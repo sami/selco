@@ -9,8 +9,9 @@ interface Props {
 
 const { title, description, canonicalUrl, ogImage, jsonLd } = Astro.props;
 
-const canonical = canonicalUrl || new URL(Astro.url.pathname, Astro.site).toString();
-const image = ogImage || new URL('/og-default.png', Astro.site).toString();
+const site = Astro.site || new URL("https://sami.github.io/selco");
+const canonical = canonicalUrl || new URL(Astro.url.pathname, site).toString();
+const image = ogImage || new URL('/og-default.png', site).toString();
 ---
 
 <!-- Global Metadata -->
