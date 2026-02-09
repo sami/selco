@@ -17,17 +17,17 @@ const jsonLd = {
 };
 
 const featuredCalculators = [
-  { title: "Conversions", href: "/calculators/conversions", icon: "🔄", desc: "Convert measurements instantly." },
-  { title: "Tiles", href: "/calculators/tiles", icon: "🧱", desc: "Calculate tiles for walls and floors." },
-  { title: "Adhesive", href: "/calculators/adhesive", icon: "🧴", desc: "Estimate adhesive requirements." },
-  { title: "Grout", href: "/calculators/grout", icon: "✨", desc: "Calculate grout bags needed." },
-  { title: "Spacers", href: "/calculators/spacers", icon: "📏", desc: "Find out how many spacers to buy." },
+  { title: "Conversions", href: "/calculators/conversions/", icon: "🔄", desc: "Convert measurements instantly." },
+  { title: "Tiles", href: "/calculators/tiles/", icon: "🧱", desc: "Calculate tiles for walls and floors." },
+  { title: "Adhesive", href: "/calculators/adhesive/", icon: "🧴", desc: "Estimate adhesive requirements." },
+  { title: "Grout", href: "/calculators/grout/", icon: "✨", desc: "Calculate grout bags needed." },
+  { title: "Spacers", href: "/calculators/spacers/", icon: "📏", desc: "Find out how many spacers to buy." },
 ];
 ---
 
 <BaseLayout
-  title="Trade Materials Calculator"
-  description="Free trade tools to calculate material quantities for building projects. Accurate estimates for bricks, plaster, concrete, and more."
+  title="Trade Materials Calculator | Building Materials Estimator"
+  description="Work out exactly what you need for your next project. Free trade tools to calculate material quantities for building projects."
   jsonLd={jsonLd}
 >
   <div class="space-y-16 pb-12">
@@ -37,8 +37,7 @@ const featuredCalculators = [
         Work out exactly what you need for your next project
       </h1>
       <p class="text-lg md:text-xl text-muted-foreground max-w-2xl mx-auto leading-relaxed">
-        Free trade tools to calculate material quantities for building projects. 
-        Accurate estimates for bricks, plaster, concrete, and more.
+        How much material do I need? Our tool helps customers and trade staff calculate material quantities for building projects.
       </p>
       <div class="flex flex-col sm:flex-row gap-4 justify-center pt-4">
         <a 
@@ -65,21 +64,21 @@ const featuredCalculators = [
             <div class="w-16 h-16 bg-white rounded-full flex items-center justify-center text-3xl shadow-sm mx-auto text-brand-blue font-bold border border-brand-blue/10">
               1
             </div>
-            <h3 class="text-xl font-bold text-primary">Choose a project</h3>
-            <p class="text-muted-foreground">Select from our range of specialist trade calculators.</p>
+            <h3 class="text-xl font-bold text-primary">Choose a project or calculator</h3>
+            <p class="text-muted-foreground">Select from our range of specialist trade tools.</p>
           </div>
           <div class="space-y-4">
             <div class="w-16 h-16 bg-white rounded-full flex items-center justify-center text-3xl shadow-sm mx-auto text-brand-blue font-bold border border-brand-blue/10">
               2
             </div>
-            <h3 class="text-xl font-bold text-primary">Enter measurements</h3>
+            <h3 class="text-xl font-bold text-primary">Enter your measurements</h3>
             <p class="text-muted-foreground">Input your dimensions and specific requirements.</p>
           </div>
           <div class="space-y-4">
             <div class="w-16 h-16 bg-white rounded-full flex items-center justify-center text-3xl shadow-sm mx-auto text-brand-blue font-bold border border-brand-blue/10">
               3
             </div>
-            <h3 class="text-xl font-bold text-primary">Get materials list</h3>
+            <h3 class="text-xl font-bold text-primary">Get your complete materials list</h3>
             <p class="text-muted-foreground">Receive an instant, accurate list of materials needed.</p>
           </div>
         </div>
@@ -132,7 +131,7 @@ const featuredCalculators = [
     <section>
       <h2 class="text-2xl md:text-3xl font-bold text-primary mb-8">Featured Project</h2>
       <a 
-        href="/projects/tiling"
+        href="/projects/tiling/"
         class="block group relative overflow-hidden rounded-2xl bg-brand-blue text-white focus-ring"
       >
         <div class="absolute inset-0 bg-gradient-to-r from-brand-blue to-blue-800 opacity-90 z-0"></div>
