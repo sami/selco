@@ -14,11 +14,12 @@ interface Props {
 
 const { title, description, canonicalUrl, ogImage, jsonLd } = Astro.props;
 const currentPath = Astro.url.pathname;
+const base = import.meta.env.BASE_URL;
 
 const navLinks = [
-  { href: '/', label: 'Home' },
-  { href: '/projects', label: 'Projects' },
-  { href: '/calculators', label: 'Calculators' },
+  { href: base, label: 'Home' },
+  { href: `${base}/projects`, label: 'Projects' },
+  { href: `${base}/calculators`, label: 'Calculators' },
 ];
 ---
 
@@ -46,14 +47,21 @@ const navLinks = [
     <header class="bg-brand-blue text-white shadow-md sticky top-0 z-40">
       <div class="container mx-auto px-4 h-16 flex items-center justify-between">
         <!-- Logo / Site Name -->
-        <a href="/" class="text-xl font-bold tracking-tight hover:text-brand-yellow transition-colors focus-ring rounded-sm">
+        <a href={base} class="text-xl font-bold tracking-tight hover:text-brand-yellow transition-colors focus-ring rounded-sm">
           SELCO Calculator
         </a>
 
         <!-- Desktop Nav -->
         <nav class="hidden md:flex gap-1" aria-label="Main navigation">
           {navLinks.map((link) => {
-            const isActive = currentPath === link.href || (link.href !== '/' && currentPath.startsWith(link.href));
+             // Handle active state with base path normalizing (remove trailing slash for comparison if needed)
+             // currentPath might be /selco/projects/
+            const normalize = (path: string) => path.endsWith('/') ? path.slice(0, -1) : path;
+            const linkHref = normalize(link.href);
+            const current = normalize(currentPath);
+            
+            const isActive = current === linkHref || (link.href !== base && current.startsWith(linkHref));
+            
             return (
               <a
                 href={link.href}
