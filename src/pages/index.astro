@@ -1,26 +1,158 @@
 ---
 import BaseLayout from '../layouts/BaseLayout.astro';
+
+const jsonLd = {
+  "@context": "https://schema.org",
+  "@type": "WebApplication",
+  "name": "SELCO Calculator",
+  "url": Astro.url.href,
+  "description": "Free trade tools to calculate material quantities for building projects. Accurate estimates for bricks, plaster, concrete, and more.",
+  "applicationCategory": "BusinessApplication",
+  "operatingSystem": "Any",
+  "offers": {
+    "@type": "Offer",
+    "price": "0",
+    "priceCurrency": "GBP"
+  }
+};
+
+const featuredCalculators = [
+  { title: "Conversions", href: "/calculators/conversions", icon: "🔄", desc: "Convert measurements instantly." },
+  { title: "Tiles", href: "/calculators/tiles", icon: "🧱", desc: "Calculate tiles for walls and floors." },
+  { title: "Adhesive", href: "/calculators/adhesive", icon: "🧴", desc: "Estimate adhesive requirements." },
+  { title: "Grout", href: "/calculators/grout", icon: "✨", desc: "Calculate grout bags needed." },
+  { title: "Spacers", href: "/calculators/spacers", icon: "📏", desc: "Find out how many spacers to buy." },
+];
 ---
 
-<BaseLayout title="Home" description="Trade materials calculator for professionals.">
-  <div class="max-w-4xl mx-auto text-center space-y-8">
-    <h1 class="text-4xl font-extrabold tracking-tight text-primary sm:text-5xl">
-      Material Calculators for the Trade
-    </h1>
-    <p class="text-lg text-muted-foreground max-w-2xl mx-auto">
-      Quick, accurate estimates for bricks, plaster, concrete, and more. Built for professionals.
-    </p>
-    
-    <div class="grid gap-4 md:grid-cols-2 lg:grid-cols-3 pt-8">
-      {/* Placeholder Cards */}
-      <a href="/calculators" class="p-6 bg-white rounded-lg border shadow-sm hover:shadow-md transition-shadow focus-ring group">
-        <h3 class="text-lg font-bold text-primary group-hover:text-brand-blue mb-2">Calculators</h3>
-        <p class="text-sm text-muted-foreground">Browse our collection of trade calculators.</p>
+<BaseLayout
+  title="Trade Materials Calculator"
+  description="Free trade tools to calculate material quantities for building projects. Accurate estimates for bricks, plaster, concrete, and more."
+  jsonLd={jsonLd}
+>
+  <div class="space-y-16 pb-12">
+    {/* Hero Section */}
+    <section class="text-center py-12 md:py-20 space-y-6">
+      <h1 class="text-4xl md:text-6xl font-extrabold tracking-tight text-brand-blue max-w-4xl mx-auto leading-tight">
+        Work out exactly what you need for your next project
+      </h1>
+      <p class="text-lg md:text-xl text-muted-foreground max-w-2xl mx-auto leading-relaxed">
+        Free trade tools to calculate material quantities for building projects. 
+        Accurate estimates for bricks, plaster, concrete, and more.
+      </p>
+      <div class="flex flex-col sm:flex-row gap-4 justify-center pt-4">
+        <a 
+          href="/calculators" 
+          class="inline-flex items-center justify-center px-8 py-3 text-base font-bold text-brand-blue bg-brand-yellow rounded-lg hover:bg-yellow-400 transition-colors focus-ring"
+        >
+          Browse Calculators
+        </a>
+        <a 
+          href="/projects" 
+          class="inline-flex items-center justify-center px-8 py-3 text-base font-bold text-brand-blue bg-white border-2 border-brand-blue/20 rounded-lg hover:bg-brand-blue/5 transition-colors focus-ring"
+        >
+          My Projects
+        </a>
+      </div>
+    </section>
+
+    {/* How It Works */}
+    <section class="bg-muted/30 -mx-4 px-4 py-12 md:py-16 md:rounded-2xl">
+      <div class="max-w-6xl mx-auto">
+        <h2 class="text-2xl md:text-3xl font-bold text-center text-primary mb-12">How it works</h2>
+        <div class="grid md:grid-cols-3 gap-8 text-center">
+          <div class="space-y-4">
+            <div class="w-16 h-16 bg-white rounded-full flex items-center justify-center text-3xl shadow-sm mx-auto text-brand-blue font-bold border border-brand-blue/10">
+              1
+            </div>
+            <h3 class="text-xl font-bold text-primary">Choose a project</h3>
+            <p class="text-muted-foreground">Select from our range of specialist trade calculators.</p>
+          </div>
+          <div class="space-y-4">
+            <div class="w-16 h-16 bg-white rounded-full flex items-center justify-center text-3xl shadow-sm mx-auto text-brand-blue font-bold border border-brand-blue/10">
+              2
+            </div>
+            <h3 class="text-xl font-bold text-primary">Enter measurements</h3>
+            <p class="text-muted-foreground">Input your dimensions and specific requirements.</p>
+          </div>
+          <div class="space-y-4">
+            <div class="w-16 h-16 bg-white rounded-full flex items-center justify-center text-3xl shadow-sm mx-auto text-brand-blue font-bold border border-brand-blue/10">
+              3
+            </div>
+            <h3 class="text-xl font-bold text-primary">Get materials list</h3>
+            <p class="text-muted-foreground">Receive an instant, accurate list of materials needed.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    {/* Featured Calculators */}
+    <section>
+      <div class="flex justify-between items-end mb-8">
+        <h2 class="text-2xl md:text-3xl font-bold text-primary">Popular Calculators</h2>
+        <a href="/calculators" class="text-brand-blue font-semibold hover:underline decoration-2 underline-offset-4 hidden sm:inline-block">
+          View all →
+        </a>
+      </div>
+      
+      <div class="grid sm:grid-cols-2 lg:grid-cols-3 gap-6">
+        {featuredCalculators.map((calc) => (
+          <a 
+            href={calc.href}
+            class="group p-6 bg-white rounded-xl border border-muted shadow-sm hover:shadow-md hover:border-brand-blue/30 transition-all focus-ring"
+          >
+            <div class="text-4xl mb-4 group-transform group-hover:scale-110 transition-transform duration-300 origin-left">
+              {calc.icon}
+            </div>
+            <h3 class="text-lg font-bold text-primary mb-2 group-hover:text-brand-blue transition-colors">
+              {calc.title}
+            </h3>
+            <p class="text-sm text-muted-foreground">
+              {calc.desc}
+            </p>
+          </a>
+        ))}
+        {/* 'More' card for mobile/filling the grid */}
+        <a 
+          href="/calculators"
+          class="flex flex-col justify-center items-center p-6 bg-muted/20 rounded-xl border border-dashed border-muted-foreground/30 hover:bg-muted/40 transition-colors focus-ring text-center"
+        >
+          <span class="text-2xl mb-2">➕</span>
+          <span class="font-bold text-primary">View all calculators</span>
+        </a>
+      </div>
+      <div class="mt-8 text-center sm:hidden">
+        <a href="/calculators" class="text-brand-blue font-semibold hover:underline">
+          View all calculators →
+        </a>
+      </div>
+    </section>
+
+    {/* Featured Project */}
+    <section>
+      <h2 class="text-2xl md:text-3xl font-bold text-primary mb-8">Featured Project</h2>
+      <a 
+        href="/projects/tiling"
+        class="block group relative overflow-hidden rounded-2xl bg-brand-blue text-white focus-ring"
+      >
+        <div class="absolute inset-0 bg-gradient-to-r from-brand-blue to-blue-800 opacity-90 z-0"></div>
+        <div class="relative z-10 p-8 md:p-12 flex flex-col md:flex-row items-center justify-between gap-8">
+          <div class="space-y-4 text-center md:text-left">
+            <div class="inline-block px-3 py-1 bg-brand-yellow text-brand-blue text-xs font-bold uppercase tracking-wider rounded-full">
+              Complete Guide
+            </div>
+            <h3 class="text-2xl md:text-4xl font-bold">Planning a Tiling Project?</h3>
+            <p class="text-blue-100 max-w-xl text-lg">
+              Calculate everything from tiles and adhesive to grout and spacers in one go. Save your project list for later.
+            </p>
+          </div>
+          <div class="shrink-0">
+            <span class="inline-flex items-center justify-center px-8 py-4 font-bold bg-white text-brand-blue rounded-lg shadow-lg group-hover:bg-brand-yellow group-hover:scale-105 transition-all duration-300">
+              Start Tiling Project
+            </span>
+          </div>
+        </div>
       </a>
-      <a href="/projects" class="p-6 bg-white rounded-lg border shadow-sm hover:shadow-md transition-shadow focus-ring group">
-        <h3 class="text-lg font-bold text-primary group-hover:text-brand-blue mb-2">My Projects</h3>
-        <p class="text-sm text-muted-foreground">Manage and save your material lists.</p>
-      </a>
-    </div>
+    </section>
   </div>
 </BaseLayout>
