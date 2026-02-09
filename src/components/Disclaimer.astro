@@ -1,0 +1,13 @@
+---
+interface Props {
+  text?: string;
+}
+
+const { text = "This calculator provides estimates only. Please verify all quantities and measurements before purchasing." } = Astro.props;
+---
+
+<div class="w-full bg-muted py-4 text-center">
+  <p class="text-sm text-muted-foreground italic px-4">
+    {text}
+  </p>
+</div>
