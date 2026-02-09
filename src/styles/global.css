@@ -1,0 +1,35 @@
+@import "tailwindcss";
+
+@theme {
+  --color-brand-blue: #003087;
+  --color-brand-yellow: #FFD100;
+
+  --color-primary: var(--color-brand-blue);
+  --color-primary-foreground: #ffffff;
+
+  --color-accent: var(--color-brand-yellow);
+  --color-accent-foreground: #003087;
+  
+  --color-surface: #ffffff;
+  --color-surface-foreground: #1f2937;
+  
+  --color-muted: #f1f5f9;
+  --color-muted-foreground: #64748b;
+  
+  --color-destructive: #dc2626;
+  --color-destructive-foreground: #ffffff;
+  
+  --color-success: #16a34a;
+  --color-success-foreground: #ffffff;
+}
+
+@utility focus-ring {
+  outline: none;
+  @apply ring-2 ring-offset-2 ring-primary;
+}
+
+/* Base styles */
+html,
+body {
+  @apply h-full antialiased;
+}

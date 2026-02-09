@@ -1,0 +1,26 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+---
+
+<BaseLayout title="Home" description="Trade materials calculator for professionals.">
+  <div class="max-w-4xl mx-auto text-center space-y-8">
+    <h1 class="text-4xl font-extrabold tracking-tight text-primary sm:text-5xl">
+      Material Calculators for the Trade
+    </h1>
+    <p class="text-lg text-muted-foreground max-w-2xl mx-auto">
+      Quick, accurate estimates for bricks, plaster, concrete, and more. Built for professionals.
+    </p>
+    
+    <div class="grid gap-4 md:grid-cols-2 lg:grid-cols-3 pt-8">
+      {/* Placeholder Cards */}
+      <a href="/calculators" class="p-6 bg-white rounded-lg border shadow-sm hover:shadow-md transition-shadow focus-ring group">
+        <h3 class="text-lg font-bold text-primary group-hover:text-brand-blue mb-2">Calculators</h3>
+        <p class="text-sm text-muted-foreground">Browse our collection of trade calculators.</p>
+      </a>
+      <a href="/projects" class="p-6 bg-white rounded-lg border shadow-sm hover:shadow-md transition-shadow focus-ring group">
+        <h3 class="text-lg font-bold text-primary group-hover:text-brand-blue mb-2">My Projects</h3>
+        <p class="text-sm text-muted-foreground">Manage and save your material lists.</p>
+      </a>
+    </div>
+  </div>
+</BaseLayout>

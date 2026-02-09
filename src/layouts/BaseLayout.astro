@@ -1,0 +1,91 @@
+---
+import SEOHead from '../components/SEOHead.astro';
+import Disclaimer from '../components/Disclaimer.astro';
+import FeedbackFooter from '../components/FeedbackFooter.astro';
+
+interface Props {
+  title: string;
+  description: string;
+  canonicalUrl?: string;
+  ogImage?: string;
+  jsonLd?: object;
+}
+
+const { title, description, canonicalUrl, ogImage, jsonLd } = Astro.props;
+const currentPath = Astro.url.pathname;
+
+const navLinks = [
+  { href: '/', label: 'Home' },
+  { href: '/projects', label: 'Projects' },
+  { href: '/calculators', label: 'Calculators' },
+];
+---
+
+<!doctype html>
+<html lang="en" class="h-full bg-surface antialiased">
+  <head>
+    <SEOHead
+      title={title}
+      description={description}
+      canonicalUrl={canonicalUrl}
+      ogImage={ogImage}
+      jsonLd={jsonLd}
+    />
+  </head>
+  <body class="flex flex-col min-h-full">
+    <!-- Skip Link -->
+    <a
+      href="#main-content"
+      class="sr-only focus:not-sr-only focus:absolute focus:top-4 focus:left-4 focus:z-50 bg-accent text-accent-foreground px-4 py-2 rounded-md font-bold ring-2 ring-primary"
+    >
+      Skip to content
+    </a>
+
+    <!-- Header -->
+    <header class="bg-brand-blue text-white shadow-md sticky top-0 z-40">
+      <div class="container mx-auto px-4 h-16 flex items-center justify-between">
+        <!-- Logo / Site Name -->
+        <a href="/" class="text-xl font-bold tracking-tight hover:text-brand-yellow transition-colors focus-ring rounded-sm">
+          SELCO Calculator
+        </a>
+
+        <!-- Desktop Nav -->
+        <nav class="hidden md:flex gap-1" aria-label="Main navigation">
+          {navLinks.map((link) => {
+            const isActive = currentPath === link.href || (link.href !== '/' && currentPath.startsWith(link.href));
+            return (
+              <a
+                href={link.href}
+                class:list={[
+                  "px-4 py-2 rounded-md text-sm font-medium transition-colors focus-ring",
+                  isActive
+                    ? "bg-white/10 text-brand-yellow font-bold border-b-2 border-brand-yellow"
+                    : "text-white/90 hover:bg-white/10 hover:text-white"
+                ]}
+                aria-current={isActive ? 'page' : undefined}
+              >
+                {link.label}
+              </a>
+            );
+          })}
+        </nav>
+
+        <!-- Mobile Menu Button (Placeholder for now) -->
+        <button type="button" class="md:hidden p-2 text-white hover:bg-white/10 rounded-md focus-ring" aria-label="Open menu">
+          <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-menu"><line x1="4" x2="20" y1="12" y2="12"/><line x1="4" x2="20" y1="6" y2="6"/><line x1="4" x2="20" y1="18" y2="18"/></svg>
+        </button>
+      </div>
+    </header>
+
+    <!-- Main Content -->
+    <main id="main-content" class="flex-grow container mx-auto px-4 py-8">
+      <slot />
+    </main>
+
+    <!-- Footer -->
+    <div class="mt-auto">
+      <Disclaimer />
+      <FeedbackFooter />
+    </div>
+  </body>
+</html>
