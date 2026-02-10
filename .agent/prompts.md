@@ -183,17 +183,22 @@ Prompts for the Antigravity coding agent. Copy and paste one at a time.
 
 ---
 
-## Prompt 8 — Fix Header: Simplify crowded navigation
+## Prompt 8 — Fix Header: Revert to pill nav with proper spacing
 
-> The desktop navigation in `src/components/Header.astro` still feels crowded. The `rounded-full` pill-shaped links are visually bulky — three of them side by side look heavy and packed even with `gap-2`.
+> The previous change broke the desktop navigation in `src/components/Header.astro`. The plain text links with underlines don't look good. Revert to the pill-shaped style but with proper spacing.
 >
-> Replace the pill nav style with simple text links:
-> - Remove `rounded-full` and the background colours from inactive links
-> - Use plain text links with `gap-6` spacing between them
-> - Active state: just `text-brand-blue font-semibold` with a small `border-b-2 border-brand-yellow` underline (no background pill)
-> - Inactive state: `text-muted-foreground` with `hover:text-brand-blue` transition
-> - Drop the `shadow-sm` on active links
+> **Revert the desktop nav links to pill-shaped buttons:**
+> - `rounded-full` with `px-4 py-2`
+> - Active state: `bg-brand-blue/10 text-brand-blue font-semibold` (no shadow-sm)
+> - Inactive state: `text-muted-foreground hover:bg-muted/50 hover:text-surface-foreground`
+> - Change nav `gap-4` (was gap-6, originally gap-1 — gap-4 is 16px, enough breathing room between pills)
 >
-> The nav should feel light and airy — like Notion or Linear's top nav, not like a row of buttons.
+> **Verify active state works on every page:**
+> - `/selco/` → Home is active
+> - `/selco/projects/` → Projects is active
+> - `/selco/calculators/` → Calculators is active
+> - `/selco/calculators/tiles/` → Calculators is active (sub-page match)
 >
-> Only touch the desktop nav inside the Header component. Don't change the mobile menu or anything else.
+> The normalize function and startsWith logic already handle this. Just make sure nothing is broken after the style revert.
+>
+> Only touch the desktop nav `<nav>` element. Don't change the logo, mobile menu, or header wrapper.
