@@ -1,35 +1,68 @@
 @import "tailwindcss";
 
 @theme {
-  --color-brand-blue: #003087;
-  --color-brand-yellow: #FFD100;
+  /* Brand Colors - Anchors */
+  --color-brand-blue: #003087;    /* Primary Brand Blue */
+  --color-brand-yellow: #FFD100;  /* Primary Brand Yellow */
 
+  /* Softened Palette for UI */
+  --color-ui-blue-dark: #0f172a;  /* Very dark blue-grey for main text */
+  --color-ui-blue-mid: #334155;   /* Mid blue-grey for secondary text */
+  --color-ui-blue-light: #e2e8f0; /* Light blue-grey for borders/dividers */
+  --color-ui-bg-subtle: #f8fafc;  /* Very subtle warm/blue-grey background */
+  --color-ui-white: #ffffff;      /* Pure white for cards/surfaces */
+  
+  /* Semantic Mappings */
   --color-primary: var(--color-brand-blue);
   --color-primary-foreground: #ffffff;
 
   --color-accent: var(--color-brand-yellow);
   --color-accent-foreground: #003087;
   
-  --color-surface: #ffffff;
-  --color-surface-foreground: #1f2937;
+  --color-surface: var(--color-ui-white);
+  --color-surface-subtle: var(--color-ui-bg-subtle);
+  --color-surface-foreground: var(--color-ui-blue-dark);
   
-  --color-muted: #f1f5f9;
-  --color-muted-foreground: #64748b;
+  --color-muted: var(--color-ui-blue-light);
+  --color-muted-foreground: var(--color-ui-blue-mid);
   
-  --color-destructive: #dc2626;
+  --color-border: var(--color-ui-blue-light);
+  
+  /* Feedback Colors */
+  --color-destructive: #ef4444;
   --color-destructive-foreground: #ffffff;
   
-  --color-success: #16a34a;
+  --color-success: #10b981;
   --color-success-foreground: #ffffff;
+
+  /* Typography */
+  --font-sans: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+  
+  /* Radii */
+  --radius-card: 16px;
+  --radius-button: 8px;
+  --radius-input: 8px;
 }
 
 @utility focus-ring {
   outline: none;
-  @apply ring-2 ring-offset-2 ring-primary;
+  @apply ring-2 ring-offset-2 ring-brand-blue/50;
+}
+
+@utility card-shadow {
+  box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.05), 0 2px 4px -2px rgb(0 0 0 / 0.05);
+}
+
+@utility card-hover {
+  @apply transition-all duration-300 hover:card-shadow hover:-translate-y-0.5;
 }
 
 /* Base styles */
-html,
+html {
+  @apply h-full antialiased bg-surface-subtle text-surface-foreground;
+  font-family: var(--font-sans);
+}
+
 body {
-  @apply h-full antialiased;
+  @apply min-h-full flex flex-col;
 }
