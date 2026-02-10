@@ -1,0 +1,13 @@
+---
+import BaseLayout from '../../../layouts/BaseLayout.astro';
+import GroutCalculator from '../../../components/GroutCalculator';
+---
+
+<BaseLayout
+  title="Grout Calculator | SELCO Calculator"
+  description="Calculate how much grout you need based on tile size, joint width, and area."
+>
+  <div class="pt-6 md:pt-10 pb-12">
+    <GroutCalculator client:load />
+  </div>
+</BaseLayout>

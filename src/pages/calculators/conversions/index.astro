@@ -1,0 +1,13 @@
+---
+import BaseLayout from '../../../layouts/BaseLayout.astro';
+import ConversionsCalculator from '../../../components/ConversionsCalculator';
+---
+
+<BaseLayout
+  title="Unit Converter | SELCO Calculator"
+  description="Convert between metric and imperial units for length, area, and weight."
+>
+  <div class="pt-6 md:pt-10 pb-12">
+    <ConversionsCalculator client:load />
+  </div>
+</BaseLayout>
