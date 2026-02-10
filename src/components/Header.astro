@@ -17,7 +17,7 @@ const current = normalize(currentPath);
 <header class="sticky top-0 z-40 w-full backdrop-blur-md bg-surface/80 border-b border-border transition-all duration-200">
   <div class="container mx-auto px-4 h-16 flex items-center justify-between">
     <!-- Logo -->
-    <a href={base} class="flex items-center gap-2 group focus-ring rounded-sm">
+    <a href={base} class="flex items-center gap-2 p-2 group focus-ring rounded-lg">
       <div class="w-8 h-8 rounded-lg bg-brand-blue text-white flex items-center justify-center font-bold text-lg shadow-sm group-hover:scale-105 transition-transform duration-200">
         S
       </div>
@@ -27,7 +27,7 @@ const current = normalize(currentPath);
     </a>
 
     <!-- Desktop Navigation -->
-    <nav class="hidden md:flex items-center gap-1" aria-label="Main navigation">
+    <nav class="hidden md:flex items-center gap-2" aria-label="Main navigation">
       {navLinks.map((link) => {
         const linkHref = normalize(link.href);
         const isActive = current === linkHref || (link.href !== base && current.startsWith(linkHref));
