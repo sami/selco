@@ -484,4 +484,14 @@ Prompts for the Antigravity coding agent. Copy and paste one at a time.
 > <link rel="icon" type="image/svg+xml" href={`${import.meta.env.BASE_URL}/favicon.svg`} />
 > ```
 >
-> After fixing, run `npm run build` and verify no links point to pages that don't exist.
+> **3. Feedback link in Footer uses wrong URL**
+>
+> In `src/components/Footer.astro` (around line 13), the Feedback link uses `mailto:contact@sami.codes`. Change it to link to the Notion feedback form instead:
+>
+> ```
+> https://madebysami.notion.site/2fe361401cd480fc9fcfdf4871d199b1?pvs=105
+> ```
+>
+> Keep the link text as "Feedback". Add `target="_blank"` and `rel="noopener noreferrer"` since it's an external link.
+>
+> After fixing all three, run `npm run build` and verify no links point to pages that don't exist.
