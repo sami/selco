@@ -1,0 +1,13 @@
+---
+import BaseLayout from '../../../layouts/BaseLayout.astro';
+import AdhesiveCalculator from '../../../components/AdhesiveCalculator';
+---
+
+<BaseLayout
+  title="Adhesive Calculator | SELCO Calculator"
+  description="Estimate how much tile adhesive you need based on area size and tile dimensions."
+>
+  <div class="pt-6 md:pt-10 pb-12">
+    <AdhesiveCalculator client:load />
+  </div>
+</BaseLayout>
