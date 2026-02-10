@@ -202,3 +202,263 @@ Prompts for the Antigravity coding agent. Copy and paste one at a time.
 > - `/selco/calculators/tiles/` (Calculators active — sub-page match)
 >
 > Do NOT touch any file other than `src/components/Header.astro`.
+
+---
+
+# Phase 2 — Build All Calculators with Tests
+
+---
+
+## Prompt 9 — Project Setup: Test Script & Dependencies
+
+> Add the missing test infrastructure:
+>
+> 1. Add `"test": "vitest"` to the `scripts` section of `package.json`
+> 2. Install `@testing-library/user-event` as a dev dependency: `npm install -D @testing-library/user-event`
+> 3. Verify the setup works by running `npm test -- --run`. It will fail because the test files reference modules that don't exist yet — that's expected and correct (TDD red phase).
+
+---
+
+## Prompt 10 — Create Shared Types & Extract Tiles Calculator Logic
+
+> The tile calculation logic is currently inlined in `src/components/TileCalculator.tsx`. Extract it to a standalone pure TypeScript module per the project architecture rules.
+>
+> **Step 1: Create `src/calculators/types.ts`** with shared interfaces:
+>
+> ```typescript
+> export interface TileInput {
+>   areaWidth: number;    // metres
+>   areaHeight: number;   // metres
+>   tileWidth: number;    // millimetres
+>   tileHeight: number;   // millimetres
+>   wastage: number;      // percentage (e.g. 10)
+> }
+>
+> export interface TileResult {
+>   tilesNeeded: number;
+>   coverageArea: number;   // square metres
+>   wastageAmount: number;  // extra tiles for wastage
+> }
+>
+> export interface AdhesiveInput {
+>   area: number;       // square metres
+>   tileSize: number;   // longest tile edge in mm
+>   wastage: number;    // percentage
+>   bagSize: number;    // kg per bag (default 20)
+> }
+>
+> export interface AdhesiveResult {
+>   kgNeeded: number;
+>   bagsNeeded: number;
+>   coverageRate: number;  // kg per m²
+> }
+>
+> export interface GroutInput {
+>   area: number;        // square metres
+>   tileWidth: number;   // mm
+>   tileHeight: number;  // mm
+>   jointWidth: number;  // mm
+>   tileDepth: number;   // mm
+>   wastage: number;     // percentage
+>   bagSize: number;     // kg per bag (default 5)
+> }
+>
+> export interface GroutResult {
+>   kgNeeded: number;
+>   bagsNeeded: number;
+>   kgPerM2: number;
+> }
+>
+> export interface SpacersInput {
+>   numberOfTiles: number;
+>   pattern: 'grid' | 'brick';
+>   wastage: number;     // percentage
+> }
+>
+> export interface SpacersResult {
+>   spacersNeeded: number;
+>   spacersPerTile: number;
+> }
+> ```
+>
+> **Step 2: Create `src/calculators/tiles.ts`** — move the `calculateTiles` function from `TileCalculator.tsx` into this file. Refactor it to:
+> - Accept a `TileInput` object (not individual params)
+> - Return a `TileResult` object
+> - **Throw an error** for invalid inputs (zero or negative dimensions) instead of returning null
+> - Keep the same calculation logic: `coverageArea = areaWidth * areaHeight`, `tileSizeM2 = (tileWidth/1000) * (tileHeight/1000)`, `rawTiles = coverageArea / tileSizeM2`, apply wastage with `Math.ceil`
+>
+> **Step 3: Update `src/components/TileCalculator.tsx`** — import `calculateTiles` and types from `../../calculators/tiles` and `../../calculators/types`. Remove the inlined function.
+>
+> **Step 4: Run `npm test -- --run src/calculators/tiles.test.ts`** — all tests must pass.
+>
+> Do NOT modify the test file. The tests define the expected behaviour.
+
+---
+
+## Prompt 11 — Implement Adhesive Calculator
+
+> Build the adhesive calculator end-to-end. Test file already exists at `src/calculators/adhesive.test.ts`.
+>
+> **Step 1: Create `src/calculators/adhesive.ts`**
+>
+> Export a `calculateAdhesive(input: AdhesiveInput): AdhesiveResult` function.
+>
+> Coverage rate logic based on largest tile edge:
+> - `tileSize <= 200mm` → 2.0 kg/m²
+> - `tileSize <= 400mm` → 3.5 kg/m²
+> - `tileSize <= 600mm` → 5.0 kg/m²
+> - `tileSize > 600mm` → 5.5 kg/m²
+>
+> Formula: `kgNeeded = area * coverageRate * (1 + wastage/100)`, `bagsNeeded = Math.ceil(kgNeeded / bagSize)`
+>
+> Throw for invalid inputs (zero/negative area or tile size).
+>
+> **Step 2: Run `npm test -- --run src/calculators/adhesive.test.ts`** — all tests must pass.
+>
+> **Step 3: Create `src/components/AdhesiveCalculator.tsx`**
+>
+> Use the same pattern as `TileCalculator.tsx` — import `calculateAdhesive` from the logic module, use `CalculatorLayout` for the UI. Form fields:
+> - Area to cover (m²)
+> - Largest tile edge (mm)
+> - Wastage allowance (%, default 10)
+> - Bag size (kg, default 20)
+>
+> Results: kg needed (primary), bags needed, coverage rate used.
+>
+> **Step 4: Create `src/pages/calculators/adhesive/index.astro`**
+>
+> Same pattern as the tiles page — import `AdhesiveCalculator` with `client:load` inside `BaseLayout`.
+>
+> Do NOT modify any test files.
+
+---
+
+## Prompt 12 — Implement Grout Calculator
+
+> Build the grout calculator. Test file exists at `src/calculators/grout.test.ts`.
+>
+> **Step 1: Create `src/calculators/grout.ts`**
+>
+> Export a `calculateGrout(input: GroutInput): GroutResult` function.
+>
+> Formula (industry standard):
+> ```
+> kgPerM2 = ((tileWidth + tileHeight) / (tileWidth * tileHeight)) * jointWidth * tileDepth * 1.6
+> kgNeeded = area * kgPerM2 * (1 + wastage/100)
+> bagsNeeded = Math.ceil(kgNeeded / bagSize)
+> ```
+> Where 1.6 is the grout density constant (kg/L).
+>
+> Throw for invalid inputs (zero/negative dimensions).
+>
+> **Step 2: Run `npm test -- --run src/calculators/grout.test.ts`** — all tests must pass.
+>
+> **Step 3: Create `src/components/GroutCalculator.tsx`**
+>
+> Use `CalculatorLayout`. Form fields:
+> - Area to cover (m²)
+> - Tile width (mm)
+> - Tile height (mm)
+> - Joint/gap width (mm, default 3)
+> - Tile depth/thickness (mm, default 8)
+> - Wastage allowance (%, default 10)
+> - Bag size (kg, default 5)
+>
+> Results: kg needed (primary), bags needed, kg per m² rate.
+>
+> **Step 4: Create `src/pages/calculators/grout/index.astro`**
+>
+> Do NOT modify any test files.
+
+---
+
+## Prompt 13 — Implement Spacers Calculator
+
+> Build the spacers calculator. Test file exists at `src/calculators/spacers.test.ts`.
+>
+> **Step 1: Create `src/calculators/spacers.ts`**
+>
+> Export a `calculateSpacers(input: SpacersInput): SpacersResult` function.
+>
+> Logic:
+> - Grid pattern: 4 spacers per tile
+> - Brick/offset pattern: 3 spacers per tile
+> - `spacersNeeded = Math.ceil(numberOfTiles * spacersPerTile * (1 + wastage/100))`
+>
+> Throw for invalid inputs (zero/negative tile count).
+>
+> **Step 2: Run `npm test -- --run src/calculators/spacers.test.ts`** — all tests must pass.
+>
+> **Step 3: Create `src/components/SpacersCalculator.tsx`**
+>
+> Use `CalculatorLayout`. Form fields:
+> - Number of tiles
+> - Layout pattern (dropdown: Grid / Brick-offset)
+> - Wastage allowance (%, default 10)
+>
+> Results: spacers needed (primary), spacers per tile used.
+>
+> **Step 4: Create `src/pages/calculators/spacers/index.astro`**
+>
+> Do NOT modify any test files.
+
+---
+
+## Prompt 14 — Implement Conversions Calculator
+
+> Build the unit conversions calculator. Test file exists at `src/calculators/conversions.test.ts`.
+>
+> **Step 1: Create `src/calculators/conversions.ts`**
+>
+> Export three functions:
+>
+> `convertLength(value: number, from: LengthUnit, to: LengthUnit): number`
+> - Units: `'mm' | 'cm' | 'm' | 'in' | 'ft' | 'yd'`
+> - Convert via a base unit (metres): define each unit's factor to metres, convert input to metres then to target unit
+>
+> `convertArea(value: number, from: AreaUnit, to: AreaUnit): number`
+> - Units: `'mm2' | 'cm2' | 'm2' | 'ft2' | 'yd2'`
+> - Same base-unit pattern (square metres)
+>
+> `convertWeight(value: number, from: WeightUnit, to: WeightUnit): number`
+> - Units: `'g' | 'kg' | 'oz' | 'lb'`
+> - Base unit: kilograms
+>
+> Export the unit type aliases (`LengthUnit`, `AreaUnit`, `WeightUnit`).
+>
+> **Step 2: Run `npm test -- --run src/calculators/conversions.test.ts`** — all tests must pass.
+>
+> **Step 3: Create `src/components/ConversionsCalculator.tsx`**
+>
+> This is different from other calculators — it's a converter, not an estimator. Layout:
+> - Tab or toggle to select conversion type: Length / Area / Weight
+> - Input value field
+> - "From" unit dropdown
+> - "To" unit dropdown
+> - Result updates live as the user types (no "Calculate" button needed — use `useMemo` or calculate on every render)
+> - Show the conversion result prominently
+> - Include a "Swap" button (Lucide `ArrowLeftRight`) to swap from/to units
+>
+> Use `CalculatorLayout` if it fits, or build a custom layout for this one since the UX is different.
+>
+> **Step 4: Create `src/pages/calculators/conversions/index.astro`**
+>
+> Do NOT modify any test files.
+
+---
+
+## Prompt 15 — Run Full Test Suite & Verify All Pages
+
+> Run the full test suite and verify everything works:
+>
+> 1. `npm test -- --run` — all tests must pass with zero failures
+> 2. `npm run build` — build must succeed with no errors
+> 3. Verify all calculator pages exist by checking the build output:
+>    - `/calculators/index.html`
+>    - `/calculators/tiles/index.html`
+>    - `/calculators/adhesive/index.html`
+>    - `/calculators/grout/index.html`
+>    - `/calculators/spacers/index.html`
+>    - `/calculators/conversions/index.html`
+>
+> Fix any issues found. Do NOT modify test files — fix the implementation code.
