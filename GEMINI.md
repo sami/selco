@@ -26,6 +26,7 @@ All calculator logic is pure TypeScript (no React). React is only used for inter
 - **Islands Architecture**: Astro renders static shells. React hydrates interactive islands via `client:load` or `client:visible`.
 - **Separation of concerns**: Calculator logic in `src/calculators/` (pure TS, no React imports). UI components in `src/components/`.
 - **Base URL**: All internal links MUST use `import.meta.env.BASE_URL` (resolves to `/selco`). Hardcoded paths will break on GitHub Pages.
+- **Shared components**: Header (`src/components/Header.astro`), Footer (`src/components/Footer.astro`), and BaseLayout (`src/layouts/BaseLayout.astro`) are shared across ALL pages. NEVER duplicate or inline their content in page files. Edit the component, not the page.
 
 ### 3. Git Workflow
 - Conventional Commits (e.g. `feat:`, `fix:`, `test:`, `chore:`).

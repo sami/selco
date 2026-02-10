@@ -183,22 +183,22 @@ Prompts for the Antigravity coding agent. Copy and paste one at a time.
 
 ---
 
-## Prompt 8 — Fix Header: Revert to pill nav with proper spacing
+## Prompt 8 — Fix Header: Revert to pill nav with proper spacing (ALL PAGES)
 
-> The previous change broke the desktop navigation in `src/components/Header.astro`. The plain text links with underlines don't look good. Revert to the pill-shaped style but with proper spacing.
+> **IMPORTANT: The navigation lives in a SINGLE shared component: `src/components/Header.astro`. This component is used by `src/layouts/BaseLayout.astro`, which is used by EVERY page. You MUST edit `src/components/Header.astro` — do NOT duplicate or inline navigation code in any page file.**
 >
-> **Revert the desktop nav links to pill-shaped buttons:**
-> - `rounded-full` with `px-4 py-2`
+> The previous change broke the desktop navigation by replacing pill-shaped links with plain text+underline links. Revert to pills with proper spacing.
+>
+> **Edit ONLY `src/components/Header.astro` — the desktop nav `<nav>` element:**
+> - `rounded-full` with `px-4 py-2` on each link
 > - Active state: `bg-brand-blue/10 text-brand-blue font-semibold` (no shadow-sm)
 > - Inactive state: `text-muted-foreground hover:bg-muted/50 hover:text-surface-foreground`
-> - Change nav `gap-4` (was gap-6, originally gap-1 — gap-4 is 16px, enough breathing room between pills)
+> - Nav gap: `gap-4` (16px between pills)
 >
-> **Verify active state works on every page:**
-> - `/selco/` → Home is active
-> - `/selco/projects/` → Projects is active
-> - `/selco/calculators/` → Calculators is active
-> - `/selco/calculators/tiles/` → Calculators is active (sub-page match)
+> **After making the change, verify it works on ALL pages by running `npm run build` and checking the output.** The same header must appear on:
+> - `/selco/` (Home active)
+> - `/selco/projects/` (Projects active)
+> - `/selco/calculators/` (Calculators active)
+> - `/selco/calculators/tiles/` (Calculators active — sub-page match)
 >
-> The normalize function and startsWith logic already handle this. Just make sure nothing is broken after the style revert.
->
-> Only touch the desktop nav `<nav>` element. Don't change the logo, mobile menu, or header wrapper.
+> Do NOT touch any file other than `src/components/Header.astro`.
