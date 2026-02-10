@@ -148,3 +148,15 @@ Prompts for the Antigravity coding agent. Copy and paste one at a time.
 >   - "Open" and "Delete" actions
 >
 > Use Tailwind CSS. Lucide icons. British English.
+
+---
+
+## Prompt 6 — Fix Header: Logo Padding & Nav Spacing
+
+> Fix two issues in the Header component (`src/components/Header.astro`):
+>
+> 1. **Logo needs padding** — The logo link (the "S" icon + "SELCO Calculator" text) has no breathing room. Add `p-1.5` or `p-2` to the `<a>` wrapper so the focus ring and hover state don't sit flush against the content.
+>
+> 2. **Navigation links are too crowded** — The desktop nav currently uses `gap-1` between links. Increase to `gap-2` so the pill-shaped links don't feel jammed together. The overall header should feel spacious, not packed.
+>
+> Only touch the Header component. Don't change anything else.
