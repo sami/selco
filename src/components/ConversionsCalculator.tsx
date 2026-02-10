@@ -119,14 +119,14 @@ export default function ConversionsCalculator() {
             </div>
 
             {/* Type tabs */}
-            <div className="flex gap-2">
+            <div className="flex gap-4">
                 {tabs.map((tab) => (
                     <button
                         key={tab.key}
                         onClick={() => handleTypeChange(tab.key)}
                         className={`px-4 py-2 rounded-full text-sm font-medium transition-all duration-200 focus-ring ${conversionType === tab.key
-                                ? 'bg-brand-blue/10 text-brand-blue font-semibold'
-                                : 'text-muted-foreground hover:bg-muted/50 hover:text-surface-foreground'
+                            ? 'bg-brand-blue/10 text-brand-blue font-semibold'
+                            : 'text-muted-foreground hover:bg-muted/50 hover:text-surface-foreground'
                             }`}
                     >
                         {tab.label}
