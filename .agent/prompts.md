@@ -494,4 +494,8 @@ Prompts for the Antigravity coding agent. Copy and paste one at a time.
 >
 > Keep the link text as "Feedback". Add `target="_blank"` and `rel="noopener noreferrer"` since it's an external link.
 >
-> After fixing all three, run `npm run build` and verify no links point to pages that don't exist.
+> **4. Conversion type pills too close together**
+>
+> In `src/components/ConversionsCalculator.tsx` (around line 122), the conversion type tabs (Length / Area / Weight) use `gap-2` (8px). Change to `gap-4` (16px) so the pill buttons have breathing room between them.
+>
+> After fixing all four, run `npm run build` and verify no links point to pages that don't exist.
