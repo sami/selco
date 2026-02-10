@@ -1,0 +1,26 @@
+---
+const year = new Date().getFullYear();
+---
+
+<footer class="mt-auto py-8 text-center text-sm text-muted-foreground border-t border-border bg-surface-subtle">
+  <div class="container mx-auto px-4 flex flex-col items-center gap-4">
+    <div class="flex items-center gap-6">
+      <a href="https://sami.codes" class="hover:text-brand-blue transition-colors">Sami.codes</a>
+      <span class="text-border">•</span>
+      <a href="https://github.com/sami/selco" class="hover:text-brand-blue transition-colors">GitHub</a>
+      <span class="text-border">•</span>
+      <a 
+        href="mailto:contact@sami.codes" 
+        class="hover:text-brand-blue transition-colors"
+      >
+        Feedback
+      </a>
+    </div>
+    
+    <div class="text-xs text-muted-foreground/80 max-w-md mx-auto">
+      <p class="mb-2 italic">This calculator provides estimates only. Please verify all quantities and measurements before purchasing.</p>
+      <p>&copy; {year} SELCO Calculator. Built with Astro & React.</p>
+      <p class="mt-1">Not officially affiliated with Selco Builders Warehouse.</p>
+    </div>
+  </div>
+</footer>

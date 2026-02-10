@@ -1,0 +1,55 @@
+---
+import MobileMenu from './MobileMenu';
+
+const currentPath = Astro.url.pathname;
+const base = import.meta.env.BASE_URL;
+
+const navLinks = [
+  { href: base, label: 'Home' },
+  { href: `${base}/projects`, label: 'Projects' },
+  { href: `${base}/calculators`, label: 'Calculators' },
+];
+
+const normalize = (path: string) => path.endsWith('/') ? path.slice(0, -1) : path;
+const current = normalize(currentPath);
+---
+
+<header class="sticky top-0 z-40 w-full backdrop-blur-md bg-surface/80 border-b border-border transition-all duration-200">
+  <div class="container mx-auto px-4 h-16 flex items-center justify-between">
+    <!-- Logo -->
+    <a href={base} class="flex items-center gap-2 group focus-ring rounded-sm">
+      <div class="w-8 h-8 rounded-lg bg-brand-blue text-white flex items-center justify-center font-bold text-lg shadow-sm group-hover:scale-105 transition-transform duration-200">
+        S
+      </div>
+      <span class="font-bold text-lg tracking-tight text-ui-blue-dark group-hover:text-brand-blue transition-colors">
+        SELCO <span class="text-muted-foreground font-normal">Calculator</span>
+      </span>
+    </a>
+
+    <!-- Desktop Navigation -->
+    <nav class="hidden md:flex items-center gap-1" aria-label="Main navigation">
+      {navLinks.map((link) => {
+        const linkHref = normalize(link.href);
+        const isActive = current === linkHref || (link.href !== base && current.startsWith(linkHref));
+        
+        return (
+          <a
+            href={link.href}
+            class:list={[
+              "px-4 py-2 rounded-full text-sm font-medium transition-all duration-200 focus-ring",
+              isActive
+                ? "bg-brand-blue/10 text-brand-blue font-semibold shadow-sm"
+                : "text-muted-foreground hover:bg-muted hover:text-foreground"
+            ]}
+            aria-current={isActive ? 'page' : undefined}
+          >
+            {link.label}
+          </a>
+        );
+      })}
+    </nav>
+
+    <!-- Mobile Menu -->
+    <MobileMenu client:load currentPath={currentPath} baseUrl={base} />
+  </div>
+</header>
