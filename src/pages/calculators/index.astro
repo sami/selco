@@ -1,19 +1,182 @@
 ---
 import BaseLayout from '../../layouts/BaseLayout.astro';
+
+const base = import.meta.env.BASE_URL.endsWith('/') ? import.meta.env.BASE_URL : `${import.meta.env.BASE_URL}/`;
+
+interface Calculator {
+  title: string;
+  href: string;
+  desc: string;
+  category: string;
+  iconPath: string;
+}
+
+const calculators: Calculator[] = [
+  {
+    title: "Tiles",
+    href: "calculators/tiles/",
+    desc: "Calculate how many tiles you need for walls and floors based on area, tile size, and layout pattern.",
+    category: "Tiling",
+    iconPath: "M3 3h7v7H3zM14 3h7v7h-7zM3 14h7v7H3zM14 14h7v7h-7z",
+  },
+  {
+    title: "Adhesive",
+    href: "calculators/adhesive/",
+    desc: "Estimate adhesive coverage and the number of bags required for your tile area and substrate type.",
+    category: "Tiling",
+    iconPath: "M12 2v6m0 0a3 3 0 1 0 0 6m0-6a3 3 0 1 1 0 6m0 0v4m-4 2h8",
+  },
+  {
+    title: "Grout",
+    href: "calculators/grout/",
+    desc: "Work out how much grout you need based on tile size, joint width, and the total area to cover.",
+    category: "Tiling",
+    iconPath: "M9.937 15.5A2 2 0 0 0 8.5 14.063l-6.135-1.582a.5.5 0 0 1 0-.962L8.5 9.936A2 2 0 0 0 9.937 8.5l1.582-6.135a.5.5 0 0 1 .963 0L14.063 8.5A2 2 0 0 0 15.5 9.937l6.135 1.582a.5.5 0 0 1 0 .963L15.5 14.063a2 2 0 0 0-1.437 1.437l-1.582 6.135a.5.5 0 0 1-.963 0z",
+  },
+  {
+    title: "Spacers",
+    href: "calculators/spacers/",
+    desc: "Calculate the number of spacers you need for your tiling job based on tile count and layout.",
+    category: "Tiling",
+    iconPath: "M21.3 15.3a2.4 2.4 0 0 1 0 3.4l-2.6 2.6a2.4 2.4 0 0 1-3.4 0L2.7 8.7a2.41 2.41 0 0 1 0-3.4l2.6-2.6a2.41 2.41 0 0 1 3.4 0zM14.5 12.5 2 25M7.5 4.5l12 12",
+  },
+  {
+    title: "Conversions",
+    href: "calculators/conversions/",
+    desc: "Convert between metric and imperial measurements — millimetres, centimetres, metres, inches, and feet.",
+    category: "General",
+    iconPath: "M8 3 4 7l4 4M4 7h16M16 21l4-4-4-4M20 17H4",
+  },
+];
+
+// Group calculators by category
+const categories = [...new Set(calculators.map(c => c.category))];
+const grouped = categories.map(cat => ({
+  name: cat,
+  items: calculators.filter(c => c.category === cat),
+}));
 ---
 
-<BaseLayout title="Calculators" description="Browse our collection of trade calculators.">
-  <div class="max-w-4xl mx-auto space-y-8">
-    <div class="border-b border-muted pb-4">
-      <h1 class="text-3xl font-bold text-primary">Calculators</h1>
-      <p class="text-muted-foreground mt-2">Select a calculator to get started.</p>
+<BaseLayout
+  title="Calculators | SELCO Calculator"
+  description="Browse all trade calculators. Estimate tiles, adhesive, grout, spacers, and convert measurements."
+>
+  <div class="space-y-10 pb-12">
+
+    {/* Page Header */}
+    <section class="pt-8 md:pt-12 space-y-6">
+      <div class="space-y-2">
+        <h1 class="text-2xl md:text-3xl font-bold text-surface-foreground tracking-tight">
+          Calculators
+        </h1>
+        <p class="text-muted-foreground text-base md:text-lg">
+          Estimate materials for your next project.
+        </p>
+      </div>
+
+      {/* Search Input */}
+      <div class="relative max-w-md">
+        <div class="absolute inset-y-0 left-0 flex items-center pl-4 pointer-events-none text-muted-foreground">
+          <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <circle cx="11" cy="11" r="8" />
+            <path d="m21 21-4.3-4.3" />
+          </svg>
+        </div>
+        <input
+          type="text"
+          placeholder="Search calculators..."
+          class="w-full pl-11 pr-4 py-3 bg-surface border border-border rounded-[--radius-input] text-sm text-surface-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-brand-blue/30 focus:border-brand-blue/40 transition-all"
+          id="calculator-search"
+        />
+      </div>
+    </section>
+
+    {/* Grouped Calculator Grid */}
+    <div class="space-y-10" id="calculator-groups">
+      {grouped.map((group) => (
+        <section data-group={group.name.toLowerCase()}>
+          <h2 class="text-lg font-semibold text-surface-foreground mb-4 flex items-center gap-2">
+            {group.name}
+            <span class="text-xs font-normal text-muted-foreground bg-muted px-2 py-0.5 rounded-full">
+              {group.items.length}
+            </span>
+          </h2>
+          <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-5">
+            {group.items.map((calc) => (
+              <a
+                href={`${base}${calc.href}`}
+                class="group flex flex-col p-6 bg-surface rounded-[--radius-card] border border-border card-shadow hover:border-brand-blue/40 hover:-translate-y-0.5 hover:shadow-md transition-all duration-200 focus-ring"
+                data-name={calc.title.toLowerCase()}
+                data-category={calc.category.toLowerCase()}
+              >
+                <div class="flex items-start justify-between mb-4">
+                  <div class="w-11 h-11 rounded-xl bg-brand-blue/5 text-brand-blue flex items-center justify-center group-hover:bg-brand-blue/10 transition-colors">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                      <path d={calc.iconPath} />
+                    </svg>
+                  </div>
+                  <span class="text-[11px] font-medium text-muted-foreground bg-muted px-2 py-0.5 rounded-full">
+                    {calc.category}
+                  </span>
+                </div>
+                <h3 class="font-bold text-surface-foreground group-hover:text-brand-blue transition-colors mb-2">
+                  {calc.title}
+                </h3>
+                <p class="text-sm text-muted-foreground leading-relaxed">
+                  {calc.desc}
+                </p>
+              </a>
+            ))}
+          </div>
+        </section>
+      ))}
     </div>
 
-    <div class="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
-      {/* Placeholder for future calculator cards */}
-      <div class="p-6 bg-muted/30 rounded-lg border border-dashed border-muted-foreground/30 text-center">
-        <p class="text-muted-foreground">More calculators coming soon...</p>
+    {/* Empty state (hidden by default, shown when search yields no results) */}
+    <div id="no-results" class="hidden text-center py-12">
+      <div class="w-12 h-12 rounded-full bg-muted flex items-center justify-center mx-auto mb-4">
+        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="text-muted-foreground">
+          <circle cx="11" cy="11" r="8" />
+          <path d="m21 21-4.3-4.3" />
+        </svg>
       </div>
+      <p class="text-muted-foreground font-medium">No calculators match your search.</p>
+      <p class="text-sm text-muted-foreground/70 mt-1">Try a different term or clear the search.</p>
     </div>
   </div>
+
+  {/* Client-side search filtering */}
+  <script>
+    const searchInput = document.getElementById('calculator-search') as HTMLInputElement;
+    const groups = document.getElementById('calculator-groups');
+    const noResults = document.getElementById('no-results');
+
+    if (searchInput && groups && noResults) {
+      searchInput.addEventListener('input', () => {
+        const query = searchInput.value.toLowerCase().trim();
+        let totalVisible = 0;
+
+        // Filter individual cards
+        const cards = groups.querySelectorAll<HTMLAnchorElement>('a[data-name]');
+        cards.forEach((card) => {
+          const name = card.dataset.name ?? '';
+          const category = card.dataset.category ?? '';
+          const desc = card.querySelector('p')?.textContent?.toLowerCase() ?? '';
+          const matches = !query || name.includes(query) || category.includes(query) || desc.includes(query);
+          card.style.display = matches ? '' : 'none';
+          if (matches) totalVisible++;
+        });
+
+        // Hide empty category sections
+        const sections = groups.querySelectorAll<HTMLElement>('section[data-group]');
+        sections.forEach((section) => {
+          const visibleCards = section.querySelectorAll<HTMLAnchorElement>('a[data-name]:not([style*="display: none"])');
+          section.style.display = visibleCards.length > 0 ? '' : 'none';
+        });
+
+        // Show/hide empty state
+        noResults.classList.toggle('hidden', totalVisible > 0);
+      });
+    }
+  </script>
 </BaseLayout>
