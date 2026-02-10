@@ -160,3 +160,40 @@ Prompts for the Antigravity coding agent. Copy and paste one at a time.
 > 2. **Navigation links are too crowded** — The desktop nav currently uses `gap-1` between links. Increase to `gap-2` so the pill-shaped links don't feel jammed together. The overall header should feel spacious, not packed.
 >
 > Only touch the Header component. Don't change anything else.
+
+---
+
+## Prompt 7 — Fix GitHub Pages: Switch to Actions deployment
+
+> GitHub Pages is returning 404 because the repo is configured to deploy from the branch directly (`build_type: "legacy"`) instead of from the GitHub Actions workflow output.
+>
+> Run this command to switch the Pages source to GitHub Actions:
+>
+> ```bash
+> gh api repos/sami/selco/pages -X PUT -f build_type=workflow
+> ```
+>
+> Then trigger a redeploy by pushing a commit or running:
+>
+> ```bash
+> gh workflow run "Deploy to GitHub Pages"
+> ```
+>
+> Verify the site loads at `https://sami.github.io/selco/` after the workflow completes.
+
+---
+
+## Prompt 8 — Fix Header: Simplify crowded navigation
+
+> The desktop navigation in `src/components/Header.astro` still feels crowded. The `rounded-full` pill-shaped links are visually bulky — three of them side by side look heavy and packed even with `gap-2`.
+>
+> Replace the pill nav style with simple text links:
+> - Remove `rounded-full` and the background colours from inactive links
+> - Use plain text links with `gap-6` spacing between them
+> - Active state: just `text-brand-blue font-semibold` with a small `border-b-2 border-brand-yellow` underline (no background pill)
+> - Inactive state: `text-muted-foreground` with `hover:text-brand-blue` transition
+> - Drop the `shadow-sm` on active links
+>
+> The nav should feel light and airy — like Notion or Linear's top nav, not like a row of buttons.
+>
+> Only touch the desktop nav inside the Header component. Don't change the mobile menu or anything else.
