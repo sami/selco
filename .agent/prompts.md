@@ -462,3 +462,26 @@ Prompts for the Antigravity coding agent. Copy and paste one at a time.
 >    - `/calculators/conversions/index.html`
 >
 > Fix any issues found. Do NOT modify test files — fix the implementation code.
+
+---
+
+## Prompt 16 — Fix Broken Links: Tiling Project & Favicon
+
+> Two links across the site produce 404 errors. Fix both:
+>
+> **1. `/selco/projects/tiling/` — page doesn't exist**
+>
+> The homepage (`src/pages/index.astro`, around line 119) links to `${base}projects/tiling/` in the "Planning a tiling project?" spotlight card. This page was never created.
+>
+> **Fix:** Change the link to point to `${base}calculators/tiles/` instead (the tile calculator is the closest existing page). Update the CTA text from "Start project" to "Start calculating" since it's no longer a project page.
+>
+> **2. `/favicon.svg` — missing base URL prefix**
+>
+> In `src/components/SEOHead.astro` (line 20), the favicon link is hardcoded as `/favicon.svg`. On GitHub Pages this resolves to `https://sami.github.io/favicon.svg` instead of `https://sami.github.io/selco/favicon.svg`.
+>
+> **Fix:** Change it to use the base URL:
+> ```astro
+> <link rel="icon" type="image/svg+xml" href={`${import.meta.env.BASE_URL}/favicon.svg`} />
+> ```
+>
+> After fixing, run `npm run build` and verify no links point to pages that don't exist.
