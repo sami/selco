@@ -1,0 +1,13 @@
+---
+import BaseLayout from '../../../layouts/BaseLayout.astro';
+import TileCalculator from '../../../components/TileCalculator';
+---
+
+<BaseLayout
+  title="Tile Calculator | SELCO Calculator"
+  description="Calculate how many tiles you need for your wall or floor based on room dimensions and tile size."
+>
+  <div class="pt-6 md:pt-10 pb-12">
+    <TileCalculator client:load />
+  </div>
+</BaseLayout>
