@@ -4,28 +4,7 @@ import CalculatorLayout, {
     type ResultItem,
     type FieldGroup,
 } from './CalculatorLayout';
-
-/** Pure calculation logic — no React */
-function calculateTiles(
-    roomWidth: number,
-    roomHeight: number,
-    tileWidth: number,
-    tileHeight: number,
-    wastagePercent: number,
-): { tilesNeeded: number; coverageArea: number; wastageAmount: number } | null {
-    if (roomWidth <= 0 || roomHeight <= 0 || tileWidth <= 0 || tileHeight <= 0) {
-        return null;
-    }
-
-    const coverageArea = roomWidth * roomHeight;
-    const tileSizeM2 = (tileWidth / 1000) * (tileHeight / 1000);
-    const rawTiles = coverageArea / tileSizeM2;
-    const wastageMultiplier = 1 + wastagePercent / 100;
-    const tilesNeeded = Math.ceil(rawTiles * wastageMultiplier);
-    const wastageAmount = Math.ceil(rawTiles * (wastagePercent / 100));
-
-    return { tilesNeeded, coverageArea, wastageAmount };
-}
+import { calculateTiles } from '../calculators/tiles';
 
 export default function TileCalculator() {
     const [roomWidth, setRoomWidth] = useState('');
@@ -37,35 +16,37 @@ export default function TileCalculator() {
     const [hasResults, setHasResults] = useState(false);
 
     const handleCalculate = useCallback(() => {
-        const result = calculateTiles(
-            parseFloat(roomWidth),
-            parseFloat(roomHeight),
-            parseFloat(tileWidth),
-            parseFloat(tileHeight),
-            parseFloat(wastage),
-        );
+        try {
+            const result = calculateTiles({
+                areaWidth: parseFloat(roomWidth),
+                areaHeight: parseFloat(roomHeight),
+                tileWidth: parseFloat(tileWidth),
+                tileHeight: parseFloat(tileHeight),
+                wastage: parseFloat(wastage),
+            });
 
-        if (!result) return;
-
-        setResults([
-            {
-                iconPath: 'M3 3h7v7H3zM14 3h7v7h-7zM3 14h7v7H3zM14 14h7v7h-7z',
-                label: 'Tiles needed',
-                value: `${result.tilesNeeded} tiles`,
-                primary: true,
-            },
-            {
-                iconPath: 'M3 3h18v18H3z',
-                label: 'Coverage area',
-                value: `${result.coverageArea.toFixed(2)} m²`,
-            },
-            {
-                iconPath: 'M12 2v20M2 12h20',
-                label: `Extra for wastage (${wastage}%)`,
-                value: `${result.wastageAmount} tiles`,
-            },
-        ]);
-        setHasResults(true);
+            setResults([
+                {
+                    iconPath: 'M3 3h7v7H3zM14 3h7v7h-7zM3 14h7v7H3zM14 14h7v7h-7z',
+                    label: 'Tiles needed',
+                    value: `${result.tilesNeeded} tiles`,
+                    primary: true,
+                },
+                {
+                    iconPath: 'M3 3h18v18H3z',
+                    label: 'Coverage area',
+                    value: `${result.coverageArea.toFixed(2)} m²`,
+                },
+                {
+                    iconPath: 'M12 2v20M2 12h20',
+                    label: `Extra for wastage (${wastage}%)`,
+                    value: `${result.wastageAmount} tiles`,
+                },
+            ]);
+            setHasResults(true);
+        } catch {
+            // Invalid input — do nothing
+        }
     }, [roomWidth, roomHeight, tileWidth, tileHeight, wastage]);
 
     const handleReset = useCallback(() => {
