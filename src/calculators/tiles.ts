@@ -22,8 +22,13 @@ export function calculateTiles(input: TileInput): TileResult {
     const rawTiles = coverageArea / tileSizeM2;
 
     const wastageMultiplier = 1 + wastage / 100;
-    const tilesNeeded = Math.ceil(rawTiles * wastageMultiplier);
-    const wastageAmount = Math.ceil(rawTiles * (wastage / 100));
+
+    // Round to 10 decimal places before ceiling to avoid IEEE 754 artefacts
+    // e.g. 6 / 0.18 * 1.05 = 35.00000000000001 → should ceil to 35, not 36
+    const safeCeil = (n: number) => Math.ceil(Math.round(n * 1e10) / 1e10);
+
+    const tilesNeeded = safeCeil(rawTiles * wastageMultiplier);
+    const wastageAmount = safeCeil(rawTiles * (wastage / 100));
 
     return { tilesNeeded, coverageArea, wastageAmount };
 }

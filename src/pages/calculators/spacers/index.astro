@@ -1,0 +1,13 @@
+---
+import BaseLayout from '../../../layouts/BaseLayout.astro';
+import SpacersCalculator from '../../../components/SpacersCalculator';
+---
+
+<BaseLayout
+  title="Spacers Calculator | SELCO Calculator"
+  description="Calculate the number of tile spacers you need based on tile count and laying pattern."
+>
+  <div class="pt-6 md:pt-10 pb-12">
+    <SpacersCalculator client:load />
+  </div>
+</BaseLayout>
