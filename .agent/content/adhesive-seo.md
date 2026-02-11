@@ -46,6 +46,21 @@ Bed thickness table:
 
 Paragraph: "For uneven substrates, add 20% to the estimated coverage. Back-buttering porcelain tiles (applying a thin layer to the back of the tile as well as the substrate) increases usage by roughly 50%."
 
+## H2: "Adhesive Coverage Rates — Selco Products"
+
+Paragraph: "The calculator uses coverage rates taken directly from the manufacturer's Technical Data Sheets (TDS) for products stocked at Selco. Select a product below to see accurate bag estimates for your job."
+
+Product coverage table:
+
+| Product | Size | Dry Walls (kg/m²) | Floors & Wet Areas (kg/m²) | Coverage per unit (dry / wet) |
+| --- | --- | --- | --- | --- |
+| Dunlop RX-3000 | 15 kg tub | 2 | 3 | 7.5 m² / 5 m² |
+| Dunlop CX-24 Essential | 20 kg bag | 2 | 3.5 | 10 m² / 5.7 m² |
+| Dunlop CF-03 Flexible Fast Set | 20 kg bag | 2 | 4 | 10 m² / 5 m² |
+| Mapei Standard Set Plus | 20 kg bag | 2 | 4 | 10 m² / 5 m² |
+
+Paragraph: "Rates are per square metre of coverage. Choose 'Dry Walls' for tiling onto even, prepared plaster or render. Choose 'Floors & Wet Areas' for floor tiles, bathrooms, showers and any area requiring a solid bed."
+
 ## [React Island: AdhesiveCalculator with client:load]
 
 ## Tips Section -- H2: "Adhesive Tips"

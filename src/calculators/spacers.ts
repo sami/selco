@@ -1,25 +1,42 @@
 import type { SpacersInput, SpacersResult } from './types';
 
+/** Common spacer sizes for dropdown presets. */
+export const SPACER_SIZES = [
+    { value: 1, label: '1 mm' },
+    { value: 1.5, label: '1.5 mm' },
+    { value: 2, label: '2 mm' },
+    { value: 3, label: '3 mm' },
+    { value: 4, label: '4 mm' },
+    { value: 5, label: '5 mm' },
+];
+
 /**
- * Calculate the number of spacers needed for a tiling project.
+ * Calculate the number of tile spacers needed for a project.
  *
- * - Grid pattern: 4 spacers per tile
- * - Brick/offset pattern: 3 spacers per tile
+ * Cross layout uses 4 spacers per tile, T-junction uses 3.
  *
- * @param input - Number of tiles, layout pattern, and wastage percentage.
- * @returns Spacers needed and spacers-per-tile rate.
- * @throws If tile count is zero or negative.
+ * @param input - Area, tile dimensions, layout pattern, and wastage.
+ * @returns Spacers needed and pack counts (100 and 250).
+ * @throws If area or tile dimensions are zero or negative.
  */
 export function calculateSpacers(input: SpacersInput): SpacersResult {
-    const { numberOfTiles, pattern, wastage } = input;
+    const { areaM2, tileWidthMm, tileHeightMm, layout, wastage } = input;
 
-    if (numberOfTiles <= 0) {
-        throw new Error('Number of tiles must be greater than zero.');
+    if (areaM2 <= 0) {
+        throw new Error('Area must be greater than zero.');
+    }
+    if (tileWidthMm <= 0 || tileHeightMm <= 0) {
+        throw new Error('Tile dimensions must be greater than zero.');
     }
 
-    const spacersPerTile = pattern === 'brick' ? 3 : 4;
-    const raw = numberOfTiles * spacersPerTile;
-    const spacersNeeded = Math.ceil(raw * (1 + wastage / 100));
+    const tileSizeM2 = (tileWidthMm / 1000) * (tileHeightMm / 1000);
+    const tiles = Math.ceil(areaM2 / tileSizeM2);
 
-    return { spacersNeeded, spacersPerTile };
+    const spacersPerTile = layout === 'cross' ? 4 : 3;
+    const spacersNeeded = Math.ceil(tiles * spacersPerTile * (1 + wastage / 100));
+
+    const packs100 = Math.ceil(spacersNeeded / 100);
+    const packs250 = Math.ceil(spacersNeeded / 250);
+
+    return { spacersNeeded, packs100, packs250 };
 }

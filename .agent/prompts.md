@@ -519,7 +519,8 @@ Test files have been updated with the new specifications. SEO content is in `.ag
 > ```typescript
 > export interface AdhesiveInput {
 >   area: number;           // square metres
->   tileSize: number;       // longest tile edge in mm
+>   coverageRate: number;   // kg/m² (from product TDS data)
+>   bagSize: number;        // kg per bag/tub (from product data)
 >   substrate: 'even' | 'uneven';
 >   wastage: number;        // percentage (e.g. 10)
 > }
@@ -529,10 +530,7 @@ Test files have been updated with the new specifications. SEO content is in `.ag
 > ```typescript
 > export interface AdhesiveResult {
 >   kgNeeded: number;
->   bags20kg: number;
->   bags10kg: number;
->   coverageRate: number;   // base kg per m² (before substrate adjustment)
->   bedThickness: number;   // mm
+>   bagsNeeded: number;
 > }
 > ```
 >
@@ -615,22 +613,27 @@ Test files have been updated with the new specifications. SEO content is in `.ag
 
 ## Prompt 20 — Rewrite Adhesive Calculator Logic
 
-> Rewrite `src/calculators/adhesive.ts` to use the new bed-thickness coverage model. Tests in `src/calculators/adhesive.test.ts`.
+> Rewrite `src/calculators/adhesive.ts` to use product-based coverage rates from manufacturer TDS data. Tests in `src/calculators/adhesive.test.ts`.
 >
-> **New coverage model** (based on largest tile edge):
-> - `tileSize < 300 mm` → bed 3 mm → 4 kg/m²
-> - `tileSize >= 300 && <= 450 mm` → bed 6 mm → 7 kg/m²
-> - `tileSize > 450 mm` → bed 10 mm → 10 kg/m²
+> **The pure function** takes `coverageRate` and `bagSize` as inputs (the UI will look these up from `ADHESIVE_PRODUCTS` based on the selected product and application type).
 >
-> **Substrate adjustment:** if `substrate === 'uneven'`, multiply effective rate by 1.2
+> **Substrate adjustment:** if `substrate === 'uneven'`, multiply the coverage rate by 1.2 (+20%)
 >
-> **Formula:** `kgNeeded = area * coverageRate * substrateMultiplier * (1 + wastage/100)`
+> **Formula:** `kgNeeded = area * coverageRate * substrateMultiplier * (1 + wastage/100)`, `bagsNeeded = Math.ceil(kgNeeded / bagSize)`
 >
-> **Return:** `{ kgNeeded, bags20kg: ceil(kg/20), bags10kg: ceil(kg/10), coverageRate (base, before substrate), bedThickness }`
+> **Return:** `{ kgNeeded, bagsNeeded }`
 >
-> **Export** `ADHESIVE_TYPES` array with at least: standard, flexible, rapid-set (each with `value` and `label`).
+> **Export** `ADHESIVE_PRODUCTS` array with Selco-stocked manufacturer data:
+> ```typescript
+> export const ADHESIVE_PRODUCTS = [
+>   { value: 'dunlop-rx3000', label: 'Dunlop RX-3000 (15 kg tub)', bagSize: 15, dryWallRate: 2, wetAreaRate: 3 },
+>   { value: 'dunlop-cx24', label: 'Dunlop CX-24 Essential (20 kg bag)', bagSize: 20, dryWallRate: 2, wetAreaRate: 3.5 },
+>   { value: 'dunlop-cf03', label: 'Dunlop CF-03 Flexible Fast Set (20 kg bag)', bagSize: 20, dryWallRate: 2, wetAreaRate: 4 },
+>   { value: 'mapei-standard', label: 'Mapei Standard Set Plus (20 kg bag)', bagSize: 20, dryWallRate: 2, wetAreaRate: 4 },
+> ];
+> ```
 >
-> Throw for zero/negative area or tile size. Import types from `./types`.
+> Throw for zero/negative area or coverage rate. Import types from `./types`.
 >
 > Run `npm test -- --run src/calculators/adhesive.test.ts` — all tests must pass. Do NOT modify the test file.
 
@@ -751,13 +754,15 @@ Test files have been updated with the new specifications. SEO content is in `.ag
 > 3. H1, intro, disclaimer callout
 > 4. Guidance section ("Choosing the Right Tile Adhesive") with 3 adhesive types
 > 5. Bed thickness section with table
-> 6. **React island**: Update `AdhesiveCalculator.tsx` to use the new API:
+> 6. **React island**: Update `AdhesiveCalculator.tsx` to use the product-based API:
+>    - Product dropdown (import `ADHESIVE_PRODUCTS` from adhesive module) — shows product name and bag size
+>    - Application type toggle: "Dry Wall" / "Floor & Wet Areas" — selects dryWallRate or wetAreaRate from the product
 >    - Area input (m²)
->    - Tile size input (largest edge in mm)
 >    - Substrate dropdown (Even / Uneven)
 >    - Wastage input (%, default 10)
->    - Results: kg needed, bags (20 kg and 10 kg), coverage rate, bed thickness
->    - Show "+20% for uneven substrate" in results when applicable
+>    - The component looks up coverageRate and bagSize from the selected product and passes them to `calculateAdhesive()`
+>    - Results: kg needed, bags needed (showing bag size from product), coverage rate used
+>    - Show "+20% for uneven substrate" note in results when applicable
 > 7. Tips section with 4 subsections
 > 8. Related calculators
 > 9. FAQ section (5 questions) with `FAQPage` JSON-LD
