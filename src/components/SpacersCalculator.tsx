@@ -14,7 +14,7 @@ const spacerSizeOptions = SPACER_SIZES.map((s) => ({
 
 const layoutOptions = [
     { value: 'cross', label: 'Cross (straight grid) — 4 per tile' },
-    { value: 't_junction', label: 'T-junction (brick bond / offset) — 3 per tile' },
+    { value: 't-junction', label: 'T-junction (brick bond / offset) — 3 per tile' },
 ];
 
 export default function SpacersCalculator() {
@@ -33,7 +33,7 @@ export default function SpacersCalculator() {
                 areaM2: parseFloat(area),
                 tileWidthMm: parseFloat(tileWidth),
                 tileHeightMm: parseFloat(tileHeight),
-                layout: layout as 'cross' | 't_junction',
+                layout: layout as 'cross' | 't-junction',
                 wastage: parseFloat(wastage),
             });
 
