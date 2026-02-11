@@ -20,8 +20,36 @@ const base = import.meta.env.BASE_URL.endsWith('/') ? import.meta.env.BASE_URL :
       </p>
     </div>
 
-    {/* Empty State */}
-    <div class="flex flex-col items-center text-center pt-12 md:pt-20 pb-16">
+    {/* Project Cards */}
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5 mb-16">
+      <a
+        href={`${base}projects/tiling/`}
+        class="group flex flex-col p-5 md:p-6 bg-surface rounded-[--radius-card] border border-border card-shadow hover:border-brand-blue/40 hover:-translate-y-0.5 hover:shadow-md transition-all duration-200 focus-ring"
+      >
+        <div class="flex items-start justify-between mb-4">
+          <div class="w-10 h-10 md:w-11 md:h-11 rounded-xl bg-brand-blue/5 text-brand-blue flex items-center justify-center group-hover:bg-brand-blue/10 transition-colors">
+            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="m12.83 2.18a2 2 0 0 0-1.66 0L2.6 6.08a1 1 0 0 0 0 1.83l8.58 3.91a2 2 0 0 0 1.66 0l8.58-3.9a1 1 0 0 0 0-1.83Z" />
+              <path d="m6.08 9.5-3.5 1.6a1 1 0 0 0 0 1.81l8.6 3.91a2 2 0 0 0 1.65 0l8.58-3.9a1 1 0 0 0 0-1.83l-3.5-1.59" />
+              <path d="m6.08 14.5-3.5 1.6a1 1 0 0 0 0 1.81l8.6 3.91a2 2 0 0 0 1.65 0l8.58-3.9a1 1 0 0 0 0-1.83l-3.5-1.59" />
+            </svg>
+          </div>
+          <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="text-muted-foreground group-hover:text-brand-blue transition-colors">
+            <path d="M5 12h14" />
+            <path d="m12 5 7 7-7 7" />
+          </svg>
+        </div>
+        <h3 class="font-bold text-surface-foreground group-hover:text-brand-blue transition-colors mb-1">
+          Tiling Project
+        </h3>
+        <p class="text-sm text-muted-foreground leading-relaxed">
+          Calculate tiles, adhesive, grout, and spacers in one go.
+        </p>
+      </a>
+    </div>
+
+    {/* Empty State / Coming Soon */}
+    <div class="flex flex-col items-center text-center pb-16 border-t border-border pt-12">
       <div class="w-14 h-14 rounded-2xl bg-muted flex items-center justify-center mb-5">
         <svg
           xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24"
@@ -33,10 +61,10 @@ const base = import.meta.env.BASE_URL.endsWith('/') ? import.meta.env.BASE_URL :
       </div>
 
       <h2 class="text-lg font-semibold text-surface-foreground mb-1">
-        No saved projects yet
+        More projects coming soon
       </h2>
       <p class="text-sm text-muted-foreground max-w-sm mb-8">
-        When you save calculator results to a project, they'll appear here.
+        We're working on calculators for plumbing, painting, and more.
       </p>
 
       <a
