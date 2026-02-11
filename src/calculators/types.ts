@@ -16,17 +16,15 @@ export interface TileResult {
 
 export interface AdhesiveInput {
     area: number;           // square metres
-    tileSize: number;       // longest tile edge in mm
+    coverageRate: number;   // kg/m² (from product TDS data)
+    bagSize: number;        // kg per bag/tub (from product data)
     substrate: 'even' | 'uneven';
     wastage: number;        // percentage (e.g. 10)
 }
 
 export interface AdhesiveResult {
     kgNeeded: number;
-    bags20kg: number;
-    bags10kg: number;
-    coverageRate: number;   // base kg per m² (before substrate adjustment)
-    bedThickness: number;   // mm
+    bagsNeeded: number;
 }
 
 export interface GroutInput {

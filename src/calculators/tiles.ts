@@ -2,10 +2,30 @@ import type { TileInput, TileResult } from './types';
 
 /** Common UK tile sizes for dropdown presets. */
 export const COMMON_TILE_SIZES = [
-    { width: 300, height: 300, label: '300 × 300 mm' },
-    { width: 600, height: 300, label: '600 × 300 mm' },
+    // Small Wall & Metro Tiles
+    { width: 150, height: 75, label: '150 × 75 mm (metro)' },
     { width: 200, height: 100, label: '200 × 100 mm (metro)' },
+    { width: 300, height: 100, label: '300 × 100 mm (large metro)' },
+    { width: 150, height: 150, label: '150 × 150 mm' },
+    { width: 200, height: 200, label: '200 × 200 mm' },
+
+    // Standard Wall & Floor Tiles
+    { width: 250, height: 400, label: '250 × 400 mm' },
+    { width: 250, height: 500, label: '250 × 500 mm' },
+    { width: 300, height: 300, label: '300 × 300 mm' },
+    { width: 330, height: 330, label: '330 × 330 mm' },
+    { width: 450, height: 450, label: '450 × 450 mm' },
+    { width: 600, height: 300, label: '600 × 300 mm' },
+
+    // Wood-Effect Planks
+    { width: 600, height: 150, label: '600 × 150 mm (plank)' },
+    { width: 900, height: 150, label: '900 × 150 mm (plank)' },
+    { width: 1200, height: 200, label: '1200 × 200 mm (plank)' },
+
+    // Large Format & Outdoor Paving
     { width: 600, height: 600, label: '600 × 600 mm' },
+    { width: 900, height: 600, label: '900 × 600 mm' },
+    { width: 1200, height: 600, label: '1200 × 600 mm' },
 ];
 
 /**

@@ -1,40 +1,37 @@
 import type { AdhesiveInput, AdhesiveResult } from './types';
 
-/**
- * Determine the adhesive coverage rate based on largest tile edge.
- *
- * - ≤ 200 mm → 2.0 kg/m²
- * - ≤ 400 mm → 3.5 kg/m²
- * - ≤ 600 mm → 5.0 kg/m²
- * - > 600 mm → 5.5 kg/m²
- */
-function getCoverageRate(tileSize: number): number {
-    if (tileSize <= 200) return 2.0;
-    if (tileSize <= 400) return 3.5;
-    if (tileSize <= 600) return 5.0;
-    return 5.5;
-}
+/** Selco-stocked adhesive products with manufacturer TDS coverage rates. */
+export const ADHESIVE_PRODUCTS = [
+    { value: 'dunlop-rx3000', label: 'Dunlop RX-3000 (15 kg tub)', bagSize: 15, dryWallRate: 2, wetAreaRate: 3 },
+    { value: 'dunlop-cx24', label: 'Dunlop CX-24 Essential (20 kg bag)', bagSize: 20, dryWallRate: 2, wetAreaRate: 3.5 },
+    { value: 'dunlop-cf03', label: 'Dunlop CF-03 Flexible Fast Set (20 kg bag)', bagSize: 20, dryWallRate: 2, wetAreaRate: 4 },
+    { value: 'mapei-standard', label: 'Mapei Standard Set Plus (20 kg bag)', bagSize: 20, dryWallRate: 2, wetAreaRate: 4 },
+];
 
 /**
- * Calculate the amount of adhesive needed for a tiling project.
+ * Calculate adhesive needed for a tiling project.
  *
- * @param input - Area, tile size, wastage percentage, and bag size.
- * @returns Kg needed, bags needed, and the coverage rate used.
- * @throws If area or tile size is zero or negative.
+ * The coverage rate and bag size are provided by the caller (looked up from
+ * {@link ADHESIVE_PRODUCTS} based on the selected product and application type).
+ * Uneven substrates add +20% to the effective coverage rate.
+ *
+ * @param input - Area, coverage rate, bag size, substrate type, and wastage.
+ * @returns Kg needed and bags needed.
+ * @throws If area or coverage rate is zero or negative.
  */
 export function calculateAdhesive(input: AdhesiveInput): AdhesiveResult {
-    const { area, tileSize, wastage, bagSize } = input;
+    const { area, coverageRate, bagSize, substrate, wastage } = input;
 
     if (area <= 0) {
         throw new Error('Area must be greater than zero.');
     }
-    if (tileSize <= 0) {
-        throw new Error('Tile size must be greater than zero.');
+    if (coverageRate <= 0) {
+        throw new Error('Coverage rate must be greater than zero.');
     }
 
-    const coverageRate = getCoverageRate(tileSize);
-    const kgNeeded = area * coverageRate * (1 + wastage / 100);
+    const substrateMultiplier = substrate === 'uneven' ? 1.2 : 1;
+    const kgNeeded = area * coverageRate * substrateMultiplier * (1 + wastage / 100);
     const bagsNeeded = Math.ceil(kgNeeded / bagSize);
 
-    return { kgNeeded, bagsNeeded, coverageRate };
+    return { kgNeeded, bagsNeeded };
 }
