@@ -1,29 +1,55 @@
-import React, { useState, useCallback } from 'react';
+import React, { useState, useCallback, useMemo } from 'react';
 import CalculatorLayout, {
     FormInput,
+    FormSelect,
     type ResultItem,
     type FieldGroup,
 } from './CalculatorLayout';
-import { calculateAdhesive } from '../calculators/adhesive';
+import { calculateAdhesive, ADHESIVE_PRODUCTS } from '../calculators/adhesive';
+
+type ApplicationType = 'dry' | 'wet';
+
+const productOptions = ADHESIVE_PRODUCTS.map((p) => ({
+    value: p.value,
+    label: p.label,
+}));
+
+const substrateOptions = [
+    { value: 'even', label: 'Even (prepared substrate)' },
+    { value: 'uneven', label: 'Uneven (+20% adhesive)' },
+];
 
 export default function AdhesiveCalculator() {
+    const [selectedProduct, setSelectedProduct] = useState(ADHESIVE_PRODUCTS[0].value);
+    const [applicationType, setApplicationType] = useState<ApplicationType>('dry');
     const [area, setArea] = useState('');
-    const [tileSize, setTileSize] = useState('300');
+    const [substrate, setSubstrate] = useState('even');
     const [wastage, setWastage] = useState('10');
-    const [bagSize, setBagSize] = useState('20');
     const [results, setResults] = useState<ResultItem[]>([]);
     const [hasResults, setHasResults] = useState(false);
+
+    const product = useMemo(
+        () => ADHESIVE_PRODUCTS.find((p) => p.value === selectedProduct) ?? ADHESIVE_PRODUCTS[0],
+        [selectedProduct],
+    );
+
+    const coverageRate = applicationType === 'dry' ? product.dryWallRate : product.wetAreaRate;
 
     const handleCalculate = useCallback(() => {
         try {
             const result = calculateAdhesive({
                 area: parseFloat(area),
-                tileSize: parseFloat(tileSize),
+                coverageRate,
+                bagSize: product.bagSize,
+                substrate: substrate as 'even' | 'uneven',
                 wastage: parseFloat(wastage),
-                bagSize: parseFloat(bagSize),
             });
 
-            setResults([
+            const isUneven = substrate === 'uneven';
+            const effectiveRate = isUneven ? coverageRate * 1.2 : coverageRate;
+            const bagLabel = product.bagSize >= 20 ? `${product.bagSize} kg bag` : `${product.bagSize} kg tub`;
+
+            const items: ResultItem[] = [
                 {
                     iconPath: 'M12 2.69l5.66 5.66a8 8 0 1 1-11.31 0z',
                     label: 'Adhesive needed',
@@ -32,31 +58,77 @@ export default function AdhesiveCalculator() {
                 },
                 {
                     iconPath: 'M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z',
-                    label: 'Bags required',
-                    value: `${result.bagsNeeded} × ${bagSize} kg bags`,
+                    label: `Bags needed (${bagLabel})`,
+                    value: `${result.bagsNeeded} bags`,
+                    primary: true,
                 },
                 {
                     iconPath: 'M2 20h20M5 20V8l7-5 7 5v12',
-                    label: 'Coverage rate',
-                    value: `${result.coverageRate} kg/m²`,
+                    label: 'Coverage rate used',
+                    value: `${effectiveRate} kg/m²${isUneven ? ' (incl. +20% uneven)' : ''}`,
                 },
-            ]);
+            ];
+
+            setResults(items);
             setHasResults(true);
         } catch {
             // Invalid input — do nothing
         }
-    }, [area, tileSize, wastage, bagSize]);
+    }, [area, coverageRate, product, substrate, wastage]);
 
     const handleReset = useCallback(() => {
+        setSelectedProduct(ADHESIVE_PRODUCTS[0].value);
+        setApplicationType('dry');
         setArea('');
-        setTileSize('300');
+        setSubstrate('even');
         setWastage('10');
-        setBagSize('20');
         setResults([]);
         setHasResults(false);
     }, []);
 
     const fieldGroups: FieldGroup[] = [
+        {
+            legend: 'Product',
+            children: (
+                <div className="space-y-4">
+                    <FormSelect
+                        id="adhesive-product"
+                        label="Adhesive product"
+                        value={selectedProduct}
+                        onChange={setSelectedProduct}
+                        options={productOptions}
+                    />
+                    <div>
+                        <label className="block text-sm font-medium text-surface-foreground mb-2">Application type</label>
+                        <div className="flex gap-2">
+                            <button
+                                type="button"
+                                onClick={() => setApplicationType('dry')}
+                                className={`flex-1 px-4 py-2.5 rounded-lg text-sm font-medium transition-all duration-200 focus-ring ${applicationType === 'dry'
+                                        ? 'bg-brand-blue text-white shadow-sm'
+                                        : 'bg-muted/30 text-muted-foreground hover:bg-muted/50 border border-border'
+                                    }`}
+                            >
+                                Dry Wall
+                            </button>
+                            <button
+                                type="button"
+                                onClick={() => setApplicationType('wet')}
+                                className={`flex-1 px-4 py-2.5 rounded-lg text-sm font-medium transition-all duration-200 focus-ring ${applicationType === 'wet'
+                                        ? 'bg-brand-blue text-white shadow-sm'
+                                        : 'bg-muted/30 text-muted-foreground hover:bg-muted/50 border border-border'
+                                    }`}
+                            >
+                                Floor &amp; Wet Areas
+                            </button>
+                        </div>
+                        <p className="text-xs text-muted-foreground mt-1.5">
+                            Coverage rate: {coverageRate} kg/m² ({product.bagSize} kg per unit)
+                        </p>
+                    </div>
+                </div>
+            ),
+        },
         {
             legend: 'Area to cover',
             children: (
@@ -74,25 +146,16 @@ export default function AdhesiveCalculator() {
             ),
         },
         {
-            legend: 'Tile details',
-            children: (
-                <FormInput
-                    id="tile-size"
-                    label="Largest tile edge"
-                    unit="mm"
-                    value={tileSize}
-                    onChange={setTileSize}
-                    placeholder="e.g. 300"
-                    min={1}
-                    step={1}
-                    required
-                />
-            ),
-        },
-        {
             legend: 'Options',
             children: (
-                <div className="grid grid-cols-2 gap-4">
+                <div className="space-y-4">
+                    <FormSelect
+                        id="substrate"
+                        label="Substrate condition"
+                        value={substrate}
+                        onChange={setSubstrate}
+                        options={substrateOptions}
+                    />
                     <FormInput
                         id="wastage"
                         label="Wastage allowance"
@@ -102,16 +165,6 @@ export default function AdhesiveCalculator() {
                         placeholder="e.g. 10"
                         min={0}
                         max={50}
-                        step={1}
-                    />
-                    <FormInput
-                        id="bag-size"
-                        label="Bag size"
-                        unit="kg"
-                        value={bagSize}
-                        onChange={setBagSize}
-                        placeholder="e.g. 20"
-                        min={1}
                         step={1}
                     />
                 </div>

@@ -1,21 +1,35 @@
 import React, { useState, useCallback } from 'react';
 import CalculatorLayout, {
     FormInput,
+    FormSelect,
     type ResultItem,
     type FieldGroup,
 } from './CalculatorLayout';
-import { calculateGrout } from '../calculators/grout';
+import { calculateGrout, COMMON_JOINT_WIDTHS } from '../calculators/grout';
+
+const CUSTOM_VALUE = 'custom';
+
+const jointWidthOptions = [
+    ...COMMON_JOINT_WIDTHS.map((j) => ({
+        value: String(j.value),
+        label: j.label,
+    })),
+    { value: CUSTOM_VALUE, label: 'Custom width…' },
+];
 
 export default function GroutCalculator() {
     const [area, setArea] = useState('');
     const [tileWidth, setTileWidth] = useState('300');
     const [tileHeight, setTileHeight] = useState('300');
-    const [jointWidth, setJointWidth] = useState('3');
+    const [selectedJointWidth, setSelectedJointWidth] = useState('3');
+    const [customJointWidth, setCustomJointWidth] = useState('');
     const [tileDepth, setTileDepth] = useState('8');
     const [wastage, setWastage] = useState('10');
-    const [bagSize, setBagSize] = useState('5');
     const [results, setResults] = useState<ResultItem[]>([]);
     const [hasResults, setHasResults] = useState(false);
+
+    const isCustomJoint = selectedJointWidth === CUSTOM_VALUE;
+    const effectiveJointWidth = isCustomJoint ? customJointWidth : selectedJointWidth;
 
     const handleCalculate = useCallback(() => {
         try {
@@ -23,10 +37,9 @@ export default function GroutCalculator() {
                 area: parseFloat(area),
                 tileWidth: parseFloat(tileWidth),
                 tileHeight: parseFloat(tileHeight),
-                jointWidth: parseFloat(jointWidth),
+                jointWidth: parseFloat(effectiveJointWidth),
                 tileDepth: parseFloat(tileDepth),
                 wastage: parseFloat(wastage),
-                bagSize: parseFloat(bagSize),
             });
 
             setResults([
@@ -38,8 +51,14 @@ export default function GroutCalculator() {
                 },
                 {
                     iconPath: 'M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z',
-                    label: 'Bags required',
-                    value: `${result.bagsNeeded} × ${bagSize} kg bags`,
+                    label: 'Bags needed (5 kg)',
+                    value: `${result.bags5kg} bags`,
+                    primary: true,
+                },
+                {
+                    iconPath: 'M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z',
+                    label: 'Bags needed (2.5 kg)',
+                    value: `${result.bags2_5kg} bags`,
                 },
                 {
                     iconPath: 'M2 20h20M5 20V8l7-5 7 5v12',
@@ -51,16 +70,16 @@ export default function GroutCalculator() {
         } catch {
             // Invalid input — do nothing
         }
-    }, [area, tileWidth, tileHeight, jointWidth, tileDepth, wastage, bagSize]);
+    }, [area, tileWidth, tileHeight, effectiveJointWidth, tileDepth, wastage]);
 
     const handleReset = useCallback(() => {
         setArea('');
         setTileWidth('300');
         setTileHeight('300');
-        setJointWidth('3');
+        setSelectedJointWidth('3');
+        setCustomJointWidth('');
         setTileDepth('8');
         setWastage('10');
-        setBagSize('5');
         setResults([]);
         setHasResults(false);
     }, []);
@@ -114,18 +133,27 @@ export default function GroutCalculator() {
         {
             legend: 'Joint & tile details',
             children: (
-                <div className="grid grid-cols-2 gap-4">
-                    <FormInput
-                        id="joint-width"
-                        label="Joint/gap width"
-                        unit="mm"
-                        value={jointWidth}
-                        onChange={setJointWidth}
-                        placeholder="e.g. 3"
-                        min={1}
-                        step={0.5}
-                        required
+                <div className="space-y-4">
+                    <FormSelect
+                        id="joint-width-preset"
+                        label="Joint width"
+                        value={selectedJointWidth}
+                        onChange={setSelectedJointWidth}
+                        options={jointWidthOptions}
                     />
+                    {isCustomJoint && (
+                        <FormInput
+                            id="joint-width-custom"
+                            label="Custom joint width"
+                            unit="mm"
+                            value={customJointWidth}
+                            onChange={setCustomJointWidth}
+                            placeholder="e.g. 4"
+                            min={0.5}
+                            step={0.5}
+                            required
+                        />
+                    )}
                     <FormInput
                         id="tile-depth"
                         label="Tile thickness"
@@ -143,29 +171,17 @@ export default function GroutCalculator() {
         {
             legend: 'Options',
             children: (
-                <div className="grid grid-cols-2 gap-4">
-                    <FormInput
-                        id="wastage"
-                        label="Wastage allowance"
-                        unit="%"
-                        value={wastage}
-                        onChange={setWastage}
-                        placeholder="e.g. 10"
-                        min={0}
-                        max={50}
-                        step={1}
-                    />
-                    <FormInput
-                        id="bag-size"
-                        label="Bag size"
-                        unit="kg"
-                        value={bagSize}
-                        onChange={setBagSize}
-                        placeholder="e.g. 5"
-                        min={1}
-                        step={1}
-                    />
-                </div>
+                <FormInput
+                    id="wastage"
+                    label="Wastage allowance"
+                    unit="%"
+                    value={wastage}
+                    onChange={setWastage}
+                    placeholder="e.g. 10"
+                    min={0}
+                    max={50}
+                    step={1}
+                />
             ),
         },
     ];
