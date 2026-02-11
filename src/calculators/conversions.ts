@@ -5,7 +5,7 @@ export type LengthUnit = 'mm' | 'cm' | 'm' | 'in' | 'ft' | 'yd';
 export type AreaUnit = 'mm2' | 'cm2' | 'm2' | 'ft2' | 'yd2';
 
 /** Supported weight units. */
-export type WeightUnit = 'g' | 'kg' | 'oz' | 'lb' | 'tonnes';
+export type WeightUnit = 'g' | 'kg' | 'oz' | 'lb' | 'tonnes' | 'stones';
 
 /** Supported volume units. */
 export type VolumeUnit = 'm3' | 'litres' | 'ft3' | 'yd3' | 'gallons_uk';
@@ -46,6 +46,7 @@ const weightToKg: Record<WeightUnit, number> = {
     oz: 0.0283495231,
     lb: 0.45359237,
     tonnes: 1000,
+    stones: 6.35029318,
 };
 
 /** Factor to convert 1 unit → cubic metres. */
