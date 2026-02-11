@@ -37,7 +37,7 @@ export function calculateGrout(input: GroutInput): GroutResult {
         ((tileWidth + tileHeight) / (tileWidth * tileHeight)) *
         jointWidth *
         tileDepth *
-        1.6;
+        2.0; // SG increased from 1.6 to 2.0 to cover denser/flexible grouts (e.g. Dunlop GX-500)
 
     const kgNeeded = area * kgPerM2 * (1 + wastage / 100);
     const bags5kg = Math.ceil(kgNeeded / 5);
