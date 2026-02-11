@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest';
-import { calculateTiles } from './tiles';
+import { calculateTiles, COMMON_TILE_SIZES } from './tiles';
 import type { TileInput } from './types';
 
 describe('calculateTiles', () => {
@@ -113,5 +113,84 @@ describe('calculateTiles', () => {
     };
 
     expect(() => calculateTiles(input)).toThrow();
+  });
+
+  // --- Phase 3: packSize support ---
+
+  it('calculates packs needed when packSize is provided', () => {
+    const input: TileInput = {
+      areaWidth: 3,
+      areaHeight: 2.4,
+      tileWidth: 300,
+      tileHeight: 300,
+      wastage: 10,
+      packSize: 25,
+    };
+    const result = calculateTiles(input);
+
+    // 88 tiles needed, ceil(88/25) = 4 packs
+    expect(result.tilesNeeded).toBe(88);
+    expect(result.packsNeeded).toBe(4);
+  });
+
+  it('calculates packs with smaller pack size', () => {
+    const input: TileInput = {
+      areaWidth: 3,
+      areaHeight: 2.4,
+      tileWidth: 300,
+      tileHeight: 300,
+      wastage: 10,
+      packSize: 10,
+    };
+    const result = calculateTiles(input);
+
+    // 88 tiles needed, ceil(88/10) = 9 packs
+    expect(result.tilesNeeded).toBe(88);
+    expect(result.packsNeeded).toBe(9);
+  });
+
+  it('omits packsNeeded when packSize is not provided', () => {
+    const input: TileInput = {
+      areaWidth: 3,
+      areaHeight: 2.4,
+      tileWidth: 300,
+      tileHeight: 300,
+      wastage: 10,
+    };
+    const result = calculateTiles(input);
+
+    expect(result.packsNeeded).toBeUndefined();
+  });
+});
+
+// --- Phase 3: COMMON_TILE_SIZES export ---
+
+describe('COMMON_TILE_SIZES', () => {
+  it('exports an array of common tile sizes', () => {
+    expect(COMMON_TILE_SIZES).toBeInstanceOf(Array);
+    expect(COMMON_TILE_SIZES.length).toBeGreaterThanOrEqual(4);
+  });
+
+  it('each entry has width, height and label', () => {
+    for (const size of COMMON_TILE_SIZES) {
+      expect(size).toHaveProperty('width');
+      expect(size).toHaveProperty('height');
+      expect(size).toHaveProperty('label');
+      expect(size.width).toBeGreaterThan(0);
+      expect(size.height).toBeGreaterThan(0);
+    }
+  });
+
+  it('includes standard UK sizes', () => {
+    const labels = COMMON_TILE_SIZES.map((s: { label: string }) => s.label.toLowerCase());
+    // Should include at least 300x300 and 600x300
+    const has300x300 = COMMON_TILE_SIZES.some(
+      (s: { width: number; height: number }) => s.width === 300 && s.height === 300
+    );
+    const has600x300 = COMMON_TILE_SIZES.some(
+      (s: { width: number; height: number }) => s.width === 600 && s.height === 300
+    );
+    expect(has300x300).toBe(true);
+    expect(has600x300).toBe(true);
   });
 });
