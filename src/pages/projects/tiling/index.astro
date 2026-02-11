@@ -1,0 +1,174 @@
+---
+import BaseLayout from '../../../layouts/BaseLayout.astro';
+import TilingWizard from '../../../components/TilingWizard';
+
+const base = import.meta.env.BASE_URL.replace(/\/$/, '') + '/';
+const canonical = 'https://sami.github.io/selco/projects/tiling/';
+
+const faqs = [
+  {
+    question: 'How much tile adhesive do I need per square metre?',
+    answer: 'It depends on tile size and trowel notch depth. For small tiles (up to 300 x 300 mm) with a 6 mm notch, allow approximately 5 kg/m². For large format tiles (600 x 600 mm and above) with a 10–12 mm notch, allow 7–8 kg/m². Our calculator uses coverage rates from Selco-stocked products including Dunlop and Mapei.',
+  },
+  {
+    question: 'What is the difference between floor tiles and wall tiles?',
+    answer: 'Floor tiles are thicker, denser, and rated for foot traffic and slip resistance per BS 5385-3:2015. Wall tiles are thinner, lighter, and not designed to bear weight. Never use wall-only tiles on floors.',
+  },
+  {
+    question: 'What size spacers should I use?',
+    answer: 'Match your spacer size to the joint width you want. Use 2 mm for rectified tiles, 3 mm for standard wall tiles, 5 mm for floor tiles, and 10 mm for rustic or handmade tiles. BS 5385-1:2009 specifies minimum joint widths by tile type.',
+  },
+  {
+    question: 'How much wastage should I allow for tiling?',
+    answer: 'Allow 10% for straight layouts and up to 15% for diagonal or herringbone patterns. This covers cuts at edges, breakages during installation, and a few spares for future repairs. BS 5385-1:2009 recommends never ordering exact quantities.',
+  },
+  {
+    question: 'Do I need to prime before tiling?',
+    answer: 'Yes, in most cases. Priming ensures the adhesive bonds properly to the substrate. It is especially important on dusty, porous, or painted surfaces. Both BAL and Mapei recommend priming plasterboard before tiling.',
+  },
+];
+
+const faqJsonLd = {
+  '@context': 'https://schema.org',
+  '@type': 'FAQPage',
+  mainEntity: faqs.map((faq) => ({
+    '@type': 'Question',
+    name: faq.question,
+    acceptedAnswer: { '@type': 'Answer', text: faq.answer },
+  })),
+};
+
+const howToJsonLd = {
+  '@context': 'https://schema.org',
+  '@type': 'HowTo',
+  name: 'How to Calculate Everything You Need for a Tiling Project',
+  description: 'Step-by-step guide to calculating tiles, adhesive, grout, and spacers for a floor or wall tiling project.',
+  step: [
+    { '@type': 'HowToStep', name: 'Measure your area', text: 'Measure the length and width of your room in metres and multiply to get the total area in square metres.' },
+    { '@type': 'HowToStep', name: 'Choose your tiles', text: 'Select your tile size and laying pattern. Add 10% waste for straight lay or 15% for diagonal patterns.' },
+    { '@type': 'HowToStep', name: 'Calculate adhesive', text: 'Choose your adhesive product and application type. Coverage rates are based on manufacturer technical data sheets.' },
+    { '@type': 'HowToStep', name: 'Calculate grout', text: 'Set your joint width and tile thickness to work out how many kilograms of grout you need.' },
+    { '@type': 'HowToStep', name: 'Calculate spacers', text: 'Choose your layout pattern (grid or brick bond) to calculate the number of spacers and packs needed.' },
+    { '@type': 'HowToStep', name: 'Review your materials list', text: 'See a complete summary of all materials with quantities, pack sizes, and suggestions for tools and accessories.' },
+  ],
+};
+---
+
+<BaseLayout
+  title="Tiling Calculator | Everything You Need for a Tiling Project | SELCO Calculator"
+  description="Free tiling project calculator. Work out how many tiles, how much adhesive, grout, and spacers you need in one go. Includes wastage, pack sizes, and a full materials list."
+  canonicalUrl={canonical}
+>
+  <!-- JSON-LD structured data -->
+  <script type="application/ld+json" set:html={JSON.stringify(faqJsonLd)} />
+  <script type="application/ld+json" set:html={JSON.stringify(howToJsonLd)} />
+
+  <div class="container mx-auto px-4 pt-6 md:pt-10 pb-16">
+
+    <!-- Breadcrumbs -->
+    <nav aria-label="Breadcrumb" class="mb-6 text-sm text-muted-foreground">
+      <ol class="flex items-center gap-1.5 flex-wrap">
+        <li><a href={base} class="hover:text-brand-blue transition-colors">Home</a></li>
+        <li class="text-border">/</li>
+        <li><a href={`${base}projects/`} class="hover:text-brand-blue transition-colors">Projects</a></li>
+        <li class="text-border">/</li>
+        <li class="text-surface-foreground font-medium">Tiling</li>
+      </ol>
+    </nav>
+
+    <!-- H1 & Intro -->
+    <header class="mb-8 max-w-3xl">
+      <h1 class="text-3xl md:text-4xl font-bold text-surface-foreground mb-4">
+        Everything You Need for a Tiling Project
+      </h1>
+      <div class="space-y-4 text-lg text-muted-foreground leading-relaxed">
+        <p>
+          Tiling a floor or wall involves more than just tiles. You need adhesive to bond them, grout to fill the joints, and spacers to keep them even. Getting the quantities right avoids waste and return trips.
+        </p>
+        <p>
+          This wizard walks you through every material step by step — from measuring your area to a complete shopping list. Each step includes guidance on choosing the right product and how much you need.
+        </p>
+      </div>
+      
+      <div class="mt-8 space-y-6">
+        <ol class="list-decimal list-inside space-y-2 text-muted-foreground">
+          <li><strong>Measure your area</strong> — Enter your room dimensions to calculate the total coverage area.</li>
+          <li><strong>Choose your tiles</strong> — Select a tile size and laying pattern. The calculator adds waste for cuts and breakages.</li>
+          <li><strong>Calculate adhesive</strong> — Pick your adhesive product and application type. Coverage rates come from manufacturer data sheets.</li>
+          <li><strong>Calculate grout</strong> — Set your joint width and tile thickness to work out grout quantity.</li>
+          <li><strong>Calculate spacers</strong> — Choose your layout pattern to get the right number of spacers and packs.</li>
+          <li><strong>Review your materials list</strong> — See everything you need in one place, plus suggestions for tools and accessories.</li>
+        </ol>
+
+        <div class="bg-surface border border-border rounded-xl p-5">
+            <h3 class="font-bold text-surface-foreground mb-3">Before you begin, make sure you have:</h3>
+            <ul class="list-disc list-inside space-y-1 text-muted-foreground text-sm">
+                <li>Your room measurements (length and width in metres)</li>
+                <li>Whether it's a floor or wall (this affects adhesive choice)</li>
+                <li>Your substrate type (concrete, plasterboard, existing tiles, timber)</li>
+                <li>Your chosen tile size and laying pattern</li>
+                <li>Whether the area is dry or wet (bathrooms, showers, kitchens)</li>
+            </ul>
+        </div>
+      </div>
+    </header>
+
+    <!-- Disclaimer -->
+    <div class="bg-brand-yellow/10 border border-brand-yellow/30 rounded-xl p-4 mb-10 text-sm text-yellow-900 flex gap-3">
+      <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="shrink-0 mt-0.5 text-brand-yellow-dark">
+        <path d="M10.29 3.86 1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z" />
+        <line x1="12" x2="12" y1="9" y2="13" />
+        <line x1="12" x2="12.01" y1="17" y2="17" />
+      </svg>
+      <p>These calculations are estimates only. Actual quantities depend on site conditions, tile breakage, cutting accuracy and substrate type. Always confirm requirements with the manufacturer before ordering.</p>
+    </div>
+
+    <!-- React Island -->
+    <section class="mb-16" id="wizard">
+      <TilingWizard client:load />
+    </section>
+
+    <!-- FAQ -->
+    <section class="mb-12 max-w-3xl">
+      <h2 class="text-2xl font-bold text-surface-foreground mb-6">Frequently Asked Questions</h2>
+      <div class="space-y-3">
+        {faqs.map((faq) => (
+          <details class="group bg-white rounded-xl border border-border overflow-hidden">
+            <summary class="flex items-center justify-between px-5 py-4 cursor-pointer text-surface-foreground font-medium hover:bg-muted/30 transition-colors focus-ring">
+              {faq.question}
+              <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="shrink-0 ml-4 text-muted-foreground transition-transform group-open:rotate-180">
+                <path d="m6 9 6 6 6-6" />
+              </svg>
+            </summary>
+            <div class="px-5 pb-4 text-sm text-muted-foreground leading-relaxed border-t border-border/50 pt-3">
+              {faq.answer}
+            </div>
+          </details>
+        ))}
+      </div>
+    </section>
+
+    <!-- Industry Standards -->
+    <section class="mb-12 max-w-3xl">
+      <h2 class="text-2xl font-bold text-surface-foreground mb-4">Industry Standards Referenced</h2>
+      <ul class="list-disc list-inside text-sm text-muted-foreground space-y-2">
+        <li><strong>BS 5385-1:2009</strong> — Wall and floor tiling. Code of practice for the design and planning of internal ceramic, natural stone, and mosaic tiling in normal conditions.</li>
+        <li><strong>BS 5385-3:2015</strong> — Wall and floor tiling. Code of practice for the design and installation of ceramic and mosaic floor tiling.</li>
+        <li><strong>BS EN 12004</strong> — Adhesives for ceramic tiles. Classification and specification (C1, C2, S1, S2 ratings).</li>
+        <li><strong>BS EN ISO 10545-3</strong> — Ceramic tiles. Determination of water absorption (porcelain vs ceramic distinction).</li>
+      </ul>
+    </section>
+
+    <!-- Sources -->
+    <section class="max-w-3xl">
+      <h2 class="text-2xl font-bold text-surface-foreground mb-4">Sources &amp; Further Reading</h2>
+      <ul class="list-disc list-inside text-sm text-muted-foreground space-y-1">
+        <li>Mapei Technical Data Sheets — Adhesive and grout coverage rates, substrate preparation guides</li>
+        <li>BAL Technical Guides — Adhesive selection by substrate and tile type, trowel size recommendations</li>
+        <li>British Standards Institution (BSI) — BS 5385 series for wall and floor tiling</li>
+        <li>Tile Association (TTA) — Trade body technical guidance</li>
+      </ul>
+    </section>
+
+  </div>
+</BaseLayout>
