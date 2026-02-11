@@ -10,7 +10,7 @@ export const TILING_SUGGESTIONS: TilingSuggestion[] = [
     { item: 'Grout float', description: 'Rubber float pushes grout into joints at 45-degree angle.' },
     { item: 'Sponge and bucket', description: 'Clean excess grout within 15–20 minutes before it hardens.' },
     { item: 'Knee pads', description: 'Essential for floor tiling — you will be kneeling for hours.' },
-    { item: 'Tile primer', description: 'Required on dusty, porous, or painted substrates to ensure adhesive bonds. BAL and Mapei both recommend priming plasterboard.' },
+    { item: 'Tile primer', description: 'Required on dusty, porous, or painted substrates to ensure adhesive bonds. Dunlop and Mapei both recommend priming plasterboard.' },
     { item: 'Waterproofing membrane', description: 'Tanking kit for shower enclosures, wet rooms, behind baths. Prevents water reaching the substrate.' },
     { item: 'Silicone sealant', description: 'Flexible seal at perimeter joints (wall-to-floor, wall-to-bath). Movement joints must not be grouted — BS 5385-1:2009.' },
     { item: 'Tile trim / edging strips', description: 'Finished edge where tiles meet walls, worktops, or change in flooring. Chrome, brushed steel, or PVC.' },
