@@ -499,3 +499,343 @@ Prompts for the Antigravity coding agent. Copy and paste one at a time.
 > In `src/components/ConversionsCalculator.tsx` (around line 122), the conversion type tabs (Length / Area / Weight) use `gap-2` (8px). Change to `gap-4` (16px) so the pill buttons have breathing room between them.
 >
 > After fixing all four, run `npm run build` and verify no links point to pages that don't exist.
+
+---
+
+# Phase 3 — SEO Content & Calculator Logic Upgrades
+
+Test files have been updated with the new specifications. SEO content is in `.agent/content/*.md`. The tests define the expected API — implement to make them pass.
+
+---
+
+## Prompt 17 — Update Shared Types for Phase 3
+
+> Update `src/calculators/types.ts` with the following changes. Do NOT modify any test files.
+>
+> **TileInput** — add optional `packSize?: number` (tiles per pack)
+> **TileResult** — add optional `packsNeeded?: number`
+>
+> **AdhesiveInput** — replace the current interface entirely:
+> ```typescript
+> export interface AdhesiveInput {
+>   area: number;           // square metres
+>   tileSize: number;       // longest tile edge in mm
+>   substrate: 'even' | 'uneven';
+>   wastage: number;        // percentage (e.g. 10)
+> }
+> ```
+>
+> **AdhesiveResult** — replace entirely:
+> ```typescript
+> export interface AdhesiveResult {
+>   kgNeeded: number;
+>   bags20kg: number;
+>   bags10kg: number;
+>   coverageRate: number;   // base kg per m² (before substrate adjustment)
+>   bedThickness: number;   // mm
+> }
+> ```
+>
+> **GroutInput** — remove `bagSize` field. Keep all other fields.
+>
+> **GroutResult** — replace entirely:
+> ```typescript
+> export interface GroutResult {
+>   kgNeeded: number;
+>   bags5kg: number;
+>   bags2_5kg: number;
+>   kgPerM2: number;
+> }
+> ```
+>
+> **SpacersInput** — replace entirely:
+> ```typescript
+> export interface SpacersInput {
+>   areaM2: number;           // square metres
+>   tileWidthMm: number;      // mm
+>   tileHeightMm: number;     // mm
+>   layout: 'cross' | 't-junction';
+>   wastage: number;           // percentage
+> }
+> ```
+>
+> **SpacersResult** — replace entirely:
+> ```typescript
+> export interface SpacersResult {
+>   spacersNeeded: number;
+>   packs100: number;
+>   packs250: number;
+> }
+> ```
+
+---
+
+## Prompt 18 — Update Conversions Calculator Logic
+
+> Update `src/calculators/conversions.ts` to add three new conversion categories and supporting exports. Tests are in `src/calculators/conversions.test.ts`.
+>
+> **Add:**
+> - `VolumeUnit` type: `'m3' | 'litres' | 'ft3' | 'yd3' | 'gallons_uk'`
+> - `TemperatureUnit` type: `'C' | 'F'`
+> - `DensityMaterial` type: `'concrete' | 'hardcore' | 'sand' | 'gravel' | 'ballast'`
+> - `convertVolume(value, from, to)` — base unit m³. Factors: litres=0.001, ft3=0.0283168, yd3=0.764555, gallons_uk=0.00454609
+> - `convertTemperature(value, from, to)` — C→F: `(C * 9/5) + 32`, F→C: `(F - 32) * 5/9`, same unit returns value unchanged
+> - `DENSITY` constant: `{ concrete: 2.4, hardcore: 2.1, sand: 1.6, gravel: 1.8, ballast: 1.8 }` (t/m³)
+> - `convertDensityToWeight(volumeM3, material)` — returns `volumeM3 * DENSITY[material]` in tonnes
+> - `UNITS` object with arrays of `{ value, label }` for length, area, volume, weight, temperature
+> - Add `'tonnes'` to `WeightUnit` type with factor 1000 (1 tonne = 1000 kg)
+>
+> **Export** all new types, functions, and constants. Keep all existing exports unchanged.
+>
+> Run `npm test -- --run src/calculators/conversions.test.ts` — all tests must pass. Do NOT modify the test file.
+
+---
+
+## Prompt 19 — Update Tiles Calculator Logic
+
+> Update `src/calculators/tiles.ts` to support pack sizes. Tests in `src/calculators/tiles.test.ts`.
+>
+> **Changes:**
+> - Import the updated `TileInput` and `TileResult` from `./types` (which now include `packSize?` and `packsNeeded?`)
+> - If `input.packSize` is provided and > 0, set `packsNeeded = Math.ceil(tilesNeeded / packSize)` in the result
+> - If `packSize` is not provided, omit `packsNeeded` from the result (leave it `undefined`)
+> - Export a `COMMON_TILE_SIZES` array with at least these entries:
+>   ```typescript
+>   export const COMMON_TILE_SIZES = [
+>     { width: 300, height: 300, label: '300 x 300 mm' },
+>     { width: 600, height: 300, label: '600 x 300 mm' },
+>     { width: 200, height: 100, label: '200 x 100 mm (metro)' },
+>     { width: 600, height: 600, label: '600 x 600 mm' },
+>   ];
+>   ```
+>
+> Run `npm test -- --run src/calculators/tiles.test.ts` — all tests must pass. Do NOT modify the test file.
+
+---
+
+## Prompt 20 — Rewrite Adhesive Calculator Logic
+
+> Rewrite `src/calculators/adhesive.ts` to use the new bed-thickness coverage model. Tests in `src/calculators/adhesive.test.ts`.
+>
+> **New coverage model** (based on largest tile edge):
+> - `tileSize < 300 mm` → bed 3 mm → 4 kg/m²
+> - `tileSize >= 300 && <= 450 mm` → bed 6 mm → 7 kg/m²
+> - `tileSize > 450 mm` → bed 10 mm → 10 kg/m²
+>
+> **Substrate adjustment:** if `substrate === 'uneven'`, multiply effective rate by 1.2
+>
+> **Formula:** `kgNeeded = area * coverageRate * substrateMultiplier * (1 + wastage/100)`
+>
+> **Return:** `{ kgNeeded, bags20kg: ceil(kg/20), bags10kg: ceil(kg/10), coverageRate (base, before substrate), bedThickness }`
+>
+> **Export** `ADHESIVE_TYPES` array with at least: standard, flexible, rapid-set (each with `value` and `label`).
+>
+> Throw for zero/negative area or tile size. Import types from `./types`.
+>
+> Run `npm test -- --run src/calculators/adhesive.test.ts` — all tests must pass. Do NOT modify the test file.
+
+---
+
+## Prompt 21 — Update Grout Calculator Logic
+
+> Update `src/calculators/grout.ts` to remove `bagSize` input and return dual bag sizes. Tests in `src/calculators/grout.test.ts`.
+>
+> **Changes:**
+> - Remove `bagSize` from destructured input (it's been removed from `GroutInput`)
+> - Return `bags5kg: Math.ceil(kgNeeded / 5)` and `bags2_5kg: Math.ceil(kgNeeded / 2.5)` instead of `bagsNeeded`
+> - Keep `kgPerM2` in the result (same formula as before)
+> - Export `COMMON_JOINT_WIDTHS` array:
+>   ```typescript
+>   export const COMMON_JOINT_WIDTHS = [
+>     { value: 2, label: '2 mm — Rectified tiles' },
+>     { value: 3, label: '3 mm — Standard wall tiles' },
+>     { value: 5, label: '5 mm — Standard floor tiles' },
+>     { value: 10, label: '10 mm — Rustic/handmade tiles' },
+>   ];
+>   ```
+>
+> Run `npm test -- --run src/calculators/grout.test.ts` — all tests must pass. Do NOT modify the test file.
+
+---
+
+## Prompt 22 — Rewrite Spacers Calculator Logic
+
+> Rewrite `src/calculators/spacers.ts` to use area-based input and return pack counts. Tests in `src/calculators/spacers.test.ts`.
+>
+> **New logic:**
+> 1. Calculate tiles: `tiles = Math.ceil(areaM2 / ((tileWidthMm / 1000) * (tileHeightMm / 1000)))`
+> 2. Spacers per tile: cross = 4, t-junction = 3
+> 3. `spacersNeeded = Math.ceil(tiles * spacersPerTile * (1 + wastage / 100))`
+> 4. `packs100 = Math.ceil(spacersNeeded / 100)`, `packs250 = Math.ceil(spacersNeeded / 250)`
+>
+> Throw for zero/negative area or tile dimensions.
+>
+> **Export** `SPACER_SIZES` array:
+> ```typescript
+> export const SPACER_SIZES = [
+>   { value: 1, label: '1 mm' },
+>   { value: 1.5, label: '1.5 mm' },
+>   { value: 2, label: '2 mm' },
+>   { value: 3, label: '3 mm' },
+>   { value: 4, label: '4 mm' },
+>   { value: 5, label: '5 mm' },
+> ];
+> ```
+>
+> Import types from `./types`. Run `npm test -- --run src/calculators/spacers.test.ts` — all tests must pass. Do NOT modify the test file.
+
+---
+
+## Prompt 23 — Verify All Calculator Tests Pass
+
+> Run the full test suite: `npm test -- --run`
+>
+> All tests must pass with zero failures. If any test fails, fix the **implementation code** (not the test files). The test files define the correct behaviour.
+>
+> After tests pass, run `npm run build` to verify the project still builds.
+
+---
+
+## Prompt 24 — Rebuild Conversions Page with SEO Content
+
+> Rebuild `src/pages/calculators/conversions/index.astro` with full SEO content. Use the content from `.agent/content/conversions-seo.md` **verbatim**.
+>
+> **Page structure:**
+> 1. SEO head metadata (title, description, canonical, OG tags)
+> 2. Breadcrumbs: Home > Calculators > Unit Conversions
+> 3. H1, intro paragraph, disclaimer callout (yellow background)
+> 4. Guidance section ("Why Conversions Matter in Building")
+> 5. How to use section (3 steps)
+> 6. **React island**: Update `ConversionsCalculator.tsx` to add Volume, Temperature, and Density tabs (import the new functions and types from `../calculators/conversions`). The density tab should have a volume input, material dropdown, and show weight in tonnes.
+> 7. Reference tables (6 small tables, one per category)
+> 8. Quick reference table ("Common Trade Conversions")
+> 9. Context section ("When You Need These Conversions") with 4 subsections
+> 10. Related calculators (link cards)
+> 11. FAQ section (5 questions as toggle blocks)
+> 12. `FAQPage` JSON-LD structured data in a `<script type="application/ld+json">` tag
+> 13. Sources & further reading
+>
+> Use Tailwind CSS. Use Lucide icons. British English. All internal links must use `import.meta.env.BASE_URL`.
+
+---
+
+## Prompt 25 — Rebuild Tiles Page with SEO Content
+
+> Rebuild `src/pages/calculators/tiles/index.astro` with full SEO content. Use the content from `.agent/content/tiles-seo.md` **verbatim**.
+>
+> **Page structure:**
+> 1. SEO head metadata
+> 2. Breadcrumbs: Home > Calculators > Tile Quantity
+> 3. H1, intro, disclaimer callout
+> 4. Guidance section ("How to Calculate Tiles") with waste allowance table
+> 5. **React island**: Update `TileCalculator.tsx` to add:
+>    - Common tile size selector (import `COMMON_TILE_SIZES` from tiles module) with a custom size option
+>    - Pack size input (optional)
+>    - Show packs needed in results when pack size is provided
+> 6. Tips section ("Tiling Tips") with 4 subsections
+> 7. Related calculators
+> 8. FAQ section (5 questions as toggle blocks) with `FAQPage` JSON-LD
+> 9. Sources & further reading
+>
+> Use Tailwind CSS. Use Lucide icons. British English. All internal links must use `import.meta.env.BASE_URL`.
+
+---
+
+## Prompt 26 — Rebuild Adhesive Page with SEO Content
+
+> Rebuild `src/pages/calculators/adhesive/index.astro` with full SEO content. Use the content from `.agent/content/adhesive-seo.md` **verbatim**.
+>
+> **Page structure:**
+> 1. SEO head metadata
+> 2. Breadcrumbs: Home > Calculators > Adhesive
+> 3. H1, intro, disclaimer callout
+> 4. Guidance section ("Choosing the Right Tile Adhesive") with 3 adhesive types
+> 5. Bed thickness section with table
+> 6. **React island**: Update `AdhesiveCalculator.tsx` to use the new API:
+>    - Area input (m²)
+>    - Tile size input (largest edge in mm)
+>    - Substrate dropdown (Even / Uneven)
+>    - Wastage input (%, default 10)
+>    - Results: kg needed, bags (20 kg and 10 kg), coverage rate, bed thickness
+>    - Show "+20% for uneven substrate" in results when applicable
+> 7. Tips section with 4 subsections
+> 8. Related calculators
+> 9. FAQ section (5 questions) with `FAQPage` JSON-LD
+> 10. Sources & further reading
+>
+> Use Tailwind CSS. Use Lucide icons. British English. All internal links must use `import.meta.env.BASE_URL`.
+
+---
+
+## Prompt 27 — Rebuild Grout Page with SEO Content
+
+> Rebuild `src/pages/calculators/grout/index.astro` with full SEO content. Use the content from `.agent/content/grout-seo.md` **verbatim**.
+>
+> **Page structure:**
+> 1. SEO head metadata
+> 2. Breadcrumbs: Home > Calculators > Grout
+> 3. H1, intro, disclaimer callout
+> 4. Guidance section ("How Much Grout Do You Need?") with joint width guide table
+> 5. Formula section with equation block
+> 6. **React island**: Update `GroutCalculator.tsx` to:
+>    - Remove bag size input
+>    - Add joint width presets dropdown (import `COMMON_JOINT_WIDTHS`) with custom option
+>    - Show bags for both 5 kg and 2.5 kg in results
+>    - Show kg/m² rate in results
+> 7. Tips section ("Grouting Tips") with 4 subsections
+> 8. Related calculators
+> 9. FAQ section (5 questions) with `FAQPage` JSON-LD
+> 10. Sources & further reading
+>
+> Use Tailwind CSS. Use Lucide icons. British English. All internal links must use `import.meta.env.BASE_URL`.
+
+---
+
+## Prompt 28 — Rebuild Spacers Page with SEO Content
+
+> Rebuild `src/pages/calculators/spacers/index.astro` with full SEO content. Use the content from `.agent/content/spacers-seo.md` **verbatim**.
+>
+> **Page structure:**
+> 1. SEO head metadata
+> 2. Breadcrumbs: Home > Calculators > Spacers
+> 3. H1, intro, disclaimer callout
+> 4. Guidance section ("Tile Spacers: Which Size and How Many?") with spacer size guide table
+> 5. How it works section (2 paragraphs)
+> 6. **React island**: Update `SpacerCalculator.tsx` (or create `SpacersCalculator.tsx`) to use the new area-based API:
+>    - Area input (m²)
+>    - Tile width and height inputs (mm)
+>    - Spacer size dropdown (import `SPACER_SIZES`) — for display/info only, doesn't affect count
+>    - Layout dropdown (Cross / T-junction)
+>    - Wastage input (%, default 10)
+>    - Results: spacers needed, packs of 100, packs of 250
+> 7. Tips section with 4 subsections
+> 8. Related calculators
+> 9. FAQ section (5 questions) with `FAQPage` JSON-LD
+> 10. Sources & further reading
+>
+> Use Tailwind CSS. Use Lucide icons. British English. All internal links must use `import.meta.env.BASE_URL`.
+
+---
+
+## Prompt 29 — Full Build & Verification
+
+> Run the full test suite and build:
+>
+> 1. `npm test -- --run` — all tests must pass with zero failures
+> 2. `npm run build` — must succeed with no errors
+> 3. Verify all pages exist in the build output:
+>    - `/index.html`
+>    - `/calculators/index.html`
+>    - `/calculators/tiles/index.html`
+>    - `/calculators/adhesive/index.html`
+>    - `/calculators/grout/index.html`
+>    - `/calculators/spacers/index.html`
+>    - `/calculators/conversions/index.html`
+> 4. Verify each calculator page includes:
+>    - `FAQPage` JSON-LD `<script>` tag
+>    - Breadcrumb navigation
+>    - Related calculators section
+>    - Sources section
+> 5. Verify no internal links point to pages that don't exist
+>
+> Fix any issues found. Do NOT modify test files.
