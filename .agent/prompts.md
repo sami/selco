@@ -844,3 +844,440 @@ Test files have been updated with the new specifications. SEO content is in `.ag
 > 5. Verify no internal links point to pages that don't exist
 >
 > Fix any issues found. Do NOT modify test files.
+
+---
+
+# Phase 4 — Tiling Project Wizard
+
+SEO content is in `.agent/content/tiling-project-seo.md`. Test file exists at `src/projects/tiling-suggestions.test.ts`. The tests define the expected data shape — implement to make them pass.
+
+---
+
+## Prompt 30 — Create Tiling Suggestions Data Module
+
+> Create `src/projects/tiling-suggestions.ts`. Test file already exists at `src/projects/tiling-suggestions.test.ts`.
+>
+> **Export** a `TILING_SUGGESTIONS` array with this shape:
+>
+> ```typescript
+> export interface TilingSuggestion {
+>     item: string;
+>     description: string;
+> }
+>
+> export const TILING_SUGGESTIONS: TilingSuggestion[] = [
+>     { item: 'Tile cutter (manual or electric)', description: 'Manual scores for straight cuts on ceramics. Electric wet cutter for porcelain, curves, and L-cuts.' },
+>     { item: 'Spirit level', description: 'Check substrate is flat before tiling. BS 5385-3:2015 specifies max 3 mm deviation over 2 m for floors.' },
+>     { item: 'Notched trowel', description: 'Applies adhesive at consistent depth. Notch size must match tile size (see adhesive step).' },
+>     { item: 'Grout float', description: 'Rubber float pushes grout into joints at 45-degree angle.' },
+>     { item: 'Sponge and bucket', description: 'Clean excess grout within 15–20 minutes before it hardens.' },
+>     { item: 'Knee pads', description: 'Essential for floor tiling — you will be kneeling for hours.' },
+>     { item: 'Tile primer', description: 'Required on dusty, porous, or painted substrates to ensure adhesive bonds. BAL and Mapei both recommend priming plasterboard.' },
+>     { item: 'Waterproofing membrane', description: 'Tanking kit for shower enclosures, wet rooms, behind baths. Prevents water reaching the substrate.' },
+>     { item: 'Silicone sealant', description: 'Flexible seal at perimeter joints (wall-to-floor, wall-to-bath). Movement joints must not be grouted — BS 5385-1:2009.' },
+>     { item: 'Tile trim / edging strips', description: 'Finished edge where tiles meet walls, worktops, or change in flooring. Chrome, brushed steel, or PVC.' },
+> ];
+> ```
+>
+> Run `npm test -- --run src/projects/tiling-suggestions.test.ts` — all tests must pass. Do NOT modify the test file.
+
+---
+
+## Prompt 31 — Create TilingWizard React Component
+
+> Create `src/components/TilingWizard.tsx` — a multi-step wizard that chains tiles → adhesive → grout → spacers with shared area input. Each step has guidance content above the calculator inputs. Use the content from `.agent/content/tiling-project-seo.md` for all guidance text.
+>
+> **Imports needed:**
+> ```typescript
+> import React, { useState, useCallback, useMemo } from 'react';
+> import { FormInput, FormSelect } from './CalculatorLayout';
+> import { calculateTiles, COMMON_TILE_SIZES } from '../calculators/tiles';
+> import { calculateAdhesive, ADHESIVE_PRODUCTS } from '../calculators/adhesive';
+> import { calculateGrout, COMMON_JOINT_WIDTHS } from '../calculators/grout';
+> import { calculateSpacers, SPACER_SIZES } from '../calculators/spacers';
+> import { TILING_SUGGESTIONS } from '../projects/tiling-suggestions';
+> import type { TileResult, AdhesiveResult, GroutResult, SpacersResult } from '../calculators/types';
+> ```
+>
+> **State model:**
+> ```typescript
+> // Navigation
+> const [currentStep, setCurrentStep] = useState(1); // 1-6
+>
+> // Step 1 — Area
+> const [roomLength, setRoomLength] = useState('');   // metres
+> const [roomWidth, setRoomWidth] = useState('');     // metres
+>
+> // Step 2 — Tiles
+> const [selectedTileSize, setSelectedTileSize] = useState('300x300');
+> const [tileWidth, setTileWidth] = useState('300');   // mm
+> const [tileHeight, setTileHeight] = useState('300'); // mm
+> const [tileWastage, setTileWastage] = useState('10');
+> const [packSize, setPackSize] = useState('');
+>
+> // Step 3 — Adhesive
+> const [selectedProduct, setSelectedProduct] = useState(ADHESIVE_PRODUCTS[0].value);
+> const [applicationType, setApplicationType] = useState<'dry' | 'wet'>('dry');
+> const [substrate, setSubstrate] = useState('even');
+> const [adhesiveWastage, setAdhesiveWastage] = useState('10');
+>
+> // Step 4 — Grout
+> const [selectedJointWidth, setSelectedJointWidth] = useState('3');
+> const [customJointWidth, setCustomJointWidth] = useState('');
+> const [tileDepth, setTileDepth] = useState('8');
+> const [groutWastage, setGroutWastage] = useState('10');
+>
+> // Step 5 — Spacers
+> const [spacerSize, setSpacerSize] = useState('3');
+> const [layout, setLayout] = useState('cross');
+> const [spacerWastage, setSpacerWastage] = useState('10');
+>
+> // Results
+> const [tileResult, setTileResult] = useState<TileResult | null>(null);
+> const [adhesiveResult, setAdhesiveResult] = useState<AdhesiveResult | null>(null);
+> const [groutResult, setGroutResult] = useState<GroutResult | null>(null);
+> const [spacersResult, setSpacersResult] = useState<SpacersResult | null>(null);
+> ```
+>
+> **Derived values:**
+> ```typescript
+> const area = useMemo(() => {
+>     const l = parseFloat(roomLength);
+>     const w = parseFloat(roomWidth);
+>     return (l > 0 && w > 0) ? l * w : 0;
+> }, [roomLength, roomWidth]);
+>
+> const product = useMemo(
+>     () => ADHESIVE_PRODUCTS.find(p => p.value === selectedProduct) ?? ADHESIVE_PRODUCTS[0],
+>     [selectedProduct],
+> );
+>
+> const isCustomTileSize = selectedTileSize === 'custom';
+> const isCustomJointWidth = selectedJointWidth === 'custom';
+> const effectiveJointWidth = isCustomJointWidth ? customJointWidth : selectedJointWidth;
+> ```
+>
+> **Tile size preset handler** (same pattern as TileCalculator):
+> ```typescript
+> function handleTileSizeChange(value: string) {
+>     setSelectedTileSize(value);
+>     if (value !== 'custom') {
+>         const [w, h] = value.split('x');
+>         setTileWidth(w);
+>         setTileHeight(h);
+>     }
+> }
+> ```
+>
+> **Step navigation:**
+> - "Next" button calculates the current step and advances.
+> - "Back" button goes to previous step (no recalculation).
+> - When going back and changing values, downstream results are NOT automatically cleared — they recalculate when "Next" is clicked on that step again.
+>
+> **Step calculation on "Next":**
+>
+> ```typescript
+> function handleNext() {
+>     try {
+>         if (currentStep === 1) {
+>             // Just validate area > 0
+>             if (area <= 0) return;
+>         } else if (currentStep === 2) {
+>             const ps = parseFloat(packSize);
+>             const result = calculateTiles({
+>                 areaWidth: parseFloat(roomLength),
+>                 areaHeight: parseFloat(roomWidth),
+>                 tileWidth: parseFloat(tileWidth),
+>                 tileHeight: parseFloat(tileHeight),
+>                 wastage: parseFloat(tileWastage),
+>                 ...(ps > 0 ? { packSize: ps } : {}),
+>             });
+>             setTileResult(result);
+>         } else if (currentStep === 3) {
+>             const coverageRate = applicationType === 'dry' ? product.dryWallRate : product.wetAreaRate;
+>             const result = calculateAdhesive({
+>                 area,
+>                 coverageRate,
+>                 bagSize: product.bagSize,
+>                 substrate: substrate as 'even' | 'uneven',
+>                 wastage: parseFloat(adhesiveWastage),
+>             });
+>             setAdhesiveResult(result);
+>         } else if (currentStep === 4) {
+>             const result = calculateGrout({
+>                 area,
+>                 tileWidth: parseFloat(tileWidth),
+>                 tileHeight: parseFloat(tileHeight),
+>                 jointWidth: parseFloat(effectiveJointWidth),
+>                 tileDepth: parseFloat(tileDepth),
+>                 wastage: parseFloat(groutWastage),
+>             });
+>             setGroutResult(result);
+>         } else if (currentStep === 5) {
+>             const result = calculateSpacers({
+>                 areaM2: area,
+>                 tileWidthMm: parseFloat(tileWidth),
+>                 tileHeightMm: parseFloat(tileHeight),
+>                 layout: layout as 'cross' | 't-junction',
+>                 wastage: parseFloat(spacerWastage),
+>             });
+>             setSpacersResult(result);
+>         }
+>         setCurrentStep((s) => Math.min(s + 1, 6));
+>     } catch {
+>         // Invalid input — stay on current step
+>     }
+> }
+>
+> function handleBack() {
+>     setCurrentStep((s) => Math.max(s - 1, 1));
+> }
+> ```
+>
+> **UI structure:**
+>
+> ```tsx
+> <div className="space-y-8">
+>     {/* Step indicator */}
+>     <div className="flex items-center gap-2">
+>         {[1,2,3,4,5,6].map(step => (
+>             <div key={step} className={`flex-1 h-2 rounded-full transition-colors ${
+>                 step <= currentStep ? 'bg-brand-blue' : 'bg-muted/40'
+>             }`} />
+>         ))}
+>     </div>
+>     <p className="text-sm text-muted-foreground">
+>         Step {currentStep} of 6 — {stepLabels[currentStep - 1]}
+>     </p>
+>
+>     {/* Current step content */}
+>     {currentStep === 1 && <StepArea />}
+>     {currentStep === 2 && <StepTiles />}
+>     {currentStep === 3 && <StepAdhesive />}
+>     {currentStep === 4 && <StepGrout />}
+>     {currentStep === 5 && <StepSpacers />}
+>     {currentStep === 6 && <StepResults />}
+>
+>     {/* Navigation buttons */}
+>     <div className="flex items-center gap-4 pt-4 border-t border-border">
+>         {currentStep > 1 && (
+>             <button type="button" onClick={handleBack}
+>                 className="px-6 h-11 text-sm font-medium text-muted-foreground hover:text-surface-foreground border border-border rounded-[--radius-button] hover:bg-muted/30 transition-all focus-ring">
+>                 Back
+>             </button>
+>         )}
+>         {currentStep < 6 && (
+>             <button type="button" onClick={handleNext}
+>                 className="px-8 h-11 text-sm font-bold bg-brand-yellow text-brand-blue rounded-[--radius-button] shadow-sm hover:brightness-105 active:scale-[0.98] transition-all focus-ring ml-auto">
+>                 Next
+>             </button>
+>         )}
+>     </div>
+> </div>
+> ```
+>
+> **Step labels array:**
+> ```typescript
+> const stepLabels = ['Your area', 'Tiles', 'Adhesive', 'Grout', 'Spacers', 'Materials list'];
+> ```
+>
+> **Each step structure:**
+> Each step is rendered inline (not as separate components — keep it all in one file for simplicity). Each step has:
+> 1. **Guidance section** — H2 heading, explanatory paragraphs with trade guidance. Use the verbatim text from `.agent/content/tiling-project-seo.md` for each step's guidance. Render as JSX with Tailwind classes. Use `<h2>`, `<p>`, `<strong>`, and `<ul>`/`<li>` as appropriate. Style guidance text with `text-muted-foreground text-sm leading-relaxed` for body, `text-surface-foreground font-semibold` for subheadings.
+> 2. **Calculator form** — form inputs using `FormInput` and `FormSelect` from `CalculatorLayout`. Wrap in a card: `bg-white rounded-2xl border border-border shadow-sm p-6`. Auto-fill area (display as read-only info line) and tile dimensions where applicable.
+>
+> **Step 1 — Area:**
+> - Guidance: H2 "Measuring Your Tiling Area" + paragraphs from content file
+> - Form: two `FormInput` fields — Room length (metres) and Room width (metres) in a 2-column grid
+> - Below form: show computed area as a prominent read-only display: `"{area.toFixed(2)} m²"`
+>
+> **Step 2 — Tiles:**
+> - Guidance: H2 "Choosing the Right Tiles" + paragraphs from content file (floor vs wall, sizes, wastage, porcelain vs ceramic)
+> - Form: Tile size preset `FormSelect` (COMMON_TILE_SIZES + Custom option), custom width/height when custom selected, wastage `FormInput`, pack size `FormInput` (optional)
+> - Show auto-filled area as info line: "Area from Step 1: {area.toFixed(2)} m²"
+>
+> **Step 3 — Adhesive:**
+> - Guidance: H2 "How Much Tile Adhesive Do You Need?" + paragraphs from content file
+> - Form: Product `FormSelect` (ADHESIVE_PRODUCTS), application type toggle buttons (Dry Wall / Floor & Wet Areas — same pattern as AdhesiveCalculator.tsx), substrate `FormSelect` (Even/Uneven), wastage `FormInput`
+> - Show: "Area: {area.toFixed(2)} m²", "Coverage rate: {rate} kg/m² ({product.bagSize} kg per unit)"
+>
+> **Step 4 — Grout:**
+> - Guidance: H2 "How Much Grout Do You Need?" + paragraphs from content file
+> - Form: Joint width `FormSelect` (COMMON_JOINT_WIDTHS + Custom option), custom joint width when custom selected, tile thickness `FormInput`, wastage `FormInput`
+> - Show: "Area: {area.toFixed(2)} m²", "Tile size: {tileWidth} x {tileHeight} mm"
+>
+> **Step 5 — Spacers:**
+> - Guidance: H2 "How Many Tile Spacers Do You Need?" + paragraphs from content file
+> - Form: Spacer size `FormSelect` (SPACER_SIZES, display only), layout `FormSelect` (Cross/T-junction), wastage `FormInput`
+> - Show: "Area: {area.toFixed(2)} m²", "Tile size: {tileWidth} x {tileHeight} mm"
+>
+> **Step 6 — Results Summary:**
+> - H2 "Your Complete Tiling Materials List"
+> - 4 result cards in a 2-column grid (mobile: 1 column). Each card:
+>   - Icon (inline SVG), material name, quantities
+>   - Tiles: "{tilesNeeded} tiles" + packs if applicable
+>   - Adhesive: "{kgNeeded.toFixed(1)} kg — {bagsNeeded} x {product.bagSize} kg bags"
+>   - Grout: "{kgNeeded.toFixed(1)} kg — {bags5kg} x 5 kg bags"
+>   - Spacers: "{spacersNeeded} spacers — {packs100} packs of 100"
+> - Below cards: "You might also need" section
+>   - H3: "You Might Also Need"
+>   - Render `TILING_SUGGESTIONS` as a styled list or table. Each row: item name (bold) + description. Use a clean card layout with alternating subtle backgrounds or a simple bordered table.
+> - "Start over" button that resets all state and goes to Step 1
+>
+> **Styling:**
+> - Use Tailwind CSS utilities matching the existing design system (brand-blue, brand-yellow, muted-foreground, surface-foreground, border, etc.)
+> - Guidance sections: `space-y-3` with `text-sm text-muted-foreground leading-relaxed`
+> - Cards: `bg-white rounded-2xl border border-border shadow-sm`
+> - Use `focus-ring` utility class on all interactive elements
+> - No emojis anywhere. Use Lucide-style inline SVG icons where needed.
+>
+> **Do NOT** create separate files for step sub-components. Keep everything in `TilingWizard.tsx`. Do NOT modify any test files or existing calculator logic files. Do NOT modify `CalculatorLayout.tsx`.
+
+---
+
+## Prompt 32 — Create Tiling Project Astro Page
+
+> Create `src/pages/projects/tiling/index.astro`. This is the SEO-focused page wrapper for the tiling wizard. Use the content from `.agent/content/tiling-project-seo.md` **verbatim** for all copy.
+>
+> **Frontmatter:**
+> ```astro
+> ---
+> import BaseLayout from '../../../layouts/BaseLayout.astro';
+> import TilingWizard from '../../../components/TilingWizard';
+>
+> const base = import.meta.env.BASE_URL.replace(/\/$/, '') + '/';
+>
+> const faqs = [
+>   {
+>     question: 'How much tile adhesive do I need per square metre?',
+>     answer: 'It depends on tile size and trowel notch depth. For small tiles (up to 300 x 300 mm) with a 6 mm notch, allow approximately 5 kg/m². For large format tiles (600 x 600 mm and above) with a 10–12 mm notch, allow 7–8 kg/m². Our calculator uses coverage rates from Selco-stocked products including Dunlop and Mapei.',
+>   },
+>   {
+>     question: 'What is the difference between floor tiles and wall tiles?',
+>     answer: 'Floor tiles are thicker, denser, and rated for foot traffic and slip resistance per BS 5385-3:2015. Wall tiles are thinner, lighter, and not designed to bear weight. Never use wall-only tiles on floors.',
+>   },
+>   {
+>     question: 'What size spacers should I use?',
+>     answer: 'Match your spacer size to the joint width you want. Use 2 mm for rectified tiles, 3 mm for standard wall tiles, 5 mm for floor tiles, and 10 mm for rustic or handmade tiles. BS 5385-1:2009 specifies minimum joint widths by tile type.',
+>   },
+>   {
+>     question: 'How much wastage should I allow for tiling?',
+>     answer: 'Allow 10% for straight layouts and up to 15% for diagonal or herringbone patterns. This covers cuts at edges, breakages during installation, and a few spares for future repairs. BS 5385-1:2009 recommends never ordering exact quantities.',
+>   },
+>   {
+>     question: 'Do I need to prime before tiling?',
+>     answer: 'Yes, in most cases. Priming ensures the adhesive bonds properly to the substrate. It is especially important on dusty, porous, or painted surfaces. Both BAL and Mapei recommend priming plasterboard before tiling.',
+>   },
+> ];
+>
+> const faqJsonLd = {
+>   '@context': 'https://schema.org',
+>   '@type': 'FAQPage',
+>   mainEntity: faqs.map((faq) => ({
+>     '@type': 'Question',
+>     name: faq.question,
+>     acceptedAnswer: { '@type': 'Answer', text: faq.answer },
+>   })),
+> };
+>
+> const howToJsonLd = {
+>   '@context': 'https://schema.org',
+>   '@type': 'HowTo',
+>   name: 'How to Calculate Everything You Need for a Tiling Project',
+>   description: 'Step-by-step guide to calculating tiles, adhesive, grout, and spacers for a floor or wall tiling project.',
+>   step: [
+>     { '@type': 'HowToStep', name: 'Measure your area', text: 'Measure the length and width of your room in metres and multiply to get the total area in square metres.' },
+>     { '@type': 'HowToStep', name: 'Choose your tiles', text: 'Select your tile size and laying pattern. Add 10% waste for straight lay or 15% for diagonal patterns.' },
+>     { '@type': 'HowToStep', name: 'Calculate adhesive', text: 'Choose your adhesive product and application type. Coverage rates are based on manufacturer technical data sheets.' },
+>     { '@type': 'HowToStep', name: 'Calculate grout', text: 'Set your joint width and tile thickness to work out how many kilograms of grout you need.' },
+>     { '@type': 'HowToStep', name: 'Calculate spacers', text: 'Choose your layout pattern (grid or brick bond) to calculate the number of spacers and packs needed.' },
+>     { '@type': 'HowToStep', name: 'Review your materials list', text: 'See a complete summary of all materials with quantities, pack sizes, and suggestions for tools and accessories.' },
+>   ],
+> };
+> ---
+> ```
+>
+> **Page structure (inside `<BaseLayout>`):**
+>
+> 1. **JSON-LD** — Two `<script type="application/ld+json">` tags: one for `faqJsonLd`, one for `howToJsonLd`
+>
+> 2. **Container** — `<div class="container mx-auto px-4 pt-6 md:pt-10 pb-16">`
+>
+> 3. **Breadcrumbs** — `Home > Projects > Tiling` (same pattern as calculator pages):
+>    ```html
+>    Home / Projects / Tiling
+>    ```
+>    Links: Home → `{base}`, Projects → `{base}projects/`
+>
+> 4. **H1 & intro** — heading "Everything You Need for a Tiling Project", two intro paragraphs from the content file, then the "What you'll calculate" ordered list (6 items with bold step names), then the "Before you start" checklist (unordered list with 5 items)
+>
+> 5. **Disclaimer callout** — yellow background card with disclaimer text (same pattern as calculator pages)
+>
+> 6. **React island** — `<TilingWizard client:load />`
+>
+> 7. **FAQ section** — H2 "Frequently Asked Questions", then 5 `<details>/<summary>` toggle blocks using the `faqs` array. Same styling as existing calculator pages.
+>
+> 8. **Industry standards** — H2 "Industry Standards Referenced", bulleted list of BS 5385-1:2009, BS 5385-3:2015, BS EN 12004, BS EN ISO 10545-3 with descriptions
+>
+> 9. **Sources** — H2 "Sources & Further Reading", bulleted list: Mapei Technical Data Sheets, BAL Technical Guides, British Standards Institution, Tile Association
+>
+> **BaseLayout props:**
+> ```
+> title="Tiling Calculator | Everything You Need for a Tiling Project"
+> description="Free tiling project calculator. Work out how many tiles, how much adhesive, grout, and spacers you need in one go. Includes wastage, pack sizes, and a full materials list."
+> ```
+>
+> **Style all sections** to match the existing calculator pages (tiles, adhesive, etc.) — same typography, spacing, card styles, and Tailwind classes. Use British English. All internal links must use `import.meta.env.BASE_URL`. Do NOT modify any other files.
+
+---
+
+## Prompt 33 — Update Homepage & Projects Page Links
+
+> Two link updates now that the tiling project page exists:
+>
+> **1. Homepage spotlight card** (`src/pages/index.astro`, around line 118-119)
+>
+> Change the spotlight `<a>` href from `${base}calculators/tiles/` to `${base}projects/tiling/`. Change the CTA text from "Start calculating" back to "Start project".
+>
+> **2. Projects page** (`src/pages/projects/index.astro`)
+>
+> Add a tiling project card above the empty state. The card should link to `${base}projects/tiling/` and look like:
+> - Lucide `Layers` icon (same as homepage spotlight)
+> - Title: "Tiling Project"
+> - Description: "Calculate tiles, adhesive, grout, and spacers in one go."
+> - Arrow icon on the right indicating a link
+> - Card styling: `bg-surface rounded-[--radius-card] border border-border card-shadow hover:border-brand-blue/40` (same as homepage calculator cards)
+>
+> Keep the empty state section below but update its heading to "More projects coming soon" and description to "We're working on calculators for plumbing, painting, and more."
+>
+> Use `import.meta.env.BASE_URL` for all links. Only modify `index.astro` and `projects/index.astro`.
+
+---
+
+## Prompt 34 — Full Build & Verification
+
+> Run the full test suite and build:
+>
+> 1. `npm test -- --run` — all tests must pass with zero failures (including the new `tiling-suggestions.test.ts`)
+> 2. `npm run build` — must succeed with no errors
+> 3. Verify the new page exists in the build output:
+>    - `/projects/tiling/index.html`
+> 4. Verify existing pages still exist:
+>    - `/index.html`
+>    - `/projects/index.html`
+>    - `/calculators/index.html`
+>    - `/calculators/tiles/index.html`
+>    - `/calculators/adhesive/index.html`
+>    - `/calculators/grout/index.html`
+>    - `/calculators/spacers/index.html`
+>    - `/calculators/conversions/index.html`
+> 5. Verify the new tiling page includes:
+>    - `HowTo` JSON-LD `<script>` tag
+>    - `FAQPage` JSON-LD `<script>` tag
+>    - Breadcrumb navigation
+>    - FAQ toggle blocks
+>    - Sources section
+> 6. Verify the homepage spotlight links to `/selco/projects/tiling/`
+> 7. Verify no internal links point to pages that don't exist
+>
+> Fix any issues found. Do NOT modify test files.
