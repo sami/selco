@@ -1,13 +1,328 @@
 ---
 import BaseLayout from '../../../layouts/BaseLayout.astro';
 import ConversionsCalculator from '../../../components/ConversionsCalculator';
+
+const base = import.meta.env.BASE_URL.replace(/\/$/, '') + '/';
+const canonical = 'https://sami.github.io/selco/calculators/conversions/';
+
+const faqs = [
+  {
+    question: 'What units does this calculator support?',
+    answer: 'Length (mm, cm, m, ft, in, yd), area (m², ft², yd²), volume (m³, litres, ft³, yd³, UK gallons), weight (g, kg, tonnes, lb, oz), temperature (C, F), and density conversions for concrete, hardcore, sand, gravel and ballast.',
+  },
+  {
+    question: 'Are UK or US gallons used?',
+    answer: 'UK gallons. One UK gallon equals 4.546 litres. One US gallon equals 3.785 litres.',
+  },
+  {
+    question: 'How do I convert cubic metres of concrete to tonnes?',
+    answer: 'Multiply the volume in cubic metres by the density of the material. Standard mixed concrete has a density of approximately 2.4 tonnes per cubic metre. For example, 3 m³ of concrete weighs roughly 7.2 tonnes.',
+  },
+  {
+    question: 'How many square metres is a 4 m x 3 m room?',
+    answer: 'Multiply length by width: 4 x 3 = 12 m². Use this figure when ordering tiles, flooring, paint or adhesive.',
+  },
+  {
+    question: 'How do I convert feet and inches to metres?',
+    answer: 'Convert everything to inches first (feet x 12 + inches), then multiply by 0.0254 to get metres. Or enter your value into the length converter above.',
+  },
+];
+
+const faqJsonLd = {
+  '@context': 'https://schema.org',
+  '@type': 'FAQPage',
+  mainEntity: faqs.map((faq) => ({
+    '@type': 'Question',
+    name: faq.question,
+    acceptedAnswer: {
+      '@type': 'Answer',
+      text: faq.answer,
+    },
+  })),
+};
+
+const relatedCalculators = [
+  { title: 'Tile Quantity', href: `${base}calculators/tiles/`, description: 'Calculate how many tiles you need.' },
+  { title: 'Adhesive', href: `${base}calculators/adhesive/`, description: 'Work out how much adhesive to buy.' },
+  { title: 'Grout', href: `${base}calculators/grout/`, description: 'Estimate grout quantity by joint size.' },
+  { title: 'Spacers', href: `${base}calculators/spacers/`, description: 'Count spacers and packs for your layout.' },
+];
 ---
 
 <BaseLayout
-  title="Unit Converter | SELCO Calculator"
-  description="Convert between metric and imperial units for length, area, and weight."
+  title="Unit Conversion Calculator | Metric and Imperial Conversions"
+  description="Free unit conversion calculator for tradespeople. Convert between metres, feet, inches, square metres, cubic metres, litres, kg and more. Fast and accurate results."
 >
-  <div class="pt-6 md:pt-10 pb-12">
-    <ConversionsCalculator client:load />
+  <!-- JSON-LD structured data -->
+  <script type="application/ld+json" set:html={JSON.stringify(faqJsonLd)} />
+
+  <div class="container mx-auto px-4 pt-6 md:pt-10 pb-16">
+
+    <!-- Breadcrumbs -->
+    <nav aria-label="Breadcrumb" class="mb-6 text-sm text-muted-foreground">
+      <ol class="flex items-center gap-1.5 flex-wrap">
+        <li><a href={base} class="hover:text-brand-blue transition-colors">Home</a></li>
+        <li class="text-border">/</li>
+        <li><a href={`${base}calculators/`} class="hover:text-brand-blue transition-colors">Calculators</a></li>
+        <li class="text-border">/</li>
+        <li class="text-surface-foreground font-medium">Unit Conversions</li>
+      </ol>
+    </nav>
+
+    <!-- H1 & Intro -->
+    <header class="mb-8 max-w-3xl">
+      <h1 class="text-3xl md:text-4xl font-bold text-surface-foreground mb-4">
+        Unit Conversion Calculator: Convert Between Metric and Imperial Units
+      </h1>
+      <p class="text-lg text-muted-foreground leading-relaxed">
+        Convert lengths, areas, volumes, weights and temperatures in seconds. Enter a value, select your units, and get an instant result. Built for trade professionals who need quick, reliable conversions on site or in branch.
+      </p>
+    </header>
+
+    <!-- Disclaimer -->
+    <div class="bg-amber-50 border border-amber-200 rounded-xl p-4 mb-10 text-sm text-amber-800 flex gap-3">
+      <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="shrink-0 mt-0.5 text-amber-600">
+        <path d="M10.29 3.86 1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z" />
+        <line x1="12" x2="12" y1="9" y2="13" />
+        <line x1="12" x2="12.01" y1="17" y2="17" />
+      </svg>
+      <p>All conversions use standard conversion factors. For material-specific density conversions (e.g. concrete volume to weight), results are based on typical densities. Always confirm with the manufacturer for exact product specifications.</p>
+    </div>
+
+    <!-- Guidance Section -->
+    <section class="mb-12 max-w-3xl">
+      <h2 class="text-2xl font-bold text-surface-foreground mb-4">Why Conversions Matter in Building</h2>
+      <div class="space-y-4 text-muted-foreground leading-relaxed">
+        <p>Building products are sold in different units depending on the supplier, country of origin and material type. Timber is quoted in metres. Plumbing fittings are listed in inches. Concrete is ordered by the cubic metre but weighed in tonnes. If you mix up your units, you order the wrong quantity.</p>
+        <p>The most common mistakes on site involve confusing square metres (m²) with cubic metres (m³), or mixing metric and imperial measurements on the same job. A room that is 12 m² in floor area is not 12 m³ in volume — that would require multiplying by the height as well.</p>
+        <p>This calculator removes the guesswork. Select a category, type in your value, and get an accurate conversion instantly. No mental arithmetic, no rounding errors.</p>
+      </div>
+    </section>
+
+    <!-- How to Use -->
+    <section class="mb-12 max-w-3xl">
+      <h2 class="text-2xl font-bold text-surface-foreground mb-6">How to Use This Calculator</h2>
+      <ol class="space-y-4">
+        <li class="flex gap-4">
+          <span class="shrink-0 w-8 h-8 rounded-full bg-brand-blue text-white flex items-center justify-center text-sm font-bold">1</span>
+          <div>
+            <p class="font-semibold text-surface-foreground">Choose a Category</p>
+            <p class="text-muted-foreground text-sm">Select the type of unit you need to convert: Length, Area, Volume, Weight, Temperature or Density.</p>
+          </div>
+        </li>
+        <li class="flex gap-4">
+          <span class="shrink-0 w-8 h-8 rounded-full bg-brand-blue text-white flex items-center justify-center text-sm font-bold">2</span>
+          <div>
+            <p class="font-semibold text-surface-foreground">Enter Your Value</p>
+            <p class="text-muted-foreground text-sm">Type the number you want to convert. The calculator accepts whole numbers and decimals.</p>
+          </div>
+        </li>
+        <li class="flex gap-4">
+          <span class="shrink-0 w-8 h-8 rounded-full bg-brand-blue text-white flex items-center justify-center text-sm font-bold">3</span>
+          <div>
+            <p class="font-semibold text-surface-foreground">Select Your Units</p>
+            <p class="text-muted-foreground text-sm">Choose the unit you are converting from and the unit you are converting to. The result updates instantly.</p>
+          </div>
+        </li>
+      </ol>
+    </section>
+
+    <!-- React Island -->
+    <section class="mb-12" id="calculator">
+      <ConversionsCalculator client:load />
+    </section>
+
+    <!-- Reference Tables -->
+    <section class="mb-12">
+      <h2 class="text-2xl font-bold text-surface-foreground mb-6">Conversion Reference Tables</h2>
+      <div class="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+
+        <!-- Length -->
+        <div class="bg-white rounded-xl border border-border p-4">
+          <h3 class="font-semibold text-surface-foreground mb-3">Length</h3>
+          <table class="w-full text-sm">
+            <thead><tr class="text-left text-muted-foreground border-b border-border"><th class="pb-2">From</th><th class="pb-2">To</th><th class="pb-2">Factor</th></tr></thead>
+            <tbody class="text-surface-foreground">
+              <tr class="border-b border-border/50"><td class="py-1.5">1 m</td><td>ft</td><td>3.281</td></tr>
+              <tr class="border-b border-border/50"><td class="py-1.5">1 ft</td><td>m</td><td>0.3048</td></tr>
+              <tr class="border-b border-border/50"><td class="py-1.5">1 in</td><td>mm</td><td>25.4</td></tr>
+              <tr class="border-b border-border/50"><td class="py-1.5">1 mm</td><td>in</td><td>0.03937</td></tr>
+              <tr class="border-b border-border/50"><td class="py-1.5">1 m</td><td>yd</td><td>1.0936</td></tr>
+              <tr><td class="py-1.5">1 yd</td><td>m</td><td>0.9144</td></tr>
+            </tbody>
+          </table>
+        </div>
+
+        <!-- Area -->
+        <div class="bg-white rounded-xl border border-border p-4">
+          <h3 class="font-semibold text-surface-foreground mb-3">Area</h3>
+          <table class="w-full text-sm">
+            <thead><tr class="text-left text-muted-foreground border-b border-border"><th class="pb-2">From</th><th class="pb-2">To</th><th class="pb-2">Factor</th></tr></thead>
+            <tbody class="text-surface-foreground">
+              <tr class="border-b border-border/50"><td class="py-1.5">1 m²</td><td>ft²</td><td>10.764</td></tr>
+              <tr class="border-b border-border/50"><td class="py-1.5">1 ft²</td><td>m²</td><td>0.0929</td></tr>
+              <tr class="border-b border-border/50"><td class="py-1.5">1 m²</td><td>yd²</td><td>1.196</td></tr>
+              <tr><td class="py-1.5">1 yd²</td><td>m²</td><td>0.8361</td></tr>
+            </tbody>
+          </table>
+        </div>
+
+        <!-- Volume -->
+        <div class="bg-white rounded-xl border border-border p-4">
+          <h3 class="font-semibold text-surface-foreground mb-3">Volume</h3>
+          <table class="w-full text-sm">
+            <thead><tr class="text-left text-muted-foreground border-b border-border"><th class="pb-2">From</th><th class="pb-2">To</th><th class="pb-2">Factor</th></tr></thead>
+            <tbody class="text-surface-foreground">
+              <tr class="border-b border-border/50"><td class="py-1.5">1 m³</td><td>litres</td><td>1,000</td></tr>
+              <tr class="border-b border-border/50"><td class="py-1.5">1 litre</td><td>m³</td><td>0.001</td></tr>
+              <tr class="border-b border-border/50"><td class="py-1.5">1 m³</td><td>ft³</td><td>35.315</td></tr>
+              <tr class="border-b border-border/50"><td class="py-1.5">1 ft³</td><td>m³</td><td>0.02832</td></tr>
+              <tr class="border-b border-border/50"><td class="py-1.5">1 UK gal</td><td>litres</td><td>4.546</td></tr>
+              <tr><td class="py-1.5">1 litre</td><td>UK gal</td><td>0.22</td></tr>
+            </tbody>
+          </table>
+        </div>
+
+        <!-- Weight -->
+        <div class="bg-white rounded-xl border border-border p-4">
+          <h3 class="font-semibold text-surface-foreground mb-3">Weight</h3>
+          <table class="w-full text-sm">
+            <thead><tr class="text-left text-muted-foreground border-b border-border"><th class="pb-2">From</th><th class="pb-2">To</th><th class="pb-2">Factor</th></tr></thead>
+            <tbody class="text-surface-foreground">
+              <tr class="border-b border-border/50"><td class="py-1.5">1 kg</td><td>lb</td><td>2.205</td></tr>
+              <tr class="border-b border-border/50"><td class="py-1.5">1 lb</td><td>kg</td><td>0.4536</td></tr>
+              <tr class="border-b border-border/50"><td class="py-1.5">1 tonne</td><td>kg</td><td>1,000</td></tr>
+              <tr><td class="py-1.5">1 oz</td><td>g</td><td>28.35</td></tr>
+            </tbody>
+          </table>
+        </div>
+
+        <!-- Temperature -->
+        <div class="bg-white rounded-xl border border-border p-4">
+          <h3 class="font-semibold text-surface-foreground mb-3">Temperature</h3>
+          <table class="w-full text-sm">
+            <thead><tr class="text-left text-muted-foreground border-b border-border"><th class="pb-2">Conversion</th><th class="pb-2">Formula</th></tr></thead>
+            <tbody class="text-surface-foreground">
+              <tr class="border-b border-border/50"><td class="py-1.5">°C → °F</td><td>(°C × 9/5) + 32</td></tr>
+              <tr><td class="py-1.5">°F → °C</td><td>(°F − 32) × 5/9</td></tr>
+            </tbody>
+          </table>
+        </div>
+
+        <!-- Density -->
+        <div class="bg-white rounded-xl border border-border p-4">
+          <h3 class="font-semibold text-surface-foreground mb-3">Density</h3>
+          <table class="w-full text-sm">
+            <thead><tr class="text-left text-muted-foreground border-b border-border"><th class="pb-2">Material</th><th class="pb-2">Density (t/m³)</th></tr></thead>
+            <tbody class="text-surface-foreground">
+              <tr class="border-b border-border/50"><td class="py-1.5">Concrete</td><td>2.4</td></tr>
+              <tr class="border-b border-border/50"><td class="py-1.5">Hardcore / MOT Type 1</td><td>2.1</td></tr>
+              <tr class="border-b border-border/50"><td class="py-1.5">Building / Soft Sand</td><td>1.6</td></tr>
+              <tr class="border-b border-border/50"><td class="py-1.5">Sharp Sand</td><td>1.7</td></tr>
+              <tr class="border-b border-border/50"><td class="py-1.5">Plastering / Fine Sand</td><td>1.5</td></tr>
+              <tr class="border-b border-border/50"><td class="py-1.5">Gravel 10 mm</td><td>1.8</td></tr>
+              <tr class="border-b border-border/50"><td class="py-1.5">Gravel 20 mm</td><td>1.8</td></tr>
+              <tr><td class="py-1.5">Ballast 20 mm</td><td>1.8</td></tr>
+            </tbody>
+          </table>
+        </div>
+
+      </div>
+    </section>
+
+    <!-- Quick Reference -->
+    <section class="mb-12 max-w-3xl">
+      <h2 class="text-2xl font-bold text-surface-foreground mb-4">Common Trade Conversions</h2>
+      <div class="bg-white rounded-xl border border-border overflow-hidden">
+        <table class="w-full text-sm">
+          <thead>
+            <tr class="bg-muted/30 text-left text-muted-foreground">
+              <th class="px-4 py-3 font-medium">Need to know</th>
+              <th class="px-4 py-3 font-medium">Answer</th>
+            </tr>
+          </thead>
+          <tbody class="text-surface-foreground">
+            <tr class="border-t border-border/50"><td class="px-4 py-2.5">How many feet in a metre?</td><td class="px-4 py-2.5">3.281 feet</td></tr>
+            <tr class="border-t border-border/50"><td class="px-4 py-2.5">How many mm in an inch?</td><td class="px-4 py-2.5">25.4 mm</td></tr>
+            <tr class="border-t border-border/50"><td class="px-4 py-2.5">How many square feet in a square metre?</td><td class="px-4 py-2.5">10.764 sq ft</td></tr>
+            <tr class="border-t border-border/50"><td class="px-4 py-2.5">How many litres in a cubic metre?</td><td class="px-4 py-2.5">1,000 litres</td></tr>
+            <tr class="border-t border-border/50"><td class="px-4 py-2.5">How many litres in a UK gallon?</td><td class="px-4 py-2.5">4.546 litres</td></tr>
+            <tr class="border-t border-border/50"><td class="px-4 py-2.5">How many kg in a tonne?</td><td class="px-4 py-2.5">1,000 kg</td></tr>
+            <tr class="border-t border-border/50"><td class="px-4 py-2.5">How many pounds in a kg?</td><td class="px-4 py-2.5">2.205 lb</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <!-- Context Section -->
+    <section class="mb-12 max-w-3xl">
+      <h2 class="text-2xl font-bold text-surface-foreground mb-6">When You Need These Conversions</h2>
+      <div class="space-y-6">
+        <div>
+          <h3 class="text-lg font-semibold text-surface-foreground mb-2">Ordering Materials</h3>
+          <p class="text-muted-foreground leading-relaxed">Product specifications often mix metric and imperial. A timber merchant quotes in metres. A plumbing supplier lists pipe lengths in feet. Use the length converter to switch before ordering.</p>
+        </div>
+        <div>
+          <h3 class="text-lg font-semibold text-surface-foreground mb-2">Reading Plans and Drawings</h3>
+          <p class="text-muted-foreground leading-relaxed">Older building plans use imperial. Newer plans use metric. The area and volume converters help you cross-reference without manual arithmetic.</p>
+        </div>
+        <div>
+          <h3 class="text-lg font-semibold text-surface-foreground mb-2">Checking Product Coverage</h3>
+          <p class="text-muted-foreground leading-relaxed">Paint tins show coverage in m²/litre. Adhesive bags show kg/m². Match product labels to your measured area.</p>
+        </div>
+        <div>
+          <h3 class="text-lg font-semibold text-surface-foreground mb-2">Working With Concrete and Aggregates</h3>
+          <p class="text-muted-foreground leading-relaxed">Concrete and aggregate are sold by volume (m³) or weight (tonnes). Use the density converter to move between the two.</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- Related Calculators -->
+    <section class="mb-12">
+      <h2 class="text-2xl font-bold text-surface-foreground mb-6">Related Calculators</h2>
+      <div class="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+        {relatedCalculators.map((calc) => (
+          <a
+            href={calc.href}
+            class="block bg-white rounded-xl border border-border p-5 hover:border-brand-blue hover:shadow-md transition-all group focus-ring"
+          >
+            <h3 class="font-semibold text-surface-foreground group-hover:text-brand-blue transition-colors mb-1">{calc.title}</h3>
+            <p class="text-sm text-muted-foreground">{calc.description}</p>
+          </a>
+        ))}
+      </div>
+    </section>
+
+    <!-- FAQ -->
+    <section class="mb-12 max-w-3xl">
+      <h2 class="text-2xl font-bold text-surface-foreground mb-6">Frequently Asked Questions</h2>
+      <div class="space-y-3">
+        {faqs.map((faq) => (
+          <details class="group bg-white rounded-xl border border-border overflow-hidden">
+            <summary class="flex items-center justify-between px-5 py-4 cursor-pointer text-surface-foreground font-medium hover:bg-muted/30 transition-colors focus-ring">
+              {faq.question}
+              <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="shrink-0 ml-4 text-muted-foreground transition-transform group-open:rotate-180">
+                <path d="m6 9 6 6 6-6" />
+              </svg>
+            </summary>
+            <div class="px-5 pb-4 text-sm text-muted-foreground leading-relaxed border-t border-border/50 pt-3">
+              {faq.answer}
+            </div>
+          </details>
+        ))}
+      </div>
+    </section>
+
+    <!-- Sources -->
+    <section class="max-w-3xl">
+      <h2 class="text-2xl font-bold text-surface-foreground mb-4">Sources &amp; Further Reading</h2>
+      <p class="text-muted-foreground text-sm mb-3">Conversion factors use standard ISO and imperial equivalents. Aggregate and concrete densities are based on typical UK bulk material weights.</p>
+      <ul class="list-disc list-inside text-sm text-muted-foreground space-y-1">
+        <li><a href="https://wrap.org.uk" target="_blank" rel="noopener noreferrer" class="text-brand-blue hover:underline">WRAP</a> — Aggregate density and weight tables</li>
+        <li><a href="https://www.bsigroup.com" target="_blank" rel="noopener noreferrer" class="text-brand-blue hover:underline">BS EN 206</a> — Concrete specification (standard mixed concrete density reference)</li>
+        <li><a href="https://www.jewson.co.uk" target="_blank" rel="noopener noreferrer" class="text-brand-blue hover:underline">Jewson</a> — Aggregate weight calculator (practical volume-to-weight guide)</li>
+      </ul>
+    </section>
+
   </div>
 </BaseLayout>
