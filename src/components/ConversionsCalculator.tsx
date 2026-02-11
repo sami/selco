@@ -3,45 +3,50 @@ import {
     convertLength,
     convertArea,
     convertWeight,
+    convertVolume,
+    convertTemperature,
+    convertDensityToWeight,
+    DENSITY,
+    UNITS,
     type LengthUnit,
     type AreaUnit,
     type WeightUnit,
+    type VolumeUnit,
+    type TemperatureUnit,
+    type DensityMaterial,
 } from '../calculators/conversions';
 
 // ---------------------------------------------------------------------------
-// Unit option data
+// Tab configuration
 // ---------------------------------------------------------------------------
 
-const lengthOptions: { value: LengthUnit; label: string }[] = [
-    { value: 'mm', label: 'Millimetres (mm)' },
-    { value: 'cm', label: 'Centimetres (cm)' },
-    { value: 'm', label: 'Metres (m)' },
-    { value: 'in', label: 'Inches (in)' },
-    { value: 'ft', label: 'Feet (ft)' },
-    { value: 'yd', label: 'Yards (yd)' },
+type ConversionType = 'length' | 'area' | 'volume' | 'weight' | 'temperature' | 'density';
+
+interface TabConfig {
+    key: ConversionType;
+    label: string;
+    defaultFrom: string;
+    defaultTo: string;
+}
+
+const tabs: TabConfig[] = [
+    { key: 'length', label: 'Length', defaultFrom: 'm', defaultTo: 'ft' },
+    { key: 'area', label: 'Area', defaultFrom: 'm2', defaultTo: 'ft2' },
+    { key: 'volume', label: 'Volume', defaultFrom: 'm3', defaultTo: 'litres' },
+    { key: 'weight', label: 'Weight', defaultFrom: 'kg', defaultTo: 'lb' },
+    { key: 'temperature', label: 'Temperature', defaultFrom: 'C', defaultTo: 'F' },
+    { key: 'density', label: 'Density', defaultFrom: 'concrete', defaultTo: '' },
 ];
 
-const areaOptions: { value: AreaUnit; label: string }[] = [
-    { value: 'mm2', label: 'mm²' },
-    { value: 'cm2', label: 'cm²' },
-    { value: 'm2', label: 'm²' },
-    { value: 'ft2', label: 'ft²' },
-    { value: 'yd2', label: 'yd²' },
-];
-
-const weightOptions: { value: WeightUnit; label: string }[] = [
-    { value: 'g', label: 'Grams (g)' },
-    { value: 'kg', label: 'Kilograms (kg)' },
-    { value: 'oz', label: 'Ounces (oz)' },
-    { value: 'lb', label: 'Pounds (lb)' },
-];
-
-type ConversionType = 'length' | 'area' | 'weight';
-
-const tabs: { key: ConversionType; label: string }[] = [
-    { key: 'length', label: 'Length' },
-    { key: 'area', label: 'Area' },
-    { key: 'weight', label: 'Weight' },
+const materialOptions: { value: DensityMaterial; label: string }[] = [
+    { value: 'concrete', label: 'Concrete (2.4 t/m³)' },
+    { value: 'hardcore', label: 'Hardcore / MOT Type 1 (2.1 t/m³)' },
+    { value: 'sand', label: 'Building / Soft Sand (1.6 t/m³)' },
+    { value: 'sharp_sand', label: 'Sharp Sand (1.7 t/m³)' },
+    { value: 'plastering_sand', label: 'Plastering / Fine Sand (1.5 t/m³)' },
+    { value: 'gravel_10mm', label: 'Gravel 10 mm (1.8 t/m³)' },
+    { value: 'gravel_20mm', label: 'Gravel 20 mm (1.8 t/m³)' },
+    { value: 'ballast_20mm', label: 'Ballast 20 mm (1.8 t/m³)' },
 ];
 
 // ---------------------------------------------------------------------------
@@ -53,14 +58,16 @@ export default function ConversionsCalculator() {
     const [inputValue, setInputValue] = useState('1');
     const [fromUnit, setFromUnit] = useState('m');
     const [toUnit, setToUnit] = useState('ft');
+    const [densityMaterial, setDensityMaterial] = useState<DensityMaterial>('concrete');
 
-    // Reset units when switching type
-    function handleTypeChange(type: ConversionType) {
-        setConversionType(type);
+    function handleTypeChange(tab: TabConfig) {
+        setConversionType(tab.key);
         setInputValue('1');
-        if (type === 'length') { setFromUnit('m'); setToUnit('ft'); }
-        if (type === 'area') { setFromUnit('m2'); setToUnit('ft2'); }
-        if (type === 'weight') { setFromUnit('kg'); setToUnit('lb'); }
+        setFromUnit(tab.defaultFrom);
+        setToUnit(tab.defaultTo);
+        if (tab.key === 'density') {
+            setDensityMaterial('concrete');
+        }
     }
 
     function handleSwap() {
@@ -68,31 +75,55 @@ export default function ConversionsCalculator() {
         setToUnit(fromUnit);
     }
 
-    const options = conversionType === 'length'
-        ? lengthOptions
-        : conversionType === 'area'
-            ? areaOptions
-            : weightOptions;
+    // Get options for current type (not used for density)
+    const options = useMemo(() => {
+        switch (conversionType) {
+            case 'length': return UNITS.length;
+            case 'area': return UNITS.area;
+            case 'volume': return UNITS.volume;
+            case 'weight': return UNITS.weight;
+            case 'temperature': return UNITS.temperature;
+            default: return [];
+        }
+    }, [conversionType]);
 
+    // Calculate result
     const result = useMemo(() => {
         const val = parseFloat(inputValue);
         if (isNaN(val)) return null;
 
         try {
-            if (conversionType === 'length') {
-                return convertLength(val, fromUnit as LengthUnit, toUnit as LengthUnit);
+            switch (conversionType) {
+                case 'length':
+                    return convertLength(val, fromUnit as LengthUnit, toUnit as LengthUnit);
+                case 'area':
+                    return convertArea(val, fromUnit as AreaUnit, toUnit as AreaUnit);
+                case 'volume':
+                    return convertVolume(val, fromUnit as VolumeUnit, toUnit as VolumeUnit);
+                case 'weight':
+                    return convertWeight(val, fromUnit as WeightUnit, toUnit as WeightUnit);
+                case 'temperature':
+                    return convertTemperature(val, fromUnit as TemperatureUnit, toUnit as TemperatureUnit);
+                case 'density':
+                    return convertDensityToWeight(val, densityMaterial);
+                default:
+                    return null;
             }
-            if (conversionType === 'area') {
-                return convertArea(val, fromUnit as AreaUnit, toUnit as AreaUnit);
-            }
-            return convertWeight(val, fromUnit as WeightUnit, toUnit as WeightUnit);
         } catch {
             return null;
         }
-    }, [inputValue, fromUnit, toUnit, conversionType]);
+    }, [inputValue, fromUnit, toUnit, conversionType, densityMaterial]);
 
     const fromLabel = options.find((o) => o.value === fromUnit)?.label ?? fromUnit;
     const toLabel = options.find((o) => o.value === toUnit)?.label ?? toUnit;
+
+    const formatResult = (r: number) =>
+        r < 0.01 && r > 0
+            ? r.toExponential(4)
+            : r.toLocaleString('en-GB', { maximumFractionDigits: 6 });
+
+    // Density tab has a distinct UI
+    const isDensity = conversionType === 'density';
 
     return (
         <div className="space-y-6">
@@ -112,18 +143,18 @@ export default function ConversionsCalculator() {
                         </svg>
                     </div>
                     <div>
-                        <h1 className="text-xl font-bold text-surface-foreground">Unit Converter</h1>
+                        <h2 className="text-xl font-bold text-surface-foreground">Unit Converter</h2>
                         <p className="text-sm text-muted-foreground">Convert between metric and imperial measurements.</p>
                     </div>
                 </div>
             </div>
 
             {/* Type tabs */}
-            <div className="flex gap-4">
+            <div className="flex flex-wrap gap-2 md:gap-4">
                 {tabs.map((tab) => (
                     <button
                         key={tab.key}
-                        onClick={() => handleTypeChange(tab.key)}
+                        onClick={() => handleTypeChange(tab)}
                         className={`px-4 py-2 rounded-full text-sm font-medium transition-all duration-200 focus-ring ${conversionType === tab.key
                             ? 'bg-brand-blue/10 text-brand-blue font-semibold'
                             : 'text-muted-foreground hover:bg-muted/50 hover:text-surface-foreground'
@@ -136,75 +167,112 @@ export default function ConversionsCalculator() {
 
             {/* Converter card */}
             <div className="bg-white rounded-2xl border border-border shadow-sm p-6 space-y-5">
-                {/* Input value */}
-                <div>
-                    <label htmlFor="convert-value" className="block text-sm font-medium text-surface-foreground mb-1.5">
-                        Value
-                    </label>
-                    <input
-                        id="convert-value"
-                        type="number"
-                        value={inputValue}
-                        onChange={(e) => setInputValue(e.target.value)}
-                        placeholder="Enter a value"
-                        className="w-full rounded-lg border border-border bg-surface px-4 py-2.5 text-sm text-surface-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-brand-blue/30 focus:border-brand-blue transition-all"
-                        min={0}
-                        step="any"
-                    />
-                </div>
+                {isDensity ? (
+                    /* Density-specific UI */
+                    <>
+                        <div>
+                            <label htmlFor="density-volume" className="block text-sm font-medium text-surface-foreground mb-1.5">
+                                Volume (m³)
+                            </label>
+                            <input
+                                id="density-volume"
+                                type="number"
+                                value={inputValue}
+                                onChange={(e) => setInputValue(e.target.value)}
+                                placeholder="Enter volume in cubic metres"
+                                className="w-full rounded-lg border border-border bg-surface px-4 py-2.5 text-sm text-surface-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-brand-blue/30 focus:border-brand-blue transition-all"
+                                min={0}
+                                step="any"
+                            />
+                        </div>
+                        <div>
+                            <label htmlFor="density-material" className="block text-sm font-medium text-surface-foreground mb-1.5">
+                                Material
+                            </label>
+                            <select
+                                id="density-material"
+                                value={densityMaterial}
+                                onChange={(e) => setDensityMaterial(e.target.value as DensityMaterial)}
+                                className="w-full rounded-lg border border-border bg-surface px-4 py-2.5 text-sm text-surface-foreground focus:outline-none focus:ring-2 focus:ring-brand-blue/30 focus:border-brand-blue transition-all"
+                            >
+                                {materialOptions.map((opt) => (
+                                    <option key={opt.value} value={opt.value}>{opt.label}</option>
+                                ))}
+                            </select>
+                        </div>
+                    </>
+                ) : (
+                    /* Standard conversion UI */
+                    <>
+                        <div>
+                            <label htmlFor="convert-value" className="block text-sm font-medium text-surface-foreground mb-1.5">
+                                Value
+                            </label>
+                            <input
+                                id="convert-value"
+                                type="number"
+                                value={inputValue}
+                                onChange={(e) => setInputValue(e.target.value)}
+                                placeholder="Enter a value"
+                                className="w-full rounded-lg border border-border bg-surface px-4 py-2.5 text-sm text-surface-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-brand-blue/30 focus:border-brand-blue transition-all"
+                                min={0}
+                                step="any"
+                            />
+                        </div>
 
-                {/* From / Swap / To */}
-                <div className="flex items-end gap-3">
-                    <div className="flex-1">
-                        <label htmlFor="from-unit" className="block text-sm font-medium text-surface-foreground mb-1.5">
-                            From
-                        </label>
-                        <select
-                            id="from-unit"
-                            value={fromUnit}
-                            onChange={(e) => setFromUnit(e.target.value)}
-                            className="w-full rounded-lg border border-border bg-surface px-4 py-2.5 text-sm text-surface-foreground focus:outline-none focus:ring-2 focus:ring-brand-blue/30 focus:border-brand-blue transition-all"
-                        >
-                            {options.map((opt) => (
-                                <option key={opt.value} value={opt.value}>{opt.label}</option>
-                            ))}
-                        </select>
-                    </div>
+                        <div className="flex items-end gap-3">
+                            <div className="flex-1">
+                                <label htmlFor="from-unit" className="block text-sm font-medium text-surface-foreground mb-1.5">
+                                    From
+                                </label>
+                                <select
+                                    id="from-unit"
+                                    value={fromUnit}
+                                    onChange={(e) => setFromUnit(e.target.value)}
+                                    className="w-full rounded-lg border border-border bg-surface px-4 py-2.5 text-sm text-surface-foreground focus:outline-none focus:ring-2 focus:ring-brand-blue/30 focus:border-brand-blue transition-all"
+                                >
+                                    {options.map((opt) => (
+                                        <option key={opt.value} value={opt.value}>{opt.label}</option>
+                                    ))}
+                                </select>
+                            </div>
 
-                    <button
-                        type="button"
-                        onClick={handleSwap}
-                        className="w-10 h-10 rounded-lg border border-border bg-muted/30 flex items-center justify-center hover:bg-muted transition-colors focus-ring mb-0.5"
-                        aria-label="Swap units"
-                    >
-                        <svg
-                            xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24"
-                            fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"
-                            className="text-muted-foreground"
-                        >
-                            <path d="M8 3 4 7l4 4" />
-                            <path d="M4 7h16" />
-                            <path d="m16 21 4-4-4-4" />
-                            <path d="M20 17H4" />
-                        </svg>
-                    </button>
+                            <button
+                                type="button"
+                                onClick={handleSwap}
+                                className="w-10 h-10 rounded-lg border border-border bg-muted/30 flex items-center justify-center hover:bg-muted transition-colors focus-ring mb-0.5"
+                                aria-label="Swap units"
+                            >
+                                <svg
+                                    xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24"
+                                    fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"
+                                    className="text-muted-foreground"
+                                >
+                                    <path d="M8 3 4 7l4 4" />
+                                    <path d="M4 7h16" />
+                                    <path d="m16 21 4-4-4-4" />
+                                    <path d="M20 17H4" />
+                                </svg>
+                            </button>
 
-                    <div className="flex-1">
-                        <label htmlFor="to-unit" className="block text-sm font-medium text-surface-foreground mb-1.5">
-                            To
-                        </label>
-                        <select
-                            id="to-unit"
-                            value={toUnit}
-                            onChange={(e) => setToUnit(e.target.value)}
-                            className="w-full rounded-lg border border-border bg-surface px-4 py-2.5 text-sm text-surface-foreground focus:outline-none focus:ring-2 focus:ring-brand-blue/30 focus:border-brand-blue transition-all"
-                        >
-                            {options.map((opt) => (
-                                <option key={opt.value} value={opt.value}>{opt.label}</option>
-                            ))}
-                        </select>
-                    </div>
-                </div>
+                            <div className="flex-1">
+                                <label htmlFor="to-unit" className="block text-sm font-medium text-surface-foreground mb-1.5">
+                                    To
+                                </label>
+                                <select
+                                    id="to-unit"
+                                    value={toUnit}
+                                    onChange={(e) => setToUnit(e.target.value)}
+                                    className="w-full rounded-lg border border-border bg-surface px-4 py-2.5 text-sm text-surface-foreground focus:outline-none focus:ring-2 focus:ring-brand-blue/30 focus:border-brand-blue transition-all"
+                                >
+                                    {options.map((opt) => (
+                                        <option key={opt.value} value={opt.value}>{opt.label}</option>
+                                    ))}
+                                </select>
+                            </div>
+                        </div>
+                    </>
+                )}
 
                 {/* Result */}
                 {result !== null && (
@@ -222,15 +290,16 @@ export default function ConversionsCalculator() {
                             <span className="text-sm text-muted-foreground">Result</span>
                         </div>
                         <p className="text-2xl font-bold text-surface-foreground">
-                            {result < 0.01 && result > 0
-                                ? result.toExponential(4)
-                                : result.toLocaleString('en-GB', { maximumFractionDigits: 6 })}
-                            <span className="text-base font-normal text-muted-foreground ml-2">{toLabel}</span>
+                            {formatResult(result)}
+                            <span className="text-base font-normal text-muted-foreground ml-2">
+                                {isDensity ? 'tonnes' : toLabel}
+                            </span>
                         </p>
                         <p className="text-sm text-muted-foreground mt-1">
-                            {inputValue} {fromLabel} = {result < 0.01 && result > 0
-                                ? result.toExponential(4)
-                                : result.toLocaleString('en-GB', { maximumFractionDigits: 6 })} {toLabel}
+                            {isDensity
+                                ? `${inputValue} m³ of ${densityMaterial} ≈ ${formatResult(result)} tonnes`
+                                : `${inputValue} ${fromLabel} = ${formatResult(result)} ${toLabel}`
+                            }
                         </p>
                     </div>
                 )}

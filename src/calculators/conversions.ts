@@ -14,7 +14,7 @@ export type VolumeUnit = 'm3' | 'litres' | 'ft3' | 'yd3' | 'gallons_uk';
 export type TemperatureUnit = 'C' | 'F';
 
 /** Supported density materials. */
-export type DensityMaterial = 'concrete' | 'hardcore' | 'sand' | 'gravel' | 'ballast';
+export type DensityMaterial = 'concrete' | 'hardcore' | 'sand' | 'sharp_sand' | 'plastering_sand' | 'gravel' | 'gravel_10mm' | 'gravel_20mm' | 'ballast' | 'ballast_20mm';
 
 // ---------------------------------------------------------------------------
 // Conversion factors — each value converts 1 of that unit TO the base unit
@@ -66,8 +66,13 @@ export const DENSITY: Record<DensityMaterial, number> = {
     concrete: 2.4,
     hardcore: 2.1,
     sand: 1.6,
+    sharp_sand: 1.7,
+    plastering_sand: 1.5,
     gravel: 1.8,
+    gravel_10mm: 1.8,
+    gravel_20mm: 1.8,
     ballast: 1.8,
+    ballast_20mm: 1.8,
 };
 
 // ---------------------------------------------------------------------------
