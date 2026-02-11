@@ -22,12 +22,12 @@ describe('calculateGrout', () => {
     };
     const result = calculateGrout(input);
 
-    // Formula: ((300+300)/(300*300)) * 3 * 8 * 1.6 = 0.2560 kg/m²
-    // 10m² * 0.256 * 1.1 = 2.816 kg
-    expect(result.kgPerM2).toBeCloseTo(0.256, 2);
-    expect(result.kgNeeded).toBeCloseTo(2.816, 1);
-    expect(result.bags5kg).toBe(1);     // ceil(2.816/5)
-    expect(result.bags2_5kg).toBe(2);   // ceil(2.816/2.5)
+    // Formula: ((300+300)/(300*300)) * 3 * 8 * 2.0 = 0.32 kg/m²
+    // 10m² * 0.32 * 1.1 = 3.52 kg
+    expect(result.kgPerM2).toBeCloseTo(0.32, 2);
+    expect(result.kgNeeded).toBeCloseTo(3.52, 2);
+    expect(result.bags5kg).toBe(1);     // ceil(3.52/5)
+    expect(result.bags2_5kg).toBe(2);   // ceil(3.52/2.5)
   });
 
   it('calculates grout for large tiles with wide joints', () => {
@@ -41,11 +41,11 @@ describe('calculateGrout', () => {
     };
     const result = calculateGrout(input);
 
-    // ((600+600)/(600*600)) * 5 * 10 * 1.6 = 0.2667 kg/m²
-    // 20m² * 0.2667 * 1.1 = 5.867 kg
-    expect(result.kgNeeded).toBeCloseTo(5.867, 1);
-    expect(result.bags5kg).toBe(2);     // ceil(5.867/5)
-    expect(result.bags2_5kg).toBe(3);   // ceil(5.867/2.5)
+    // ((600+600)/(600*600)) * 5 * 10 * 2.0 = 0.3333 kg/m²
+    // 20m² * 0.3333 * 1.1 = 7.333 kg
+    expect(result.kgNeeded).toBeCloseTo(7.333, 3);
+    expect(result.bags5kg).toBe(2);     // ceil(7.33/5)
+    expect(result.bags2_5kg).toBe(3);   // ceil(7.33/2.5)
   });
 
   it('calculates grout for small mosaic tiles', () => {
@@ -59,9 +59,9 @@ describe('calculateGrout', () => {
     };
     const result = calculateGrout(input);
 
-    // ((50+50)/(50*50)) * 2 * 4 * 1.6 = 0.512 kg/m²
-    // 5m² * 0.512 * 1.1 = 2.816 kg
-    expect(result.kgNeeded).toBeCloseTo(2.816, 1);
+    // ((50+50)/(50*50)) * 2 * 4 * 2.0 = 0.64 kg/m²
+    // 5m² * 0.64 * 1.1 = 3.52 kg
+    expect(result.kgNeeded).toBeCloseTo(3.52, 2);
     expect(result.bags5kg).toBe(1);
     expect(result.bags2_5kg).toBe(2);
   });
@@ -77,11 +77,11 @@ describe('calculateGrout', () => {
     };
     const result = calculateGrout(input);
 
-    // ((600+300)/(600*300)) * 3 * 8 * 1.6 = 0.192 kg/m²
-    // 10m² * 0.192 * 1.0 = 1.92 kg
-    expect(result.kgNeeded).toBeCloseTo(1.92, 1);
-    expect(result.bags5kg).toBe(1);     // ceil(1.92/5)
-    expect(result.bags2_5kg).toBe(1);   // ceil(1.92/2.5)
+    // ((600+300)/(600*300)) * 3 * 8 * 2.0 = 0.24 kg/m²
+    // 10m² * 0.24 * 1.0 = 2.4 kg
+    expect(result.kgNeeded).toBeCloseTo(2.4, 2);
+    expect(result.bags5kg).toBe(1);     // ceil(2.4/5)
+    expect(result.bags2_5kg).toBe(1);   // ceil(2.4/2.5)
   });
 
   it('throws for zero area', () => {

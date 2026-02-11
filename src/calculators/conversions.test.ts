@@ -116,6 +116,9 @@ describe('convertWeight', () => {
   it('converts kilograms to tonnes', () => {
     expect(convertWeight(500, 'kg', 'tonnes')).toBeCloseTo(0.5, 3);
   });
+  it('converts stones to kilograms', () => {
+    expect(convertWeight(1, 'stones', 'kg')).toBeCloseTo(6.35, 2);
+  });
 });
 
 // ---------------------------------------------------------------------------
