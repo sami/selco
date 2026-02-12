@@ -4,8 +4,6 @@ import React from 'react';
 
 /** A single result line displayed in the results panel */
 export interface ResultItem {
-    /** Lucide SVG path string for the icon */
-    iconPath: string;
     label: string;
     value: string;
     /** Whether this is the primary/hero result */
@@ -24,8 +22,6 @@ export interface CalculatorLayoutProps {
     title: string;
     /** Short description of what this calculator does */
     description: string;
-    /** Lucide SVG path string for the title icon */
-    iconPath: string;
     /** Grouped form field sections */
     fieldGroups: FieldGroup[];
     /** Results to display (empty array = show empty state) */
@@ -147,24 +143,6 @@ export function FormSelect({ id, label, value, onChange, options }: FormSelectPr
 function ResultsEmptyState() {
     return (
         <div className="flex flex-col items-center justify-center text-center py-12 px-6">
-            <div className="w-14 h-14 rounded-2xl bg-[--color-muted] flex items-center justify-center mb-4">
-                <svg
-                    xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"
-                    fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"
-                    className="text-[--color-muted-foreground]"
-                >
-                    <rect width="16" height="20" x="4" y="2" rx="2" />
-                    <line x1="8" x2="16" y1="6" y2="6" />
-                    <line x1="16" x2="16" y1="14" y2="18" />
-                    <path d="M16 10h.01" />
-                    <path d="M12 10h.01" />
-                    <path d="M8 10h.01" />
-                    <path d="M12 14h.01" />
-                    <path d="M8 14h.01" />
-                    <path d="M12 18h.01" />
-                    <path d="M8 18h.01" />
-                </svg>
-            </div>
             <p className="font-medium text-[--color-surface-foreground] text-sm">
                 Enter your measurements to see results
             </p>
@@ -191,20 +169,9 @@ function ResultsPanel({ results }: { results: ResultItem[] }) {
             {secondary.length > 0 && (
                 <div className="space-y-3 border-t border-[--color-border] pt-4">
                     {secondary.map((item, i) => (
-                        <div key={i} className="flex items-center gap-3">
-                            <div className="w-8 h-8 rounded-lg bg-[--color-muted] flex items-center justify-center shrink-0">
-                                <svg
-                                    xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24"
-                                    fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"
-                                    className="text-[--color-muted-foreground]"
-                                >
-                                    <path d={item.iconPath} />
-                                </svg>
-                            </div>
-                            <div className="flex-1 min-w-0">
-                                <p className="text-xs text-[--color-muted-foreground]">{item.label}</p>
-                                <p className="text-sm font-semibold text-[--color-surface-foreground]">{item.value}</p>
-                            </div>
+                        <div key={i}>
+                            <p className="text-xs text-[--color-muted-foreground]">{item.label}</p>
+                            <p className="text-sm font-semibold text-[--color-surface-foreground]">{item.value}</p>
                         </div>
                     ))}
                 </div>
@@ -217,7 +184,6 @@ function ResultsPanel({ results }: { results: ResultItem[] }) {
 export default function CalculatorLayout({
     title,
     description,
-    iconPath,
     fieldGroups,
     results,
     hasResults,
@@ -228,21 +194,11 @@ export default function CalculatorLayout({
     return (
         <div className="space-y-8">
             {/* Page Header */}
-            <div className="flex items-center gap-3">
-                <div className="w-10 h-10 rounded-xl bg-[--color-brand-blue]/5 text-[--color-brand-blue] flex items-center justify-center">
-                    <svg
-                        xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24"
-                        fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"
-                    >
-                        <path d={iconPath} />
-                    </svg>
-                </div>
-                <div>
-                    <h1 className="text-xl md:text-2xl font-bold text-[--color-surface-foreground] tracking-tight">
-                        {title}
-                    </h1>
-                    <p className="text-sm text-[--color-muted-foreground]">{description}</p>
-                </div>
+            <div>
+                <h1 className="text-xl md:text-2xl font-bold text-[--color-surface-foreground] tracking-tight">
+                    {title}
+                </h1>
+                <p className="text-sm text-[--color-muted-foreground]">{description}</p>
             </div>
 
             {/* Two-column layout */}
@@ -330,14 +286,6 @@ export default function CalculatorLayout({
                     flex items-center justify-center gap-2
                   "
                                 >
-                                    <svg
-                                        xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24"
-                                        fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"
-                                    >
-                                        <path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z" />
-                                        <polyline points="17 21 17 13 7 13 7 21" />
-                                        <polyline points="7 3 7 8 15 8" />
-                                    </svg>
                                     Save to project (coming soon)
                                 </button>
                             </div>

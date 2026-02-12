@@ -467,41 +467,27 @@ export default function TilingWizard() {
                         <div className="grid md:grid-cols-2 gap-4">
                             {/* Tiles Card */}
                             <div className="bg-white rounded-2xl border border-border shadow-sm p-5">
-                                <div className="flex items-start gap-4">
-                                    <div className="w-10 h-10 rounded-lg bg-brand-blue/5 flex items-center justify-center shrink-0 text-brand-blue">
-                                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect width="18" height="18" x="3" y="3" rx="2" /><path d="M3 9h18" /><path d="M9 21V9" /></svg>
+                                <h3 className="font-semibold text-surface-foreground">Tiles</h3>
+                                <p className="text-2xl font-bold text-surface-foreground mt-1">{tileResult?.tilesNeeded} tiles</p>
+                                <p className="text-sm text-muted-foreground">
+                                    {tileWidth}×{tileHeight} mm • Area: {tileResult?.coverageArea.toFixed(2)} m²
+                                </p>
+                                {tileResult?.packsNeeded && (
+                                    <div className="mt-2 inline-flex items-center px-2.5 py-1 rounded-md bg-muted/40 text-xs font-medium text-muted-foreground">
+                                        {tileResult.packsNeeded} packs of {packSize}
                                     </div>
-                                    <div>
-                                        <h3 className="font-semibold text-surface-foreground">Tiles</h3>
-                                        <p className="text-2xl font-bold text-surface-foreground mt-1">{tileResult?.tilesNeeded} tiles</p>
-                                        <p className="text-sm text-muted-foreground">
-                                            {tileWidth}×{tileHeight} mm • Area: {tileResult?.coverageArea.toFixed(2)} m²
-                                        </p>
-                                        {tileResult?.packsNeeded && (
-                                            <div className="mt-2 inline-flex items-center px-2.5 py-1 rounded-md bg-muted/40 text-xs font-medium text-muted-foreground">
-                                                {tileResult.packsNeeded} packs of {packSize}
-                                            </div>
-                                        )}
-                                    </div>
-                                </div>
+                                )}
                             </div>
 
                             {/* Adhesive Card */}
                             <div className="bg-white rounded-2xl border border-border shadow-sm p-5">
-                                <div className="flex items-start gap-4">
-                                    <div className="w-10 h-10 rounded-lg bg-brand-blue/5 flex items-center justify-center shrink-0 text-brand-blue">
-                                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M10 2h4" /><path d="M12 14v-4" /><path d="M4 14a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2h-4l-4 4-4-4H4z" /></svg>
-                                    </div>
-                                    <div>
-                                        <h3 className="font-semibold text-surface-foreground">Adhesive</h3>
-                                        <p className="text-2xl font-bold text-surface-foreground mt-1">{adhesiveResult?.kgNeeded.toFixed(1)} kg</p>
-                                        <p className="text-sm text-muted-foreground mb-2">
-                                            {selectedProduct === 'dunlop-rx3000' ? 'Tub' : 'Bag'} size: {product.bagSize} kg
-                                        </p>
-                                        <div className="inline-flex items-center px-2.5 py-1 rounded-md bg-brand-yellow/20 text-brand-blue border border-brand-yellow/30 text-xs font-bold">
-                                            {adhesiveResult?.bagsNeeded} x {product.bagSize} kg {selectedProduct === 'dunlop-rx3000' ? 'tubs' : 'bags'}
-                                        </div>
-                                    </div>
+                                <h3 className="font-semibold text-surface-foreground">Adhesive</h3>
+                                <p className="text-2xl font-bold text-surface-foreground mt-1">{adhesiveResult?.kgNeeded.toFixed(1)} kg</p>
+                                <p className="text-sm text-muted-foreground mb-2">
+                                    {selectedProduct === 'dunlop-rx3000' ? 'Tub' : 'Bag'} size: {product.bagSize} kg
+                                </p>
+                                <div className="inline-flex items-center px-2.5 py-1 rounded-md bg-brand-yellow/20 text-brand-blue border border-brand-yellow/30 text-xs font-bold">
+                                    {adhesiveResult?.bagsNeeded} x {product.bagSize} kg {selectedProduct === 'dunlop-rx3000' ? 'tubs' : 'bags'}
                                 </div>
                             </div>
 

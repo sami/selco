@@ -128,25 +128,9 @@ export default function ConversionsCalculator() {
     return (
         <div className="space-y-6">
             {/* Header */}
-            <div className="space-y-1">
-                <div className="flex items-center gap-3">
-                    <div className="w-10 h-10 rounded-xl bg-brand-blue/10 flex items-center justify-center">
-                        <svg
-                            xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24"
-                            fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"
-                            className="text-brand-blue"
-                        >
-                            <path d="M8 3 4 7l4 4" />
-                            <path d="M4 7h16" />
-                            <path d="m16 21 4-4-4-4" />
-                            <path d="M20 17H4" />
-                        </svg>
-                    </div>
-                    <div>
-                        <h2 className="text-xl font-bold text-surface-foreground">Unit Converter</h2>
-                        <p className="text-sm text-muted-foreground">Convert between metric and imperial measurements.</p>
-                    </div>
-                </div>
+            <div>
+                <h2 className="text-xl font-bold text-surface-foreground">Unit Converter</h2>
+                <p className="text-sm text-muted-foreground">Convert between metric and imperial measurements.</p>
             </div>
 
             {/* Type tabs */}
@@ -242,19 +226,10 @@ export default function ConversionsCalculator() {
                             <button
                                 type="button"
                                 onClick={handleSwap}
-                                className="w-10 h-10 rounded-lg border border-border bg-muted/30 flex items-center justify-center hover:bg-muted transition-colors focus-ring mb-0.5"
+                                className="w-10 h-10 rounded-lg border border-border bg-muted/30 flex items-center justify-center hover:bg-muted transition-colors focus-ring mb-0.5 text-sm font-medium text-muted-foreground"
                                 aria-label="Swap units"
                             >
-                                <svg
-                                    xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24"
-                                    fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"
-                                    className="text-muted-foreground"
-                                >
-                                    <path d="M8 3 4 7l4 4" />
-                                    <path d="M4 7h16" />
-                                    <path d="m16 21 4-4-4-4" />
-                                    <path d="M20 17H4" />
-                                </svg>
+                                ⇄
                             </button>
 
                             <div className="flex-1">
@@ -279,18 +254,7 @@ export default function ConversionsCalculator() {
                 {/* Result */}
                 {result !== null && (
                     <div className="pt-3 border-t border-border">
-                        <div className="flex items-center gap-2 mb-2">
-                            <div className="w-8 h-8 rounded-lg bg-green-50 border border-green-200 flex items-center justify-center">
-                                <svg
-                                    xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24"
-                                    fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"
-                                    className="text-green-600"
-                                >
-                                    <polyline points="20 6 9 17 4 12" />
-                                </svg>
-                            </div>
-                            <span className="text-sm text-muted-foreground">Result</span>
-                        </div>
+                        <p className="text-sm text-muted-foreground mb-2">Result</p>
                         <p className="text-2xl font-bold text-surface-foreground">
                             {formatResult(result)}
                             <span className="text-base font-normal text-muted-foreground ml-2">

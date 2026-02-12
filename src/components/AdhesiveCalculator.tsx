@@ -51,19 +51,16 @@ export default function AdhesiveCalculator() {
 
             const items: ResultItem[] = [
                 {
-                    iconPath: 'M12 2.69l5.66 5.66a8 8 0 1 1-11.31 0z',
                     label: 'Adhesive needed',
                     value: `${result.kgNeeded.toFixed(1)} kg`,
                     primary: true,
                 },
                 {
-                    iconPath: 'M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z',
                     label: `Bags needed (${bagLabel})`,
                     value: `${result.bagsNeeded} bags`,
                     primary: true,
                 },
                 {
-                    iconPath: 'M2 20h20M5 20V8l7-5 7 5v12',
                     label: 'Coverage rate used',
                     value: `${effectiveRate} kg/m²${isUneven ? ' (incl. +20% uneven)' : ''}`,
                 },
@@ -180,7 +177,6 @@ export default function AdhesiveCalculator() {
         <CalculatorLayout
             title="Adhesive Calculator"
             description="Estimate how much tile adhesive you need for your project."
-            iconPath="M12 2.69l5.66 5.66a8 8 0 1 1-11.31 0z"
             fieldGroups={fieldGroups}
             results={results}
             hasResults={hasResults}
