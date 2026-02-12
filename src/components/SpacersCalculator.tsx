@@ -26,8 +26,31 @@ export default function SpacersCalculator() {
     const [wastage, setWastage] = useState('10');
     const [results, setResults] = useState<ResultItem[]>([]);
     const [hasResults, setHasResults] = useState(false);
+    const [error, setError] = useState<string | null>(null);
+
+    const validateInputs = () => {
+        const a = parseFloat(area);
+        const w = parseFloat(wastage);
+        const tw = parseFloat(tileWidth);
+        const th = parseFloat(tileHeight);
+
+        if (isNaN(a) || a <= 0) return 'Total area must be a valid number greater than 0.';
+        if (isNaN(tw) || tw <= 0) return 'Tile width must be a valid number greater than 0.';
+        if (isNaN(th) || th <= 0) return 'Tile height must be a valid number greater than 0.';
+        if (isNaN(w) || w < 0 || w > 100) return 'Wastage must be between 0 and 100%.';
+
+        return null;
+    };
 
     const handleCalculate = useCallback(() => {
+        setError(null);
+        const validationError = validateInputs();
+        if (validationError) {
+            setError(validationError);
+            setHasResults(false);
+            return;
+        }
+
         try {
             const result = calculateSpacers({
                 areaM2: parseFloat(area),
@@ -54,8 +77,9 @@ export default function SpacersCalculator() {
                 },
             ]);
             setHasResults(true);
-        } catch {
-            // Invalid input — do nothing
+        } catch (e) {
+            setError(e instanceof Error ? e.message : 'An unexpected error occurred.');
+            setHasResults(false);
         }
     }, [area, tileWidth, tileHeight, layout, wastage, spacerSize]);
 
@@ -68,6 +92,7 @@ export default function SpacersCalculator() {
         setWastage('10');
         setResults([]);
         setHasResults(false);
+        setError(null);
     }, []);
 
     const fieldGroups: FieldGroup[] = [
@@ -79,7 +104,7 @@ export default function SpacersCalculator() {
                     label="Total area"
                     unit="m²"
                     value={area}
-                    onChange={setArea}
+                    onChange={(v) => { setArea(v); setError(null); }}
                     placeholder="e.g. 12.5"
                     min={0.01}
                     step="0.01"
@@ -96,7 +121,7 @@ export default function SpacersCalculator() {
                         label="Tile width"
                         unit="mm"
                         value={tileWidth}
-                        onChange={setTileWidth}
+                        onChange={(v) => { setTileWidth(v); setError(null); }}
                         placeholder="e.g. 300"
                         min={1}
                         step={1}
@@ -107,7 +132,7 @@ export default function SpacersCalculator() {
                         label="Tile height"
                         unit="mm"
                         value={tileHeight}
-                        onChange={setTileHeight}
+                        onChange={(v) => { setTileHeight(v); setError(null); }}
                         placeholder="e.g. 300"
                         min={1}
                         step={1}
@@ -145,7 +170,7 @@ export default function SpacersCalculator() {
                     label="Wastage allowance"
                     unit="%"
                     value={wastage}
-                    onChange={setWastage}
+                    onChange={(v) => { setWastage(v); setError(null); }}
                     placeholder="e.g. 10"
                     min={0}
                     max={50}
@@ -164,6 +189,7 @@ export default function SpacersCalculator() {
             hasResults={hasResults}
             onCalculate={handleCalculate}
             onReset={handleReset}
+            error={error}
         />
     );
 }

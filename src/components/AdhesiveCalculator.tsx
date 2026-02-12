@@ -27,6 +27,7 @@ export default function AdhesiveCalculator() {
     const [wastage, setWastage] = useState('10');
     const [results, setResults] = useState<ResultItem[]>([]);
     const [hasResults, setHasResults] = useState(false);
+    const [error, setError] = useState<string | null>(null);
 
     const product = useMemo(
         () => ADHESIVE_PRODUCTS.find((p) => p.value === selectedProduct) ?? ADHESIVE_PRODUCTS[0],
@@ -35,7 +36,24 @@ export default function AdhesiveCalculator() {
 
     const coverageRate = applicationType === 'dry' ? product.dryWallRate : product.wetAreaRate;
 
+    const validateInputs = () => {
+        const a = parseFloat(area);
+        const w = parseFloat(wastage);
+
+        if (isNaN(a) || a <= 0) return 'Total area must be a valid number greater than 0.';
+        if (isNaN(w) || w < 0 || w > 100) return 'Wastage must be between 0 and 100%.';
+        return null;
+    };
+
     const handleCalculate = useCallback(() => {
+        setError(null);
+        const validationError = validateInputs();
+        if (validationError) {
+            setError(validationError);
+            setHasResults(false);
+            return;
+        }
+
         try {
             const result = calculateAdhesive({
                 area: parseFloat(area),
@@ -68,8 +86,9 @@ export default function AdhesiveCalculator() {
 
             setResults(items);
             setHasResults(true);
-        } catch {
-            // Invalid input — do nothing
+        } catch (e) {
+            setError(e instanceof Error ? e.message : 'An unexpected error occurred.');
+            setHasResults(false);
         }
     }, [area, coverageRate, product, substrate, wastage]);
 
@@ -81,6 +100,7 @@ export default function AdhesiveCalculator() {
         setWastage('10');
         setResults([]);
         setHasResults(false);
+        setError(null);
     }, []);
 
     const fieldGroups: FieldGroup[] = [
@@ -104,8 +124,8 @@ export default function AdhesiveCalculator() {
                                 aria-checked={applicationType === 'dry'}
                                 onClick={() => setApplicationType('dry')}
                                 className={`flex-1 px-4 py-2.5 rounded-lg text-sm font-medium transition-all duration-200 focus-ring ${applicationType === 'dry'
-                                        ? 'bg-brand-blue text-white shadow-sm'
-                                        : 'bg-muted/30 text-muted-foreground hover:bg-muted/50 border border-border'
+                                    ? 'bg-brand-blue text-white shadow-sm'
+                                    : 'bg-muted/30 text-muted-foreground hover:bg-muted/50 border border-border'
                                     }`}
                             >
                                 Dry Wall
@@ -116,8 +136,8 @@ export default function AdhesiveCalculator() {
                                 aria-checked={applicationType === 'wet'}
                                 onClick={() => setApplicationType('wet')}
                                 className={`flex-1 px-4 py-2.5 rounded-lg text-sm font-medium transition-all duration-200 focus-ring ${applicationType === 'wet'
-                                        ? 'bg-brand-blue text-white shadow-sm'
-                                        : 'bg-muted/30 text-muted-foreground hover:bg-muted/50 border border-border'
+                                    ? 'bg-brand-blue text-white shadow-sm'
+                                    : 'bg-muted/30 text-muted-foreground hover:bg-muted/50 border border-border'
                                     }`}
                             >
                                 Floor &amp; Wet Areas
@@ -138,7 +158,7 @@ export default function AdhesiveCalculator() {
                     label="Total area"
                     unit="m²"
                     value={area}
-                    onChange={setArea}
+                    onChange={(v) => { setArea(v); setError(null); }}
                     placeholder="e.g. 12.5"
                     min={0.01}
                     step="0.01"
@@ -162,7 +182,7 @@ export default function AdhesiveCalculator() {
                         label="Wastage allowance"
                         unit="%"
                         value={wastage}
-                        onChange={setWastage}
+                        onChange={(v) => { setWastage(v); setError(null); }}
                         placeholder="e.g. 10"
                         min={0}
                         max={50}
@@ -182,6 +202,7 @@ export default function AdhesiveCalculator() {
             hasResults={hasResults}
             onCalculate={handleCalculate}
             onReset={handleReset}
+            error={error}
         />
     );
 }

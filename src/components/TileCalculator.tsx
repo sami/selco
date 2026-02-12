@@ -27,6 +27,7 @@ export default function TileCalculator() {
     const [packSize, setPackSize] = useState('');
     const [results, setResults] = useState<ResultItem[]>([]);
     const [hasResults, setHasResults] = useState(false);
+    const [error, setError] = useState<string | null>(null);
 
     const isCustom = selectedSize === CUSTOM_VALUE;
 
@@ -37,9 +38,34 @@ export default function TileCalculator() {
             setTileWidth(w);
             setTileHeight(h);
         }
+        setError(null);
     }
 
+    const validateInputs = () => {
+        const w = parseFloat(roomWidth);
+        const h = parseFloat(roomHeight);
+        const tw = parseFloat(tileWidth);
+        const th = parseFloat(tileHeight);
+        const wa = parseFloat(wastage);
+
+        if (isNaN(w) || w <= 0) return 'Room width must be a valid number greater than 0.';
+        if (isNaN(h) || h <= 0) return 'Room height must be a valid number greater than 0.';
+        if (isNaN(tw) || tw <= 0) return 'Tile width must be a valid number greater than 0.';
+        if (isNaN(th) || th <= 0) return 'Tile height must be a valid number greater than 0.';
+        if (isNaN(wa) || wa < 0 || wa > 100) return 'Wastage must be between 0 and 100%.';
+
+        return null;
+    };
+
     const handleCalculate = useCallback(() => {
+        setError(null);
+        const validationError = validateInputs();
+        if (validationError) {
+            setError(validationError);
+            setHasResults(false);
+            return;
+        }
+
         try {
             const ps = parseFloat(packSize);
             const result = calculateTiles({
@@ -77,8 +103,9 @@ export default function TileCalculator() {
 
             setResults(items);
             setHasResults(true);
-        } catch {
-            // Invalid input — do nothing
+        } catch (e) {
+            setError(e instanceof Error ? e.message : 'An unexpected error occurred.');
+            setHasResults(false);
         }
     }, [roomWidth, roomHeight, tileWidth, tileHeight, wastage, packSize]);
 
@@ -92,6 +119,7 @@ export default function TileCalculator() {
         setPackSize('');
         setResults([]);
         setHasResults(false);
+        setError(null);
     }, []);
 
     const fieldGroups: FieldGroup[] = [
@@ -104,7 +132,7 @@ export default function TileCalculator() {
                         label="Width"
                         unit="metres"
                         value={roomWidth}
-                        onChange={setRoomWidth}
+                        onChange={(v) => { setRoomWidth(v); setError(null); }}
                         placeholder="e.g. 3.5"
                         min={0.01}
                         step="0.01"
@@ -115,7 +143,7 @@ export default function TileCalculator() {
                         label="Height / Length"
                         unit="metres"
                         value={roomHeight}
-                        onChange={setRoomHeight}
+                        onChange={(v) => { setRoomHeight(v); setError(null); }}
                         placeholder="e.g. 2.4"
                         min={0.01}
                         step="0.01"
@@ -142,7 +170,7 @@ export default function TileCalculator() {
                                 label="Tile width"
                                 unit="mm"
                                 value={tileWidth}
-                                onChange={setTileWidth}
+                                onChange={(v) => { setTileWidth(v); setError(null); }}
                                 placeholder="e.g. 300"
                                 min={1}
                                 step={1}
@@ -153,7 +181,7 @@ export default function TileCalculator() {
                                 label="Tile height"
                                 unit="mm"
                                 value={tileHeight}
-                                onChange={setTileHeight}
+                                onChange={(v) => { setTileHeight(v); setError(null); }}
                                 placeholder="e.g. 300"
                                 min={1}
                                 step={1}
@@ -173,7 +201,7 @@ export default function TileCalculator() {
                         label="Wastage allowance"
                         unit="%"
                         value={wastage}
-                        onChange={setWastage}
+                        onChange={(v) => { setWastage(v); setError(null); }}
                         placeholder="e.g. 10"
                         min={0}
                         max={50}
@@ -184,7 +212,7 @@ export default function TileCalculator() {
                         label="Pack size (optional)"
                         unit="tiles/pack"
                         value={packSize}
-                        onChange={setPackSize}
+                        onChange={(v) => { setPackSize(v); setError(null); }}
                         placeholder="e.g. 10"
                         min={1}
                         step={1}
@@ -203,6 +231,7 @@ export default function TileCalculator() {
             hasResults={hasResults}
             onCalculate={handleCalculate}
             onReset={handleReset}
+            error={error}
         />
     );
 }
