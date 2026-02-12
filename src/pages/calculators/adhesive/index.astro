@@ -2,8 +2,7 @@
 import BaseLayout from '../../../layouts/BaseLayout.astro';
 import AdhesiveCalculator from '../../../components/AdhesiveCalculator';
 
-const base = import.meta.env.BASE_URL.replace(/\/$/, '') + '/';
-const canonical = 'https://sami.github.io/selco/calculators/adhesive/';
+const base = import.meta.env.BASE_URL.endsWith('/') ? import.meta.env.BASE_URL : `${import.meta.env.BASE_URL}/`;
 
 const faqs = [
   {
@@ -27,6 +26,18 @@ const faqs = [
     answer: 'Some adhesives are rated for both walls and floors. Check the product label. Floor adhesive must be rated for compressive loads. Using a wall-only adhesive on a floor can lead to tile cracking and debonding.',
   },
 ];
+
+const site = 'https://sami.github.io/selco/';
+
+const breadcrumbJsonLd = {
+  '@context': 'https://schema.org',
+  '@type': 'BreadcrumbList',
+  itemListElement: [
+    { '@type': 'ListItem', position: 1, name: 'Home', item: site },
+    { '@type': 'ListItem', position: 2, name: 'Calculators', item: `${site}calculators/` },
+    { '@type': 'ListItem', position: 3, name: 'Adhesive', item: `${site}calculators/adhesive/` },
+  ],
+};
 
 const faqJsonLd = {
   '@context': 'https://schema.org',
@@ -52,9 +63,8 @@ const relatedCalculators = [
 <BaseLayout
   title="Tile Adhesive Calculator | How Much Adhesive Do I Need?"
   description="Free tile adhesive calculator. Enter your tiling area, tile size and substrate type to estimate how many kg and bags of adhesive you need. Covers standard, flexible and rapid-set adhesives."
-  canonicalUrl={canonical}
 >
-  <!-- JSON-LD structured data -->
+  <script type="application/ld+json" set:html={JSON.stringify(breadcrumbJsonLd)} />
   <script type="application/ld+json" set:html={JSON.stringify(faqJsonLd)} />
 
   <div class="container mx-auto px-4 pt-6 md:pt-10 pb-16">
@@ -118,10 +128,10 @@ const relatedCalculators = [
         <table class="w-full text-sm">
           <thead>
             <tr class="bg-muted/30 text-left text-muted-foreground">
-              <th class="px-4 py-3 font-medium">Tile Size (largest dimension)</th>
-              <th class="px-4 py-3 font-medium">Recommended Trowel</th>
-              <th class="px-4 py-3 font-medium">Bed Thickness</th>
-              <th class="px-4 py-3 font-medium">Approx. Coverage</th>
+              <th scope="col" class="px-4 py-3 font-medium">Tile Size (largest dimension)</th>
+              <th scope="col" class="px-4 py-3 font-medium">Recommended Trowel</th>
+              <th scope="col" class="px-4 py-3 font-medium">Bed Thickness</th>
+              <th scope="col" class="px-4 py-3 font-medium">Approx. Coverage</th>
             </tr>
           </thead>
           <tbody class="text-surface-foreground">
@@ -144,11 +154,11 @@ const relatedCalculators = [
         <table class="w-full text-sm">
           <thead>
             <tr class="bg-muted/30 text-left text-muted-foreground">
-              <th class="px-4 py-3 font-medium">Product</th>
-              <th class="px-4 py-3 font-medium">Size</th>
-              <th class="px-4 py-3 font-medium">Dry Walls (kg/m²)</th>
-              <th class="px-4 py-3 font-medium">Floors & Wet Areas (kg/m²)</th>
-              <th class="px-4 py-3 font-medium">Coverage per unit (dry / wet)</th>
+              <th scope="col" class="px-4 py-3 font-medium">Product</th>
+              <th scope="col" class="px-4 py-3 font-medium">Size</th>
+              <th scope="col" class="px-4 py-3 font-medium">Dry Walls (kg/m²)</th>
+              <th scope="col" class="px-4 py-3 font-medium">Floors & Wet Areas (kg/m²)</th>
+              <th scope="col" class="px-4 py-3 font-medium">Coverage per unit (dry / wet)</th>
             </tr>
           </thead>
           <tbody class="text-surface-foreground">

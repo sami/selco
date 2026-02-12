@@ -4,7 +4,7 @@ import BaseLayout from '../layouts/BaseLayout.astro';
 const jsonLd = {
   "@context": "https://schema.org",
   "@type": "WebApplication",
-  "name": "SELCO Calculator",
+  "name": "Trade Materials Calculator",
   "url": Astro.url.href,
   "description": "Free trade tools to calculate material quantities for building projects. Accurate estimates for tiles, adhesive, grout, spacers, and more.",
   "applicationCategory": "BusinessApplication",
@@ -78,6 +78,7 @@ const calculators = [
             <path d="m21 21-4.3-4.3" />
           </svg>
         </div>
+        <label for="calculator-search" class="sr-only">Search calculators</label>
         <input
           type="text"
           placeholder="Search calculators..."

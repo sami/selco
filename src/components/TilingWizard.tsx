@@ -305,10 +305,12 @@ export default function TilingWizard() {
                         />
 
                         <div className="space-y-1.5">
-                            <label className="block text-sm font-medium text-surface-foreground">Application type</label>
-                            <div className="grid grid-cols-2 gap-2">
+                            <label className="block text-sm font-medium text-surface-foreground" id="wizard-app-type-label">Application type</label>
+                            <div className="grid grid-cols-2 gap-2" role="radiogroup" aria-labelledby="wizard-app-type-label">
                                 <button
                                     type="button"
+                                    role="radio"
+                                    aria-checked={applicationType === 'dry'}
                                     onClick={() => setApplicationType('dry')}
                                     className={`h-11 rounded-[--radius-input] text-sm font-medium border transition-all focus-ring ${applicationType === 'dry'
                                         ? 'bg-brand-blue/5 border-brand-blue text-brand-blue'
@@ -319,6 +321,8 @@ export default function TilingWizard() {
                                 </button>
                                 <button
                                     type="button"
+                                    role="radio"
+                                    aria-checked={applicationType === 'wet'}
                                     onClick={() => setApplicationType('wet')}
                                     className={`h-11 rounded-[--radius-input] text-sm font-medium border transition-all focus-ring ${applicationType === 'wet'
                                         ? 'bg-brand-blue/5 border-brand-blue text-brand-blue'
@@ -361,7 +365,7 @@ export default function TilingWizard() {
                         <h2 className="text-xl font-bold text-surface-foreground">How Much Grout Do You Need?</h2>
                         <div className="space-y-3 text-sm text-muted-foreground leading-relaxed">
                             <p>Fills the joints between tiles, preventing water ingress and giving a finished look. <strong>2 mm joints</strong> offer a minimal, modern look for rectified tiles. <strong>5 mm joints</strong> are standard for floors to accommodate slight size variations.</p>
-                            <p><strong>Coverage formula:</strong> Based on tile dimensions, joint width, tile thickness, and grout specific gravity (SG 1.6 industry standard).</p>
+                            <p><strong>Coverage formula:</strong> Based on tile dimensions, joint width, tile thickness, and grout specific gravity (SG 2.0, covering denser/flexible grouts).</p>
                         </div>
                     </section>
 
@@ -547,8 +551,8 @@ export default function TilingWizard() {
                             <table className="w-full text-sm text-left">
                                 <thead className="bg-muted/40 text-muted-foreground font-medium">
                                     <tr>
-                                        <th className="px-5 py-3">Item</th>
-                                        <th className="px-5 py-3">Why you might need it</th>
+                                        <th scope="col" className="px-5 py-3">Item</th>
+                                        <th scope="col" className="px-5 py-3">Why you might need it</th>
                                     </tr>
                                 </thead>
                                 <tbody className="divide-y divide-border/50 bg-white">

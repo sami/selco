@@ -150,7 +150,31 @@ describe('calculateAdhesive', () => {
       wastage: 10,
     };
 
-    expect(() => calculateAdhesive(input)).toThrow();
+    expect(() => calculateAdhesive(input)).toThrow('Coverage rate must be greater than zero.');
+  });
+
+  it('throws for negative wastage', () => {
+    const input: AdhesiveInput = {
+      area: 10,
+      coverageRate: 2,
+      bagSize: 20,
+      substrate: 'even',
+      wastage: -5,
+    };
+
+    expect(() => calculateAdhesive(input)).toThrow('Wastage must be between 0 and 100.');
+  });
+
+  it('throws for wastage over 100', () => {
+    const input: AdhesiveInput = {
+      area: 10,
+      coverageRate: 2,
+      bagSize: 20,
+      substrate: 'even',
+      wastage: 200,
+    };
+
+    expect(() => calculateAdhesive(input)).toThrow('Wastage must be between 0 and 100.');
   });
 });
 

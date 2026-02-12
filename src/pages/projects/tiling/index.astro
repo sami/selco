@@ -2,8 +2,7 @@
 import BaseLayout from '../../../layouts/BaseLayout.astro';
 import TilingWizard from '../../../components/TilingWizard';
 
-const base = import.meta.env.BASE_URL.replace(/\/$/, '') + '/';
-const canonical = 'https://sami.github.io/selco/projects/tiling/';
+const base = import.meta.env.BASE_URL.endsWith('/') ? import.meta.env.BASE_URL : `${import.meta.env.BASE_URL}/`;
 
 const faqs = [
   {
@@ -27,6 +26,18 @@ const faqs = [
     answer: 'Yes, in most cases. Priming ensures the adhesive bonds properly to the substrate. It is especially important on dusty, porous, or painted surfaces. Both Dunlop and Mapei recommend priming plasterboard before tiling.',
   },
 ];
+
+const site = 'https://sami.github.io/selco/';
+
+const breadcrumbJsonLd = {
+  '@context': 'https://schema.org',
+  '@type': 'BreadcrumbList',
+  itemListElement: [
+    { '@type': 'ListItem', position: 1, name: 'Home', item: site },
+    { '@type': 'ListItem', position: 2, name: 'Projects', item: `${site}projects/` },
+    { '@type': 'ListItem', position: 3, name: 'Tiling', item: `${site}projects/tiling/` },
+  ],
+};
 
 const faqJsonLd = {
   '@context': 'https://schema.org',
@@ -55,11 +66,10 @@ const howToJsonLd = {
 ---
 
 <BaseLayout
-  title="Tiling Calculator | Everything You Need for a Tiling Project | SELCO Calculator"
+  title="Tiling Calculator | Everything You Need for a Tiling Project | Trade Materials Calculator"
   description="Free tiling project calculator. Work out how many tiles, how much adhesive, grout, and spacers you need in one go. Includes wastage, pack sizes, and a full materials list."
-  canonicalUrl={canonical}
 >
-  <!-- JSON-LD structured data -->
+  <script type="application/ld+json" set:html={JSON.stringify(breadcrumbJsonLd)} />
   <script type="application/ld+json" set:html={JSON.stringify(faqJsonLd)} />
   <script type="application/ld+json" set:html={JSON.stringify(howToJsonLd)} />
 

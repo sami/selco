@@ -150,10 +150,12 @@ export default function ConversionsCalculator() {
             </div>
 
             {/* Type tabs */}
-            <div className="flex flex-wrap gap-2 md:gap-4">
+            <div className="flex flex-wrap gap-2 md:gap-4" role="tablist" aria-label="Conversion type">
                 {tabs.map((tab) => (
                     <button
                         key={tab.key}
+                        role="tab"
+                        aria-selected={conversionType === tab.key}
                         onClick={() => handleTypeChange(tab)}
                         className={`px-4 py-2 rounded-full text-sm font-medium transition-all duration-200 focus-ring ${conversionType === tab.key
                             ? 'bg-brand-blue/10 text-brand-blue font-semibold'

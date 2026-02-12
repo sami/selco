@@ -112,7 +112,31 @@ describe('calculateTiles', () => {
       wastage: 10,
     };
 
-    expect(() => calculateTiles(input)).toThrow();
+    expect(() => calculateTiles(input)).toThrow('Area dimensions must be greater than zero.');
+  });
+
+  it('throws for negative wastage', () => {
+    const input: TileInput = {
+      areaWidth: 3,
+      areaHeight: 2,
+      tileWidth: 300,
+      tileHeight: 300,
+      wastage: -10,
+    };
+
+    expect(() => calculateTiles(input)).toThrow('Wastage must be between 0 and 100.');
+  });
+
+  it('throws for wastage over 100', () => {
+    const input: TileInput = {
+      areaWidth: 3,
+      areaHeight: 2,
+      tileWidth: 300,
+      tileHeight: 300,
+      wastage: 150,
+    };
+
+    expect(() => calculateTiles(input)).toThrow('Wastage must be between 0 and 100.');
   });
 
   // --- Phase 3: packSize support ---

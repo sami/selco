@@ -118,7 +118,31 @@ describe('calculateSpacers', () => {
       wastage: 10,
     };
 
-    expect(() => calculateSpacers(input)).toThrow();
+    expect(() => calculateSpacers(input)).toThrow('Tile dimensions must be greater than zero.');
+  });
+
+  it('throws for negative wastage', () => {
+    const input: SpacersInput = {
+      areaM2: 10,
+      tileWidthMm: 300,
+      tileHeightMm: 300,
+      layout: 'cross',
+      wastage: -10,
+    };
+
+    expect(() => calculateSpacers(input)).toThrow('Wastage must be between 0 and 100.');
+  });
+
+  it('throws for wastage over 100', () => {
+    const input: SpacersInput = {
+      areaM2: 10,
+      tileWidthMm: 300,
+      tileHeightMm: 300,
+      layout: 'cross',
+      wastage: 150,
+    };
+
+    expect(() => calculateSpacers(input)).toThrow('Wastage must be between 0 and 100.');
   });
 });
 

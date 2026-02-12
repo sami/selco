@@ -12,9 +12,9 @@ export const COMMON_JOINT_WIDTHS = [
  * Calculate the amount of grout needed for a tiling project.
  *
  * Uses the industry-standard formula:
- *   kgPerM2 = ((tileWidth + tileHeight) / (tileWidth * tileHeight)) * jointWidth * tileDepth * 1.6
+ *   kgPerM2 = ((tileWidth + tileHeight) / (tileWidth * tileHeight)) * jointWidth * tileDepth * 2.0
  *
- * Where 1.6 is the grout density constant (kg/L).
+ * Where 2.0 is the grout density constant (kg/L), covering denser/flexible grouts.
  *
  * @param input - Tile dimensions, joint size, area, and wastage.
  * @returns Kg needed, bag counts (5 kg and 2.5 kg), and kg per m² rate.
@@ -31,6 +31,9 @@ export function calculateGrout(input: GroutInput): GroutResult {
     }
     if (jointWidth <= 0 || tileDepth <= 0) {
         throw new Error('Joint width and tile depth must be greater than zero.');
+    }
+    if (wastage < 0 || wastage > 100) {
+        throw new Error('Wastage must be between 0 and 100.');
     }
 
     const kgPerM2 =

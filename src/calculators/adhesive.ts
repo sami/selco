@@ -28,6 +28,9 @@ export function calculateAdhesive(input: AdhesiveInput): AdhesiveResult {
     if (coverageRate <= 0) {
         throw new Error('Coverage rate must be greater than zero.');
     }
+    if (wastage < 0 || wastage > 100) {
+        throw new Error('Wastage must be between 0 and 100.');
+    }
 
     const substrateMultiplier = substrate === 'uneven' ? 1.2 : 1;
     const kgNeeded = area * coverageRate * substrateMultiplier * (1 + wastage / 100);
