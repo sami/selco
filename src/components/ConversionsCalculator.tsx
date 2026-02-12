@@ -252,7 +252,7 @@ export default function ConversionsCalculator() {
                 )}
 
                 {/* Result */}
-                {result !== null && (
+                {result !== null ? (
                     <div className="pt-3 border-t border-border">
                         <p className="text-sm text-muted-foreground mb-2">Result</p>
                         <p className="text-2xl font-bold text-surface-foreground">
@@ -267,6 +267,10 @@ export default function ConversionsCalculator() {
                                 : `${inputValue} ${fromLabel} = ${formatResult(result)} ${toLabel}`
                             }
                         </p>
+                    </div>
+                ) : inputValue && (
+                    <div className="pt-3 border-t border-border">
+                        <p className="text-sm text-[--color-destructive]">Please enter a valid number.</p>
                     </div>
                 )}
             </div>

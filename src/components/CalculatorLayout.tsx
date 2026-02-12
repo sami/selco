@@ -34,8 +34,11 @@ export interface CalculatorLayoutProps {
     onReset: () => void;
     /** Whether calculation is in progress */
     isCalculating?: boolean;
+    /** Optional error message to display */
+    error?: string | null;
 }
 
+/* ─── Sub-components ─── */
 /* ─── Sub-components ─── */
 
 /** Reusable form input with label and optional unit suffix */
@@ -139,15 +142,26 @@ export function FormSelect({ id, label, value, onChange, options }: FormSelectPr
     );
 }
 
+/* ─── Error Alert ─── */
+function ErrorAlert({ message }: { message: string }) {
+    return (
+        <div className="p-4 rounded-[--radius-card] bg-[--color-destructive]/10 border border-[--color-destructive]/20 text-[--color-destructive] text-sm font-medium flex items-start gap-3">
+            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="shrink-0"><circle cx="12" cy="12" r="10" /><line x1="12" x2="12" y1="8" y2="12" /><line x1="12" x2="12.01" y1="16" y2="16" /></svg>
+            <span>{message}</span>
+        </div>
+    );
+}
+
 /* ─── Empty state for results panel ─── */
 function ResultsEmptyState() {
     return (
-        <div className="flex flex-col items-center justify-center text-center py-12 px-6">
-            <p className="font-medium text-[--color-surface-foreground] text-sm">
-                Enter your measurements to see results
-            </p>
-            <p className="text-xs text-[--color-muted-foreground] mt-1">
-                Fill in the form and hit Calculate.
+        <div className="text-center py-12 px-4">
+            <div className="inline-flex items-center justify-center w-12 h-12 rounded-full bg-[--color-muted] mb-4 text-[--color-muted-foreground]">
+                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z" /><polyline points="3.27 6.96 12 12.01 20.73 6.96" /><line x1="12" y1="22.08" x2="12" y2="12" /></svg>
+            </div>
+            <h3 className="text-sm font-medium text-[--color-surface-foreground] mb-1">No results yet</h3>
+            <p className="text-sm text-[--color-muted-foreground]">
+                Enter your measurements and click calculate to see the results.
             </p>
         </div>
     );
@@ -155,27 +169,27 @@ function ResultsEmptyState() {
 
 /* ─── Results panel with items ─── */
 function ResultsPanel({ results }: { results: ResultItem[] }) {
-    const primary = results.find((r) => r.primary);
-    const secondary = results.filter((r) => !r.primary);
-
     return (
-        <div className="space-y-5">
-            {primary && (
-                <div className="text-center py-4">
-                    <p className="text-3xl font-bold text-[--color-surface-foreground]">{primary.value}</p>
-                    <p className="text-sm text-[--color-muted-foreground] mt-1">{primary.label}</p>
+        <div className="space-y-4">
+            {results.map((item, index) => (
+                <div
+                    key={index}
+                    className={`
+            p-4 rounded-lg flex items-center justify-between
+            ${item.primary
+                            ? 'bg-[--color-brand-blue]/5 border border-[--color-brand-blue]/10'
+                            : 'bg-transparent border-b border-[--color-border] last:border-0'
+                        }
+          `}
+                >
+                    <span className={`text-sm ${item.primary ? 'font-medium text-[--color-brand-blue]' : 'text-[--color-muted-foreground]'}`}>
+                        {item.label}
+                    </span>
+                    <span className={`font-bold ${item.primary ? 'text-lg text-[--color-brand-blue]' : 'text-[--color-surface-foreground]'}`}>
+                        {item.value}
+                    </span>
                 </div>
-            )}
-            {secondary.length > 0 && (
-                <div className="space-y-3 border-t border-[--color-border] pt-4">
-                    {secondary.map((item, i) => (
-                        <div key={i}>
-                            <p className="text-xs text-[--color-muted-foreground]">{item.label}</p>
-                            <p className="text-sm font-semibold text-[--color-surface-foreground]">{item.value}</p>
-                        </div>
-                    ))}
-                </div>
-            )}
+            ))}
         </div>
     );
 }
@@ -190,10 +204,11 @@ export default function CalculatorLayout({
     onCalculate,
     onReset,
     isCalculating = false,
+    error,
 }: CalculatorLayoutProps) {
     return (
         <div className="space-y-8">
-            {/* Page Header */}
+            {/* ... Page Header ... */}
             <div>
                 <h1 className="text-xl md:text-2xl font-bold text-[--color-surface-foreground] tracking-tight">
                     {title}
@@ -205,6 +220,8 @@ export default function CalculatorLayout({
             <div className="grid lg:grid-cols-5 gap-6 lg:gap-8 items-start">
                 {/* Left — Input Form */}
                 <div className="lg:col-span-3 space-y-6">
+                    {error && <ErrorAlert message={error} />}
+
                     <form
                         onSubmit={(e) => {
                             e.preventDefault();
@@ -242,7 +259,7 @@ export default function CalculatorLayout({
                         </button>
 
                         {/* Reset link */}
-                        {hasResults && (
+                        {(hasResults || error) && (
                             <button
                                 type="button"
                                 onClick={onReset}
