@@ -39,19 +39,16 @@ export default function SpacersCalculator() {
 
             setResults([
                 {
-                    iconPath: 'M21.3 15.3a2.4 2.4 0 0 1 0 3.4l-2.6 2.6a2.4 2.4 0 0 1-3.4 0L2.7 8.7a2.41 2.41 0 0 1 0-3.4l2.6-2.6a2.41 2.41 0 0 1 3.4 0Z',
                     label: 'Spacers needed',
                     value: `${result.spacersNeeded} × ${spacerSize} mm spacers`,
                     primary: true,
                 },
                 {
-                    iconPath: 'M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z',
                     label: 'Packs of 100',
                     value: `${result.packs100} packs`,
                     primary: true,
                 },
                 {
-                    iconPath: 'M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z',
                     label: 'Packs of 250',
                     value: `${result.packs250} packs`,
                 },
@@ -162,7 +159,6 @@ export default function SpacersCalculator() {
         <CalculatorLayout
             title="Spacers Calculator"
             description="Calculate how many tile spacers you need for your project."
-            iconPath="M21.3 15.3a2.4 2.4 0 0 1 0 3.4l-2.6 2.6a2.4 2.4 0 0 1-3.4 0L2.7 8.7a2.41 2.41 0 0 1 0-3.4l2.6-2.6a2.41 2.41 0 0 1 3.4 0Z"
             fieldGroups={fieldGroups}
             results={results}
             hasResults={hasResults}

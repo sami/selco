@@ -53,18 +53,15 @@ export default function TileCalculator() {
 
             const items: ResultItem[] = [
                 {
-                    iconPath: 'M3 3h7v7H3zM14 3h7v7h-7zM3 14h7v7H3zM14 14h7v7h-7z',
                     label: 'Tiles needed',
                     value: `${result.tilesNeeded} tiles`,
                     primary: true,
                 },
                 {
-                    iconPath: 'M3 3h18v18H3z',
                     label: 'Coverage area',
                     value: `${result.coverageArea.toFixed(2)} m²`,
                 },
                 {
-                    iconPath: 'M12 2v20M2 12h20',
                     label: `Extra for wastage (${wastage}%)`,
                     value: `${result.wastageAmount} tiles`,
                 },
@@ -72,7 +69,6 @@ export default function TileCalculator() {
 
             if (result.packsNeeded !== undefined) {
                 items.push({
-                    iconPath: 'M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z',
                     label: `Packs needed (${packSize} per pack)`,
                     value: `${result.packsNeeded} packs`,
                     primary: true,
@@ -202,7 +198,6 @@ export default function TileCalculator() {
         <CalculatorLayout
             title="Tile Calculator"
             description="Work out how many tiles you need for your wall or floor."
-            iconPath="M3 3h7v7H3zM14 3h7v7h-7zM3 14h7v7H3zM14 14h7v7h-7z"
             fieldGroups={fieldGroups}
             results={results}
             hasResults={hasResults}

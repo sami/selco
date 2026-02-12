@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { createPortal } from 'react-dom';
-import { Menu, X, Home, Calculator, FolderKanban } from 'lucide-react';
+import { Menu, X } from 'lucide-react';
 
 interface MobileMenuProps {
     currentPath: string;
@@ -23,9 +23,9 @@ export default function MobileMenu({ currentPath, baseUrl }: MobileMenuProps) {
     }, [isOpen]);
 
     const navLinks = [
-        { href: baseUrl, label: 'Home', icon: Home },
-        { href: `${baseUrl}/projects`, label: 'Projects', icon: FolderKanban },
-        { href: `${baseUrl}/calculators`, label: 'Calculators', icon: Calculator },
+        { href: baseUrl, label: 'Home' },
+        { href: `${baseUrl}/projects`, label: 'Projects' },
+        { href: `${baseUrl}/calculators`, label: 'Calculators' },
     ];
 
     const normalize = (path: string) => path.endsWith('/') ? path.slice(0, -1) : path;
@@ -74,19 +74,19 @@ export default function MobileMenu({ currentPath, baseUrl }: MobileMenuProps) {
                                 {navLinks.map((link) => {
                                     const linkHref = normalize(link.href);
                                     const isActive = current === linkHref || (link.href !== baseUrl && current.startsWith(linkHref));
-                                    const Icon = link.icon;
+
 
                                     return (
                                         <a
                                             key={link.href}
                                             href={link.href}
                                             className={`flex items-center gap-3 px-4 py-3 rounded-lg font-medium transition-all ${isActive
-                                                    ? 'bg-brand-blue/5 text-brand-blue'
-                                                    : 'text-muted-foreground hover:bg-muted hover:text-foreground'
+                                                ? 'bg-brand-blue/5 text-brand-blue'
+                                                : 'text-muted-foreground hover:bg-muted hover:text-foreground'
                                                 }`}
                                             onClick={() => setIsOpen(false)}
                                         >
-                                            <Icon className={`w-5 h-5 ${isActive ? 'text-brand-blue' : 'text-muted-foreground'}`} />
+
                                             {link.label}
                                             {isActive && (
                                                 <span className="ml-auto w-1.5 h-1.5 rounded-full bg-brand-yellow" />
