@@ -191,12 +191,17 @@ describe('convertTemperature', () => {
 // ---------------------------------------------------------------------------
 
 describe('DENSITY', () => {
-  it('exports density constants for common materials', () => {
+  it('exports density constants for all materials', () => {
     expect(DENSITY.concrete).toBe(2.4);
     expect(DENSITY.hardcore).toBe(2.1);
     expect(DENSITY.sand).toBe(1.6);
+    expect(DENSITY.sharp_sand).toBe(1.7);
+    expect(DENSITY.plastering_sand).toBe(1.5);
     expect(DENSITY.gravel).toBe(1.8);
+    expect(DENSITY.gravel_10mm).toBe(1.8);
+    expect(DENSITY.gravel_20mm).toBe(1.8);
     expect(DENSITY.ballast).toBe(1.8);
+    expect(DENSITY.ballast_20mm).toBe(1.8);
   });
 });
 
@@ -219,6 +224,26 @@ describe('convertDensityToWeight', () => {
 
   it('handles zero volume', () => {
     expect(convertDensityToWeight(0, 'concrete')).toBe(0);
+  });
+
+  it('converts 1 m\u00B3 of sharp sand to tonnes', () => {
+    expect(convertDensityToWeight(1, 'sharp_sand')).toBeCloseTo(1.7, 3);
+  });
+
+  it('converts 1 m\u00B3 of plastering sand to tonnes', () => {
+    expect(convertDensityToWeight(1, 'plastering_sand')).toBeCloseTo(1.5, 3);
+  });
+
+  it('converts 1 m\u00B3 of gravel 10mm to tonnes', () => {
+    expect(convertDensityToWeight(1, 'gravel_10mm')).toBeCloseTo(1.8, 3);
+  });
+
+  it('converts 1 m\u00B3 of gravel 20mm to tonnes', () => {
+    expect(convertDensityToWeight(1, 'gravel_20mm')).toBeCloseTo(1.8, 3);
+  });
+
+  it('converts 1 m\u00B3 of ballast 20mm to tonnes', () => {
+    expect(convertDensityToWeight(1, 'ballast_20mm')).toBeCloseTo(1.8, 3);
   });
 });
 

@@ -28,6 +28,9 @@ export function calculateSpacers(input: SpacersInput): SpacersResult {
     if (tileWidthMm <= 0 || tileHeightMm <= 0) {
         throw new Error('Tile dimensions must be greater than zero.');
     }
+    if (wastage < 0 || wastage > 100) {
+        throw new Error('Wastage must be between 0 and 100.');
+    }
 
     const tileSizeM2 = (tileWidthMm / 1000) * (tileHeightMm / 1000);
     const tiles = Math.ceil(areaM2 / tileSizeM2);

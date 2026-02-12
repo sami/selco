@@ -99,10 +99,12 @@ export default function AdhesiveCalculator() {
                         options={productOptions}
                     />
                     <div>
-                        <label className="block text-sm font-medium text-surface-foreground mb-2">Application type</label>
-                        <div className="flex gap-2">
+                        <label className="block text-sm font-medium text-surface-foreground mb-2" id="app-type-label">Application type</label>
+                        <div className="flex gap-2" role="radiogroup" aria-labelledby="app-type-label">
                             <button
                                 type="button"
+                                role="radio"
+                                aria-checked={applicationType === 'dry'}
                                 onClick={() => setApplicationType('dry')}
                                 className={`flex-1 px-4 py-2.5 rounded-lg text-sm font-medium transition-all duration-200 focus-ring ${applicationType === 'dry'
                                         ? 'bg-brand-blue text-white shadow-sm'
@@ -113,6 +115,8 @@ export default function AdhesiveCalculator() {
                             </button>
                             <button
                                 type="button"
+                                role="radio"
+                                aria-checked={applicationType === 'wet'}
                                 onClick={() => setApplicationType('wet')}
                                 className={`flex-1 px-4 py-2.5 rounded-lg text-sm font-medium transition-all duration-200 focus-ring ${applicationType === 'wet'
                                         ? 'bg-brand-blue text-white shadow-sm'

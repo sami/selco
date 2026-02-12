@@ -44,6 +44,9 @@ export function calculateTiles(input: TileInput): TileResult {
     if (tileWidth <= 0 || tileHeight <= 0) {
         throw new Error('Tile dimensions must be greater than zero.');
     }
+    if (wastage < 0 || wastage > 100) {
+        throw new Error('Wastage must be between 0 and 100.');
+    }
 
     const coverageArea = areaWidth * areaHeight;
     const tileSizeM2 = (tileWidth / 1000) * (tileHeight / 1000);

@@ -2,8 +2,7 @@
 import BaseLayout from '../../../layouts/BaseLayout.astro';
 import ConversionsCalculator from '../../../components/ConversionsCalculator';
 
-const base = import.meta.env.BASE_URL.replace(/\/$/, '') + '/';
-const canonical = 'https://sami.github.io/selco/calculators/conversions/';
+const base = import.meta.env.BASE_URL.endsWith('/') ? import.meta.env.BASE_URL : `${import.meta.env.BASE_URL}/`;
 
 const faqs = [
   {
@@ -28,6 +27,18 @@ const faqs = [
   },
 ];
 
+const site = 'https://sami.github.io/selco/';
+
+const breadcrumbJsonLd = {
+  '@context': 'https://schema.org',
+  '@type': 'BreadcrumbList',
+  itemListElement: [
+    { '@type': 'ListItem', position: 1, name: 'Home', item: site },
+    { '@type': 'ListItem', position: 2, name: 'Calculators', item: `${site}calculators/` },
+    { '@type': 'ListItem', position: 3, name: 'Conversions', item: `${site}calculators/conversions/` },
+  ],
+};
+
 const faqJsonLd = {
   '@context': 'https://schema.org',
   '@type': 'FAQPage',
@@ -50,11 +61,10 @@ const relatedCalculators = [
 ---
 
 <BaseLayout
-  title="Unit Conversion Calculator | Length, Area, Volume | SELCO Calculator"
+  title="Unit Conversion Calculator | Length, Area, Volume | Trade Materials Calculator"
   description="Free online unit converter for tradespeople. Convert length, area, volume, weight, temperature and material density (kg to tonnes). Quick, accurate and easy to use."
-  canonicalUrl={canonical}
 >
-  <!-- JSON-LD structured data -->
+  <script type="application/ld+json" set:html={JSON.stringify(breadcrumbJsonLd)} />
   <script type="application/ld+json" set:html={JSON.stringify(faqJsonLd)} />
 
   <div class="container mx-auto px-4 pt-6 md:pt-10 pb-16">

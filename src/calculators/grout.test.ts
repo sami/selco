@@ -7,7 +7,7 @@ import type { GroutInput } from './types';
 //
 // - Removed bagSize input — now always returns bags5kg and bags2_5kg
 // - Added COMMON_JOINT_WIDTHS export
-// - Formula unchanged: ((W+H)/(W*H)) * jointWidth * tileDepth * 1.6
+// - Formula: ((W+H)/(W*H)) * jointWidth * tileDepth * 2.0
 // ---------------------------------------------------------------------------
 
 describe('calculateGrout', () => {
@@ -107,7 +107,33 @@ describe('calculateGrout', () => {
       wastage: 10,
     };
 
-    expect(() => calculateGrout(input)).toThrow();
+    expect(() => calculateGrout(input)).toThrow('Tile dimensions must be greater than zero.');
+  });
+
+  it('throws for negative wastage', () => {
+    const input: GroutInput = {
+      area: 10,
+      tileWidth: 300,
+      tileHeight: 300,
+      jointWidth: 3,
+      tileDepth: 8,
+      wastage: -10,
+    };
+
+    expect(() => calculateGrout(input)).toThrow('Wastage must be between 0 and 100.');
+  });
+
+  it('throws for wastage over 100', () => {
+    const input: GroutInput = {
+      area: 10,
+      tileWidth: 300,
+      tileHeight: 300,
+      jointWidth: 3,
+      tileDepth: 8,
+      wastage: 150,
+    };
+
+    expect(() => calculateGrout(input)).toThrow('Wastage must be between 0 and 100.');
   });
 });
 
