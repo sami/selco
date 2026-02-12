@@ -1281,3 +1281,477 @@ SEO content is in `.agent/content/tiling-project-seo.md`. Test file exists at `s
 > 7. Verify no internal links point to pages that don't exist
 >
 > Fix any issues found. Do NOT modify test files.
+
+---
+
+# Phase 5 — Masonry Wall Calculator
+
+Add a masonry calculator at `/calculators/masonry/` covering bricks, blocks, mortar, wall ties, lintels, and DPC. Four wall types: half-brick, one-brick, cavity, blockwork partition. Follows the exact same file patterns as the existing tiling calculators.
+
+---
+
+## Prompt 35 — Append Masonry Types to Shared Types
+
+> Append masonry-related TypeScript interfaces and types to the END of `src/calculators/types.ts`. Do NOT modify any existing interfaces. The file currently ends with `SpacersResult`. Add a blank line after the closing brace of `SpacersResult`, then add these types:
+>
+> ```typescript
+> export type WallType = 'half-brick' | 'one-brick' | 'cavity' | 'blockwork';
+> export type MortarMixRatio = '1:3' | '1:4' | '1:5' | '1:6';
+>
+> export interface WallSection {
+>     length: number;     // metres
+>     height: number;     // metres
+> }
+>
+> export interface Opening {
+>     width: number;      // metres
+>     height: number;     // metres
+> }
+>
+> export interface MasonryInput {
+>     wallType: WallType;
+>     walls: WallSection[];
+>     openings: Opening[];
+>     blockWidth: 100 | 140;          // mm — for cavity inner leaf & blockwork
+>     mixRatio: MortarMixRatio;
+>     unitWaste: number;              // percentage (e.g. 5)
+>     mortarWaste: number;            // percentage (e.g. 10)
+>     cavityWidth: number;            // mm — only used for cavity walls
+> }
+>
+> export interface WallAreaResult {
+>     grossArea: number;      // m²
+>     openingArea: number;    // m²
+>     netArea: number;        // m²
+> }
+>
+> export interface MortarResult {
+>     wetVolume: number;      // m³
+>     cementBags: number;
+>     sandTonnes: number;
+> }
+>
+> export interface WallTiesResult {
+>     general: number;
+>     atOpenings: number;
+>     total: number;
+> }
+>
+> export interface LintelResult {
+>     width: number;          // m — opening width
+>     lintelLength: number;   // mm
+> }
+>
+> export interface DPCResult {
+>     length: number;         // metres
+>     widthMm: number;        // mm
+> }
+>
+> export interface MasonryResult {
+>     area: WallAreaResult;
+>     bricks: number;
+>     blocks: number;
+>     mortar: MortarResult;
+>     wallTies: WallTiesResult;
+>     lintels: LintelResult[];
+>     dpc: DPCResult;
+> }
+> ```
+>
+> Follow the existing file's style exactly (4-space indentation, comment style, etc).
+
+---
+
+## Prompt 36 — Create Masonry Calculator Logic
+
+> Create `src/calculators/masonry.ts` with pure calculation logic for a UK masonry wall calculator.
+>
+> Import all masonry types from `'./types'`: `WallType`, `MortarMixRatio`, `WallSection`, `Opening`, `MasonryInput`, `MasonryResult`, `WallAreaResult`, `MortarResult`, `WallTiesResult`, `LintelResult`, `DPCResult`.
+>
+> Follow the exact same patterns as the existing `src/calculators/tiles.ts` (import types from `'./types'`, export constants, export pure functions, use `safeCeil` helper, throw on invalid input).
+>
+> **Constants to export:**
+>
+> - `BRICK_DIMENSIONS = { length: 215, width: 102.5, height: 65 }` — standard UK brick mm
+> - `BLOCK_DIMENSIONS = { length: 440, height: 215 }` — standard UK block mm
+> - `MORTAR_JOINT = 10` — mm
+> - `UNITS_PER_M2 = { bricks: 60, blocks: 10 }` — per m² of wall face
+> - `MORTAR_PER_M2` — Record keyed by WallType: `'half-brick'`=0.024, `'one-brick'`=0.048, `'cavity'`=0.024 (per leaf), `'blockwork'`=0.009. All in m³/m².
+> - `MORTAR_MIX_RATIOS` — `Record<MortarMixRatio, { cement: number; sand: number }>`: `'1:3'`→{1,3}, `'1:4'`→{1,4}, `'1:5'`→{1,5}, `'1:6'`→{1,6}
+> - `WALL_TIE_RATE = 2.5` — ties per m² (PD 6697)
+> - `LINTEL_BEARING = 150` — mm each side
+> - `CEMENT_DENSITY = 1500` — kg/m³
+> - `SAND_DENSITY = 1600` — kg/m³
+> - `BULKING_FACTOR = 1.33` — wet→dry multiplier
+> - `CEMENT_BAG_KG = 25` — UK standard
+> - `DEFAULT_WASTE = { unit: 5, mortar: 10 }` — percentages
+> - `WALL_TYPES` — `Record<WallType, { label: string; hasBricks: boolean; hasBlocks: boolean; leaves: number }>`:
+>   - `'half-brick'`: label=`'Half-brick (single skin)'`, hasBricks=true, hasBlocks=false, leaves=1
+>   - `'one-brick'`: label=`'One-brick (215 mm)'`, hasBricks=true, hasBlocks=false, leaves=1
+>   - `'cavity'`: label=`'Cavity wall (brick + block)'`, hasBricks=true, hasBlocks=true, leaves=2
+>   - `'blockwork'`: label=`'Blockwork partition'`, hasBricks=false, hasBlocks=true, leaves=1
+>
+> **Functions to export:**
+>
+> 1. `calculateWallArea(walls: WallSection[], openings: Opening[]): WallAreaResult`
+>    - Throw if walls array is empty: `'At least one wall section is required.'`
+>    - Throw if any wall dimension <= 0: `'Wall dimensions must be greater than zero.'`
+>    - Throw if any opening dimension < 0: `'Opening dimensions must not be negative.'`
+>    - grossArea = sum of wall.length × wall.height
+>    - openingArea = sum of opening.width × opening.height
+>    - netArea = max(0, grossArea − openingArea)
+>    - Round all to 2 decimal places
+>
+> 2. `calculateBricks(netArea: number, wallType: WallType, waste: number): number`
+>    - Return 0 if wallType has no bricks (check `WALL_TYPES[wallType].hasBricks`)
+>    - half-brick & cavity: 60/m². one-brick: 120/m²
+>    - Apply waste: `safeCeil(netArea * rate * (1 + waste/100))`
+>
+> 3. `calculateBlocks(netArea: number, wallType: WallType, _blockWidth: number, waste: number): number`
+>    - Return 0 if wallType has no blocks
+>    - Always 10/m² regardless of block width
+>    - Apply waste same as bricks
+>
+> 4. `calculateMortar(netArea: number, wallType: WallType, mixRatio: MortarMixRatio, waste: number): MortarResult`
+>    - Base rate from `MORTAR_PER_M2[wallType]`
+>    - For cavity walls, total rate = `MORTAR_PER_M2['cavity'] + MORTAR_PER_M2['blockwork']` (both leaves)
+>    - wetVolume = netArea × totalRate × (1 + waste/100), round to 3dp
+>    - dryVolume = wetVolume × BULKING_FACTOR
+>    - Split dry volume by mix ratio parts: cementVolume = dryVolume × (cement / totalParts), sandVolume = dryVolume × (sand / totalParts)
+>    - cementKg = cementVolume × CEMENT_DENSITY → cementBags = safeCeil(cementKg / 25)
+>    - sandKg = sandVolume × SAND_DENSITY → sandTonnes = round(sandKg / 1000, 2dp)
+>
+> 5. `calculateWallTies(netArea: number, openings: Opening[]): WallTiesResult`
+>    - general = safeCeil(netArea × 2.5)
+>    - atOpenings = sum over each opening of safeCeil(2 × (width + height) / 0.3)
+>    - total = general + atOpenings
+>
+> 6. `calculateLintels(openings: Opening[]): LintelResult[]`
+>    - For each opening: lintelLength = round(width × 1000) + 300 (150mm bearing each side)
+>
+> 7. `calculateDPC(walls: WallSection[], wallType: WallType): DPCResult`
+>    - length = sum of wall.length values, round 2dp
+>    - widthMm: `'half-brick'`=112.5, `'one-brick'`=225, `'cavity'`=225, `'blockwork'`=100
+>
+> 8. `calculateMasonry(input: MasonryInput): MasonryResult` — orchestrator
+>    - Validate unitWaste and mortarWaste are 0–100, throw if not
+>    - Call all above functions, only call `calculateWallTies` for cavity walls (others get `{ general: 0, atOpenings: 0, total: 0 }`)
+>    - Return `{ area, bricks, blocks, mortar, wallTies, lintels, dpc }`
+>
+> Use the same `safeCeil` helper as tiles.ts: `const safeCeil = (n: number) => Math.ceil(Math.round(n * 1e10) / 1e10);`
+
+---
+
+## Prompt 37 — Create Masonry Calculator Tests
+
+> Create `src/calculators/masonry.test.ts` using vitest (`import { describe, it, expect } from 'vitest'`). Follow the exact same patterns as `src/calculators/tiles.test.ts`.
+>
+> Import everything needed:
+> ```typescript
+> import {
+>     calculateWallArea, calculateBricks, calculateBlocks, calculateMortar,
+>     calculateWallTies, calculateLintels, calculateDPC, calculateMasonry,
+>     UNITS_PER_M2, MORTAR_PER_M2, WALL_TYPES,
+> } from './masonry';
+> ```
+>
+> Write these test groups:
+>
+> **`describe('calculateWallArea')`**
+> 1. `'calculates area for a single wall'` — walls=[{length:5, height:2.4}], openings=[] → grossArea=12, openingArea=0, netArea=12
+> 2. `'subtracts openings from gross area'` — walls=[{length:5, height:2.4}], openings=[{width:1.2, height:2.1}] → openingArea=2.52, netArea=9.48
+> 3. `'handles multiple walls'` — walls=[{length:5,height:2.4},{length:3,height:2.4}] → grossArea=19.2
+> 4. `'handles zero openings'` — walls=[{length:4,height:2.4}], openings=[] → netArea equals grossArea=9.6
+> 5. `'throws for empty walls array'` — walls=[], openings=[] → throws `'At least one wall section is required.'`
+> 6. `'throws for zero wall dimension'` — walls=[{length:0,height:2.4}] → throws `'Wall dimensions must be greater than zero.'`
+> 7. `'throws for negative opening'` — walls=[{length:5,height:2.4}], openings=[{width:-1,height:2}] → throws `'Opening dimensions must not be negative.'`
+> 8. `'clamps net area to zero'` — walls=[{length:1,height:1}], openings=[{width:2,height:2}] → netArea=0
+>
+> **`describe('calculateBricks')`**
+> 9. `'half-brick = 60/m²'` — calculateBricks(10, 'half-brick', 0) → 600
+> 10. `'one-brick = 120/m²'` — calculateBricks(10, 'one-brick', 0) → 1200
+> 11. `'cavity outer leaf = 60/m²'` — calculateBricks(10, 'cavity', 0) → 600
+> 12. `'applies waste'` — calculateBricks(10, 'half-brick', 5) → 630
+> 13. `'returns 0 for blockwork'` — calculateBricks(10, 'blockwork', 0) → 0
+>
+> **`describe('calculateBlocks')`**
+> 14. `'10/m² for 100mm'` — calculateBlocks(10, 'blockwork', 100, 0) → 100
+> 15. `'10/m² for 140mm'` — calculateBlocks(10, 'blockwork', 140, 0) → 100
+> 16. `'10/m² for cavity inner leaf'` — calculateBlocks(10, 'cavity', 100, 0) → 100
+> 17. `'applies waste'` — calculateBlocks(10, 'blockwork', 100, 5) → 105
+> 18. `'returns 0 for half-brick'` — calculateBlocks(10, 'half-brick', 100, 0) → 0
+>
+> **`describe('calculateMortar')`**
+> 19. `'half-brick mortar volume'` — calculateMortar(10, 'half-brick', '1:4', 0) → wetVolume=0.24
+> 20. `'one-brick mortar volume'` — calculateMortar(10, 'one-brick', '1:4', 0) → wetVolume=0.48
+> 21. `'cavity = brick leaf + block leaf'` — calculateMortar(10, 'cavity', '1:4', 0) → wetVolume close to 0.33 (0.024+0.009=0.033 per m²)
+> 22. `'blockwork mortar volume'` — calculateMortar(10, 'blockwork', '1:4', 0) → wetVolume=0.09
+> 23. `'1:4 mix produces correct cement bags'` — calculateMortar(10, 'half-brick', '1:4', 0) → dryVol=0.24×1.33=0.3192, cement=0.3192/5×1500=95.76kg, bags=ceil(95.76/25)=4
+> 24. `'1:4 mix produces correct sand tonnes'` — same input → sand=0.3192×4/5×1600=409.0kg → 0.41 tonnes
+> 25. `'applies mortar waste'` — calculateMortar(10, 'half-brick', '1:4', 10) → wetVolume=0.264
+> 26. `'1:3 mix uses more cement than 1:6'` — compare cementBags for same area
+>
+> **`describe('calculateWallTies')`**
+> 27. `'general = 2.5/m²'` — calculateWallTies(10, []) → general=25, atOpenings=0, total=25
+> 28. `'extra ties at openings'` — calculateWallTies(10, [{width:1.2, height:2.1}]) → atOpenings=ceil(2×(1.2+2.1)/0.3)=ceil(22)=22, total=25+22=47
+>
+> **`describe('calculateLintels')`**
+> 29. `'length = width + 300mm'` — calculateLintels([{width:1.2, height:2.1}]) → [{width:1.2, lintelLength:1500}]
+> 30. `'handles multiple openings'` — calculateLintels([{width:0.9,height:1.2},{width:1.8,height:2.1}]) → length 2 results, second lintelLength=2100
+>
+> **`describe('calculateDPC')`**
+> 31. `'calculates total length'` — calculateDPC([{length:5,height:2.4},{length:3,height:2.4}], 'half-brick') → length=8
+> 32. `'half-brick width = 112.5mm'` → widthMm=112.5
+> 33. `'cavity width = 225mm'` → widthMm=225
+>
+> **`describe('calculateMasonry')`** — orchestrator
+> 34. `'full calculation for half-brick wall'` — input: wallType='half-brick', walls=[{length:6,height:2.4}], openings=[{width:1.2,height:2.1}], blockWidth=100, mixRatio='1:4', unitWaste=5, mortarWaste=10, cavityWidth=0. Verify: area.netArea=11.88, bricks>0, blocks=0, wallTies.total=0
+> 35. `'full calculation for cavity wall'` — wallType='cavity', same walls/openings. Verify: bricks>0, blocks>0, wallTies.total>0
+> 36. `'throws for invalid waste'` — unitWaste=-5 → throws `'Unit waste must be between 0 and 100.'`
+> 37. `'throws for waste over 100'` — mortarWaste=150 → throws `'Mortar waste must be between 0 and 100.'`
+>
+> Use exact `toBe` / `toBeCloseTo` / `toThrow` assertions matching the patterns in the existing test files.
+
+---
+
+## Prompt 38 — Create MasonryCalculator React Component
+
+> Create `src/components/MasonryCalculator.tsx` following the EXACT same patterns as `src/components/TileCalculator.tsx` and `src/components/AdhesiveCalculator.tsx`.
+>
+> **Imports:**
+> ```typescript
+> import React, { useState, useCallback } from 'react';
+> import CalculatorLayout, {
+>     FormInput, FormSelect, type ResultItem, type FieldGroup,
+> } from './CalculatorLayout';
+> import { calculateMasonry, WALL_TYPES, DEFAULT_WASTE } from '../calculators/masonry';
+> import type { WallType, MortarMixRatio } from '../calculators/types';
+> ```
+>
+> **State:**
+> - `wallType: WallType` = `'cavity'`
+> - `blockWidth: string` = `'100'`
+> - `walls: Array<{ length: string; height: string }>` = `[{ length: '', height: '' }]`
+> - `openings: Array<{ width: string; height: string }>` = `[]`
+> - `mixRatio: MortarMixRatio` = `'1:4'`
+> - `unitWaste: string` = `'5'`
+> - `mortarWaste: string` = `'10'`
+> - `cavityWidth: string` = `'100'`
+> - `results: ResultItem[]` = `[]`
+> - `hasResults: boolean` = `false`
+> - `error: string | null` = `null`
+>
+> **Options for selects:**
+> - wallTypeOptions: map `WALL_TYPES` entries to `{ value, label }` array
+> - blockWidthOptions: `[{ value:'100', label:'100 mm' }, { value:'140', label:'140 mm' }]`
+> - mixRatioOptions: `[{ value:'1:3', label:'1:3 (strong)' }, { value:'1:4', label:'1:4 (general purpose)' }, { value:'1:5', label:'1:5 (internal)' }, { value:'1:6', label:'1:6 (lightweight block)' }]`
+>
+> **Repeater logic:**
+> - `addWall()`: push `{ length: '', height: '' }`
+> - `removeWall(index)`: splice, minimum 1 wall
+> - `updateWall(index, field, value)`: update in place
+> - `addOpening()`: push `{ width: '', height: '' }`
+> - `removeOpening(index)`: splice
+> - `updateOpening(index, field, value)`: update in place
+>
+> **Conditional visibility:**
+> - Show block width select only when wallType is `'cavity'` or `'blockwork'`
+> - Show cavity width input only when wallType is `'cavity'`
+>
+> **Validation (`validateInputs`):**
+> - Each wall must have length > 0 and height > 0 (check all are valid numbers)
+> - Each opening must have width > 0 and height > 0
+> - unitWaste and mortarWaste must be 0–100
+> - Return null if valid, error string if not
+>
+> **`handleCalculate`:**
+> - Call `validateInputs`, show error if invalid
+> - Parse all inputs and call `calculateMasonry({ wallType, walls: parsedWalls, openings: parsedOpenings, blockWidth: parseInt(blockWidth) as 100 | 140, mixRatio, unitWaste: parseFloat(unitWaste), mortarWaste: parseFloat(mortarWaste), cavityWidth: parseFloat(cavityWidth) })`
+> - Build `ResultItem[]`:
+>   - If bricks > 0: `{ label: 'Bricks', value: '${bricks} bricks', primary: true }`
+>   - If blocks > 0: `{ label: 'Blocks', value: '${blocks} blocks', primary: true }`
+>   - `{ label: 'Cement', value: '${mortar.cementBags} × 25 kg bags' }`
+>   - `{ label: 'Sand', value: '${mortar.sandTonnes} tonnes' }`
+>   - `{ label: 'Mortar volume', value: '${mortar.wetVolume} m³' }`
+>   - If wallTies.total > 0: `{ label: 'Wall ties', value: '${wallTies.total} ties' }`
+>   - If lintels.length > 0: `{ label: 'Lintels', value: lintels.map(l => '${l.lintelLength} mm').join(', ') }`
+>   - `{ label: 'DPC', value: '${dpc.length} m × ${dpc.widthMm} mm' }`
+>   - `{ label: 'Gross area', value: '${area.grossArea} m²' }`
+>   - `{ label: 'Net area', value: '${area.netArea} m²' }`
+>
+> **`handleReset`:** Reset all state to defaults.
+>
+> **Field groups (`FieldGroup[]`):**
+>
+> 1. legend: `'Wall type'`
+>    - `FormSelect` for wall type
+>    - Conditionally show `FormSelect` for block width (when showBlocks)
+>
+> 2. legend: `'Wall sections'`
+>    - Map over walls array, each row has:
+>      - Two `FormInput`s in `grid grid-cols-2 gap-4`: Length (metres) and Height (metres)
+>      - Remove button (only if `walls.length > 1`): `className="text-xs text-[--color-muted-foreground] hover:text-[--color-destructive]"`, type="button"
+>    - Add wall button below: type="button", text `'+ Add wall section'`, `className="text-sm text-[--color-brand-blue] hover:underline font-medium"`
+>
+> 3. legend: `'Openings (optional)'`
+>    - Map over openings array, each row has:
+>      - Two `FormInput`s in `grid grid-cols-2 gap-4`: Width (metres) and Height (metres)
+>      - Remove button
+>    - Add opening button: `'+ Add opening'`
+>
+> 4. legend: `'Mortar & waste'`
+>    - `FormSelect` for mix ratio
+>    - `FormInput` for unit waste (%)
+>    - `FormInput` for mortar waste (%)
+>    - Conditionally show `FormInput` for cavity width (mm) when wallType is `'cavity'`
+>
+> **Return:**
+> ```tsx
+> <CalculatorLayout
+>     title="Masonry Calculator"
+>     description="Calculate bricks, blocks, mortar, and wall ties for any wall."
+>     fieldGroups={fieldGroups}
+>     results={results}
+>     hasResults={hasResults}
+>     onCalculate={handleCalculate}
+>     onReset={handleReset}
+>     error={error}
+> />
+> ```
+>
+> Use the exact same className patterns as `TileCalculator.tsx` and `AdhesiveCalculator.tsx`. Clear error on any input change with `setError(null)` in onChange callbacks.
+
+---
+
+## Prompt 39 — Create Masonry Calculator Astro Page
+
+> Create `src/pages/calculators/masonry/index.astro` following the EXACT same structure as `src/pages/calculators/tiles/index.astro`.
+>
+> **Frontmatter:**
+> ```astro
+> ---
+> import BaseLayout from '../../../layouts/BaseLayout.astro';
+> import MasonryCalculator from '../../../components/MasonryCalculator';
+>
+> const base = import.meta.env.BASE_URL.endsWith('/') ? import.meta.env.BASE_URL : `${import.meta.env.BASE_URL}/`;
+> ---
+> ```
+>
+> **FAQs (5 questions):**
+> 1. `'How many bricks do I need per square metre?'` → `'A half-brick wall uses approximately 60 bricks per m². A one-brick (215 mm) wall uses 120 per m². These figures include a 10 mm mortar joint.'`
+> 2. `'How many blocks per square metre?'` → `'Standard 440 × 215 mm blocks work out to roughly 10 blocks per m², regardless of whether you use 100 mm or 140 mm thick blocks.'`
+> 3. `'What mortar mix ratio should I use?'` → `'For general-purpose brickwork above DPC, use 1:4 (cement to sand). Use 1:3 for exposed or structural work below DPC. Use 1:5 or 1:6 for lightweight blockwork partitions.'`
+> 4. `'Do I need wall ties for a cavity wall?'` → `'Yes. Building Regulations require wall ties at a minimum rate of 2.5 per m², with additional ties around openings at 300 mm centres. Our calculator includes both.'`
+> 5. `'How much extra should I order for waste?'` → `'Allow 5% waste for bricks and blocks to cover breakages and cutting. Allow 10% for mortar to cover spillage and pointing. These are the calculator defaults.'`
+>
+> **Structured data:**
+> - `breadcrumbJsonLd`: Home → Calculators → Masonry (matching tiles pattern exactly, just change name and URL slug to `'Masonry'` and `'calculators/masonry/'`)
+> - `faqJsonLd`: FAQPage schema from the faqs array (same pattern as tiles)
+> - `const site = 'https://sami.github.io/selco/';`
+>
+> **relatedCalculators:**
+> - `{ title: 'Tiles', href: '${base}calculators/tiles/', description: 'Calculate tile quantities for floors and walls.' }`
+> - `{ title: 'Adhesive', href: '${base}calculators/adhesive/', description: 'Work out how much tile adhesive to buy.' }`
+> - `{ title: 'Grout', href: '${base}calculators/grout/', description: 'Estimate grout quantity by joint size.' }`
+> - `{ title: 'Unit Conversions', href: '${base}calculators/conversions/', description: 'Convert between metric and imperial units.' }`
+>
+> **Page content** (inside `<BaseLayout>`, same `div.container` structure as tiles):
+>
+> **BaseLayout props:**
+> ```
+> title="Masonry Calculator | How Many Bricks and Blocks Do I Need?"
+> description="Free masonry calculator. Calculate bricks, blocks, mortar, wall ties, lintels, and DPC for half-brick, one-brick, cavity, and blockwork walls."
+> ```
+>
+> 1. **JSON-LD** — Two `<script type="application/ld+json">` tags for breadcrumbs and FAQ
+>
+> 2. **Breadcrumbs**: Home / Calculators / Masonry
+>
+> 3. **Header**:
+>    - H1: `'Masonry Calculator: Work Out How Many Bricks and Blocks You Need'`
+>    - Intro: `'Enter your wall dimensions, choose a wall type, and get an instant estimate of bricks, blocks, mortar, wall ties, and lintels. The calculator covers half-brick, one-brick, cavity, and blockwork partition walls.'`
+>
+> 4. **Disclaimer**: Same amber box as tiles: `'These calculations are estimates only. Actual quantities depend on site conditions, cutting accuracy, mortar joint consistency, and brick/block dimensions. Always confirm requirements with your supplier before ordering.'`
+>
+> 5. **Guidance section** (h2: `'How to Calculate Masonry Materials'`):
+>    - H3: `'How many bricks per m²?'` — `'A standard UK brick is 215 × 102.5 × 65 mm. With a 10 mm mortar joint, a half-brick (single skin) wall uses 60 bricks per m². A one-brick wall (215 mm thick) uses 120 per m². Cavity walls use 60 bricks per m² on the outer leaf.'`
+>    - H3: `'How many blocks per m²?'` — `'A standard concrete block is 440 × 215 mm. With 10 mm joints, you need 10 blocks per m² of wall face. This applies to both 100 mm and 140 mm thick blocks.'`
+>    - H3: `'Mortar mix ratios'` — Table (same styling as tiles waste table):
+>
+>      | Mix Ratio | Use | Cement (25 kg bags/m³) |
+>      |-----------|-----|------------------------|
+>      | 1:3 | Below DPC, retaining walls | ~15 bags |
+>      | 1:4 | General purpose above DPC | ~12 bags |
+>      | 1:5 | Internal blockwork | ~9 bags |
+>      | 1:6 | Lightweight block partitions | ~8 bags |
+>
+>    - H3: `'Wall types explained'` — Brief paragraph for each: half-brick (garden walls, internal partitions), one-brick (load-bearing, structural), cavity (external walls with insulation gap), blockwork (internal partitions, fast to build).
+>    - H3: `'Common mistakes'` — `'Under-ordering bricks (always add 5%), not accounting for mortar waste, forgetting wall ties in cavity walls, and omitting lintel bearings when measuring for steel.'`
+>
+> 6. **Calculator island**: `<MasonryCalculator client:load />`
+>
+> 7. **Tips section** (h2: `'Masonry Tips'`):
+>    - H3: `'Ordering bricks'` — `'Order all bricks from the same batch to avoid colour variation. Check with your supplier about lead times — handmade and specialist bricks can take weeks.'`
+>    - H3: `'Mixing mortar'` — `'Mix mortar in small batches to prevent it setting before use. In hot weather, dampen bricks before laying to stop them drawing moisture from the mortar too quickly.'`
+>    - H3: `'Waste and returns'` — `'Most builders\' merchants won\'t accept returns on cut blocks or opened cement bags. Calculate carefully and keep packaging intact where possible.'`
+>    - H3: `'Wall ties'` — `'Use stainless steel wall ties for cavity walls. Space them at 900 mm horizontally and 450 mm vertically, with extra ties at 300 mm centres around all openings.'`
+>
+> 8. **Related calculators**: Same grid as tiles, using relatedCalculators array.
+>
+> 9. **FAQ section**: Same details/summary accordion as tiles, using faqs array.
+>
+> 10. **Sources section** (h2: `'Sources & Further Reading'`):
+>     - `'Brick and block rates are based on standard UK unit sizes with 10 mm mortar joints. Mortar volumes follow PD 6697 guidance.'`
+>     - Bullet list (text references only, no external links):
+>       - BS EN 771-1 — Specification for masonry units: clay bricks
+>       - PD 6697 — Recommendations for the design of masonry structures (mortar mix design)
+>       - Approved Document A (Structure) — Building Regulations guidance on wall construction and wall ties
+>
+> Use the same Tailwind classes and HTML structure as the tiles page throughout.
+
+---
+
+## Prompt 40 — Add Masonry to Index Pages
+
+> Make two small changes to add the masonry calculator to the site navigation.
+>
+> **1. `src/pages/index.astro`** — Add a new entry to the `calculators` array (after the `'Conversions'` entry):
+> ```javascript
+> {
+>     title: "Masonry",
+>     href: "calculators/masonry/",
+>     desc: "Calculate bricks, blocks, mortar, and wall ties for any wall.",
+> },
+> ```
+>
+> **2. `src/pages/calculators/index.astro`** — Add a new entry to the `calculators` array (after the `'Conversions'` entry):
+> ```javascript
+> {
+>     title: "Masonry",
+>     href: "calculators/masonry/",
+>     desc: "Calculate bricks, blocks, mortar, and wall ties for any masonry wall — half-brick, one-brick, cavity, or blockwork.",
+>     category: "Masonry",
+> },
+> ```
+>
+> Do not change anything else in either file.
+
+---
+
+## Prompt 41 — Masonry Full Build & Verification
+
+> Run the full test suite and build:
+>
+> 1. `npm test -- --run` — all existing tests pass + new masonry tests pass (expect ~37 new tests)
+> 2. `npm run build` — clean build, 10 pages (was 9)
+> 3. Verify the new page exists in the build output: `/calculators/masonry/index.html`
+> 4. Verify the masonry page includes:
+>    - `FAQPage` JSON-LD `<script>` tag
+>    - `BreadcrumbList` JSON-LD `<script>` tag
+>    - Breadcrumb navigation
+>    - Related calculators section
+>    - Sources section
+> 5. Verify the homepage and calculators index both link to `/selco/calculators/masonry/`
+> 6. Verify no internal links point to pages that don't exist
+>
+> Fix any issues found. Do NOT modify test files — fix the implementation code.

@@ -145,9 +145,8 @@ export function FormSelect({ id, label, value, onChange, options }: FormSelectPr
 /* ─── Error Alert ─── */
 function ErrorAlert({ message }: { message: string }) {
     return (
-        <div className="p-4 rounded-[--radius-card] bg-[--color-destructive]/10 border border-[--color-destructive]/20 text-[--color-destructive] text-sm font-medium flex items-start gap-3">
-            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="shrink-0"><circle cx="12" cy="12" r="10" /><line x1="12" x2="12" y1="8" y2="12" /><line x1="12" x2="12.01" y1="16" y2="16" /></svg>
-            <span>{message}</span>
+        <div className="p-4 rounded-[--radius-card] bg-[--color-destructive]/10 border border-[--color-destructive]/20 text-[--color-destructive] text-sm font-medium">
+            {message}
         </div>
     );
 }
@@ -156,9 +155,6 @@ function ErrorAlert({ message }: { message: string }) {
 function ResultsEmptyState() {
     return (
         <div className="text-center py-12 px-4">
-            <div className="inline-flex items-center justify-center w-12 h-12 rounded-full bg-[--color-muted] mb-4 text-[--color-muted-foreground]">
-                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z" /><polyline points="3.27 6.96 12 12.01 20.73 6.96" /><line x1="12" y1="22.08" x2="12" y2="12" /></svg>
-            </div>
             <h3 className="text-sm font-medium text-[--color-surface-foreground] mb-1">No results yet</h3>
             <p className="text-sm text-[--color-muted-foreground]">
                 Enter your measurements and click calculate to see the results.

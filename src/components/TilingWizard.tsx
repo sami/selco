@@ -493,39 +493,25 @@ export default function TilingWizard() {
 
                             {/* Grout Card */}
                             <div className="bg-white rounded-2xl border border-border shadow-sm p-5">
-                                <div className="flex items-start gap-4">
-                                    <div className="w-10 h-10 rounded-lg bg-brand-blue/5 flex items-center justify-center shrink-0 text-brand-blue">
-                                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M12 2.69l5.66 5.66a8 8 0 1 1-11.31 0z" /></svg>
-                                    </div>
-                                    <div>
-                                        <h3 className="font-semibold text-surface-foreground">Grout</h3>
-                                        <p className="text-2xl font-bold text-surface-foreground mt-1">{groutResult?.kgNeeded.toFixed(1)} kg</p>
-                                        <p className="text-sm text-muted-foreground mb-2">
-                                            Joint: {effectiveJointWidth} mm • Depth: {tileDepth} mm
-                                        </p>
-                                        <div className="inline-flex items-center px-2.5 py-1 rounded-md bg-brand-yellow/20 text-brand-blue border border-brand-yellow/30 text-xs font-bold">
-                                            {groutResult?.bags5kg} x 5 kg bags
-                                        </div>
-                                    </div>
+                                <h3 className="font-semibold text-surface-foreground">Grout</h3>
+                                <p className="text-2xl font-bold text-surface-foreground mt-1">{groutResult?.kgNeeded.toFixed(1)} kg</p>
+                                <p className="text-sm text-muted-foreground mb-2">
+                                    Joint: {effectiveJointWidth} mm • Depth: {tileDepth} mm
+                                </p>
+                                <div className="inline-flex items-center px-2.5 py-1 rounded-md bg-brand-yellow/20 text-brand-blue border border-brand-yellow/30 text-xs font-bold">
+                                    {groutResult?.bags5kg} x 5 kg bags
                                 </div>
                             </div>
 
                             {/* Spacers Card */}
                             <div className="bg-white rounded-2xl border border-border shadow-sm p-5">
-                                <div className="flex items-start gap-4">
-                                    <div className="w-10 h-10 rounded-lg bg-brand-blue/5 flex items-center justify-center shrink-0 text-brand-blue">
-                                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M3 3h7v7H3z" /><path d="M14 3h7v7h-7z" /><path d="M14 14h7v7h-7z" /><path d="M3 14h7v7H3z" /></svg>
-                                    </div>
-                                    <div>
-                                        <h3 className="font-semibold text-surface-foreground">Spacers</h3>
-                                        <p className="text-2xl font-bold text-surface-foreground mt-1">{spacersResult?.spacersNeeded}</p>
-                                        <p className="text-sm text-muted-foreground mb-2">
-                                            Size: {spacerSize} mm • {layout === 'cross' ? 'Cross' : 'T-junction'} layout
-                                        </p>
-                                        <div className="inline-flex items-center px-2.5 py-1 rounded-md bg-brand-yellow/20 text-brand-blue border border-brand-yellow/30 text-xs font-bold">
-                                            {spacersResult?.packs100} x packs of 100
-                                        </div>
-                                    </div>
+                                <h3 className="font-semibold text-surface-foreground">Spacers</h3>
+                                <p className="text-2xl font-bold text-surface-foreground mt-1">{spacersResult?.spacersNeeded}</p>
+                                <p className="text-sm text-muted-foreground mb-2">
+                                    Size: {spacerSize} mm • {layout === 'cross' ? 'Cross' : 'T-junction'} layout
+                                </p>
+                                <div className="inline-flex items-center px-2.5 py-1 rounded-md bg-brand-yellow/20 text-brand-blue border border-brand-yellow/30 text-xs font-bold">
+                                    {spacersResult?.packs100} x packs of 100
                                 </div>
                             </div>
                         </div>
