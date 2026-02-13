@@ -124,8 +124,17 @@ export function calculateMortar(
 }
 
 export function calculateWallTies(netArea: number, openings: Opening[]): WallTiesResult {
-    // Stub implementation
-    return { general: 0, atOpenings: 0, total: 0 };
+    const general = Math.ceil(netArea * 2.5);
+
+    let atOpenings = 0;
+    for (const opening of openings) {
+        const perimeter = (opening.width + opening.height) * 2;
+        atOpenings += Math.ceil(perimeter / 0.3);
+    }
+
+    const total = general + atOpenings;
+
+    return { general, atOpenings, total };
 }
 
 export function calculateLintels(openings: Opening[]): LintelResult[] {
