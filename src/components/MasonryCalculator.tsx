@@ -58,9 +58,9 @@ export default function MasonryCalculator() {
     };
 
     const updateWall = (index: number, field: 'length' | 'height', value: string) => {
-        const newWalls = [...walls];
-        newWalls[index][field] = value;
-        setWalls(newWalls);
+        setWalls(walls.map((wall, i) =>
+            i === index ? { ...wall, [field]: value } : wall
+        ));
         setError(null);
     };
 
@@ -71,16 +71,14 @@ export default function MasonryCalculator() {
     };
 
     const removeOpening = (index: number) => {
-        const newOpenings = [...openings];
-        newOpenings.splice(index, 1);
-        setOpenings(newOpenings);
+        setOpenings(openings.filter((_, i) => i !== index));
         setError(null);
     };
 
     const updateOpening = (index: number, field: 'width' | 'height', value: string) => {
-        const newOpenings = [...openings];
-        newOpenings.splice(index, 1);
-        setOpenings(newOpenings);
+        setOpenings(openings.map((opening, i) =>
+            i === index ? { ...opening, [field]: value } : opening
+        ));
         setError(null);
     };
 
