@@ -124,57 +124,55 @@ describe('calculateBlocks', () => {
 
 describe('calculateMortar', () => {
     it('half-brick mortar volume', () => {
-        // 10 * 0.024 = 0.24
-        const result = calculateMortar(10, 'half-brick', '1:4', 0);
-        expect(result.wetVolume).toBeCloseTo(0.24);
+        // 10 * 0.043 = 0.43
+        const result = calculateMortar(10, 'half-brick', '1:4', 0, 'jumbo');
+        expect(result.wetVolume).toBeCloseTo(0.43);
     });
 
     it('one-brick mortar volume', () => {
-        // 10 * 0.048 = 0.48
-        const result = calculateMortar(10, 'one-brick', '1:4', 0);
-        expect(result.wetVolume).toBeCloseTo(0.48);
+        // 10 * 0.086 = 0.86
+        const result = calculateMortar(10, 'one-brick', '1:4', 0, 'jumbo');
+        expect(result.wetVolume).toBeCloseTo(0.86);
     });
 
     it('cavity = brick leaf + block leaf', () => {
-        // 0.024 (brick) + 0.009 (block) = 0.033
-        // 10 * 0.033 = 0.33
-        const result = calculateMortar(10, 'cavity', '1:4', 0);
-        expect(result.wetVolume).toBeCloseTo(0.33);
+        // 0.043 (brick) + 0.011 (block) = 0.054
+        // 10 * 0.054 = 0.54
+        const result = calculateMortar(10, 'cavity', '1:4', 0, 'jumbo');
+        expect(result.wetVolume).toBeCloseTo(0.54);
     });
 
     it('blockwork mortar volume', () => {
-        // 10 * 0.009 = 0.09
-        const result = calculateMortar(10, 'blockwork', '1:4', 0);
-        expect(result.wetVolume).toBeCloseTo(0.09);
+        // 10 * 0.011 = 0.11
+        const result = calculateMortar(10, 'blockwork', '1:4', 0, 'jumbo');
+        expect(result.wetVolume).toBeCloseTo(0.11);
     });
 
     it('1:4 mix produces correct cement bags', () => {
-        // wetVolume = 0.24
-        // dryVolume = 0.24 * 1.33 = 0.3192
-        // cement = 0.3192 / 5 * 1500 = 95.76 kg
-        // bags = ceil(95.76 / 25) = 4
-        const result = calculateMortar(10, 'half-brick', '1:4', 0);
-        expect(result.cementBags).toBe(4);
+        // wetVolume = 0.43
+        // dryVolume = 0.43 * 1.33 = 0.5719
+        // cement = 0.5719 / 5 * 1440 = 164.7072 kg (using 1440 density)
+        // bags = ceil(164.7072 / 25) = 7
+        const result = calculateMortar(10, 'half-brick', '1:4', 0, 'jumbo');
+        expect(result.cementBags).toBe(7);
     });
 
     it('1:4 mix produces correct sand tonnes', () => {
-        // sand = 0.3192 * 4/5 * 1600 = 408.576 kg
-        // tonnes = 0.408576 -> roughly 0.41
-        // Note: Check rounding logic in implementation vs test expectation
-        // Prompt says "roughly 0.41 tonnes", we'll check closeTo
-        const result = calculateMortar(10, 'half-brick', '1:4', 0);
-        expect(result.sandTonnes).toBeCloseTo(0.41, 1);
+        // sand = 0.5719 * 4/5 * 1600 = 732.032 kg
+        // tonnes = 0.732032 -> roughly 0.73
+        const result = calculateMortar(10, 'half-brick', '1:4', 0, 'jumbo');
+        expect(result.sandTonnes).toBeCloseTo(0.73, 1);
     });
 
     it('applies mortar waste', () => {
-        // 0.24 * 1.10 = 0.264
-        const result = calculateMortar(10, 'half-brick', '1:4', 10);
-        expect(result.wetVolume).toBeCloseTo(0.264);
+        // 0.43 * 1.10 = 0.473
+        const result = calculateMortar(10, 'half-brick', '1:4', 10, 'jumbo');
+        expect(result.wetVolume).toBeCloseTo(0.473);
     });
 
     it('1:3 mix uses more cement than 1:6', () => {
-        const r1 = calculateMortar(10, 'half-brick', '1:3', 0);
-        const r2 = calculateMortar(10, 'half-brick', '1:6', 0);
+        const r1 = calculateMortar(10, 'half-brick', '1:3', 0, 'jumbo');
+        const r2 = calculateMortar(10, 'half-brick', '1:6', 0, 'jumbo');
         expect(r1.cementBags).toBeGreaterThan(r2.cementBags);
     });
 });
@@ -409,7 +407,6 @@ describe('sand bag calculations', () => {
     it('handles zero wall area -> zero bags', () => {
         const input = {
             ...baseInput,
-            walls: [{ length: 0, height: 0 }], // actually valid based on previous tests?
             // calculateWallArea throws if 0 dim.
             // Let's use opening to make net area 0.
             walls: [{ length: 1, height: 1 }],
