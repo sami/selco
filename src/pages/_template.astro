@@ -1,22 +1,22 @@
 ---
 import SelcoLayout from '../layouts/SelcoLayout.astro';
 import SelcoSidebar from '../components/selco/SelcoSidebar.astro';
-// Imports cleared
 
 const BASE_URL = import.meta.env.BASE_URL;
 const base = BASE_URL.endsWith('/') ? BASE_URL : `${BASE_URL}/`;
 
 const breadcrumbs = [
   { label: 'Home', href: base },
-  { label: 'Calculators' } // Current page context
+  { label: 'Page Title' } // Update this
 ];
 
-const title = "Trade Materials Calculator";
+const title = "Page Title";
+const description = "Page description for SEO";
 ---
 
 <SelcoLayout
   title={title}
-  description="Work out exactly what you need for your next project. Free trade tools to calculate material quantities for building projects."
+  description={description}
   showSidebar={true}
   breadcrumbs={breadcrumbs}
 >
@@ -24,12 +24,15 @@ const title = "Trade Materials Calculator";
 
   <main class="w-full">
     <div class="space-y-12 pb-12">
-      <!-- Page Title (Migrated from Layout) -->
+      <!-- Standard H1 -->
       <h1 class="text-3xl md:text-4xl font-['Arial_Black',sans-serif] text-[#004B8D] uppercase tracking-tight mb-4 mt-6 leading-none">
         {title}
       </h1>
 
       <div class="min-h-[60vh]">
-        <!-- Content cleared as requested -->
+        <!-- Page Content Goes Here -->
+        <p>Start building your page here.</p>
       </div>
+    </div>
+  </main>
 </SelcoLayout>
