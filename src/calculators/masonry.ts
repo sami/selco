@@ -145,8 +145,21 @@ export function calculateLintels(openings: Opening[]): LintelResult[] {
 }
 
 export function calculateDPC(walls: WallSection[], wallType: WallType): DPCResult {
-    // Stub implementation
-    return { length: 0, widthMm: 0 };
+    let length = 0;
+    for (const wall of walls) {
+        length += wall.length;
+    }
+
+    let widthMm = 0;
+    if (wallType === 'half-brick') {
+        widthMm = 112.5; // Standard 112.5mm DPC
+    } else if (wallType === 'cavity' || wallType === 'one-brick') {
+        widthMm = 225; // Standard 225mm DPC
+    } else {
+        widthMm = 100; // Default for blockwork or unknown
+    }
+
+    return { length, widthMm };
 }
 
 export function calculateMasonry(input: MasonryInput): MasonryResult {
