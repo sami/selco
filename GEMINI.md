@@ -39,3 +39,11 @@ All calculator logic is pure TypeScript (no React). React is only used for inter
 - Use `aria-label` or `aria-labelledby` where visible text is insufficient.
 - Form inputs must have associated `<label>` elements.
 - Use the `focus-ring` utility class for custom focus styles.
+
+### 5. Copywriting Standards
+- **Tone**: Professional trade-focused, direct, and helpful. Avoid "marketing fluff".
+- **Terminology**:
+  - Use "Plan your [Project] job..." for project descriptions.
+  - Use "Work out..." instead of "Calculate..." in descriptions to sound more natural.
+  - NEVER imply pricing, quotes, or costs. Focus strictly on **quantities** and **estimates**.
+  - Use "Calculators" instead of "Tools" in navigation and headings.
