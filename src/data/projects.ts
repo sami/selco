@@ -19,7 +19,7 @@ export const projects: Project[] = [
         id: 'tiling',
         title: 'Tiling',
         href: 'projects/tiling/',
-        description: 'Plan your tiling project from start to finish. Calculate tiles, adhesive, grout, and spacers.',
+        description: 'Plan your tiling job from start to finish. Work out tiles, adhesive, grout and spacers.',
         tools: [
             {
                 title: 'Tiles',
@@ -47,7 +47,7 @@ export const projects: Project[] = [
         id: 'masonry',
         title: 'Masonry',
         href: 'projects/masonry/',
-        description: 'Calculate bricks, blocks, mortar, and wall ties for any wall construction.',
+        description: 'Work out bricks, blocks, mortar and wall ties for your walls.',
         tools: [
             {
                 title: 'Brick Calculator',
