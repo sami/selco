@@ -138,8 +138,10 @@ export function calculateWallTies(netArea: number, openings: Opening[]): WallTie
 }
 
 export function calculateLintels(openings: Opening[]): LintelResult[] {
-    // Stub implementation
-    return [];
+    return openings.map((opening) => ({
+        width: opening.width,
+        lintelLength: opening.width * 1000 + 300,
+    }));
 }
 
 export function calculateDPC(walls: WallSection[], wallType: WallType): DPCResult {
