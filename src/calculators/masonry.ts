@@ -28,9 +28,10 @@ export const UNITS_PER_M2 = {
 };
 
 export const MORTAR_PER_M2 = {
-    'half-brick': 0.024,
-    'one-brick': 0.048,
-    'blockwork': 0.009,
+    'half-brick': 0.043,
+    'one-brick': 0.086,
+    'blockwork': 0.011,
+    'cavity': 0.054, // 0.043 (brick) + 0.011 (block)
 };
 
 export const WALL_TYPES: { value: WallType; label: string }[] = [
@@ -38,6 +39,11 @@ export const WALL_TYPES: { value: WallType; label: string }[] = [
     { value: 'one-brick', label: 'Double Skin Brick (215mm)' },
     { value: 'cavity', label: 'Cavity Wall (Brick & Block)' },
     { value: 'blockwork', label: 'Single Skin Blockwork' },
+];
+
+export const SAND_BAG_SIZES = [
+    { value: 'jumbo', label: 'Jumbo Bag (875 kg)', kg: 875 },
+    { value: 'large', label: 'Large Bag (35 kg)', kg: 35 },
 ];
 
 export function calculateWallArea(walls: WallSection[], openings: Opening[]): WallAreaResult {
@@ -80,9 +86,41 @@ export function calculateBlocks(netArea: number, wallType: WallType, blockWidth:
     return Math.ceil(totalBlocks);
 }
 
-export function calculateMortar(netArea: number, wallType: WallType, mixRatio: MortarMixRatio, wastage: number): MortarResult {
-    // Stub implementation
-    return { wetVolume: 0, cementBags: 0, sandTonnes: 0, sandKg: 0, sandBags: 0, sandBagSizeKg: 0 };
+export function calculateMortar(
+    netArea: number,
+    wallType: WallType,
+    mixRatio: MortarMixRatio,
+    wastage: number,
+    sandBagSize: 'jumbo' | 'large'
+): MortarResult {
+    const rate = MORTAR_PER_M2[wallType];
+    const wetVolume = netArea * rate * (1 + wastage / 100);
+    const dryVolume = wetVolume * 1.33;
+
+    // Parse mix ratio (e.g. "1:4")
+    const parts = parseInt(mixRatio.split(':')[1], 10) + 1;
+    const sandRatio = (parts - 1) / parts;
+    const cementRatio = 1 / parts;
+
+    const cementVolume = dryVolume * cementRatio;
+    const sandVolume = dryVolume * sandRatio;
+
+    const cementKg = cementVolume * 1440;
+    const cementBags = Math.ceil(cementKg / 25);
+
+    const sandKg = sandVolume * 1600;
+    const sandBagSizeKg = sandBagSize === 'jumbo' ? 875 : 35;
+    const sandBags = Math.ceil(sandKg / sandBagSizeKg);
+    const sandTonnes = sandKg / 1000;
+
+    return {
+        wetVolume,
+        cementBags,
+        sandTonnes,
+        sandKg,
+        sandBags,
+        sandBagSizeKg,
+    };
 }
 
 export function calculateWallTies(netArea: number, openings: Opening[]): WallTiesResult {
