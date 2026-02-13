@@ -74,8 +74,10 @@ export function calculateBricks(netArea: number, wallType: WallType, wastage: nu
 }
 
 export function calculateBlocks(netArea: number, wallType: WallType, blockWidth: number, wastage: number): number {
-    // Stub implementation
-    return 0;
+    const blocksPerM2 = UNITS_PER_M2.blocks[wallType];
+    const baseBlocks = netArea * blocksPerM2;
+    const totalBlocks = baseBlocks * (1 + wastage / 100);
+    return Math.ceil(totalBlocks);
 }
 
 export function calculateMortar(netArea: number, wallType: WallType, mixRatio: MortarMixRatio, wastage: number): MortarResult {
