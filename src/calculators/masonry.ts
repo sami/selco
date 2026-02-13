@@ -41,8 +41,29 @@ export const WALL_TYPES: { value: WallType; label: string }[] = [
 ];
 
 export function calculateWallArea(walls: WallSection[], openings: Opening[]): WallAreaResult {
-    // Stub implementation
-    return { grossArea: 0, openingArea: 0, netArea: 0 };
+    if (!walls || walls.length === 0) {
+        throw new Error('At least one wall section is required.');
+    }
+
+    let grossArea = 0;
+    for (const wall of walls) {
+        if (wall.length <= 0 || wall.height <= 0) {
+            throw new Error('Wall dimensions must be greater than zero.');
+        }
+        grossArea += wall.length * wall.height;
+    }
+
+    let openingArea = 0;
+    for (const opening of openings) {
+        if (opening.width < 0 || opening.height < 0) {
+            throw new Error('Opening dimensions must not be negative.');
+        }
+        openingArea += opening.width * opening.height;
+    }
+
+    const netArea = Math.max(0, grossArea - openingArea);
+
+    return { grossArea, openingArea, netArea };
 }
 
 export function calculateBricks(netArea: number, wallType: WallType, wastage: number): number {
@@ -57,7 +78,7 @@ export function calculateBlocks(netArea: number, wallType: WallType, blockWidth:
 
 export function calculateMortar(netArea: number, wallType: WallType, mixRatio: MortarMixRatio, wastage: number): MortarResult {
     // Stub implementation
-    return { wetVolume: 0, cementBags: 0, sandTonnes: 0 };
+    return { wetVolume: 0, cementBags: 0, sandTonnes: 0, sandKg: 0, sandBags: 0, sandBagSizeKg: 0 };
 }
 
 export function calculateWallTies(netArea: number, openings: Opening[]): WallTiesResult {
@@ -81,7 +102,7 @@ export function calculateMasonry(input: MasonryInput): MasonryResult {
         area: { grossArea: 0, openingArea: 0, netArea: 0 },
         bricks: 0,
         blocks: 0,
-        mortar: { wetVolume: 0, cementBags: 0, sandTonnes: 0 },
+        mortar: { wetVolume: 0, cementBags: 0, sandTonnes: 0, sandKg: 0, sandBags: 0, sandBagSizeKg: 0 },
         wallTies: { general: 0, atOpenings: 0, total: 0 },
         lintels: [],
         dpc: { length: 0, widthMm: 0 },
