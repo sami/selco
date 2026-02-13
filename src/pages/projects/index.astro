@@ -1,7 +1,9 @@
 ---
 import BaseLayout from '../../layouts/BaseLayout.astro';
+import { projects } from '../../data/projects';
 
-const base = import.meta.env.BASE_URL.endsWith('/') ? import.meta.env.BASE_URL : `${import.meta.env.BASE_URL}/`;
+const BASE_URL = import.meta.env.BASE_URL;
+const base = BASE_URL.endsWith('/') ? BASE_URL : `${BASE_URL}/`;
 ---
 
 <BaseLayout
@@ -22,17 +24,31 @@ const base = import.meta.env.BASE_URL.endsWith('/') ? import.meta.env.BASE_URL :
 
     {/* Project Cards */}
     <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5 mb-16">
-      <a
-        href={`${base}projects/tiling/`}
-        class="group flex flex-col p-5 md:p-6 bg-surface rounded-[--radius-card] border border-border card-shadow hover:border-brand-blue/40 hover:-translate-y-0.5 hover:shadow-md transition-all duration-200 focus-ring"
-      >
-        <h3 class="font-bold text-surface-foreground group-hover:text-brand-blue transition-colors mb-1">
-          Tiling Project
-        </h3>
-        <p class="text-sm text-muted-foreground leading-relaxed">
-          Calculate tiles, adhesive, grout, and spacers in one go.
-        </p>
-      </a>
+      {projects.map((project) => (
+        <a
+          href={`${base}${project.href}`}
+          class="group flex flex-col p-5 md:p-6 bg-surface rounded-[--radius-card] border border-border card-shadow hover:border-brand-blue/40 hover:-translate-y-0.5 hover:shadow-md transition-all duration-200 focus-ring"
+        >
+          <div class="flex items-start justify-between mb-4">
+              <span class="text-[11px] font-medium text-muted-foreground bg-muted px-2 py-0.5 rounded-full uppercase tracking-wider">
+                Project
+              </span>
+          </div>
+          <h3 class="font-bold text-lg text-surface-foreground group-hover:text-brand-blue transition-colors mb-2">
+            {project.title}
+          </h3>
+          <p class="text-sm text-muted-foreground leading-relaxed mb-4">
+            {project.description}
+          </p>
+           <div class="mt-auto pt-4 border-t border-border/50 flex flex-wrap gap-2">
+               {project.tools.slice(0, 3).map(tool => (
+                 <span class="text-xs text-muted-foreground bg-muted/50 px-2 py-1 rounded">
+                   {tool.title}
+                 </span>
+               ))}
+            </div>
+        </a>
+      ))}
     </div>
 
     {/* Empty State / Coming Soon */}
@@ -48,7 +64,7 @@ const base = import.meta.env.BASE_URL.endsWith('/') ? import.meta.env.BASE_URL :
         href={`${base}calculators/`}
         class="inline-flex items-center gap-2 px-6 py-3 bg-brand-yellow text-brand-blue font-bold text-sm rounded-[--radius-button] shadow-sm hover:brightness-105 active:scale-[0.98] transition-all focus-ring"
       >
-        Browse calculators
+        Browse all calculators
       </a>
     </div>
 

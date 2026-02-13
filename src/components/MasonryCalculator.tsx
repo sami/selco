@@ -24,8 +24,20 @@ const mixRatioOptions = [
 
 const sandBagOptions = SAND_BAG_SIZES.map((s) => ({ value: s.value, label: s.label }));
 
-export default function MasonryCalculator() {
-    const [wallType, setWallType] = useState<WallType>('cavity');
+export interface MasonryCalculatorProps {
+    title?: string;
+    description?: string;
+    defaultWallType?: WallType;
+    hideFields?: string[];
+}
+
+export default function MasonryCalculator({
+    title = "Masonry Calculator",
+    description = "Calculate bricks, blocks, mortar, and wall ties for any wall.",
+    defaultWallType = "cavity",
+    hideFields = [],
+}: MasonryCalculatorProps) {
+    const [wallType, setWallType] = useState<WallType>(defaultWallType);
     const [blockWidth, setBlockWidth] = useState('100');
     const [walls, setWalls] = useState<Array<{ length: string; height: string }>>([{ length: '', height: '' }]);
     const [openings, setOpenings] = useState<Array<{ width: string; height: string }>>([]);
@@ -39,8 +51,8 @@ export default function MasonryCalculator() {
     const [error, setError] = useState<string | null>(null);
 
     // Visibility logic
-    const showBlocks = wallType === 'cavity' || wallType === 'blockwork';
-    const showCavityWidth = wallType === 'cavity';
+    const showBlocks = (wallType === 'cavity' || wallType === 'blockwork') && !hideFields.includes('block-width');
+    const showCavityWidth = wallType === 'cavity' && !hideFields.includes('cavity-width');
 
     // Wall repeater logic
     const addWall = () => {
@@ -193,7 +205,7 @@ export default function MasonryCalculator() {
     }, [wallType, walls, openings, blockWidth, mixRatio, unitWaste, mortarWaste, cavityWidth, sandBagSize]);
 
     const handleReset = useCallback(() => {
-        setWallType('cavity');
+        setWallType(defaultWallType);
         setBlockWidth('100');
         setWalls([{ length: '', height: '' }]);
         setOpenings([]);
@@ -205,7 +217,7 @@ export default function MasonryCalculator() {
         setResults([]);
         setHasResults(false);
         setError(null);
-    }, []);
+    }, [defaultWallType]);
 
     const fieldGroups: FieldGroup[] = [
         {
@@ -394,8 +406,8 @@ export default function MasonryCalculator() {
 
     return (
         <CalculatorLayout
-            title="Masonry Calculator"
-            description="Calculate bricks, blocks, mortar, and wall ties for any wall."
+            title={title}
+            description={description}
             fieldGroups={fieldGroups}
             results={results}
             hasResults={hasResults}

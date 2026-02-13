@@ -2,12 +2,13 @@
 import MobileMenu from './MobileMenu';
 
 const currentPath = Astro.url.pathname;
-const base = import.meta.env.BASE_URL;
+const RAW_BASE = import.meta.env.BASE_URL;
+const base = RAW_BASE.endsWith('/') ? RAW_BASE : `${RAW_BASE}/`;
 
 const navLinks = [
   { href: base, label: 'Home' },
-  { href: `${base}/projects`, label: 'Projects' },
-  { href: `${base}/calculators`, label: 'Calculators' },
+  { href: `${base}projects/`, label: 'Projects' },
+  { href: `${base}calculators/`, label: 'Calculators' },
 ];
 
 const normalize = (path: string) => path.endsWith('/') ? path.slice(0, -1) : path;
