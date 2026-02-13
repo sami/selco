@@ -5,8 +5,8 @@ import CalculatorLayout, {
     type ResultItem,
     type FieldGroup,
 } from './CalculatorLayout';
-import { calculateMasonry, WALL_TYPES } from '../calculators/masonry';
-import type { WallType, MortarMixRatio } from '../calculators/types';
+import { calculateMasonry, WALL_TYPES, SAND_BAG_SIZES } from '../calculators/masonry';
+import type { WallType, MortarMixRatio, SandBagSize } from '../calculators/types';
 
 const wallTypeOptions = WALL_TYPES.map((t) => ({ value: t.value, label: t.label }));
 
@@ -22,6 +22,8 @@ const mixRatioOptions = [
     { value: '1:6', label: '1:6 (lightweight block)' },
 ];
 
+const sandBagOptions = SAND_BAG_SIZES.map((s) => ({ value: s.value, label: s.label }));
+
 export default function MasonryCalculator() {
     const [wallType, setWallType] = useState<WallType>('cavity');
     const [blockWidth, setBlockWidth] = useState('100');
@@ -31,6 +33,7 @@ export default function MasonryCalculator() {
     const [unitWaste, setUnitWaste] = useState('5');
     const [mortarWaste, setMortarWaste] = useState('10');
     const [cavityWidth, setCavityWidth] = useState('100');
+    const [sandBagSize, setSandBagSize] = useState<SandBagSize>('jumbo');
     const [results, setResults] = useState<ResultItem[]>([]);
     const [hasResults, setHasResults] = useState(false);
     const [error, setError] = useState<string | null>(null);
@@ -76,7 +79,7 @@ export default function MasonryCalculator() {
 
     const updateOpening = (index: number, field: 'width' | 'height', value: string) => {
         const newOpenings = [...openings];
-        newOpenings[index][field] = value;
+        newOpenings.splice(index, 1);
         setOpenings(newOpenings);
         setError(null);
     };
@@ -136,7 +139,8 @@ export default function MasonryCalculator() {
                 mixRatio,
                 unitWaste: parseFloat(unitWaste),
                 mortarWaste: parseFloat(mortarWaste),
-                cavityWidth: parseFloat(cavityWidth),
+                cavityWidth: parseFloat(cavityWidth) || 0,
+                sandBagSize,
             });
 
             const items: ResultItem[] = [];
@@ -157,10 +161,12 @@ export default function MasonryCalculator() {
                 });
             }
 
+            const sandBagLabel = sandBagSize === 'jumbo' ? 'Sand (Jumbo bags)' : 'Sand (Large bags)';
+
             items.push(
                 { label: 'Cement', value: `${result.mortar.cementBags} × 25 kg bags` },
-                { label: 'Sand', value: `${result.mortar.sandTonnes} tonnes` },
-                { label: 'Mortar volume', value: `${result.mortar.wetVolume} m³` },
+                { label: sandBagLabel, value: `${result.mortar.sandBags} × ${result.mortar.sandBagSizeKg} kg bags` },
+                { label: 'Sand mass', value: `${result.mortar.sandTonnes.toFixed(2)} tonnes` },
             );
 
             if (result.wallTies.total > 0) {
@@ -176,8 +182,8 @@ export default function MasonryCalculator() {
 
             items.push(
                 { label: 'DPC', value: `${result.dpc.length} m × ${result.dpc.widthMm} mm` },
-                { label: 'Gross area', value: `${result.area.grossArea} m²` },
-                { label: 'Net area', value: `${result.area.netArea} m²` },
+                { label: 'Gross area', value: `${result.area.grossArea.toFixed(2)} m²` },
+                { label: 'Net area', value: `${result.area.netArea.toFixed(2)} m²` },
             );
 
             setResults(items);
@@ -186,7 +192,7 @@ export default function MasonryCalculator() {
             setError(e instanceof Error ? e.message : 'An unexpected error occurred.');
             setHasResults(false);
         }
-    }, [wallType, walls, openings, blockWidth, mixRatio, unitWaste, mortarWaste, cavityWidth]);
+    }, [wallType, walls, openings, blockWidth, mixRatio, unitWaste, mortarWaste, cavityWidth, sandBagSize]);
 
     const handleReset = useCallback(() => {
         setWallType('cavity');
@@ -197,6 +203,7 @@ export default function MasonryCalculator() {
         setUnitWaste('5');
         setMortarWaste('10');
         setCavityWidth('100');
+        setSandBagSize('jumbo');
         setResults([]);
         setHasResults(false);
         setError(null);
@@ -329,9 +336,16 @@ export default function MasonryCalculator() {
             ),
         },
         {
-            legend: 'Mortar & waste',
+            legend: 'Materials & Waste',
             children: (
                 <div className="space-y-4">
+                    <FormSelect
+                        id="sand-bag-size"
+                        label="Sand bag size"
+                        value={sandBagSize}
+                        onChange={(v) => { setSandBagSize(v as SandBagSize); setError(null); }}
+                        options={sandBagOptions}
+                    />
                     <FormSelect
                         id="mix-ratio"
                         label="Mortar mix ratio"
