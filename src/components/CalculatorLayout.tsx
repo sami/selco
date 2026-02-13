@@ -285,24 +285,7 @@ export default function CalculatorLayout({
                             {hasResults ? <ResultsPanel results={results} /> : <ResultsEmptyState />}
                         </div>
 
-                        {/* Future: Save to Project */}
-                        {hasResults && (
-                            <div className="border-t border-[--color-border] p-4">
-                                <button
-                                    type="button"
-                                    disabled
-                                    className="
-                    w-full h-10 text-sm font-medium
-                    text-[--color-muted-foreground] bg-[--color-muted]
-                    rounded-[--radius-button]
-                    cursor-not-allowed opacity-60
-                    flex items-center justify-center gap-2
-                  "
-                                >
-                                    Save to project (coming soon)
-                                </button>
-                            </div>
-                        )}
+
                     </div>
                 </div>
             </div>
