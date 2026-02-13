@@ -1,65 +1,14 @@
 ---
 import BaseLayout from '../../layouts/BaseLayout.astro';
+import { projects, standaloneTools } from '../../data/projects';
 
-const base = import.meta.env.BASE_URL.endsWith('/') ? import.meta.env.BASE_URL : `${import.meta.env.BASE_URL}/`;
-
-interface Calculator {
-  title: string;
-  href: string;
-  desc: string;
-  category: string;
-}
-
-const calculators: Calculator[] = [
-  {
-    title: "Tiles",
-    href: "calculators/tiles/",
-    desc: "Calculate how many tiles you need for walls and floors based on area, tile size, and layout pattern.",
-    category: "Tiling",
-  },
-  {
-    title: "Adhesive",
-    href: "calculators/adhesive/",
-    desc: "Estimate adhesive coverage and the number of bags required for your tile area and substrate type.",
-    category: "Tiling",
-  },
-  {
-    title: "Grout",
-    href: "calculators/grout/",
-    desc: "Work out how much grout you need based on tile size, joint width, and the total area to cover.",
-    category: "Tiling",
-  },
-  {
-    title: "Spacers",
-    href: "calculators/spacers/",
-    desc: "Calculate the number of spacers you need for your tiling job based on tile count and layout.",
-    category: "Tiling",
-  },
-  {
-    title: "Conversions",
-    href: "calculators/conversions/",
-    desc: "Convert between metric and imperial measurements — millimetres, centimetres, metres, inches, and feet.",
-    category: "General",
-  },
-  {
-    title: "Masonry",
-    href: "calculators/masonry/",
-    desc: "Calculate bricks, blocks, mortar, and wall ties for any masonry wall — half-brick, one-brick, cavity, or blockwork.",
-    category: "Masonry",
-  },
-];
-
-// Group calculators by category
-const categories = [...new Set(calculators.map(c => c.category))];
-const grouped = categories.map(cat => ({
-  name: cat,
-  items: calculators.filter(c => c.category === cat),
-}));
+const BASE_URL = import.meta.env.BASE_URL;
+const base = BASE_URL.endsWith('/') ? BASE_URL : `${BASE_URL}/`;
 ---
 
 <BaseLayout
   title="Calculators | Trade Materials Calculator"
-  description="Browse all trade calculators. Estimate tiles, adhesive, grout, spacers, and convert measurements."
+  description="Browse all trade calculators. Estimate tiles, masonry, adhesive, and more."
 >
   <div class="space-y-10 pb-12">
 
@@ -70,7 +19,7 @@ const grouped = categories.map(cat => ({
           Calculators
         </h1>
         <p class="text-muted-foreground text-base md:text-lg">
-          Estimate materials for your next project.
+          Browse all tools by project or category.
         </p>
       </div>
 
@@ -92,43 +41,77 @@ const grouped = categories.map(cat => ({
       </div>
     </section>
 
-    {/* Grouped Calculator Grid */}
+    {/* Grouped Tool Grid */}
     <div class="space-y-10" id="calculator-groups">
-      {grouped.map((group) => (
-        <section data-group={group.name.toLowerCase()}>
+      
+      {/* Project-based Tools */}
+      {projects.map((project) => (
+        <section data-group={project.title.toLowerCase()}>
           <h2 class="text-lg font-semibold text-surface-foreground mb-4 flex items-center gap-2">
-            {group.name}
+            {project.title} Tools
             <span class="text-xs font-normal text-muted-foreground bg-muted px-2 py-0.5 rounded-full">
-              {group.items.length}
+              {project.tools.length}
             </span>
           </h2>
           <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-5">
-            {group.items.map((calc) => (
+            {project.tools.map((tool) => (
               <a
-                href={`${base}${calc.href}`}
+                href={`${base}${tool.href}`}
                 class="group flex flex-col p-6 bg-surface rounded-[--radius-card] border border-border card-shadow hover:border-brand-blue/40 hover:-translate-y-0.5 hover:shadow-md transition-all duration-200 focus-ring"
-                data-name={calc.title.toLowerCase()}
-                data-category={calc.category.toLowerCase()}
+                data-name={tool.title.toLowerCase()}
+                data-category={project.title.toLowerCase()}
               >
                 <div class="flex items-start justify-between mb-4">
-                  <span class="text-[11px] font-medium text-muted-foreground bg-muted px-2 py-0.5 rounded-full">
-                    {calc.category}
+                  <span class="text-[11px] font-medium text-muted-foreground bg-muted px-2 py-0.5 rounded-full uppercase tracking-wider">
+                    {project.title}
                   </span>
                 </div>
                 <h3 class="font-bold text-surface-foreground group-hover:text-brand-blue transition-colors mb-2">
-                  {calc.title}
+                  {tool.title}
                 </h3>
                 <p class="text-sm text-muted-foreground leading-relaxed">
-                  {calc.desc}
+                  {tool.description}
                 </p>
               </a>
             ))}
           </div>
         </section>
       ))}
+
+      {/* General Tools */}
+      <section data-group="general">
+        <h2 class="text-lg font-semibold text-surface-foreground mb-4 flex items-center gap-2">
+            General Tools
+            <span class="text-xs font-normal text-muted-foreground bg-muted px-2 py-0.5 rounded-full">
+              {standaloneTools.length}
+            </span>
+        </h2>
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-5">
+             {standaloneTools.map((tool) => (
+              <a
+                href={`${base}${tool.href}`}
+                class="group flex flex-col p-6 bg-surface rounded-[--radius-card] border border-border card-shadow hover:border-brand-blue/40 hover:-translate-y-0.5 hover:shadow-md transition-all duration-200 focus-ring"
+                data-name={tool.title.toLowerCase()}
+                data-category="general"
+              >
+                <div class="flex items-start justify-between mb-4">
+                  <span class="text-[11px] font-medium text-muted-foreground bg-muted px-2 py-0.5 rounded-full uppercase tracking-wider">
+                    General
+                  </span>
+                </div>
+                <h3 class="font-bold text-surface-foreground group-hover:text-brand-blue transition-colors mb-2">
+                  {tool.title}
+                </h3>
+                <p class="text-sm text-muted-foreground leading-relaxed">
+                  {tool.description}
+                </p>
+              </a>
+            ))}
+        </div>
+      </section>
     </div>
 
-    {/* Empty state (hidden by default, shown when search yields no results) */}
+    {/* Empty state */}
     <div id="no-results" class="hidden text-center py-12">
       <div class="w-12 h-12 rounded-full bg-muted flex items-center justify-center mx-auto mb-4">
         <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="text-muted-foreground">
@@ -136,8 +119,7 @@ const grouped = categories.map(cat => ({
           <path d="m21 21-4.3-4.3" />
         </svg>
       </div>
-      <p class="text-muted-foreground font-medium">No calculators match your search.</p>
-      <p class="text-sm text-muted-foreground/70 mt-1">Try a different term or clear the search.</p>
+      <p class="text-muted-foreground font-medium">No tools match your search.</p>
     </div>
   </div>
 

@@ -16,40 +16,10 @@ const jsonLd = {
   }
 };
 
-const base = import.meta.env.BASE_URL.endsWith('/') ? import.meta.env.BASE_URL : `${import.meta.env.BASE_URL}/`;
+import { projects, standaloneTools } from '../data/projects';
 
-const calculators = [
-  {
-    title: "Tiles",
-    href: "calculators/tiles/",
-    desc: "Work out how many tiles you need for walls and floors.",
-  },
-  {
-    title: "Adhesive",
-    href: "calculators/adhesive/",
-    desc: "Estimate adhesive coverage for your tile area.",
-  },
-  {
-    title: "Grout",
-    href: "calculators/grout/",
-    desc: "Calculate the number of grout bags required.",
-  },
-  {
-    title: "Spacers",
-    href: "calculators/spacers/",
-    desc: "Find out how many spacers to buy for your layout.",
-  },
-  {
-    title: "Conversions",
-    href: "calculators/conversions/",
-    desc: "Convert between metric and imperial measurements.",
-  },
-  {
-    title: "Masonry",
-    href: "calculators/masonry/",
-    desc: "Calculate bricks, blocks, mortar, and wall ties for any wall.",
-  },
-];
+const BASE_URL = import.meta.env.BASE_URL;
+const base = BASE_URL.endsWith('/') ? BASE_URL : `${BASE_URL}/`;
 ---
 
 <BaseLayout
@@ -63,16 +33,60 @@ const calculators = [
     <section class="pt-8 md:pt-12 space-y-6">
       <div class="space-y-2">
         <h1 class="text-2xl md:text-3xl font-bold text-surface-foreground tracking-tight">
-          What are you working on today?
+          What are you building today?
         </h1>
         <p class="text-muted-foreground text-base md:text-lg">
-          Jump straight into a calculator, or search for what you need.
+          Start a new project or find a quick calculator.
         </p>
       </div>
 
-      {/* Search Input */}
-      <div class="relative max-w-md">
+      {/* Projects Grid */}
+      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
+        {projects.map((project) => (
+          <a
+            href={`${base}${project.href}`}
+            class="group flex flex-col p-6 bg-surface rounded-[--radius-card] border border-border card-shadow hover:border-brand-blue/40 hover:-translate-y-0.5 hover:shadow-md transition-all duration-200 focus-ring"
+          >
+            <div class="flex items-start justify-between mb-4">
+              <span class="text-[11px] font-medium text-muted-foreground bg-muted px-2 py-0.5 rounded-full uppercase tracking-wider">
+                Project
+              </span>
+            </div>
+            <h3 class="font-bold text-lg text-surface-foreground group-hover:text-brand-blue transition-colors mb-2">
+              {project.title}
+            </h3>
+            <p class="text-sm text-muted-foreground leading-relaxed">
+              {project.description}
+            </p>
+            <div class="mt-4 pt-4 border-t border-border/50 flex flex-wrap gap-2">
+               {project.tools.slice(0, 3).map(tool => (
+                 <span class="text-xs text-muted-foreground bg-muted/50 px-2 py-1 rounded">
+                   {tool.title}
+                 </span>
+               ))}
+               {project.tools.length > 3 && (
+                 <span class="text-xs text-muted-foreground bg-muted/50 px-2 py-1 rounded">
+                   +{project.tools.length - 3} more
+                 </span>
+               )}
+            </div>
+          </a>
+        ))}
+        
+        {/* 'More Projects' Placeholder */}
+         <div class="flex flex-col p-6 bg-muted/10 rounded-[--radius-card] border border-border border-dashed justify-center items-center text-center space-y-2">
+            <h3 class="font-semibold text-muted-foreground">More Coming Soon</h3>
+            <p class="text-sm text-muted-foreground/70">Plumbing, Painting, Electrical...</p>
+         </div>
+      </div>
+    </section>
 
+    {/* Quick Tools Section */}
+    <section class="space-y-6">
+      <h2 class="text-xl font-bold text-surface-foreground">Quick Calculators</h2>
+      
+      {/* Search Input */}
+      <div class="relative max-w-md mb-6">
         <label for="calculator-search" class="sr-only">Search calculators</label>
         <input
           type="text"
@@ -81,57 +95,49 @@ const calculators = [
           id="calculator-search"
         />
       </div>
-    </section>
 
-    {/* Calculator Quick-Access Grid */}
-    <section>
-      <h2 class="sr-only">Calculators</h2>
-      <div class="grid grid-cols-2 lg:grid-cols-3 gap-4 md:gap-5" id="calculator-grid">
-        {calculators.map((calc) => (
-          <a
-            href={`${base}${calc.href}`}
-            class="group flex flex-col p-5 md:p-6 bg-surface rounded-[--radius-card] border border-border card-shadow hover:border-brand-blue/40 hover:-translate-y-0.5 hover:shadow-md transition-all duration-200 focus-ring"
-            data-name={calc.title.toLowerCase()}
+      <div class="grid grid-cols-2 lg:grid-cols-4 gap-4" id="tool-grid">
+        {/* Standalone Tools */}
+        {standaloneTools.map((tool) => (
+           <a
+            href={`${base}${tool.href}`}
+            class="group flex flex-col p-5 bg-surface rounded-[--radius-card] border border-border hover:border-brand-blue/40 hover:shadow-sm transition-all focus-ring"
+            data-name={tool.title.toLowerCase()}
+            data-category="general"
           >
-            <h3 class="font-bold text-surface-foreground group-hover:text-brand-blue transition-colors mb-1">
-              {calc.title}
+             <span class="text-[10px] font-semibold text-muted-foreground mb-1 uppercase tracking-wide">General</span>
+            <h3 class="font-semibold text-surface-foreground group-hover:text-brand-blue transition-colors mb-1">
+              {tool.title}
             </h3>
-            <p class="text-sm text-muted-foreground leading-relaxed">
-              {calc.desc}
+            <p class="text-xs text-muted-foreground line-clamp-2">
+              {tool.description}
+            </p>
+          </a>
+        ))}
+
+        {/* Project Tools (Flattened for Quick Access) */}
+        {projects.flatMap(p => p.tools.map(t => ({...t, category: p.title}))).map((tool) => (
+           <a
+            href={`${base}${tool.href}`}
+            class="group flex flex-col p-5 bg-surface rounded-[--radius-card] border border-border hover:border-brand-blue/40 hover:shadow-sm transition-all focus-ring"
+            data-name={tool.title.toLowerCase()}
+            data-category={tool.category.toLowerCase()}
+          >
+            <span class="text-[10px] font-semibold text-muted-foreground mb-1 uppercase tracking-wide">{tool.category}</span>
+            <h3 class="font-semibold text-surface-foreground group-hover:text-brand-blue transition-colors mb-1">
+              {tool.title}
+            </h3>
+            <p class="text-xs text-muted-foreground line-clamp-2">
+              {tool.description}
             </p>
           </a>
         ))}
       </div>
-    </section>
-
-    {/* Tiling Project Spotlight */}
-    <section>
-      <a
-        href={`${base}projects/tiling/`}
-        class="group block rounded-[--radius-card] bg-gradient-to-br from-brand-blue to-blue-900 p-6 md:p-8 text-white overflow-hidden relative focus-ring"
-      >
-        <div class="flex flex-col md:flex-row items-start md:items-center gap-5 md:gap-8">
-          <div class="flex-1 space-y-1">
-            <h3 class="text-lg md:text-xl font-bold">Planning a tiling project?</h3>
-            <p class="text-blue-200 text-sm md:text-base">
-              Calculate tiles, adhesive, grout, and spacers in one go.
-            </p>
-          </div>
-          <div class="shrink-0">
-            <span class="inline-flex items-center px-5 py-2.5 bg-brand-yellow text-brand-blue font-bold text-sm rounded-[--radius-button] group-hover:scale-105 transition-transform duration-200 shadow-sm">
-              Start project
-            </span>
-          </div>
-        </div>
-      </a>
-    </section>
-
-    {/* Quick Tip */}
-    <section class="p-5 bg-surface rounded-[--radius-card] border border-border">
-      <h3 class="font-semibold text-surface-foreground text-sm">Quick tip</h3>
-      <p class="text-sm text-muted-foreground mt-0.5">
-        Always add 10% extra to your tile quantity to account for cuts, breakages, and pattern matching.
-      </p>
+      
+       {/* Empty state */}
+       <div id="no-results" class="hidden text-center py-8">
+         <p class="text-muted-foreground font-medium">No calculators found.</p>
+       </div>
     </section>
 
   </div>
@@ -139,19 +145,24 @@ const calculators = [
   {/* Client-side search filtering */}
   <script>
     const searchInput = document.getElementById('calculator-search') as HTMLInputElement;
-    const grid = document.getElementById('calculator-grid');
+    const grid = document.getElementById('tool-grid');
+    const noResults = document.getElementById('no-results');
 
-    if (searchInput && grid) {
+    if (searchInput && grid && noResults) {
       searchInput.addEventListener('input', () => {
         const query = searchInput.value.toLowerCase().trim();
-        const cards = grid.querySelectorAll<HTMLAnchorElement>('a[data-name]');
+        let totalVisible = 0;
 
+        const cards = grid.querySelectorAll<HTMLAnchorElement>('a[data-name]');
         cards.forEach((card) => {
           const name = card.dataset.name ?? '';
-          const desc = card.querySelector('p')?.textContent?.toLowerCase() ?? '';
-          const matches = !query || name.includes(query) || desc.includes(query);
+          const category = card.dataset.category ?? '';
+          const matches = !query || name.includes(query) || category.includes(query);
           card.style.display = matches ? '' : 'none';
+          if (matches) totalVisible++;
         });
+
+        noResults.classList.toggle('hidden', totalVisible > 0);
       });
     }
   </script>

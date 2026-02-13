@@ -1,0 +1,53 @@
+---
+import BaseLayout from '../../../layouts/BaseLayout.astro';
+import MasonryCalculator from '../../../components/MasonryCalculator';
+
+const BASE_URL = import.meta.env.BASE_URL;
+const base = BASE_URL.endsWith('/') ? BASE_URL : `${BASE_URL}/`;
+---
+
+<BaseLayout
+  title="Brick Calculator | Calculate Bricks Needed for Walls"
+  description="Calculate how many bricks you need for a single skin, double skin, or cavity wall. Includes mortar estimates."
+>
+  <div class="container mx-auto px-4 pt-6 md:pt-10 pb-16">
+    <nav aria-label="Breadcrumb" class="mb-6 text-sm text-muted-foreground">
+      <ol class="flex items-center gap-1.5 flex-wrap">
+        <li><a href={base} class="hover:text-brand-blue transition-colors">Home</a></li>
+        <li class="text-border">/</li>
+        <li><a href={`${base}projects/masonry/`} class="hover:text-brand-blue transition-colors">Masonry</a></li>
+        <li class="text-border">/</li>
+        <li class="text-surface-foreground font-medium">Brick Calculator</li>
+      </ol>
+    </nav>
+
+    <div class="max-w-3xl mx-auto">
+      <header class="mb-8">
+        <h1 class="text-3xl md:text-4xl font-bold text-surface-foreground mb-4">
+          Brick Calculator
+        </h1>
+        <p class="text-lg text-muted-foreground leading-relaxed">
+          Accurately calculate the number of bricks required for your wall. Supports standard UK brick sizes (215mm x 65mm) with 10mm mortar joints.
+        </p>
+      </header>
+
+      <div class="bg-surface rounded-xl border border-border p-1 shadow-sm">
+        <MasonryCalculator 
+            client:load 
+            title="Brick Calculator" 
+            description="Enter your wall dimensions to calculate bricks and mortar."
+            defaultWallType="one-brick"
+        />
+      </div>
+
+      <div class="mt-12 prose prose-slate max-w-none text-muted-foreground">
+        <h3>How many bricks do I need?</h3>
+        <ul>
+            <li><strong>Half-brick wall (single skin):</strong> 60 bricks per m²</li>
+            <li><strong>One-brick wall (double skin):</strong> 120 bricks per m²</li>
+        </ul>
+        <p>Always add 5-10% for wastage and cuts.</p>
+      </div>
+    </div>
+  </div>
+</BaseLayout>
