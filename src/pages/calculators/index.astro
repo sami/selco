@@ -1,111 +1,40 @@
 ---
-import BaseLayout from '../../layouts/BaseLayout.astro';
+import SelcoLayout from '../../layouts/SelcoLayout.astro';
+import SelcoSidebar from '../../components/selco/SelcoSidebar.astro';
 import { projects, standaloneTools } from '../../data/projects';
 
 const BASE_URL = import.meta.env.BASE_URL;
 const base = BASE_URL.endsWith('/') ? BASE_URL : `${BASE_URL}/`;
+
+const breadcrumbs = [
+  { label: 'Home', href: base },
+  { label: 'Calculators' } // Current page context
+];
 ---
 
-<BaseLayout
-  title="Calculators | Trade Materials Calculator"
-  description="Browse all trade calculators. Estimate tiles, masonry, adhesive, and more."
+<SelcoLayout
+  title="Calculators | Trade Building Tools"
+  description="All our trade calculators in one place. Bricks, tiles, adhesive, grout, spacers and more."
+  showSidebar={true}
+  breadcrumbs={breadcrumbs}
 >
-  <div class="space-y-10 pb-12">
+  <SelcoSidebar />
 
-    {/* Page Header */}
-    <section class="pt-8 md:pt-12 space-y-6">
-      <div class="space-y-2">
+  <main class="w-full">
+    <div class="space-y-8 pb-12">
+      <div class="space-y-6 pt-4">
         <h1 class="text-2xl md:text-3xl font-bold text-surface-foreground tracking-tight">
-          Calculators
+          All Calculators
         </h1>
-        <p class="text-muted-foreground text-base md:text-lg">
-          Browse all tools by project or category.
-        </p>
-      </div>
-
-      {/* Search Input */}
-      <div class="relative max-w-md">
-        <div class="absolute inset-y-0 left-0 flex items-center pl-4 pointer-events-none text-muted-foreground">
-          <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-            <circle cx="11" cy="11" r="8" />
-            <path d="m21 21-4.3-4.3" />
-          </svg>
-        </div>
-        <label for="calculator-search" class="sr-only">Search calculators</label>
-        <input
-          type="text"
-          placeholder="Search calculators (e.g. bricks, tiles)"
-          class="w-full pl-11 pr-4 py-3 bg-surface border border-border rounded-[--radius-input] text-sm text-surface-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-brand-blue/30 focus:border-brand-blue/40 transition-all"
-          id="calculator-search"
-        />
-      </div>
-    </section>
-
-    {/* Grouped Tool Grid */}
-    <div class="space-y-10" id="calculator-groups">
-      
-      {/* Project-based Tools */}
-      {projects.map((project) => (
-        <section data-group={project.title.toLowerCase()}>
-          <h2 class="text-lg font-semibold text-surface-foreground mb-4 flex items-center gap-2">
-            {project.title} Tools
-            <span class="text-xs font-normal text-muted-foreground bg-muted px-2 py-0.5 rounded-full">
-              {project.tools.length}
-            </span>
-          </h2>
-          <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-5">
-            {project.tools.map((tool) => (
-              <a
-                href={`${base}${tool.href}`}
-                class="group flex flex-col p-6 bg-surface rounded-[--radius-card] border border-border card-shadow hover:border-brand-blue/40 hover:-translate-y-0.5 hover:shadow-md transition-all duration-200 focus-ring"
-                data-name={tool.title.toLowerCase()}
-                data-category={project.title.toLowerCase()}
-              >
-                <div class="flex items-start justify-between mb-4">
-                  <span class="text-[11px] font-medium text-muted-foreground bg-muted px-2 py-0.5 rounded-full uppercase tracking-wider">
-                    {project.title}
-                  </span>
-                </div>
-                <h3 class="font-bold text-surface-foreground group-hover:text-brand-blue transition-colors mb-2">
-                  {tool.title}
-                </h3>
-                <p class="text-sm text-muted-foreground leading-relaxed">
-                  {tool.description}
-                </p>
-              </a>
-            ))}
+        
+        {/* Search Input */}
+        <div class="relative max-w-lg">
+          <label for="calculator-search" class="sr-only">Search calculators</label>
+          <div class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-muted-foreground" viewBox="0 0 20 20" fill="currentColor">
+              <path fill-rule="evenodd" d="M8 4a4 4 0 100 8 4 4 0 000-8zM2 8a6 6 0 1110.89 3.476l4.817 4.817a1 1 0 01-1.414 1.414l-4.816-4.816A6 6 0 012 8z" clip-rule="evenodd" />
+            </svg>
           </div>
-        </section>
-      ))}
-
-      {/* General Tools */}
-      <section data-group="general">
-        <h2 class="text-lg font-semibold text-surface-foreground mb-4 flex items-center gap-2">
-            General Tools
-            <span class="text-xs font-normal text-muted-foreground bg-muted px-2 py-0.5 rounded-full">
-              {standaloneTools.length}
-            </span>
-        </h2>
-        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-5">
-             {standaloneTools.map((tool) => (
-              <a
-                href={`${base}${tool.href}`}
-                class="group flex flex-col p-6 bg-surface rounded-[--radius-card] border border-border card-shadow hover:border-brand-blue/40 hover:-translate-y-0.5 hover:shadow-md transition-all duration-200 focus-ring"
-                data-name={tool.title.toLowerCase()}
-                data-category="general"
-              >
-                <div class="flex items-start justify-between mb-4">
-                  <span class="text-[11px] font-medium text-muted-foreground bg-muted px-2 py-0.5 rounded-full uppercase tracking-wider">
-                    General
-                  </span>
-                </div>
-                <h3 class="font-bold text-surface-foreground group-hover:text-brand-blue transition-colors mb-2">
-                  {tool.title}
-                </h3>
-                <p class="text-sm text-muted-foreground leading-relaxed">
-                  {tool.description}
-                </p>
-              </a>
             ))}
         </div>
       </section>

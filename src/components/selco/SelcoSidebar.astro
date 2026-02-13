@@ -1,0 +1,100 @@
+---
+const RAW_BASE = import.meta.env.BASE_URL;
+const base = RAW_BASE.endsWith('/') ? RAW_BASE : `${RAW_BASE}/`;
+const currentPath = Astro.url.pathname;
+
+const navItems = [
+  { label: 'Home', href: base },
+  { label: 'My Projects', href: `${base}projects/` },
+  { label: 'Calculators', href: `${base}calculators/` },
+];
+
+const normalize = (path: string) => path.endsWith('/') ? path.slice(0, -1) : path;
+const current = normalize(currentPath);
+---
+
+<aside class="sidebar">
+  <div class="sidebar-header">
+    Calculators Menu <i class="fas fa-chevron-down"></i>
+  </div>
+  <ul class="sidebar-list">
+    {navItems.map(item => {
+        const itemHrefNormalized = normalize(item.href);
+        // loose match for sub-paths (e.g. projects/masonry is active for Projects)
+        const isActive = item.href === base 
+            ? current === normalize(base) // Exact match for home
+            : current.startsWith(itemHrefNormalized);
+            
+        return (
+            <li>
+                <a href={item.href} class={isActive ? 'active' : ''}>
+                    {item.label}
+                </a>
+            </li>
+        );
+    })}
+  </ul>
+  
+  <div style="border-top: 1px solid #ccc; margin-top: 10px; padding-top: 10px;">
+    <ul class="sidebar-list">
+       <li><a href="https://www.selcobw.com/info/about-us" target="_blank" rel="noopener noreferrer">About Selco</a></li>
+       <li><a href="https://www.selcobw.com/info/terms-and-conditions" target="_blank" rel="noopener noreferrer">Terms & Conditions</a></li>
+       <li><a href="https://www.selcobw.com/info/privacy-policy" target="_blank" rel="noopener noreferrer">Privacy Policy</a></li>
+    </ul>
+  </div>
+</aside>
+
+<style>
+  .sidebar {
+    margin-top: 10px;
+  }
+  .sidebar-header {
+    background-color: #00264d;
+    color: white;
+    padding: 12px 15px;
+    font-weight: 700;
+    font-size: 0.95rem;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+  .sidebar-list {
+    background-color: #f4f4f4;
+    list-style: none;
+    padding: 0;
+    margin: 0;
+  }
+  .sidebar-list li a {
+    display: block;
+    padding: 10px 15px;
+    border-bottom: 1px solid #ddd;
+    font-size: 0.9rem;
+    color: #555;
+    position: relative;
+    display: flex;
+    align-items: center;
+    text-decoration: none;
+  }
+  .sidebar-list li a::before {
+    content: '\f054';
+    font-family: 'Font Awesome 6 Free';
+    font-weight: 900;
+    font-size: 0.6rem;
+    margin-right: 10px;
+    color: #999;
+  }
+  .sidebar-list li a:hover {
+    background-color: #fff;
+    color: #004B8D;
+  }
+  .sidebar-list li a.active {
+    font-weight: 700;
+    color: #333;
+    background-color: #fff;
+  }
+  @media (max-width: 1024px) {
+    .sidebar {
+      display: none;
+    }
+  }
+</style>

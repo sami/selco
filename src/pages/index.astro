@@ -1,146 +1,141 @@
 ---
-import BaseLayout from '../layouts/BaseLayout.astro';
-
-const jsonLd = {
-  "@context": "https://schema.org",
-  "@type": "WebApplication",
-  "name": "Trade Materials Calculator",
-  "url": Astro.url.href,
-  "description": "Free trade tools to calculate material quantities for building projects. Accurate estimates for tiles, adhesive, grout, spacers, and more.",
-  "applicationCategory": "BusinessApplication",
-  "operatingSystem": "Any",
-  "offers": {
-    "@type": "Offer",
-    "price": "0",
-    "priceCurrency": "GBP"
-  }
-};
-
+import SelcoLayout from '../layouts/SelcoLayout.astro';
+import SelcoSidebar from '../components/selco/SelcoSidebar.astro';
 import { projects, standaloneTools } from '../data/projects';
 
 const BASE_URL = import.meta.env.BASE_URL;
 const base = BASE_URL.endsWith('/') ? BASE_URL : `${BASE_URL}/`;
+
+const breadcrumbs = [
+  { label: 'Home', href: base },
+  { label: 'Calculators' } // Current page context
+];
 ---
 
-<BaseLayout
+<SelcoLayout
   title="Trade Materials Calculator | Building Materials Estimator"
   description="Work out exactly what you need for your next project. Free trade tools to calculate material quantities for building projects."
-  jsonLd={jsonLd}
+  showSidebar={true}
+  breadcrumbs={breadcrumbs}
 >
-  <div class="space-y-12 pb-12">
+  <SelcoSidebar />
 
-    {/* Welcome Section */}
-    <section class="pt-8 md:pt-12 space-y-6">
-      <div class="space-y-2">
-        <h1 class="text-2xl md:text-3xl font-bold text-surface-foreground tracking-tight">
-          What are you building today?
-        </h1>
-        <p class="text-muted-foreground text-base md:text-lg">
-          Start a new job or jump straight into a calculator.
-        </p>
-      </div>
+  <main class="w-full">
+    <div class="space-y-12 pb-12">
 
-      {/* Projects Grid */}
-      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
-        {projects.map((project) => (
-          <a
-            href={`${base}${project.href}`}
-            class="group flex flex-col p-6 bg-surface rounded-[--radius-card] border border-border card-shadow hover:border-brand-blue/40 hover:-translate-y-0.5 hover:shadow-md transition-all duration-200 focus-ring"
-          >
-            <div class="flex items-start justify-between mb-4">
-              <span class="text-[11px] font-medium text-muted-foreground bg-muted px-2 py-0.5 rounded-full uppercase tracking-wider">
-                Project
-              </span>
-            </div>
-            <h3 class="font-bold text-lg text-surface-foreground group-hover:text-brand-blue transition-colors mb-2">
-              {project.title}
-            </h3>
-            <p class="text-sm text-muted-foreground leading-relaxed">
-              {project.description}
-            </p>
-            <div class="mt-4 pt-4 border-t border-border/50 flex flex-wrap gap-2">
-               {project.tools.slice(0, 3).map(tool => (
-                 <span class="text-xs text-muted-foreground bg-muted/50 px-2 py-1 rounded">
-                   {tool.title}
-                 </span>
-               ))}
-               {project.tools.length > 3 && (
-                 <span class="text-xs text-muted-foreground bg-muted/50 px-2 py-1 rounded">
-                   +{project.tools.length - 3} more
-                 </span>
-               )}
-            </div>
-          </a>
-        ))}
+      {/* Welcome Section */}
+      <section class="pt-4 space-y-6">
+        <div class="space-y-2">
+          <h1 class="text-2xl md:text-3xl font-bold text-surface-foreground tracking-tight">
+            What are you building today?
+          </h1>
+          <p class="text-muted-foreground text-base md:text-lg">
+            Start a new job or jump straight into a calculator.
+          </p>
+        </div>
+
+        {/* Projects Grid */}
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
+          {projects.map((project) => (
+            <a
+              href={`${base}${project.href}`}
+              class="group flex flex-col p-6 bg-surface rounded-[--radius-card] border border-border card-shadow hover:border-brand-blue/40 hover:-translate-y-0.5 hover:shadow-md transition-all duration-200 focus-ring"
+            >
+              <div class="flex items-start justify-between mb-4">
+                <span class="text-[11px] font-medium text-muted-foreground bg-muted px-2 py-0.5 rounded-full uppercase tracking-wider">
+                  Project
+                </span>
+              </div>
+              <h3 class="font-bold text-lg text-surface-foreground group-hover:text-brand-blue transition-colors mb-2">
+                {project.title}
+              </h3>
+              <p class="text-sm text-muted-foreground leading-relaxed">
+                {project.description}
+              </p>
+              <div class="mt-4 pt-4 border-t border-border/50 flex flex-wrap gap-2">
+                 {project.tools.slice(0, 3).map(tool => (
+                   <span class="text-xs text-muted-foreground bg-muted/50 px-2 py-1 rounded">
+                     {tool.title}
+                   </span>
+                 ))}
+                 {project.tools.length > 3 && (
+                   <span class="text-xs text-muted-foreground bg-muted/50 px-2 py-1 rounded">
+                     +{project.tools.length - 3} more
+                   </span>
+                 )}
+              </div>
+            </a>
+          ))}
+          
+          {/* 'More Projects' Placeholder */}
+           <div class="flex flex-col p-6 bg-muted/10 rounded-[--radius-card] border border-border border-dashed justify-center items-center text-center space-y-2">
+              <h3 class="font-semibold text-muted-foreground">More Coming Soon</h3>
+              <p class="text-sm text-muted-foreground/70">Plumbing, Painting, Electrical...</p>
+           </div>
+        </div>
+      </section>
+
+      {/* Quick Tools Section */}
+      <section class="space-y-6">
+        <h2 class="text-xl font-bold text-surface-foreground">Quick Calculators</h2>
         
-        {/* 'More Projects' Placeholder */}
-         <div class="flex flex-col p-6 bg-muted/10 rounded-[--radius-card] border border-border border-dashed justify-center items-center text-center space-y-2">
-            <h3 class="font-semibold text-muted-foreground">More Coming Soon</h3>
-            <p class="text-sm text-muted-foreground/70">Plumbing, Painting, Electrical...</p>
+        {/* Search Input */}
+        <div class="relative max-w-md mb-6">
+          <label for="calculator-search" class="sr-only">Search calculators</label>
+          <input
+            type="text"
+            placeholder="Search calculators (e.g. bricks, tiles)"
+            class="w-full pl-4 pr-4 py-3 bg-surface border border-border rounded-[--radius-input] text-sm text-surface-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-brand-blue/30 focus:border-brand-blue/40 transition-all"
+            id="calculator-search"
+          />
+        </div>
+
+        <div class="grid grid-cols-2 lg:grid-cols-3 gap-4" id="tool-grid">
+          {/* Standalone Tools */}
+          {standaloneTools.map((tool) => (
+             <a
+              href={`${base}${tool.href}`}
+              class="group flex flex-col p-5 bg-surface rounded-[--radius-card] border border-border hover:border-brand-blue/40 hover:shadow-sm transition-all focus-ring"
+              data-name={tool.title.toLowerCase()}
+              data-category="general"
+            >
+               <span class="text-[10px] font-semibold text-muted-foreground mb-1 uppercase tracking-wide">General</span>
+              <h3 class="font-semibold text-surface-foreground group-hover:text-brand-blue transition-colors mb-1">
+                {tool.title}
+              </h3>
+              <p class="text-xs text-muted-foreground line-clamp-2">
+                {tool.description}
+              </p>
+            </a>
+          ))}
+
+          {/* Project Tools (Flattened for Quick Access) */}
+          {projects.flatMap(p => p.tools.map(t => ({...t, category: p.title}))).map((tool) => (
+             <a
+              href={`${base}${tool.href}`}
+              class="group flex flex-col p-5 bg-surface rounded-[--radius-card] border border-border hover:border-brand-blue/40 hover:shadow-sm transition-all focus-ring"
+              data-name={tool.title.toLowerCase()}
+              data-category={tool.category.toLowerCase()}
+            >
+              <span class="text-[10px] font-semibold text-muted-foreground mb-1 uppercase tracking-wide">{tool.category}</span>
+              <h3 class="font-semibold text-surface-foreground group-hover:text-brand-blue transition-colors mb-1">
+                {tool.title}
+              </h3>
+              <p class="text-xs text-muted-foreground line-clamp-2">
+                {tool.description}
+              </p>
+            </a>
+          ))}
+        </div>
+        
+         {/* Empty state */}
+         <div id="no-results" class="hidden text-center py-8">
+           <p class="text-muted-foreground font-medium">No calculators found.</p>
          </div>
-      </div>
-    </section>
+      </section>
 
-    {/* Quick Tools Section */}
-    <section class="space-y-6">
-      <h2 class="text-xl font-bold text-surface-foreground">Quick Calculators</h2>
-      
-      {/* Search Input */}
-      <div class="relative max-w-md mb-6">
-        <label for="calculator-search" class="sr-only">Search calculators</label>
-        <input
-          type="text"
-          placeholder="Search calculators (e.g. bricks, tiles)"
-          class="w-full pl-4 pr-4 py-3 bg-surface border border-border rounded-[--radius-input] text-sm text-surface-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-brand-blue/30 focus:border-brand-blue/40 transition-all"
-          id="calculator-search"
-        />
-      </div>
-
-      <div class="grid grid-cols-2 lg:grid-cols-4 gap-4" id="tool-grid">
-        {/* Standalone Tools */}
-        {standaloneTools.map((tool) => (
-           <a
-            href={`${base}${tool.href}`}
-            class="group flex flex-col p-5 bg-surface rounded-[--radius-card] border border-border hover:border-brand-blue/40 hover:shadow-sm transition-all focus-ring"
-            data-name={tool.title.toLowerCase()}
-            data-category="general"
-          >
-             <span class="text-[10px] font-semibold text-muted-foreground mb-1 uppercase tracking-wide">General</span>
-            <h3 class="font-semibold text-surface-foreground group-hover:text-brand-blue transition-colors mb-1">
-              {tool.title}
-            </h3>
-            <p class="text-xs text-muted-foreground line-clamp-2">
-              {tool.description}
-            </p>
-          </a>
-        ))}
-
-        {/* Project Tools (Flattened for Quick Access) */}
-        {projects.flatMap(p => p.tools.map(t => ({...t, category: p.title}))).map((tool) => (
-           <a
-            href={`${base}${tool.href}`}
-            class="group flex flex-col p-5 bg-surface rounded-[--radius-card] border border-border hover:border-brand-blue/40 hover:shadow-sm transition-all focus-ring"
-            data-name={tool.title.toLowerCase()}
-            data-category={tool.category.toLowerCase()}
-          >
-            <span class="text-[10px] font-semibold text-muted-foreground mb-1 uppercase tracking-wide">{tool.category}</span>
-            <h3 class="font-semibold text-surface-foreground group-hover:text-brand-blue transition-colors mb-1">
-              {tool.title}
-            </h3>
-            <p class="text-xs text-muted-foreground line-clamp-2">
-              {tool.description}
-            </p>
-          </a>
-        ))}
-      </div>
-      
-       {/* Empty state */}
-       <div id="no-results" class="hidden text-center py-8">
-         <p class="text-muted-foreground font-medium">No calculators found.</p>
-       </div>
-    </section>
-
-  </div>
+    </div>
+  </main>
 
   {/* Client-side search filtering */}
   <script>
@@ -166,4 +161,4 @@ const base = BASE_URL.endsWith('/') ? BASE_URL : `${BASE_URL}/`;
       });
     }
   </script>
-</BaseLayout>
+</SelcoLayout>
