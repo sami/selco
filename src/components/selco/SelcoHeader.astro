@@ -1,0 +1,329 @@
+---
+const currentPath = Astro.url.pathname;
+const RAW_BASE = import.meta.env.BASE_URL;
+const base = RAW_BASE.endsWith('/') ? RAW_BASE : `${RAW_BASE}/`;
+---
+
+<style>
+  .selco-header {
+    background-color: #FFCD00;
+    padding: 10px 0;
+  }
+  
+  /* Desktop Layout (Default) */
+  .header-inner {
+    max-width: 1280px;
+    margin: 0 auto;
+    padding: 0 15px;
+    display: flex;
+    align-items: center;
+    gap: 20px;
+  }
+  
+  .logo { order: 1; }
+  .logo img { height: 50px; width: auto; display: block; }
+  
+  .search-container {
+    order: 2;
+    flex-grow: 1;
+    display: flex;
+    max-width: 600px;
+    margin: 0 auto;
+  }
+  .search-container input {
+    width: 100%;
+    padding: 10px 15px;
+    border: 1px solid white;
+    border-right: none;
+    border-radius: 4px 0 0 4px;
+    font-size: 0.9rem;
+    outline: none;
+    background-color: white;
+  }
+  .search-container button {
+    background-color: #00264d;
+    color: white;
+    border: 1px solid #00264d;
+    padding: 0 15px;
+    border-radius: 0 4px 4px 0;
+    font-size: 1rem;
+    cursor: pointer;
+  }
+
+  /* Shared Icon Link Styles */
+  .header-icon-link {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    color: #00264d;
+    font-weight: 700;
+    font-size: 0.8rem;
+    text-decoration: none;
+    background: none;
+    border: none;
+    cursor: pointer;
+  }
+  .header-icon-link i {
+    font-size: 1.2rem;
+    margin-bottom: 2px;
+  }
+
+  .mobile-only { display: none; }
+
+  /* Desktop specific orders for links */
+  /* We want Calculators, Branches, Login on the right */
+  a[href*="calculators"] { order: 3; }
+  a[href="#"] { order: 4; } /* Branches matches this generic href, beware */
+  a[class*="header-icon-link"]:nth-of-type(3) { order: 3; } /* Calc */
+  a[class*="header-icon-link"]:nth-of-type(4) { order: 4; } /* Branches */
+  a[class*="header-icon-link"]:nth-of-type(5) { order: 5; } /* Login */
+
+
+  /* Mobile Layout */
+  @media (max-width: 1024px) {
+    .selco-header {
+        padding: 0 0 10px 0;
+    }
+    
+    .header-inner {
+        display: grid;
+        grid-template-columns: repeat(5, 1fr);
+        grid-template-rows: auto auto;
+        gap: 5px 2px; /* Tighter gap */
+        padding: 5px 10px; /* Reduced padding */
+    }
+    
+    /* Row 1: Icons & Logo */
+    .mobile-only { display: flex; } /* Show Menu */
+    
+    /* Order Items */
+    #mobile-menu-toggle { order: 1; grid-column: 1; }
+    
+    /* Branches */
+    a:has(.fa-map-marker-alt) { grid-row: 1; grid-column: 2; order: 2; }
+    
+    /* Logo */
+    .logo { 
+        grid-row: 1; 
+        grid-column: 3; 
+        order: 3; 
+        justify-self: center;
+        padding-top: 2px;
+    }
+    .logo img { height: 28px; } /* Much smaller logo */
+
+    /* Calculators */
+    a:has(.fa-calculator) { grid-row: 1; grid-column: 4; order: 4; }
+    
+    /* Login */
+    a:has(.fa-lock) { grid-row: 1; grid-column: 5; order: 5; }
+    
+    /* Universal style for top row items */
+    .header-icon-link, a:has(.fa-map-marker-alt), a:has(.fa-calculator), a:has(.fa-lock) {
+        justify-self: center;
+        margin: 0;
+        font-size: 0.6rem; /* Smaller text */
+        padding-top: 2px;
+    }
+    .header-icon-link i, :where(a) i {
+        font-size: 1rem; /* Smaller icons */
+    }
+
+    /* Row 2: Search */
+    .search-container {
+        grid-row: 2;
+        grid-column: 1 / -1; /* Span full width */
+        order: 6;
+        margin-top: 2px;
+        max-width: none; /* Override desktop constraint */
+        margin-left: 0;
+        margin-right: 0;
+    }
+    
+    /* Compact input */
+    .search-container input {
+        padding: 6px 10px;
+        font-size: 0.85rem;
+    }
+    .search-container button {
+        padding: 0 10px;
+    }
+  }
+
+  /* Drawer */
+  .mobile-nav {
+    position: fixed;
+    top: 0;
+    right: -280px;
+    width: 280px;
+    height: 100vh;
+    background-color: white;
+    z-index: 1000;
+    box-shadow: -2px 0 5px rgba(0,0,0,0.2);
+    transition: transform 0.3s ease-in-out;
+    display: flex;
+    flex-direction: column;
+  }
+  .mobile-nav.open {
+    transform: translateX(-280px);
+  }
+  .mobile-nav-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    background-color: rgba(0,0,0,0.5);
+    z-index: 999;
+  }
+  
+  .mobile-nav-header {
+    background-color: #00264d;
+    color: white;
+    padding: 15px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+  .mobile-nav-title {
+    font-weight: bold;
+    font-size: 1.1rem;
+    text-transform: uppercase;
+  }
+  #mobile-menu-close {
+    background: none;
+    border: none;
+    color: white;
+    font-size: 1.2rem;
+    cursor: pointer;
+  }
+
+  .mobile-nav-list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    overflow-y: auto;
+    flex: 1;
+  }
+  .mobile-nav-list li a {
+    display: block;
+    padding: 15px 20px;
+    border-bottom: 1px solid #eee;
+    color: #333;
+    text-decoration: none;
+    font-weight: 600;
+    transition: background 0.2s;
+  }
+  .mobile-nav-list li a i {
+    width: 25px;
+    color: #004B8D;
+    text-align: center;
+    margin-right: 10px;
+  }
+  .mobile-nav-list li a:hover,
+  .mobile-nav-list li a.active {
+    background-color: #f4f4f4;
+    color: #004B8D;
+  }
+  .mobile-nav-list li.divider {
+    height: 10px;
+    background-color: #f4f4f4;
+    border-top: 1px solid #eee;
+    border-bottom: 1px solid #eee;
+  }
+</style>
+
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+
+<header class="selco-header">
+  <div class="header-inner">
+    {/* Logo */}
+    <a href={base} class="logo">
+      <img src={`${base}selco-logo.svg`} alt="Selco Builders Warehouse">
+    </a>
+
+    {/* Search */}
+    <div class="search-container">
+      <input type="text" placeholder="Search (e.g. Bricks, Bosch, 5mm)" disabled>
+      <button disabled><i class="fas fa-search"></i></button>
+    </div>
+
+    {/* Navigation Items (Direct children for Grid) */}
+    <button id="mobile-menu-toggle" class="header-icon-link mobile-only" aria-label="Open Menu">
+      <i class="fas fa-bars"></i>
+      <span>Menu</span>
+    </button>
+    
+    <a href="#" class="header-icon-link">
+      <i class="fas fa-map-marker-alt"></i>
+      <span>Branches</span>
+    </a>
+
+    <a href={`${base}calculators/`} class="header-icon-link">
+        <i class="fas fa-calculator"></i>
+        <span>Calculators</span>
+    </a>
+
+    <a href="#" class="header-icon-link">
+      <i class="fas fa-lock"></i>
+      <span>Log In</span>
+    </a>
+  </div>
+
+  <!-- Mobile Navigation Drawer -->
+  <div id="mobile-nav-overlay" class="mobile-nav-overlay hidden"></div>
+  <nav id="mobile-nav" class="mobile-nav">
+    <div class="mobile-nav-header">
+      <span class="mobile-nav-title">Menu</span>
+      <button id="mobile-menu-close" aria-label="Close Menu">
+        <i class="fas fa-times"></i>
+      </button>
+    </div>
+    <ul class="mobile-nav-list">
+      <li>
+        <a href={base} class={currentPath === base || currentPath === base.slice(0, -1) ? 'active' : ''}>
+          <i class="fas fa-home"></i> Home
+        </a>
+      </li>
+      <li>
+        <a href={`${base}projects/`} class={currentPath.includes('/projects/') ? 'active' : ''}>
+          <i class="fas fa-folder-open"></i> My Projects
+        </a>
+      </li>
+      <li>
+        <a href={`${base}calculators/`} class={currentPath.includes('/calculators/') ? 'active' : ''}>
+          <i class="fas fa-calculator"></i> All Calculators
+        </a>
+      </li>
+      <li class="divider"></li>
+      <li><a href="#"><i class="fas fa-map-marker-alt"></i> Branches</a></li>
+      <li><a href="#"><i class="fas fa-lock"></i> Log In</a></li>
+      <li class="divider"></li>
+      <li><a href="https://www.selcobw.com/info/about-us" target="_blank">About Selco</a></li>
+    </ul>
+  </nav>
+</header>
+
+<script>
+  const toggleBtn = document.getElementById('mobile-menu-toggle');
+  const closeBtn = document.getElementById('mobile-menu-close');
+  const nav = document.getElementById('mobile-nav');
+  const overlay = document.getElementById('mobile-nav-overlay');
+
+  function toggleMenu() {
+    const isOpen = nav?.classList.contains('open');
+    if (isOpen) {
+        nav?.classList.remove('open');
+        overlay?.classList.add('hidden');
+        document.body.style.overflow = '';
+    } else {
+        nav?.classList.add('open');
+        overlay?.classList.remove('hidden');
+        document.body.style.overflow = 'hidden';
+    }
+  }
+
+  toggleBtn?.addEventListener('click', toggleMenu);
+  closeBtn?.addEventListener('click', toggleMenu);
+  overlay?.addEventListener('click', toggleMenu);
+</script>

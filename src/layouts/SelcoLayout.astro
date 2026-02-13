@@ -153,12 +153,25 @@ const base = RAW_BASE.endsWith('/') ? RAW_BASE : `${RAW_BASE}/`;
       }
 
       @media (max-width: 1024px) {
-        .main-container {
+        .main-container,
+        .main-container.with-sidebar {
           grid-template-columns: 1fr;
+          gap: 0; /* Remove gap between sidebar bar and content on mobile */
         }
+      }
+      
+      @media (max-width: 768px) {
         .top-bar-inner {
-          flex-direction: column;
-          align-items: center;
+            display: none;
+        }
+        .top-bar {
+            display: none;
+        }
+        .breadcrumbs {
+            padding: 10px 10px 0; /* Align with header padding */
+            text-align: left;
+            width: 100%;
+            box-sizing: border-box;
         }
       }
     </style>
@@ -209,10 +222,7 @@ const base = RAW_BASE.endsWith('/') ? RAW_BASE : `${RAW_BASE}/`;
       </div>
     )}
 
-    <!-- Page Title -->
-    <div class="page-title-container">
-      <h1 class="page-title">{title}</h1>
-    </div>
+
 
     <!-- Main Content -->
     <div class:list={["main-container", { "with-sidebar": showSidebar }]}>

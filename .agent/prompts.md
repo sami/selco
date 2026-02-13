@@ -1,3 +1,112 @@
+# Project Implementation Prompts
+
+---
+
+# Selco BW Demo - Project Lists Page
+
+## Overview
+Create a demo "Project Lists Explained" page styled to match Selco Builders Warehouse branding. This page showcases what a help/info section could look like on selcobw.com, featuring an embedded calculator for creating project material lists.
+
+## Design System
+
+**Colors:**
+- Selco Yellow: `#FFCD00`
+- Selco Blue: `#004B8D` (main branding)
+- Selco Dark Blue: `#00264d` (top bar & footer)
+- Selco Nav Blue: `#1b3a6e` (navigation bar)
+
+**Typography:**
+- Font stack: 'Open Sans', Helvetica, Arial, sans-serif
+- Heavy headings: 'Arial Black' for page titles
+
+---
+
+## Prompt 1: Selco Layout Components
+
+**Target Files:**
+- `src/components/selco/SelcoHeader.astro`
+- `src/components/selco/SelcoNav.astro`
+- `src/components/selco/SelcoFooter.astro`
+- `src/layouts/SelcoLayout.astro`
+
+**Task:**
+Create reusable Selco BW-branded layout components:
+
+1. **SelcoHeader.astro**: Yellow header with logo, search bar, branches link, login button
+2. **SelcoNav.astro**: Dark blue navigation bar with product categories (Building Materials, Timber & Joinery, etc.)
+3. **SelcoFooter.astro**: Dark blue footer with links grid and prominent demo disclaimer
+4. **SelcoLayout.astro**: Base layout combining all components with top bar, breadcrumbs support
+
+**Requirements:**
+- Responsive design (mobile-first)
+- Non-functional nav links (demo only)
+- Prominent "DEMO - Not affiliated with Selco BW" disclaimer in footer
+- Match color scheme from design system
+
+---
+
+## Prompt 2: Project Lists Calculator Component
+
+**Target File:** `src/components/selco/ProjectListsCalculator.tsx`
+
+**Context:**
+Interactive React component for the embedded project lists calculator with Selco branding.
+
+**Features:**
+- Yellow banner hero with calculator icon
+- Add items with name, quantity, price
+- Display items in table format
+- Calculate and show running total
+- Remove items functionality
+- Styled with Selco colors
+
+**State:**
+```typescript
+interface ListItem {
+  name: string;
+  qty: number;
+  price: number;
+  total: number;
+}
+```
+
+---
+
+## Prompt 3: Project Lists Page
+
+**Target File:** `src/pages/info/help/project-lists.astro`
+
+**Context:**
+Main content page explaining Project Lists feature with embedded calculator.
+
+**Structure:**
+- Breadcrumbs: Home / Help Section / Project Lists
+- Page Title: "PROJECT LISTS" (uppercase, heavy font)
+- Sidebar: Customer Services menu with Project Lists active
+- Main content:
+  - Embedded calculator component
+  - Hero text explaining the feature
+  - "How do I create a Project List?" section
+  - "What happens next?" section
+  - "So, why use Project Lists?" bullet points
+  - "Get Started" CTA button
+
+**Layout:** Use SelcoLayout with sidebar support
+
+---
+
+## Prompt 4: Demo Disclaimer
+
+**Requirements:**
+Add prominent disclaimer to Selco-styled pages:
+
+- Location: Above footer, in yellow promo section OR in footer
+- Message: "⚠️ DEMO ONLY – Not affiliated with Selco Builders Warehouse. This is a demonstration calculator application."
+- Styling: Amber/yellow background, dark text, border, prominent placement
+- Ensure visibility on all screen sizes
+
+---
+
 # Masonry Calculator Implementation Prompts
 
 ## Prompt 1: Types & Interfaces

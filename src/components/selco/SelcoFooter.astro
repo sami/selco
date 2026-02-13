@@ -1,0 +1,211 @@
+---
+const year = new Date().getFullYear();
+---
+
+<style>
+  .footer-promo {
+    background-color: #FFCD00;
+    padding: 30px 15px;
+    margin-top: auto;
+  }
+  .footer-promo-inner {
+    max-width: 1280px;
+    margin: 0 auto;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 20px;
+  }
+  .promo-text h3 {
+    color: #00264d;
+    font-size: 1.4rem;
+    margin-bottom: 5px;
+    font-weight: 800;
+  }
+  .promo-text p {
+    color: #333;
+    font-size: 0.9rem;
+    max-width: 700px;
+  }
+  .btn-trade-card {
+    background-color: #00264d;
+    color: white;
+    padding: 12px 25px;
+    font-weight: 700;
+    border-radius: 4px;
+    white-space: nowrap;
+    text-decoration: none;
+    pointer-events: none;
+    opacity: 0.7;
+  }
+
+  .demo-disclaimer {
+    background-color: #fff3cd;
+    border: 3px solid #ffc107;
+    padding: 20px;
+    margin: 20px 0;
+    border-radius: 8px;
+    text-align: center;
+  }
+  .demo-disclaimer h4 {
+    color: #856404;
+    font-size: 1.2rem;
+    margin-bottom: 8px;
+    font-weight: 800;
+  }
+  .demo-disclaimer p {
+    color: #856404;
+    font-size: 0.9rem;
+    margin: 0;
+  }
+
+  .selco-footer {
+    background-color: #00264d;
+    color: white;
+    padding: 50px 0 20px;
+  }
+  .footer-grid {
+    max-width: 1280px;
+    margin: 0 auto;
+    padding: 0 15px;
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 30px;
+    margin-bottom: 40px;
+  }
+  .footer-col h4 {
+    color: white;
+    margin-bottom: 20px;
+    font-size: 1rem;
+    font-weight: 700;
+  }
+  .footer-col ul {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+  }
+  .footer-col ul li {
+    margin-bottom: 10px;
+    font-size: 0.85rem;
+  }
+  .footer-col ul li a {
+    color: #ccc;
+    text-decoration: none;
+    pointer-events: none;
+  }
+  .footer-col ul li a:hover {
+    color: white;
+    text-decoration: underline;
+  }
+  .social-icons {
+    display: flex;
+    gap: 10px;
+  }
+  .social-icons a {
+    width: 32px;
+    height: 32px;
+    background: rgba(255,255,255,0.2);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: background 0.2s;
+    text-decoration: none;
+    color: white;
+    pointer-events: none;
+  }
+
+  .footer-bottom {
+    max-width: 1280px;
+    margin: 0 auto;
+    padding: 20px 15px 0;
+    border-top: 1px solid rgba(255,255,255,0.1);
+    text-align: center;
+    color: #ccc;
+    font-size: 0.8rem;
+  }
+
+  @media (max-width: 1024px) {
+    .footer-grid {
+      grid-template-columns: 1fr 1fr;
+    }
+    .footer-promo-inner {
+      text-align: center;
+      justify-content: center;
+    }
+  }
+
+  @media (max-width: 600px) {
+    .footer-grid {
+      grid-template-columns: 1fr;
+      text-align: center;
+    }
+    .social-icons {
+      justify-content: center;
+    }
+  }
+</style>
+
+<!-- Footer Promo -->
+<div class="footer-promo">
+  <div class="footer-promo-inner">
+    <div class="demo-disclaimer">
+      <h4>⚠️ DEMO ONLY</h4>
+      <p><strong>Not affiliated with Selco Builders Warehouse.</strong> This is a demonstration calculator application created to showcase potential functionality for selcobw.com.</p>
+    </div>
+  </div>
+</div>
+
+<!-- Main Footer -->
+<footer class="selco-footer">
+  <div class="footer-grid">
+    <div class="footer-col">
+      <h4>Help</h4>
+      <ul>
+        <li><a href="#">Selcobw.com Help</a></li>
+        <li><a href="#">Buying from Selco</a></li>
+        <li><a href="#">Branch Finder</a></li>
+        <li><a href="#">Returns Policy</a></li>
+        <li><a href="#">What are Project Lists?</a></li>
+        <li><a href="#">Contact Us</a></li>
+      </ul>
+    </div>
+    <div class="footer-col">
+      <h4>Services</h4>
+      <ul>
+        <li><a href="#">Get a Trade Card</a></li>
+        <li><a href="#">Trade Accounts Explained</a></li>
+        <li><a href="#">Click & Collect</a></li>
+        <li><a href="#">Click & Deliver</a></li>
+        <li><a href="#">Dial & Deliver</a></li>
+        <li><a href="#">All Trade Services</a></li>
+      </ul>
+    </div>
+    <div class="footer-col">
+      <h4>About</h4>
+      <ul>
+        <li><a href="#">About Selco</a></li>
+        <li><a href="#">The Toolkit Blog</a></li>
+        <li><a href="#">Careers</a></li>
+        <li><a href="#">Modern Slavery Policy Statement</a></li>
+        <li><a href="#">Property Requirements</a></li>
+        <li><a href="#">Environmental, Social and Governance (ESG)</a></li>
+      </ul>
+    </div>
+    <div class="footer-col">
+      <h4>Connect with us on Social</h4>
+      <div class="social-icons">
+        <a href="#"><i class="fab fa-facebook-f"></i></a>
+        <a href="#"><i class="fab fa-instagram"></i></a>
+        <a href="#"><i class="fab fa-twitter"></i></a>
+        <a href="#"><i class="fab fa-linkedin-in"></i></a>
+        <a href="#"><i class="fab fa-youtube"></i></a>
+      </div>
+    </div>
+  </div>
+
+  <div class="footer-bottom">
+    <p>&copy; {year} Demo Application. Built with Astro & React. Original design &copy; Selco Builders Warehouse.</p>
+  </div>
+</footer>

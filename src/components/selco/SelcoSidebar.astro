@@ -1,53 +1,142 @@
 ---
+import { projects, standaloneTools } from '../../data/projects';
+
 const RAW_BASE = import.meta.env.BASE_URL;
 const base = RAW_BASE.endsWith('/') ? RAW_BASE : `${RAW_BASE}/`;
 const currentPath = Astro.url.pathname;
 
-const navItems = [
-  { label: 'Home', href: base },
-  { label: 'My Projects', href: `${base}projects/` },
-  { label: 'Calculators', href: `${base}calculators/` },
-];
-
 const normalize = (path: string) => path.endsWith('/') ? path.slice(0, -1) : path;
 const current = normalize(currentPath);
+
+// Helper to check active state
+const isActive = (href: string) => {
+    const normHref = normalize(href);
+    return href === base ? current === normalize(base) : current.startsWith(normHref);
+};
 ---
 
-<aside class="sidebar">
-  <div class="sidebar-header">
-    Calculators Menu <i class="fas fa-chevron-down"></i>
-  </div>
-  <ul class="sidebar-list">
-    {navItems.map(item => {
-        const itemHrefNormalized = normalize(item.href);
-        // loose match for sub-paths (e.g. projects/masonry is active for Projects)
-        const isActive = item.href === base 
-            ? current === normalize(base) // Exact match for home
-            : current.startsWith(itemHrefNormalized);
-            
-        return (
-            <li>
-                <a href={item.href} class={isActive ? 'active' : ''}>
-                    {item.label}
-                </a>
-            </li>
-        );
-    })}
-  </ul>
-  
-  <div style="border-top: 1px solid #ccc; margin-top: 10px; padding-top: 10px;">
+<aside class="sidebar-container">
+  <!-- Mobile Toggle Header -->
+  <button id="sidebar-toggle" class="sidebar-mobile-toggle" aria-expanded="false">
+    In this section <i class="fas fa-caret-down transition-transform"></i>
+  </button>
+
+  <div id="sidebar-content" class="sidebar-content">
+    <div class="sidebar-header desktop-only">
+      Calculators Menu <i class="fas fa-chevron-down"></i>
+    </div>
+    
     <ul class="sidebar-list">
-       <li><a href="https://www.selcobw.com/info/about-us" target="_blank" rel="noopener noreferrer">About Selco</a></li>
-       <li><a href="https://www.selcobw.com/info/terms-and-conditions" target="_blank" rel="noopener noreferrer">Terms & Conditions</a></li>
-       <li><a href="https://www.selcobw.com/info/privacy-policy" target="_blank" rel="noopener noreferrer">Privacy Policy</a></li>
+        {/* Home */}
+        <li>
+            <div class="accordion-header">
+                <a href={base} class={isActive(base) ? 'active section-link' : 'section-link'}>
+                    Home
+                </a>
+            </div>
+        </li>
+
+        {/* Projects Accordion */}
+        <li class="accordion-item">
+            <div class="accordion-header">
+                <a href={`${base}projects/`} class={isActive(`${base}projects/`) ? 'active section-link' : 'section-link'}>
+                    Projects
+                </a>
+                <button class="accordion-toggle" aria-label="Toggle Projects">
+                    <i class="fas fa-chevron-down"></i>
+                </button>
+            </div>
+            <ul class="accordion-content">
+                {projects.map(project => (
+                    <li>
+                        <a href={`${base}${project.href}`} class={isActive(`${base}${project.href}`) ? 'active' : ''}>
+                           {project.title}
+                        </a>
+                    </li>
+                ))}
+            </ul>
+        </li>
+
+        {/* Calculators Accordion */}
+        <li class="accordion-item">
+             <div class="accordion-header">
+                <a href={`${base}calculators/`} class={isActive(`${base}calculators/`) ? 'active section-link' : 'section-link'}>
+                    Calculators
+                </a>
+                <button class="accordion-toggle" aria-label="Toggle Calculators">
+                    <i class="fas fa-chevron-down"></i>
+                </button>
+            </div>
+            <ul class="accordion-content">
+                {standaloneTools.map(tool => {
+                    const isConversion = tool.title.toLowerCase().includes('conversion');
+                    return (
+                        <li>
+                            <a 
+                                href={`${base}${tool.href}`} 
+                                class={`${isActive(`${base}${tool.href}`) ? 'active' : ''} ${isConversion ? 'highlight-link' : ''}`}
+                            >
+                                {isConversion && <i class="fas fa-exchange-alt mr-2 text-brand-yellow"></i>}
+                                {tool.title}
+                            </a>
+                        </li>
+                    );
+                })}
+            </ul>
+        </li>
     </ul>
   </div>
 </aside>
 
+<script>
+  // Mobile Sidebar Toggle
+  const toggle = document.getElementById('sidebar-toggle');
+  const content = document.getElementById('sidebar-content');
+  const icon = toggle?.querySelector('.fa-caret-down');
+
+  toggle?.addEventListener('click', () => {
+    const isExpanded = toggle.getAttribute('aria-expanded') === 'true';
+    toggle.setAttribute('aria-expanded', (!isExpanded).toString());
+    content?.classList.toggle('open');
+    icon?.classList.toggle('rotate-180');
+  });
+
+  // Accordion Toggles
+  const accordions = document.querySelectorAll('.accordion-toggle');
+  accordions.forEach(btn => {
+    btn.addEventListener('click', (e) => {
+        e.preventDefault(); // Prevent accidental navigation
+        const item = btn.closest('.accordion-item');
+        item?.classList.toggle('expanded');
+        const icon = btn.querySelector('i');
+        icon?.classList.toggle('rotate-180');
+    });
+  });
+</script>
+
 <style>
-  .sidebar {
+  .sidebar-container {
     margin-top: 10px;
   }
+  
+  /* Mobile Toggle */
+  .sidebar-mobile-toggle {
+    display: none;
+    width: 100%;
+    background-color: #00264d;
+    color: white;
+    padding: 10px 15px;
+    font-weight: 700;
+    font-size: 1rem;
+    border: none;
+    text-align: left;
+    justify-content: space-between;
+    align-items: center;
+    cursor: pointer;
+    margin-bottom: 0;
+  }
+
+  /* Header */
   .sidebar-header {
     background-color: #00264d;
     color: white;
@@ -58,12 +147,15 @@ const current = normalize(currentPath);
     justify-content: space-between;
     align-items: center;
   }
+
+  /* List Styling */
   .sidebar-list {
     background-color: #f4f4f4;
     list-style: none;
     padding: 0;
     margin: 0;
   }
+  
   .sidebar-list li a {
     display: block;
     padding: 10px 15px;
@@ -75,7 +167,9 @@ const current = normalize(currentPath);
     align-items: center;
     text-decoration: none;
   }
-  .sidebar-list li a::before {
+  
+  /* Standard Arrow for links */
+  .sidebar-list > li > a::before {
     content: '\f054';
     font-family: 'Font Awesome 6 Free';
     font-weight: 900;
@@ -83,6 +177,8 @@ const current = normalize(currentPath);
     margin-right: 10px;
     color: #999;
   }
+
+  /* Hover States */
   .sidebar-list li a:hover {
     background-color: #fff;
     color: #004B8D;
@@ -92,9 +188,77 @@ const current = normalize(currentPath);
     color: #333;
     background-color: #fff;
   }
-  @media (max-width: 1024px) {
-    .sidebar {
+
+  /* Accordion Styling */
+  .accordion-header {
+      display: flex;
+      align-items: stretch;
+      background-color: #f4f4f4;
+      border-bottom: 1px solid #ddd;
+  }
+  
+  .section-link {
+      flex: 1;
+      font-weight: 800;
+      color: #00264d !important;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      padding: 15px !important;
+      border-bottom: none !important;
+  }
+  /* Remove default arrow for section headers */
+  .section-link::before {
+      display: none; 
+  }
+
+  .accordion-toggle {
+      background: none;
+      border: none;
+      border-left: 1px solid #ddd;
+      padding: 0 15px;
+      color: #00264d;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+  }
+
+  .accordion-content {
       display: none;
-    }
+      list-style: none;
+      padding: 0;
+      margin: 0;
+      background-color: #fff;
+  }
+  
+  .accordion-item.expanded .accordion-content {
+      display: block;
+  }
+
+  .accordion-content li a {
+      padding-left: 25px; /* Indent properties */
+      font-size: 0.85rem;
+  }
+
+  /* Highlight Link (Unit Conversions) */
+  .highlight-link {
+      font-weight: 700;
+      color: #004B8D !important;
+      background-color: #e6f0ff !important;
+  }
+
+  /* Utilities */
+  .desktop-only { display: flex; }
+  .rotate-180 { transform: rotate(180deg); }
+  .transition-transform { transition: transform 0.3s ease; }
+  .mr-2 { margin-right: 0.5rem; }
+  .text-brand-yellow { color: #FFCD00; }
+
+  @media (max-width: 1024px) {
+    .sidebar-container { margin-top: 0; }
+    .sidebar-mobile-toggle { display: flex; }
+    .desktop-only { display: none; }
+    .sidebar-content { display: none; }
+    .sidebar-content.open { display: block; }
   }
 </style>
