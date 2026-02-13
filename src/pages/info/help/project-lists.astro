@@ -1,0 +1,210 @@
+---
+import SelcoLayout from '../../../layouts/SelcoLayout.astro';
+import ProjectListsCalculator from '../../../components/selco/ProjectListsCalculator';
+
+const RAW_BASE = import.meta.env.BASE_URL;
+const base = RAW_BASE.endsWith('/') ? RAW_BASE : `${RAW_BASE}/`;
+
+const breadcrumbs = [
+  { label: 'Home', href: base },
+  { label: 'Help Section', href: '#' },
+  { label: 'Project Lists' }
+];
+---
+
+<SelcoLayout
+  title="Project Lists"
+  description="Quickly and easily calculate the cost of materials for your jobs with our handy Project Lists tool."
+  showSidebar={true}
+  breadcrumbs={breadcrumbs}
+>
+  <!-- Sidebar -->
+  <aside class="sidebar">
+    <div class="sidebar-header">
+      Customer Services <i class="fas fa-chevron-down"></i>
+    </div>
+    <ul class="sidebar-list">
+      <li><a href="#">Buying with Selco</a></li>
+      <li><a href="#">Branch Finder</a></li>
+      <li><a href="#">Click & Deliver</a></li>
+      <li><a href="#">Click & Collect</a></li>
+      <li><a href="#">Dial & Deliver</a></li>
+      <li><a href="#">Returns & Cancellations</a></li>
+      <li><a href="#">Credit Account Management</a></li>
+      <li><a href="#" class="active">Project Lists</a></li>
+      <li><a href="#">FAQ's</a></li>
+      <li><a href="#">Contact Us</a></li>
+      <li><a href="#">Whistleblowing</a></li>
+      <li><a href="#">Close Account</a></li>
+    </ul>
+    <div style="border-top: 1px solid #ccc; margin-top: 10px; padding-top: 10px;">
+      <ul class="sidebar-list">
+        <li><a href="#">Website Information</a></li>
+        <li><a href="#">Trade Services</a></li>
+        <li><a href="#">About Selco</a></li>
+      </ul>
+    </div>
+  </aside>
+
+  <!-- Main Content -->
+  <main class="content-area">
+    <!-- Calculator Embedded as Hero -->
+    <ProjectListsCalculator client:load />
+
+    <p class="hero-text">
+      Quickly and easily calculate the cost of materials for your jobs with our handy Project Lists tool.
+    </p>
+
+    <p>
+      We're here to make your job as straightforward as possible. Our Project Lists tool is designed to help you easily plan and price your future projects. It tracks the building materials you need, and the total cost of building supplies per project.
+    </p>
+
+    <h2>How do I create a Project List?</h2>
+    <p>Creating a list couldn't be easier.</p>
+    <ol class="numbered-list">
+      <li>Simply log in and go to the projects area.</li>
+      <li>Click 'add a new project' to create a list of all the building materials you need.</li>
+      <li>Once you've set up your project list, you can then go straight to the products you require and click 'add to project'.</li>
+    </ol>
+
+    <h2>What happens next?</h2>
+    <p>
+      When your list is finished, you can choose to either send it to your local <a href="#" class="link">Selco branch</a> for a materials quote, print it out, or email a quote directly to your customer.
+    </p>
+
+    <h2>So, why use Project Lists?</h2>
+    <ul class="bullet-list">
+      <li>Makes planning and pricing your next job easier than ever.</li>
+      <li>Quickly create project lists and quotes even while on the go.</li>
+      <li>Get a competitive quote by sending your product lists to your local Selco branch.</li>
+      <li>All your project details are saved in one place; meaning no more lost bits of paper or scribbling on notepads.</li>
+    </ul>
+
+    <a href="#" class="btn-get-started">Get Started</a>
+  </main>
+</SelcoLayout>
+
+<style>
+  .sidebar {
+    margin-top: 10px;
+  }
+  .sidebar-header {
+    background-color: #00264d;
+    color: white;
+    padding: 12px 15px;
+    font-weight: 700;
+    font-size: 0.95rem;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+  .sidebar-list {
+    background-color: #f4f4f4;
+    list-style: none;
+    padding: 0;
+    margin: 0;
+  }
+  .sidebar-list li a {
+    display: block;
+    padding: 10px 15px;
+    border-bottom: 1px solid #ddd;
+    font-size: 0.9rem;
+    color: #555;
+    position: relative;
+    display: flex;
+    align-items: center;
+    text-decoration: none;
+    pointer-events: none;
+  }
+  .sidebar-list li a::before {
+    content: '\f054';
+    font-family: 'Font Awesome 6 Free';
+    font-weight: 900;
+    font-size: 0.6rem;
+    margin-right: 10px;
+    color: #999;
+  }
+  .sidebar-list li a:hover {
+    background-color: #fff;
+    color: #004B8D;
+  }
+  .sidebar-list li a.active {
+    font-weight: 700;
+    color: #333;
+    background-color: #fff;
+    pointer-events: auto;
+  }
+
+  .content-area {
+    color: #333;
+    font-size: 1rem;
+  }
+
+  .hero-text {
+    color: #004B8D;
+    font-weight: 700;
+    font-size: 1.1rem;
+    margin: 20px 0;
+  }
+
+  .content-area p {
+    margin-bottom: 15px;
+    color: #444;
+    line-height: 1.6;
+  }
+
+  .content-area h2 {
+    color: #004B8D;
+    font-size: 1.2rem;
+    font-weight: 800;
+    margin-top: 25px;
+    margin-bottom: 10px;
+  }
+
+  .numbered-list {
+    margin-left: 20px;
+    color: #444;
+    margin-bottom: 20px;
+    line-height: 1.6;
+  }
+
+  .numbered-list li {
+    margin-bottom: 8px;
+  }
+
+  .bullet-list {
+    list-style: disc;
+    padding-left: 20px;
+    margin-bottom: 20px;
+    color: #444;
+  }
+
+  .bullet-list li {
+    margin-bottom: 8px;
+  }
+
+  .link {
+    color: #004B8D;
+    text-decoration: underline;
+  }
+
+  .btn-get-started {
+    display: inline-block;
+    background-color: #00264d;
+    color: white;
+    padding: 12px 30px;
+    font-weight: 700;
+    border-radius: 4px;
+    margin-top: 10px;
+    font-size: 1rem;
+    text-decoration: none;
+    pointer-events: none;
+    opacity: 0.7;
+  }
+
+  @media (max-width: 1024px) {
+    .sidebar {
+      display: none;
+    }
+  }
+</style>

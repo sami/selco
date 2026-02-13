@@ -1,0 +1,66 @@
+---
+// Navigation bar with product categories
+---
+
+<style>
+  .selco-nav {
+    background-color: #1b3a6e;
+    color: white;
+  }
+  .nav-inner {
+    max-width: 1280px;
+    margin: 0 auto;
+    padding: 0 15px;
+    display: flex;
+    justify-content: flex-start;
+    gap: 1px;
+    overflow-x: auto;
+    scrollbar-width: none;
+  }
+  .nav-inner::-webkit-scrollbar {
+    display: none;
+  }
+  .nav-item {
+    padding: 12px 10px;
+    font-size: 0.7rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    text-align: center;
+    white-space: nowrap;
+    cursor: not-allowed;
+    border-right: 1px solid rgba(255,255,255,0.1);
+    display: flex;
+    align-items: center;
+    opacity: 0.7;
+    pointer-events: none;
+  }
+  .nav-item:first-child {
+    padding-left: 0;
+  }
+  .home-icon {
+    font-size: 1rem;
+    padding: 0 5px;
+  }
+  @media (max-width: 768px) {
+    .selco-nav {
+      display: none;
+    }
+  }
+</style>
+
+<nav class="selco-nav">
+  <div class="nav-inner">
+    <div class="nav-item"><i class="fas fa-home home-icon"></i></div>
+    <div class="nav-item">Building<br>Materials</div>
+    <div class="nav-item">Timber &<br>Joinery</div>
+    <div class="nav-item">Landscaping &<br>Fencing</div>
+    <div class="nav-item">Kitchens &<br>Bathrooms</div>
+    <div class="nav-item">Flooring &<br>Tiling</div>
+    <div class="nav-item">Plumbing &<br>Heating</div>
+    <div class="nav-item">Tools, Equipment<br>& Workwear</div>
+    <div class="nav-item">Painting &<br>Decorating</div>
+    <div class="nav-item">Electrical, Lighting<br>& Ventilation</div>
+    <div class="nav-item">Security &<br>Ironmongery</div>
+    <div class="nav-item">Fixings &<br>Adhesives</div>
+  </div>
+</nav>
