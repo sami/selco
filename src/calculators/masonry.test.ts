@@ -11,8 +11,9 @@ import {
     UNITS_PER_M2,
     MORTAR_PER_M2,
     WALL_TYPES,
+    SAND_BAG_SIZES,
 } from './masonry';
-import type { MasonryInput } from './types';
+import type { MasonryInput, SandBagSize } from './types';
 
 describe('calculateWallArea', () => {
     it('calculates area for a single wall', () => {
@@ -250,6 +251,7 @@ describe('calculateMasonry', () => {
             unitWaste: 5,
             mortarWaste: 10,
             cavityWidth: 0,
+            sandBagSize: 'jumbo',
         };
 
         const result = calculateMasonry(input);
@@ -272,6 +274,7 @@ describe('calculateMasonry', () => {
             unitWaste: 5,
             mortarWaste: 10,
             cavityWidth: 50,
+            sandBagSize: 'jumbo',
         };
 
         const result = calculateMasonry(input);
@@ -290,6 +293,7 @@ describe('calculateMasonry', () => {
             unitWaste: -5,
             mortarWaste: 10,
             cavityWidth: 0,
+            sandBagSize: 'jumbo',
         };
         expect(() => calculateMasonry(input)).toThrow('Unit waste must be between 0 and 100.');
     });
@@ -304,7 +308,126 @@ describe('calculateMasonry', () => {
             unitWaste: 5,
             mortarWaste: 150,
             cavityWidth: 0,
+            sandBagSize: 'jumbo',
         };
         expect(() => calculateMasonry(input)).toThrow('Mortar waste must be between 0 and 100.');
+    });
+});
+
+describe('sand bag calculations', () => {
+    // Tests for specific bag logic if we were testing a helper,
+    // but here we test the result via calculateMortar if we updated it,
+    // or calculateMasonry.
+    // The plan says:
+    // - jumbo: 408.576 kg sand -> ceil(408.576 / 875) = 1 jumbo bag
+    // - large: 408.576 kg sand -> ceil(408.576 / 35) = 12 large bags
+    // - small quantity: 30 kg -> 1 jumbo or 1 large bag
+    // - zero sand -> 0 bags
+    // Since calculateMortar doesn't take sandBagSize in the current stub/signature in test file,
+    // we should check if we need to update calculateMortar signature in valid TS or just test via calculateMasonry.
+    // The plan prompts say: Prompt 5 calculateMortar.
+    // Wait, the prompts are for the OTHER AI.
+    // I need to write tests that match the FUTURE signature even if it breaks now.
+    // Does calculateMortar take sandBagSize? The Prompt 5 details aren't explicitly "add sandBagSize arg",
+    // but Prompt 1 adds it to MasonryInput.
+    // Let's assume calculateMortar might NOT take it if it just returns mass,
+    // but calculateMasonry definitely does.
+    // However, the checks are "result.mortar.sandBags".
+    // Let's put these checks in calculateMasonry tests or new describe block.
+    //
+    // Actually, looking at the plan: "describe('sand bag calculations')"
+    // This implies unit testing the logic.
+    // I will add a test that mimics the logic or uses calculateMasonry.
+    // Since I can't easily change calculateMortar signature here without changing all calls,
+    // I'll stick to testing 'calculateMasonry' which I updated the input for,
+    // OR I'll assume calculateMortar WILL be updated to take it?
+    // Plan: "Prompt 5: calculateMortar ... sand bag count".
+    // This suggests calculateMortar should do it.
+    // But calculateMortar currently is: (netArea, wallType, mixRatio, wastage).
+    // I should probably update calculateMortar calls in THIS file to include sandBagSize if I want to test it directly.
+    // BUT the instructions say "No changes to existing test expectations."
+    // If I change the signature, I break existing tests.
+    // Maybe `sandBagSize` is optional or I update all calls?
+    // "Update all calculateMasonry integration test inputs" was explicit.
+    // It didn't explicitly say "Update all calculateMortar calls".
+    // So maybe `calculateMasonry` handles the bag conversion?
+    // "Prompt 5: calculateMortar ... sand bag count" implies it's in there.
+    // Use an optional argument for now? Or just update `calculateMasonry` tests.
+    // Let's use `calculateMasonry` for the new tests to be safe and avoid refactoring everything.
+    // The plan listed:
+    // describe('calculateMasonry with sandBagSize')
+    //   - half-brick + jumbo -> result.mortar.sandBags > 0, sandBagSizeKg = 875
+    // ...
+    // So I will implement those.
+
+    const baseInput: MasonryInput = {
+        wallType: 'half-brick',
+        walls: [{ length: 5, height: 2.4 }], // 12m2 gross
+        openings: [],
+        blockWidth: 100,
+        mixRatio: '1:4',
+        unitWaste: 5,
+        mortarWaste: 10,
+        cavityWidth: 0,
+        sandBagSize: 'jumbo',
+    };
+
+    it('calculates jumbo bags correctly', () => {
+        // 12m2 * 0.024 = 0.288 m3 wet
+        // 0.288 * 1.33 = 0.38304 dry
+        // Sand = 0.38304 * 0.8 * 1600 = 490.29 kg
+        // Jumbo (875): ceil(490.29 / 875) = 1
+        const input = { ...baseInput, sandBagSize: 'jumbo' as const };
+        const result = calculateMasonry(input);
+        expect(result.mortar.sandBags).toBe(1);
+        expect(result.mortar.sandBagSizeKg).toBe(875);
+    });
+
+    it('calculates large bags correctly', () => {
+        // Same sand mass: ~490.29 kg
+        // Large (35): ceil(490.29 / 35) = 15
+        const input = { ...baseInput, sandBagSize: 'large' as const };
+        const result = calculateMasonry(input);
+        expect(result.mortar.sandBags).toBe(15);
+        expect(result.mortar.sandBagSizeKg).toBe(35);
+    });
+
+    it('handles zero sand (small area)', () => {
+        const input = {
+            ...baseInput,
+            walls: [{ length: 0.1, height: 0.1 }],
+            sandBagSize: 'jumbo' as const
+        };
+        const result = calculateMasonry(input);
+        // extremely small amount might round to 0 if we aren't careful,
+        // but Math.ceil(>0) is 1.
+        // 0.01 m2 -> ... -> >0 kg -> 1 bag.
+        // Unless it's literally 0.
+        expect(result.mortar.sandBags).toBeGreaterThanOrEqual(1);
+    });
+
+    it('handles zero wall area -> zero bags', () => {
+        const input = {
+            ...baseInput,
+            walls: [{ length: 0, height: 0 }], // actually valid based on previous tests?
+            // calculateWallArea throws if 0 dim.
+            // Let's use opening to make net area 0.
+            walls: [{ length: 1, height: 1 }],
+            openings: [{ width: 1, height: 1 }],
+        };
+        const result = calculateMasonry(input);
+        expect(result.mortar.sandBags).toBe(0);
+    });
+});
+
+describe('SAND_BAG_SIZES constant', () => {
+    it('exports correct bag definitions', () => {
+        expect(SAND_BAG_SIZES).toHaveLength(2);
+        expect(SAND_BAG_SIZES).toContainEqual(
+            expect.objectContaining({ value: 'jumbo', kg: 875 })
+        );
+        expect(SAND_BAG_SIZES).toContainEqual(
+            expect.objectContaining({ value: 'large', kg: 35 })
+        );
     });
 });
