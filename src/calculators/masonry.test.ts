@@ -377,7 +377,8 @@ describe('sand bag calculations', () => {
         // Jumbo (875): ceil(490.29 / 875) = 1
         const input = { ...baseInput, sandBagSize: 'jumbo' as const };
         const result = calculateMasonry(input);
-        expect(result.mortar.sandBags).toBe(1);
+        // With new rate (0.043): ~966kg sand -> 2 jumbo bags
+        expect(result.mortar.sandBags).toBe(2);
         expect(result.mortar.sandBagSizeKg).toBe(875);
     });
 
@@ -386,7 +387,8 @@ describe('sand bag calculations', () => {
         // Large (35): ceil(490.29 / 35) = 15
         const input = { ...baseInput, sandBagSize: 'large' as const };
         const result = calculateMasonry(input);
-        expect(result.mortar.sandBags).toBe(15);
+        // With new rate (0.043): ~966kg sand -> 28 large bags
+        expect(result.mortar.sandBags).toBe(28);
         expect(result.mortar.sandBagSizeKg).toBe(35);
     });
 

@@ -163,14 +163,39 @@ export function calculateDPC(walls: WallSection[], wallType: WallType): DPCResul
 }
 
 export function calculateMasonry(input: MasonryInput): MasonryResult {
-    // Stub implementation
+    if (input.unitWaste < 0 || input.unitWaste > 100) {
+        throw new Error('Unit waste must be between 0 and 100.');
+    }
+    if (input.mortarWaste < 0 || input.mortarWaste > 100) {
+        throw new Error('Mortar waste must be between 0 and 100.');
+    }
+
+    const area = calculateWallArea(input.walls, input.openings);
+
+    const bricks = calculateBricks(area.netArea, input.wallType, input.unitWaste);
+    const blocks = calculateBlocks(area.netArea, input.wallType, input.blockWidth, input.unitWaste);
+
+    const mortar = calculateMortar(
+        area.netArea,
+        input.wallType,
+        input.mixRatio,
+        input.mortarWaste,
+        input.sandBagSize
+    );
+
+    const wallTies = (input.wallType === 'cavity')
+        ? calculateWallTies(area.netArea, input.openings)
+        : { general: 0, atOpenings: 0, total: 0 };
+    const lintels = calculateLintels(input.openings);
+    const dpc = calculateDPC(input.walls, input.wallType);
+
     return {
-        area: { grossArea: 0, openingArea: 0, netArea: 0 },
-        bricks: 0,
-        blocks: 0,
-        mortar: { wetVolume: 0, cementBags: 0, sandTonnes: 0, sandKg: 0, sandBags: 0, sandBagSizeKg: 0 },
-        wallTies: { general: 0, atOpenings: 0, total: 0 },
-        lintels: [],
-        dpc: { length: 0, widthMm: 0 },
+        area,
+        bricks,
+        blocks,
+        mortar,
+        wallTies,
+        lintels,
+        dpc,
     };
 }
