@@ -1,0 +1,225 @@
+---
+import SelcoHeader from '../components/selco/SelcoHeader.astro';
+import SelcoNav from '../components/selco/SelcoNav.astro';
+import SelcoFooter from '../components/selco/SelcoFooter.astro';
+import '../styles/global.css';
+
+interface Props {
+  title: string;
+  description?: string;
+  showSidebar?: boolean;
+  breadcrumbs?: Array<{ label: string; href?: string }>;
+}
+
+const { title, description = '', showSidebar = false, breadcrumbs = [] } = Astro.props;
+const RAW_BASE = import.meta.env.BASE_URL;
+const base = RAW_BASE.endsWith('/') ? RAW_BASE : `${RAW_BASE}/`;
+---
+
+<!doctype html>
+<html lang="en-GB">
+  <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{title}</title>
+    {description && <meta name="description" content={description}>}
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+      :root {
+        --selco-yellow: #FFCD00;
+        --selco-blue: #004B8D;
+        --selco-dark-blue: #00264d;
+        --selco-nav-blue: #1b3a6e;
+        --text-dark: #333333;
+        --text-grey: #666666;
+        --light-bg: #f4f4f4;
+        --border-color: #e5e5e5;
+        --white: #ffffff;
+      }
+
+      * {
+        box-sizing: border-box;
+        margin: 0;
+        padding: 0;
+      }
+
+      body {
+        font-family: 'Open Sans', Helvetica, Arial, sans-serif;
+        color: var(--text-dark);
+        background-color: var(--white);
+        line-height: 1.5;
+        display: flex;
+        flex-direction: column;
+        min-height: 100vh;
+      }
+
+      .top-bar {
+        background-color: var(--selco-dark-blue);
+        color: white;
+        font-size: 0.75rem;
+        font-weight: 700;
+        padding: 8px 0;
+      }
+      .top-bar-inner {
+        max-width: 1280px;
+        margin: 0 auto;
+        padding: 0 15px;
+        display: flex;
+        justify-content: space-between;
+        flex-wrap: wrap;
+        gap: 10px;
+      }
+      .top-left-links a,
+      .top-right-links a {
+        margin: 0 10px;
+        text-transform: uppercase;
+        padding: 2px 8px;
+        text-decoration: none;
+        color: white;
+        pointer-events: none;
+        opacity: 0.7;
+      }
+
+      .info-strip {
+        background-color: #fcfcfc;
+        border-bottom: 1px solid #e0e0e0;
+        padding: 10px 0;
+        font-size: 0.8rem;
+        color: var(--selco-blue);
+        font-weight: 600;
+      }
+      .info-strip-inner {
+        max-width: 1280px;
+        margin: 0 auto;
+        padding: 0 15px;
+        display: flex;
+        gap: 30px;
+        flex-wrap: wrap;
+      }
+      .info-item i {
+        margin-right: 6px;
+        font-size: 1rem;
+        vertical-align: middle;
+      }
+
+      .breadcrumbs {
+        max-width: 1280px;
+        margin: 0 auto;
+        padding: 15px 15px 0;
+        font-size: 0.8rem;
+        color: var(--selco-blue);
+        font-weight: 600;
+      }
+      .breadcrumbs a {
+        color: var(--selco-blue);
+        text-decoration: none;
+      }
+      .breadcrumbs span {
+        color: #ccc;
+        margin: 0 5px;
+        font-weight: normal;
+      }
+      .breadcrumbs .current {
+        color: #999;
+      }
+
+      .page-title-container {
+        max-width: 1280px;
+        margin: 0 auto;
+        padding: 10px 15px 20px;
+      }
+      .page-title {
+        font-family: 'Arial Black', sans-serif;
+        font-size: 2.2rem;
+        color: var(--selco-dark-blue);
+        text-transform: uppercase;
+        margin: 0;
+        letter-spacing: -1px;
+      }
+
+      .main-container {
+        display: grid;
+        gap: 30px;
+        max-width: 1280px;
+        margin: 0 auto;
+        padding: 0 15px 60px;
+        width: 100%;
+        flex: 1;
+        grid-template-columns: 1fr;
+      }
+
+      .main-container.with-sidebar {
+        grid-template-columns: 260px 1fr;
+      }
+
+      @media (max-width: 1024px) {
+        .main-container {
+          grid-template-columns: 1fr;
+        }
+        .top-bar-inner {
+          flex-direction: column;
+          align-items: center;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <!-- Top Bar -->
+    <div class="top-bar">
+      <div class="top-bar-inner">
+        <div class="top-left-links">
+          <a href="#">MATERIALS</a>
+          <a href="#">CAREERS</a>
+          <a href="#">BLOG</a>
+        </div>
+        <div class="top-right-links">
+          <a href="#">First Time Log In</a>
+          <a href="#">Get a Trade Card</a>
+        </div>
+      </div>
+    </div>
+
+    <!-- Header -->
+    <SelcoHeader />
+
+    <!-- Navigation -->
+    <SelcoNav />
+
+    <!-- Info Strip -->
+    <div class="info-strip">
+      <div class="info-strip-inner">
+        <span class="info-item"><i class="fas fa-headset"></i> <strong>Dial & Deliver:</strong> Got a Trade Card? Call us on <span style="text-decoration: underline;">03331 886 388</span> to place an order.</span>
+        <span class="info-item"><i class="fas fa-truck"></i> <strong>Click & Deliver:</strong> FREE Delivery on orders over £150 ex VAT.</span>
+      </div>
+    </div>
+
+    <!-- Breadcrumbs -->
+    {breadcrumbs.length > 0 && (
+      <div class="breadcrumbs">
+        {breadcrumbs.map((crumb, index) => (
+          <>
+            {crumb.href ? (
+              <a href={crumb.href}>{crumb.label}</a>
+            ) : (
+              <span class="current">{crumb.label}</span>
+            )}
+            {index < breadcrumbs.length - 1 && <span>/</span>}
+          </>
+        ))}
+      </div>
+    )}
+
+    <!-- Page Title -->
+    <div class="page-title-container">
+      <h1 class="page-title">{title}</h1>
+    </div>
+
+    <!-- Main Content -->
+    <div class:list={["main-container", { "with-sidebar": showSidebar }]}>
+      <slot />
+    </div>
+
+    <!-- Footer -->
+    <SelcoFooter />
+  </body>
+</html>
