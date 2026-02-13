@@ -59,6 +59,7 @@ export interface SpacersResult {
 
 export type WallType = 'half-brick' | 'one-brick' | 'cavity' | 'blockwork';
 export type MortarMixRatio = '1:3' | '1:4' | '1:5' | '1:6';
+export type SandBagSize = 'jumbo' | 'large';
 
 export interface WallSection {
     length: number;     // metres
@@ -79,6 +80,7 @@ export interface MasonryInput {
     unitWaste: number;              // percentage (e.g. 5)
     mortarWaste: number;            // percentage (e.g. 10)
     cavityWidth: number;            // mm — only used for cavity walls
+    sandBagSize: SandBagSize;
 }
 
 export interface WallAreaResult {
@@ -91,6 +93,9 @@ export interface MortarResult {
     wetVolume: number;      // m³
     cementBags: number;
     sandTonnes: number;
+    sandKg: number;
+    sandBags: number;
+    sandBagSizeKg: number;
 }
 
 export interface WallTiesResult {
