@@ -19,17 +19,67 @@ const title = "Trade Materials Calculator";
   description="Work out exactly what you need for your next project. Free trade tools to calculate material quantities for building projects."
   showSidebar={true}
   breadcrumbs={breadcrumbs}
+  pageTitle={title}
 >
   <SelcoSidebar />
 
   <main class="w-full">
     <div class="space-y-12 pb-12">
-      <!-- Page Title (Migrated from Layout) -->
-      <h1 class="text-3xl md:text-4xl font-['Arial_Black',sans-serif] text-[#004B8D] uppercase tracking-tight mb-4 mt-6 leading-none">
-        {title}
-      </h1>
+      <section class="space-y-5">
+        <h2 class="text-2xl md:text-3xl font-bold text-surface-foreground">Plan your job in minutes</h2>
+        <p class="text-muted-foreground text-base md:text-lg leading-relaxed max-w-3xl">
+          Use our trade calculators to work out quantities for bricks, blocks, tiles, adhesive, grout and more. Save time on-site by estimating materials up front and ordering with confidence.
+        </p>
+        <div class="grid gap-4 sm:grid-cols-2 xl:grid-cols-3">
+          <a
+            href={`${base}calculators/`}
+            class="group rounded-[--radius-card] border border-border bg-surface p-5 card-shadow hover:border-brand-blue/40 hover:-translate-y-0.5 hover:shadow-md transition-all duration-200"
+          >
+            <p class="text-xs font-semibold text-muted-foreground uppercase tracking-wide">Browse tools</p>
+            <h3 class="mt-2 text-lg font-semibold text-surface-foreground group-hover:text-brand-blue transition-colors">All Calculators</h3>
+            <p class="mt-2 text-sm text-muted-foreground">Explore every trade calculator in one place.</p>
+          </a>
+          <a
+            href={`${base}projects/`}
+            class="group rounded-[--radius-card] border border-border bg-surface p-5 card-shadow hover:border-brand-blue/40 hover:-translate-y-0.5 hover:shadow-md transition-all duration-200"
+          >
+            <p class="text-xs font-semibold text-muted-foreground uppercase tracking-wide">Build a pack</p>
+            <h3 class="mt-2 text-lg font-semibold text-surface-foreground group-hover:text-brand-blue transition-colors">Project Bundles</h3>
+            <p class="mt-2 text-sm text-muted-foreground">Group the right calculators for each job type.</p>
+          </a>
+          <a
+            href={`${base}calculators/tiles/`}
+            class="group rounded-[--radius-card] border border-border bg-surface p-5 card-shadow hover:border-brand-blue/40 hover:-translate-y-0.5 hover:shadow-md transition-all duration-200"
+          >
+            <p class="text-xs font-semibold text-muted-foreground uppercase tracking-wide">Most used</p>
+            <h3 class="mt-2 text-lg font-semibold text-surface-foreground group-hover:text-brand-blue transition-colors">Tile Calculator</h3>
+            <p class="mt-2 text-sm text-muted-foreground">Estimate tile quantities, waste and coverage.</p>
+          </a>
+        </div>
+      </section>
 
-      <div class="min-h-[60vh]">
-        <!-- Content cleared as requested -->
-      </div>
+      <section class="grid gap-6 lg:grid-cols-[2fr_1fr]">
+        <div class="space-y-4">
+          <h2 class="text-2xl font-bold text-surface-foreground">How the calculators work</h2>
+          <p class="text-muted-foreground leading-relaxed">
+            Pick a calculator, enter your dimensions, and get instant quantities in the units you need. Every tool uses trade-standard formulas and includes sensible wastage guidance.
+          </p>
+          <ul class="grid gap-3 text-sm text-muted-foreground">
+            <li class="flex items-start gap-3"><span class="mt-1 h-2 w-2 rounded-full bg-brand-blue"></span>Measured in metric units, with conversions when needed.</li>
+            <li class="flex items-start gap-3"><span class="mt-1 h-2 w-2 rounded-full bg-brand-blue"></span>Built for trade scenarios: pallets, bags, boxes and m².</li>
+            <li class="flex items-start gap-3"><span class="mt-1 h-2 w-2 rounded-full bg-brand-blue"></span>Quick links to the most common materials.</li>
+          </ul>
+        </div>
+        <div class="rounded-[--radius-card] border border-border bg-muted/20 p-5">
+          <h3 class="text-lg font-semibold text-surface-foreground">Need help choosing?</h3>
+          <p class="mt-2 text-sm text-muted-foreground">
+            Start with a project bundle to see the calculators that match your trade. You can save the list and return to it later.
+          </p>
+          <a href={`${base}projects/`} class="mt-4 inline-flex items-center text-sm font-semibold text-brand-blue hover:text-brand-blue/80">
+            View project bundles
+          </a>
+        </div>
+      </section>
+    </div>
+  </main>
 </SelcoLayout>
