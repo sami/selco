@@ -1,85 +1,278 @@
 ---
 import SelcoLayout from '../layouts/SelcoLayout.astro';
 import SelcoSidebar from '../components/selco/SelcoSidebar.astro';
-// Imports cleared
 
 const BASE_URL = import.meta.env.BASE_URL;
 const base = BASE_URL.endsWith('/') ? BASE_URL : `${BASE_URL}/`;
 
 const breadcrumbs = [
-  { label: 'Home', href: base },
-  { label: 'Calculators' } // Current page context
+  { label: 'Home' }
 ];
 
-const title = "Trade Materials Calculator";
+const title = "Trade Projects Calculator — Free Building Material Estimators";
+const description = "Free project calculators for tradespeople. Estimate all materials for tiling, masonry, and concrete projects in one guided flow. Accurate quantities with wastage included.";
+
+const handyCalculators = [
+  {
+    title: 'Unit Converter',
+    description: 'Convert between metric and imperial units for length, area, volume, and weight. Useful when product data sheets and site measurements use different systems.',
+    href: '#' // To be updated when page exists
+  }
+];
+
+const projectCalculators = [
+  {
+    title: 'Tiling Project',
+    description: 'Estimate tiles, adhesive, grout, spacers, and self-levelling compound for any floor or wall area. Enter your dimensions once and get quantities for every material.',
+    href: '#'
+  },
+  {
+    title: 'Masonry Project',
+    description: 'Calculate bricks or blocks, sand, cement, and wall ties for single-skin or cavity walls. Deduct windows and doors automatically.',
+    href: '#'
+  },
+  {
+    title: 'Concrete & Groundworks Project',
+    description: 'Work out cement, sand, aggregate, and hardcore sub-base quantities for slabs and foundations. Covers both the concrete and the sub-base underneath.',
+    href: '#'
+  }
+];
+
+const faqs = [
+  {
+    question: 'How accurate are the estimates?',
+    answer: 'All calculations use industry-standard formulas and manufacturer coverage rates. Results include a configurable wastage percentage to account for cuts and breakage. They are estimates, not exact quantities. Always round up when ordering.'
+  },
+  {
+    question: 'What is wastage and why does it matter?',
+    answer: 'Wastage accounts for offcuts, breakage, and pattern matching. A typical allowance is 10% for tiles and 5% for bricks. Skipping wastage often means a return trip to the merchant.'
+  },
+  {
+    question: 'Do I need to create an account?',
+    answer: 'No. All calculators run in your browser with no sign-up, no login, and no data stored.'
+  },
+  {
+    question: 'What units are supported?',
+    answer: 'Both metric (metres, millimetres, kilograms) and imperial (feet, inches, yards). The Unit Converter handles conversions between them.'
+  },
+  {
+    question: 'What is a project calculator?',
+    answer: 'A project calculator chains every material for a specific job into one guided flow. For example, the Tiling Project covers tiles, adhesive, grout, spacers, and self-levelling compound. You enter your dimensions once and get quantities for all of them.'
+  }
+];
+
+const jsonLd = {
+  '@context': 'https://schema.org',
+  '@type': 'FAQPage',
+  mainEntity: faqs.map(faq => ({
+    '@type': 'Question',
+    name: faq.question,
+    acceptedAnswer: {
+      '@type': 'Answer',
+      text: faq.answer
+    }
+  }))
+};
 ---
 
 <SelcoLayout
   title={title}
-  description="Work out exactly what you need for your next project. Free trade tools to calculate material quantities for building projects."
+  description={description}
   showSidebar={true}
   breadcrumbs={breadcrumbs}
-  pageTitle={title}
+  pageTitle="Trade Projects Calculator — Free Building Material Estimators"
 >
   <SelcoSidebar />
 
   <main class="w-full">
+    <script type="application/ld+json" set:html={JSON.stringify(jsonLd)} />
+    
     <div class="space-y-12 pb-12">
-      <section class="space-y-5">
-        <h2 class="text-2xl md:text-3xl font-bold text-surface-foreground">Plan your job in minutes</h2>
-        <p class="text-muted-foreground text-base md:text-lg leading-relaxed max-w-3xl">
-          Use our trade calculators to work out quantities for bricks, blocks, tiles, adhesive, grout and more. Save time on-site by estimating materials up front and ordering with confidence.
+      {/* Intro Section */}
+      <section class="space-y-6 max-w-3xl">
+        <p class="text-lg text-muted-foreground leading-relaxed">
+          Estimate every material for your project in one go. Select a project type, enter your dimensions, and get a full materials list with wastage included.
         </p>
-        <div class="grid gap-4 sm:grid-cols-2 xl:grid-cols-3">
-          <a
-            href={`${base}calculators/`}
-            class="group rounded-[--radius-card] border border-border bg-surface p-5 card-shadow hover:border-brand-blue/40 hover:-translate-y-0.5 hover:shadow-md transition-all duration-200"
+        <p class="text-lg text-muted-foreground leading-relaxed">
+          Each project calculator walks you through every material step by step. No more switching between separate tools for tiles, adhesive, grout, and spacers. One flow covers everything.
+        </p>
+        <p class="text-lg text-muted-foreground leading-relaxed">
+          Built for tradespeople who need quick, accurate answers on site.
+        </p>
+      </section>
+
+      {/* Search Bar */}
+      <section class="max-w-lg">
+        <label for="search-calculators" class="sr-only">Search calculators and projects</label>
+        <div class="relative">
+          <input
+            id="search-calculators"
+            type="text"
+            placeholder="Search calculators and projects..."
+            class="w-full px-4 py-3 border border-border rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-brand-blue/40"
           >
-            <p class="text-xs font-semibold text-muted-foreground uppercase tracking-wide">Browse tools</p>
-            <h3 class="mt-2 text-lg font-semibold text-surface-foreground group-hover:text-brand-blue transition-colors">All Calculators</h3>
-            <p class="mt-2 text-sm text-muted-foreground">Explore every trade calculator in one place.</p>
-          </a>
-          <a
-            href={`${base}projects/`}
-            class="group rounded-[--radius-card] border border-border bg-surface p-5 card-shadow hover:border-brand-blue/40 hover:-translate-y-0.5 hover:shadow-md transition-all duration-200"
-          >
-            <p class="text-xs font-semibold text-muted-foreground uppercase tracking-wide">Build a pack</p>
-            <h3 class="mt-2 text-lg font-semibold text-surface-foreground group-hover:text-brand-blue transition-colors">Project Bundles</h3>
-            <p class="mt-2 text-sm text-muted-foreground">Group the right calculators for each job type.</p>
-          </a>
-          <a
-            href={`${base}calculators/tiles/`}
-            class="group rounded-[--radius-card] border border-border bg-surface p-5 card-shadow hover:border-brand-blue/40 hover:-translate-y-0.5 hover:shadow-md transition-all duration-200"
-          >
-            <p class="text-xs font-semibold text-muted-foreground uppercase tracking-wide">Most used</p>
-            <h3 class="mt-2 text-lg font-semibold text-surface-foreground group-hover:text-brand-blue transition-colors">Tile Calculator</h3>
-            <p class="mt-2 text-sm text-muted-foreground">Estimate tile quantities, waste and coverage.</p>
-          </a>
         </div>
       </section>
 
-      <section class="grid gap-6 lg:grid-cols-[2fr_1fr]">
-        <div class="space-y-4">
-          <h2 class="text-2xl font-bold text-surface-foreground">How the calculators work</h2>
-          <p class="text-muted-foreground leading-relaxed">
-            Pick a calculator, enter your dimensions, and get instant quantities in the units you need. Every tool uses trade-standard formulas and includes sensible wastage guidance.
-          </p>
-          <ul class="grid gap-3 text-sm text-muted-foreground">
-            <li class="flex items-start gap-3"><span class="mt-1 h-2 w-2 rounded-full bg-brand-blue"></span>Measured in metric units, with conversions when needed.</li>
-            <li class="flex items-start gap-3"><span class="mt-1 h-2 w-2 rounded-full bg-brand-blue"></span>Built for trade scenarios: pallets, bags, boxes and m².</li>
-            <li class="flex items-start gap-3"><span class="mt-1 h-2 w-2 rounded-full bg-brand-blue"></span>Quick links to the most common materials.</li>
-          </ul>
+      {/* Handy Calculators Section */}
+      <section class="space-y-6">
+        <div>
+          <h2 class="text-2xl md:text-3xl font-bold text-surface-foreground mb-2">Handy Calculators</h2>
+          <p class="text-muted-foreground text-base">Quick utility tools for everyday conversions and estimates.</p>
         </div>
-        <div class="rounded-[--radius-card] border border-border bg-muted/20 p-5">
-          <h3 class="text-lg font-semibold text-surface-foreground">Need help choosing?</h3>
-          <p class="mt-2 text-sm text-muted-foreground">
-            Start with a project bundle to see the calculators that match your trade. You can save the list and return to it later.
-          </p>
-          <a href={`${base}projects/`} class="mt-4 inline-flex items-center text-sm font-semibold text-brand-blue hover:text-brand-blue/80">
-            View project bundles
-          </a>
+        
+        <div class="grid gap-4 sm:grid-cols-2 lg:grid-cols-3" data-section="handy-calculators">
+          {handyCalculators.map(calc => (
+            <a
+              href={calc.href}
+              data-name={calc.title.toLowerCase()}
+              class="group rounded-lg border border-border bg-surface p-5 card-shadow hover:border-brand-blue/40 hover:-translate-y-0.5 hover:shadow-md transition-all duration-200"
+            >
+              <h3 class="font-semibold text-surface-foreground group-hover:text-brand-blue transition-colors">{calc.title}</h3>
+              <p class="mt-2 text-sm text-muted-foreground leading-relaxed">{calc.description}</p>
+            </a>
+          ))}
+        </div>
+        
+        <p class="text-sm text-muted-foreground italic">
+          More handy calculators coming soon: Coverage Calculator, Sheet Material Cutting Planner.
+        </p>
+
+        {/* No results state */}
+        <div id="no-handy-results" class="hidden text-center py-8">
+          <p class="text-muted-foreground">No matching handy calculators found.</p>
+        </div>
+      </section>
+
+      {/* Project Calculators Section */}
+      <section class="space-y-6">
+        <div>
+          <h2 class="text-2xl md:text-3xl font-bold text-surface-foreground mb-2">Project Calculators</h2>
+          <p class="text-muted-foreground text-base">The main product. Each project calculator chains every related material into a single guided flow.</p>
+        </div>
+        
+        <div class="grid gap-4 sm:grid-cols-2 lg:grid-cols-3" data-section="project-calculators">
+          {projectCalculators.map(project => (
+            <a
+              href={project.href}
+              data-name={project.title.toLowerCase()}
+              class="group rounded-lg border border-border bg-surface p-5 card-shadow hover:border-brand-blue/40 hover:-translate-y-0.5 hover:shadow-md transition-all duration-200"
+            >
+              <h3 class="font-semibold text-surface-foreground group-hover:text-brand-blue transition-colors">{project.title}</h3>
+              <p class="mt-2 text-sm text-muted-foreground leading-relaxed">{project.description}</p>
+            </a>
+          ))}
+        </div>
+
+        {/* No results state */}
+        <div id="no-project-results" class="hidden text-center py-8">
+          <p class="text-muted-foreground">No matching project calculators found.</p>
+        </div>
+      </section>
+
+      {/* How It Works Section */}
+      <section class="space-y-6 max-w-3xl">
+        <h2 class="text-2xl md:text-3xl font-bold text-surface-foreground">How It Works</h2>
+        
+        <ol class="space-y-4 text-muted-foreground">
+          <li class="flex gap-4">
+            <span class="font-bold text-brand-blue flex-shrink-0">1.</span>
+            <div>
+              <strong class="text-surface-foreground block">Pick a project</strong>
+              <p>Choose Tiling, Masonry, or Concrete & Groundworks.</p>
+            </div>
+          </li>
+          <li class="flex gap-4">
+            <span class="font-bold text-brand-blue flex-shrink-0">2.</span>
+            <div>
+              <strong class="text-surface-foreground block">Enter your measurements</strong>
+              <p>Input dimensions like length, width, and depth. Each step shows placeholder values to guide you.</p>
+            </div>
+          </li>
+          <li class="flex gap-4">
+            <span class="font-bold text-brand-blue flex-shrink-0">3.</span>
+            <div>
+              <strong class="text-surface-foreground block">Step through each material</strong>
+              <p>The wizard moves you through every material in the project. Skip optional steps if you need to.</p>
+            </div>
+          </li>
+          <li class="flex gap-4">
+            <span class="font-bold text-brand-blue flex-shrink-0">4.</span>
+            <div>
+              <strong class="text-surface-foreground block">Get your full materials list</strong>
+              <p>A summary page shows every material and quantity, with wastage included. Ready for ordering.</p>
+            </div>
+          </li>
+        </ol>
+      </section>
+
+      {/* FAQ Section */}
+      <section class="space-y-6 max-w-3xl">
+        <h2 class="text-2xl md:text-3xl font-bold text-surface-foreground">Frequently Asked Questions</h2>
+        
+        <div class="space-y-4">
+          {faqs.map((faq, index) => (
+            <details class="border border-border rounded-lg p-4 group">
+              <summary class="cursor-pointer font-semibold text-surface-foreground hover:text-brand-blue transition-colors flex items-center gap-2">
+                {faq.question}
+                <span class="inline-block group-open:rotate-180 transition-transform">▼</span>
+              </summary>
+              <p class="mt-4 text-muted-foreground leading-relaxed">{faq.answer}</p>
+            </details>
+          ))}
         </div>
       </section>
     </div>
   </main>
 </SelcoLayout>
+
+<script>
+  // Client-side search functionality
+  const searchInput = document.getElementById('search-calculators') as HTMLInputElement;
+  const handySection = document.querySelector('[data-section="handy-calculators"]');
+  const projectSection = document.querySelector('[data-section="project-calculators"]');
+  const noHandyResults = document.getElementById('no-handy-results');
+  const noProjectResults = document.getElementById('no-project-results');
+
+  if (searchInput) {
+    searchInput.addEventListener('input', () => {
+      const query = searchInput.value.toLowerCase().trim();
+
+      // Filter handy calculators
+      if (handySection) {
+        const handyCards = handySection.querySelectorAll('a[data-name]');
+        let handyVisible = 0;
+
+        handyCards.forEach(card => {
+          const name = (card as HTMLElement).dataset.name || '';
+          const text = card.textContent?.toLowerCase() || '';
+          const matches = !query || name.includes(query) || text.includes(query);
+          (card as HTMLElement).style.display = matches ? '' : 'none';
+          if (matches) handyVisible++;
+        });
+
+        if (noHandyResults) {
+          noHandyResults.classList.toggle('hidden', handyVisible > 0);
+        }
+      }
+
+      // Filter project calculators
+      if (projectSection) {
+        const projectCards = projectSection.querySelectorAll('a[data-name]');
+        let projectVisible = 0;
+
+        projectCards.forEach(card => {
+          const name = (card as HTMLElement).dataset.name || '';
+          const text = card.textContent?.toLowerCase() || '';
+          const matches = !query || name.includes(query) || text.includes(query);
+          (card as HTMLElement).style.display = matches ? '' : 'none';
+          if (matches) projectVisible++;
+        });
+
+        if (noProjectResults) {
+          noProjectResults.classList.toggle('hidden', projectVisible > 0);
+        }
+      }
+    });
+  }
+</script>
