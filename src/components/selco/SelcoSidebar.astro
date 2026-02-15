@@ -23,66 +23,42 @@ const isActive = (href: string) => {
 
   <div id="sidebar-content" class="sidebar-content">
     <div class="sidebar-header desktop-only">
-      Calculators Menu <i class="fas fa-chevron-down"></i>
+      Navigation
     </div>
     
     <ul class="sidebar-list">
-        {/* Home */}
         <li>
-            <div class="accordion-header">
-                <a href={base} class={isActive(base) ? 'active section-link' : 'section-link'}>
-                    Home
-                </a>
-            </div>
+            <a href={base} class={isActive(base) ? 'active' : ''}>
+                Home
+            </a>
         </li>
 
-        {/* Projects Accordion */}
-        <li class="accordion-item">
-            <div class="accordion-header">
-                <a href={`${base}projects/`} class={isActive(`${base}projects/`) ? 'active section-link' : 'section-link'}>
-                    Projects
-                </a>
-                <button class="accordion-toggle" aria-label="Toggle Projects">
-                    <i class="fas fa-chevron-down"></i>
-                </button>
-            </div>
-            <ul class="accordion-content">
-                {projects.map(project => (
-                    <li>
-                        <a href={`${base}${project.href}`} class={isActive(`${base}${project.href}`) ? 'active' : ''}>
-                           {project.title}
-                        </a>
-                    </li>
-                ))}
-            </ul>
+        <li class="sidebar-section">
+            <span class="section-title">Handy Calculators</span>
+        </li>
+        <li>
+            <a href={`${base}calculators/conversions/`} class={isActive(`${base}calculators/conversions/`) ? 'active' : ''}>
+                Unit Converter
+            </a>
         </li>
 
-        {/* Calculators Accordion */}
-        <li class="accordion-item">
-             <div class="accordion-header">
-                <a href={`${base}calculators/`} class={isActive(`${base}calculators/`) ? 'active section-link' : 'section-link'}>
-                    Calculators
-                </a>
-                <button class="accordion-toggle" aria-label="Toggle Calculators">
-                    <i class="fas fa-chevron-down"></i>
-                </button>
-            </div>
-            <ul class="accordion-content">
-                {standaloneTools.map(tool => {
-                    const isConversion = tool.title.toLowerCase().includes('conversion');
-                    return (
-                        <li>
-                            <a 
-                                href={`${base}${tool.href}`} 
-                                class={`${isActive(`${base}${tool.href}`) ? 'active' : ''} ${isConversion ? 'highlight-link' : ''}`}
-                            >
-                                {isConversion && <i class="fas fa-exchange-alt mr-2 text-brand-yellow"></i>}
-                                {tool.title}
-                            </a>
-                        </li>
-                    );
-                })}
-            </ul>
+        <li class="sidebar-section">
+            <span class="section-title">Project Calculators</span>
+        </li>
+        <li>
+            <a href={`${base}projects/tiling/`} class={isActive(`${base}projects/tiling/`) ? 'active' : ''}>
+                Tiling
+            </a>
+        </li>
+        <li>
+            <a href={`${base}projects/masonry/`} class={isActive(`${base}projects/masonry/`) ? 'active' : ''}>
+                Masonry
+            </a>
+        </li>
+        <li>
+            <a href={`${base}projects/`} class={isActive(`${base}projects/`) ? 'active' : ''}>
+                Concrete &amp; Groundworks
+            </a>
         </li>
     </ul>
   </div>
@@ -176,6 +152,22 @@ const isActive = (href: string) => {
     font-size: 0.6rem;
     margin-right: 10px;
     color: #999;
+  }
+
+  .sidebar-section {
+    background-color: #e8e8e8 !important;
+    border-bottom: 1px solid #ddd !important;
+    padding: 0 !important;
+  }
+
+  .section-title {
+    display: block;
+    padding: 10px 15px;
+    font-size: 0.7rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    color: #666;
+    letter-spacing: 0.5px;
   }
 
   /* Hover States */
