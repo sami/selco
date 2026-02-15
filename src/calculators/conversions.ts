@@ -1,14 +1,14 @@
 /** Supported length units. */
-export type LengthUnit = 'mm' | 'cm' | 'm' | 'in' | 'ft' | 'yd';
+export type LengthUnit = 'mm' | 'cm' | 'm' | 'km' | 'in' | 'ft' | 'yd' | 'miles';
 
 /** Supported area units. */
-export type AreaUnit = 'mm2' | 'cm2' | 'm2' | 'ft2' | 'yd2';
+export type AreaUnit = 'mm2' | 'cm2' | 'm2' | 'in2' | 'ft2' | 'yd2';
 
 /** Supported weight units. */
 export type WeightUnit = 'g' | 'kg' | 'oz' | 'lb' | 'tonnes' | 'stones';
 
 /** Supported volume units. */
-export type VolumeUnit = 'm3' | 'litres' | 'ft3' | 'yd3' | 'gallons_uk';
+export type VolumeUnit = 'cm3' | 'm3' | 'litres' | 'in3' | 'ft3' | 'yd3' | 'gallons_uk';
 
 /** Supported temperature units. */
 export type TemperatureUnit = 'C' | 'F';
@@ -25,9 +25,11 @@ const lengthToMetres: Record<LengthUnit, number> = {
     mm: 0.001,
     cm: 0.01,
     m: 1,
+    km: 1000,
     in: 0.0254,
     ft: 0.3048,
     yd: 0.9144,
+    miles: 1609.34,
 };
 
 /** Factor to convert 1 unit → square metres. */
@@ -35,6 +37,7 @@ const areaToM2: Record<AreaUnit, number> = {
     mm2: 1e-6,
     cm2: 1e-4,
     m2: 1,
+    in2: 0.00064516,
     ft2: 0.09290304,
     yd2: 0.83612736,
 };
@@ -51,8 +54,10 @@ const weightToKg: Record<WeightUnit, number> = {
 
 /** Factor to convert 1 unit → cubic metres. */
 const volumeToM3: Record<VolumeUnit, number> = {
+    cm3: 1e-6,
     m3: 1,
     litres: 0.001,
+    in3: 0.000016387064,
     ft3: 0.0283168,
     yd3: 0.764555,
     gallons_uk: 0.00454609,
@@ -86,20 +91,25 @@ export const UNITS = {
         { value: 'mm', label: 'Millimetres (mm)' },
         { value: 'cm', label: 'Centimetres (cm)' },
         { value: 'm', label: 'Metres (m)' },
+        { value: 'km', label: 'Kilometres (km)' },
         { value: 'in', label: 'Inches (in)' },
         { value: 'ft', label: 'Feet (ft)' },
         { value: 'yd', label: 'Yards (yd)' },
+        { value: 'miles', label: 'Miles (mi)' },
     ],
     area: [
         { value: 'mm2', label: 'mm²' },
         { value: 'cm2', label: 'cm²' },
         { value: 'm2', label: 'm²' },
+        { value: 'in2', label: 'in²' },
         { value: 'ft2', label: 'ft²' },
         { value: 'yd2', label: 'yd²' },
     ],
     volume: [
+        { value: 'cm3', label: 'Cubic centimetres (cm³)' },
         { value: 'm3', label: 'Cubic metres (m³)' },
         { value: 'litres', label: 'Litres (L)' },
+        { value: 'in3', label: 'Cubic inches (in³)' },
         { value: 'ft3', label: 'Cubic feet (ft³)' },
         { value: 'yd3', label: 'Cubic yards (yd³)' },
         { value: 'gallons_uk', label: 'UK Gallons' },
