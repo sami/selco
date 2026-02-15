@@ -9,9 +9,11 @@ interface Props {
   description?: string;
   showSidebar?: boolean;
   breadcrumbs?: Array<{ label: string; href?: string }>;
+  pageTitle?: string;
 }
 
-const { title, description = '', showSidebar = false, breadcrumbs = [] } = Astro.props;
+const { title, description = '', showSidebar = false, breadcrumbs = [], pageTitle } = Astro.props;
+const resolvedPageTitle = pageTitle === undefined ? title : pageTitle;
 const RAW_BASE = import.meta.env.BASE_URL;
 const base = RAW_BASE.endsWith('/') ? RAW_BASE : `${RAW_BASE}/`;
 ---
@@ -130,6 +132,9 @@ const base = RAW_BASE.endsWith('/') ? RAW_BASE : `${RAW_BASE}/`;
         max-width: 1280px;
         margin: 0 auto;
         padding: 10px 15px 20px;
+        text-align: left;
+        width: 100%;
+        box-sizing: border-box;
       }
       .page-title {
         font-family: 'Arial Black', sans-serif;
@@ -153,6 +158,24 @@ const base = RAW_BASE.endsWith('/') ? RAW_BASE : `${RAW_BASE}/`;
 
       .main-container.with-sidebar {
         grid-template-columns: 260px 1fr;
+      }
+
+      .content-footer {
+        margin-top: 40px;
+        padding-top: 16px;
+        border-top: 1px solid var(--border-color);
+        display: flex;
+        flex-wrap: wrap;
+        gap: 10px 20px;
+        align-items: center;
+        font-size: 0.85rem;
+        color: var(--text-grey);
+      }
+
+      .content-footer a {
+        color: var(--selco-blue);
+        text-decoration: none;
+        font-weight: 600;
       }
 
       @media (max-width: 1024px) {
@@ -226,11 +249,21 @@ const base = RAW_BASE.endsWith('/') ? RAW_BASE : `${RAW_BASE}/`;
       </div>
     )}
 
+    {resolvedPageTitle && (
+      <div class="page-title-container">
+        <h1 class="page-title">{resolvedPageTitle}</h1>
+      </div>
+    )}
+
 
 
     <!-- Main Content -->
     <div class:list={["main-container", { "with-sidebar": showSidebar }]}>
       <slot />
+      <div class="content-footer">
+        <span>Disclaimer: Calculations are estimates only. Always verify product coverage and site conditions before ordering.</span>
+        <a href="https://madebysami.notion.site/2fe361401cd480fc9fcfdf4871d199b1?pvs=105">Share feedback</a>
+      </div>
     </div>
 
     <!-- Footer -->
