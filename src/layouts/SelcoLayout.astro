@@ -160,22 +160,77 @@ const base = RAW_BASE.endsWith('/') ? RAW_BASE : `${RAW_BASE}/`;
         grid-template-columns: 260px 1fr;
       }
 
-      .content-footer {
-        margin-top: 40px;
-        padding-top: 16px;
-        border-top: 1px solid var(--border-color);
+      .main-container > main {
         display: flex;
-        flex-wrap: wrap;
-        gap: 10px 20px;
-        align-items: center;
+        flex-direction: column;
+      }
+
+      .content-footer {
+        margin-top: auto;
+        padding: 20px 24px;
+        margin-left: auto;
+        margin-top: 60px;
+        border: 2px solid var(--selco-blue);
+        border-radius: 8px;
+        background: linear-gradient(135deg, #f0f7ff 0%, #e6f2ff 100%);
+        text-align: right;
+        font-size: 0.8rem;
+        color: var(--selco-blue);
+        max-width: 320px;
+        line-height: 1.6;
+        box-shadow: 0 2px 8px rgba(0, 43, 128, 0.1);
+      }
+
+      .content-footer-disclaimer {
+        display: block;
+        margin-bottom: 12px;
+        color: var(--selco-dark-blue);
+        font-weight: 700;
         font-size: 0.85rem;
-        color: var(--text-grey);
+        padding: 10px 12px;
+        background-color: rgba(255, 205, 0, 0.15);
+        border-left: 3px solid var(--selco-yellow);
+        border-radius: 4px;
       }
 
       .content-footer a {
-        color: var(--selco-blue);
+        color: white;
         text-decoration: none;
-        font-weight: 600;
+        font-weight: 700;
+        display: inline-block;
+        padding: 8px 16px;
+        border-radius: 6px;
+        background-color: var(--selco-blue);
+        transition: all 0.3s ease;
+        font-size: 0.8rem;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+      }
+
+      .content-footer a:hover {
+        background-color: var(--selco-yellow);
+        color: var(--selco-dark-blue);
+        transform: translateY(-2px);
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+      }
+
+      @media (max-width: 768px) {
+        .content-footer {
+          flex-direction: column !important;
+          align-items: stretch !important;
+          gap: 12px;
+          padding: 16px 16px;
+        }
+
+        .content-footer-disclaimer {
+          width: 100%;
+          margin-bottom: 0 !important;
+        }
+
+        .content-footer a {
+          width: 100%;
+          text-align: center;
+        }
       }
 
       @media (max-width: 1024px) {
@@ -260,10 +315,6 @@ const base = RAW_BASE.endsWith('/') ? RAW_BASE : `${RAW_BASE}/`;
     <!-- Main Content -->
     <div class:list={["main-container", { "with-sidebar": showSidebar }]}>
       <slot />
-      <div class="content-footer">
-        <span>Disclaimer: Calculations are estimates only. Always verify product coverage and site conditions before ordering.</span>
-        <a href="https://madebysami.notion.site/2fe361401cd480fc9fcfdf4871d199b1?pvs=105">Share feedback</a>
-      </div>
     </div>
 
     <!-- Footer -->

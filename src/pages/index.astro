@@ -9,8 +9,8 @@ const breadcrumbs = [
   { label: 'Home' }
 ];
 
-const title = "Trade Projects Calculator — Free Building Material Estimators";
-const description = "Free project calculators for tradespeople. Estimate all materials for tiling, masonry, and concrete projects in one guided flow. Accurate quantities with wastage included.";
+const title = "Trade Projects Calculator";
+const description = "Project calculators for tradespeople. Calculate all materials for tiling, masonry, and concrete projects in one guided flow. Accurate quantities with wastage included.";
 
 const handyCalculators = [
   {
@@ -40,8 +40,8 @@ const projectCalculators = [
 
 const faqs = [
   {
-    question: 'How accurate are the estimates?',
-    answer: 'All calculations use industry-standard formulas and manufacturer coverage rates. Results include a configurable wastage percentage to account for cuts and breakage. They are estimates, not exact quantities. Always round up when ordering.'
+    question: 'How accurate are the calculations?',
+    answer: 'All calculations use industry-standard formulas and manufacturer coverage rates. Results include a configurable wastage percentage to account for cuts and breakage. They are calculations based on standard formulas, not exact quantities. Always round up when ordering.'
   },
   {
     question: 'What is wastage and why does it matter?',
@@ -61,7 +61,7 @@ const faqs = [
   }
 ];
 
-const jsonLd = {
+const faqSchema = {
   '@context': 'https://schema.org',
   '@type': 'FAQPage',
   mainEntity: faqs.map(faq => ({
@@ -73,6 +73,22 @@ const jsonLd = {
     }
   }))
 };
+
+const websiteSchema = {
+  '@context': 'https://schema.org',
+  '@type': 'WebSite',
+  name: 'Trade Projects Calculator',
+  description: description,
+  url: 'https://www.tradeprojectscalculator.com',
+  potentialAction: {
+    '@type': 'SearchAction',
+    target: {
+      '@type': 'EntryPoint',
+      urlTemplate: 'https://www.tradeprojectscalculator.com?q={search_term_string}'
+    },
+    query_input: 'required name=search_term_string'
+  }
+};
 ---
 
 <SelcoLayout
@@ -80,12 +96,13 @@ const jsonLd = {
   description={description}
   showSidebar={true}
   breadcrumbs={breadcrumbs}
-  pageTitle="Trade Projects Calculator — Free Building Material Estimators"
+  pageTitle="Trade Projects Calculator"
 >
   <SelcoSidebar />
 
   <main class="w-full">
-    <script type="application/ld+json" set:html={JSON.stringify(jsonLd)} />
+    <script type="application/ld+json" set:html={JSON.stringify(websiteSchema)} />
+    <script type="application/ld+json" set:html={JSON.stringify(faqSchema)} />
     
     <div class="space-y-12 pb-12">
       {/* Intro Section */}
@@ -118,7 +135,7 @@ const jsonLd = {
       <section class="space-y-6">
         <div>
           <h2 class="text-2xl md:text-3xl font-bold text-surface-foreground mb-2">Handy Calculators</h2>
-          <p class="text-muted-foreground text-base">Quick utility tools for everyday conversions and estimates.</p>
+          <p class="text-muted-foreground text-base">Quick utility tools for everyday conversions and calculations.</p>
         </div>
         
         <div class="grid gap-4 sm:grid-cols-2 lg:grid-cols-3" data-section="handy-calculators">
@@ -222,6 +239,11 @@ const jsonLd = {
           ))}
         </div>
       </section>
+    </div>
+
+    <div class="content-footer" style="padding: 20px 24px; margin-top: 60px; border: 2px solid #004B8D; border-radius: 8px; background: linear-gradient(135deg, #f0f7ff 0%, #e6f2ff 100%); font-size: 0.8rem; color: #004B8D; line-height: 1.6; box-shadow: 0 2px 8px rgba(0, 43, 128, 0.1); display: flex; gap: 20px; align-items: center; justify-content: space-between; flex-wrap: wrap;">
+      <span class="content-footer-disclaimer" style="display: block; color: #00264d; font-weight: 700; font-size: 0.85rem; padding: 10px 12px; background-color: rgba(255, 205, 0, 0.15); border-left: 3px solid #FFCD00; border-radius: 4px; flex: 1; min-width: 200px;">Disclaimer: Calculations are estimates only. Always verify product coverage and site conditions before ordering.</span>
+      <a href="https://madebysami.notion.site/2fe361401cd480fc9fcfdf4871d199b1?pvs=105" style="color: white; text-decoration: none; font-weight: 700; display: inline-block; padding: 8px 16px; border-radius: 6px; background-color: #004B8D; transition: all 0.3s ease; font-size: 0.8rem; text-transform: uppercase; letter-spacing: 0.5px; flex-shrink: 0;">Share feedback</a>
     </div>
   </main>
 </SelcoLayout>
