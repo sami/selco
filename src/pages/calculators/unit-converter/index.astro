@@ -169,6 +169,99 @@ const howToSchema = {
         </div>
       </section>
 
+      {/* Common Material Densities */}
+      <section class="space-y-6 max-w-4xl">
+        <h2 class="text-2xl md:text-3xl font-bold text-surface-foreground">Common Material Densities</h2>
+        
+        <p class="text-muted-foreground leading-relaxed">
+          Use these bulk density values to convert between volume and weight for ordering building materials.
+        </p>
+
+        <div class="overflow-x-auto">
+          <table class="w-full border-collapse bg-surface rounded-lg overflow-hidden">
+            <thead>
+              <tr class="bg-brand-blue/5 border-b border-border">
+                <th class="text-left p-3 text-sm font-semibold text-surface-foreground">Material</th>
+                <th class="text-left p-3 text-sm font-semibold text-surface-foreground">Bulk Density (kg/m³)</th>
+                <th class="text-left p-3 text-sm font-semibold text-surface-foreground">Source</th>
+              </tr>
+            </thead>
+            <tbody class="text-sm text-muted-foreground">
+              <tr class="border-b border-border">
+                <td class="p-3">Ordinary Portland Cement</td>
+                <td class="p-3 font-medium">1,500</td>
+                <td class="p-3">BS EN 197-1:2011</td>
+              </tr>
+              <tr class="border-b border-border">
+                <td class="p-3">Sharp sand</td>
+                <td class="p-3 font-medium">1,600</td>
+                <td class="p-3">BS EN 12620:2002+A1:2008</td>
+              </tr>
+              <tr class="border-b border-border">
+                <td class="p-3">Gravel/aggregate 20mm</td>
+                <td class="p-3 font-medium">1,750</td>
+                <td class="p-3">BS EN 12620:2002+A1:2008</td>
+              </tr>
+              <tr class="border-b border-border">
+                <td class="p-3">Mixed wet concrete</td>
+                <td class="p-3 font-medium">2,400</td>
+                <td class="p-3">BS EN 206:2013+A2:2021</td>
+              </tr>
+              <tr class="border-b border-border">
+                <td class="p-3">MOT Type 1 compacted</td>
+                <td class="p-3 font-medium">2,100</td>
+                <td class="p-3">Highways England SHW Series 800</td>
+              </tr>
+              <tr class="border-b border-border">
+                <td class="p-3">MOT Type 1 loose</td>
+                <td class="p-3 font-medium">1,800</td>
+                <td class="p-3">Highways England SHW Series 800</td>
+              </tr>
+              <tr class="border-b border-border">
+                <td class="p-3">Crushed concrete compacted</td>
+                <td class="p-3 font-medium">1,900</td>
+                <td class="p-3">WRAP Quality Protocol</td>
+              </tr>
+              <tr class="border-b border-border">
+                <td class="p-3">Scalpings</td>
+                <td class="p-3 font-medium">1,800</td>
+                <td class="p-3">BS EN 13242:2002+A1:2007</td>
+              </tr>
+              <tr class="border-b border-border">
+                <td class="p-3">Ballast (sand + gravel mix)</td>
+                <td class="p-3 font-medium">1,800</td>
+                <td class="p-3">BS EN 12620:2002+A1:2008</td>
+              </tr>
+              <tr class="border-b border-border">
+                <td class="p-3">Soft building sand</td>
+                <td class="p-3 font-medium">1,500</td>
+                <td class="p-3">BS EN 13139:2002</td>
+              </tr>
+              <tr class="border-b border-border">
+                <td class="p-3">Topsoil</td>
+                <td class="p-3 font-medium">1,300</td>
+                <td class="p-3">BS 3882:2015</td>
+              </tr>
+              <tr>
+                <td class="p-3">Grout</td>
+                <td class="p-3 font-medium">1,700</td>
+                <td class="p-3">BS EN 13888:2009</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+        <p class="text-muted-foreground leading-relaxed">
+          To convert volume to weight, multiply your volume in cubic metres by the bulk density. The result is weight in kilograms. Divide by 1,000 to get tonnes. For example, 2 m³ of sharp sand weighs 2 × 1,600 = 3,200 kg, or 3.2 tonnes.
+        </p>
+
+        <div class="bg-brand-yellow/10 border-l-4 border-brand-yellow p-4 rounded">
+          <p class="text-muted-foreground text-sm leading-relaxed">
+            Bulk density varies depending on moisture content and compaction. These are typical values for ordering purposes. Always check the supplier's data sheet for the specific product.
+          </p>
+        </div>
+      </section>
+
       {/* Internal Links */}
       <section class="space-y-4 max-w-3xl">
         <h3 class="text-xl font-semibold text-surface-foreground">Related Calculators</h3>

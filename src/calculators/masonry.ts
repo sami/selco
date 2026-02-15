@@ -105,10 +105,12 @@ export function calculateMortar(
     const cementVolume = dryVolume * cementRatio;
     const sandVolume = dryVolume * sandRatio;
 
-    const cementKg = cementVolume * 1440;
+    const cementDensity = 1500; // kg/m³, BS EN 197-1:2011
+    const cementKg = cementVolume * cementDensity;
     const cementBags = Math.ceil(cementKg / 25);
 
-    const sandKg = sandVolume * 1600;
+    const sandDensity = 1600; // kg/m³, BS EN 12620:2002+A1:2008
+    const sandKg = sandVolume * sandDensity;
     const sandBagSizeKg = sandBagSize === 'jumbo' ? 875 : 35;
     const sandBags = Math.ceil(sandKg / sandBagSizeKg);
     const sandTonnes = sandKg / 1000;
