@@ -36,11 +36,13 @@ export function calculateGrout(input: GroutInput): GroutResult {
         throw new Error('Wastage must be between 0 and 100.');
     }
 
+    const groutDensity = 1.7; // kg/L, BS EN 13888:2009
+
     const kgPerM2 =
         ((tileWidth + tileHeight) / (tileWidth * tileHeight)) *
         jointWidth *
         tileDepth *
-        2.0; // SG increased from 1.6 to 2.0 to cover denser/flexible grouts (e.g. Dunlop GX-500)
+        groutDensity;
 
     const kgNeeded = area * kgPerM2 * (1 + wastage / 100);
     const bags5kg = Math.ceil(kgNeeded / 5);
