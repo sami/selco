@@ -71,12 +71,12 @@ const volumeToM3: Record<VolumeUnit, number> = {
 export const DENSITY: Record<DensityMaterial, number> = {
     concrete: 2.4,          // BS EN 206:2013+A2:2021
     hardcore: 2.1,          // Highways England SHW Series 800
-    sand: 1.5,              // BS EN 13139:2002 (soft building sand)
-    sharp_sand: 1.6,        // BS EN 12620:2002+A1:2008
+    sand: 1.6,              // BS EN 13139:2002 (soft building sand)
+    sharp_sand: 1.7,        // BS EN 12620:2002+A1:2008
     plastering_sand: 1.5,   // BS EN 13139:2002
     gravel: 1.8,            // BS EN 12620:2002+A1:2008
     gravel_10mm: 1.8,       // BS EN 12620:2002+A1:2008
-    gravel_20mm: 1.75,      // BS EN 12620:2002+A1:2008
+    gravel_20mm: 1.8,       // BS EN 12620:2002+A1:2008
     ballast: 1.8,           // BS EN 12620:2002+A1:2008
     ballast_20mm: 1.8,      // BS EN 12620:2002+A1:2008
 };

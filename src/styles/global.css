@@ -66,3 +66,14 @@ html {
 body {
   @apply min-h-full flex flex-col;
 }
+
+/* Typography */
+h2 {
+  @apply text-2xl;
+}
+
+@media (min-width: 768px) {
+  h2 {
+    @apply text-3xl;
+  }
+}
