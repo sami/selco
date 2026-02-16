@@ -29,12 +29,14 @@ const projectCalculators = [
   {
     title: 'Masonry Project',
     description: 'Calculate bricks or blocks, sand, cement, and wall ties for single-skin or cavity walls. Deduct windows and doors automatically.',
-    href: '#'
+    href: '#',
+    disabled: true
   },
   {
     title: 'Concrete & Groundworks Project',
     description: 'Work out cement, sand, aggregate, and hardcore sub-base quantities for slabs and foundations. Covers both the concrete and the sub-base underneath.',
-    href: '#'
+    href: '#',
+    disabled: true
   }
 ];
 
@@ -171,9 +173,15 @@ const websiteSchema = {
         <div class="grid gap-4 sm:grid-cols-2 lg:grid-cols-3" data-section="project-calculators">
           {projectCalculators.map(project => (
             <a
-              href={project.href}
+              href={project.disabled ? '#' : project.href}
+              aria-disabled={project.disabled ? 'true' : undefined}
               data-name={project.title.toLowerCase()}
-              class="group rounded-lg border border-border bg-surface p-5 card-shadow hover:border-brand-blue/40 hover:-translate-y-0.5 hover:shadow-md transition-all duration-200"
+              class:list={[
+                'group rounded-lg border border-border bg-surface p-5 card-shadow transition-all duration-200',
+                project.disabled
+                  ? 'opacity-60 pointer-events-none'
+                  : 'hover:border-brand-blue/40 hover:-translate-y-0.5 hover:shadow-md'
+              ]}
             >
               <h3 class="font-semibold text-surface-foreground group-hover:text-brand-blue transition-colors">{project.title}</h3>
               <p class="mt-2 text-sm text-muted-foreground leading-relaxed">{project.description}</p>
