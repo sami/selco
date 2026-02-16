@@ -120,19 +120,6 @@ const websiteSchema = {
         </p>
       </section>
 
-      {/* Search Bar */}
-      <section class="max-w-lg">
-        <label for="search-calculators" class="sr-only">Search calculators and projects</label>
-        <div class="relative">
-          <input
-            id="search-calculators"
-            type="text"
-            placeholder="Search calculators and projects..."
-            class="w-full px-4 py-3 border border-border rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-brand-blue/40"
-          >
-        </div>
-      </section>
-
       {/* Handy Calculators Section */}
       <section class="space-y-6">
         <div>
@@ -157,10 +144,6 @@ const websiteSchema = {
           More handy calculators coming soon: Coverage Calculator, Sheet Material Cutting Planner.
         </p>
 
-        {/* No results state */}
-        <div id="no-handy-results" class="hidden text-center py-8">
-          <p class="text-muted-foreground">No matching handy calculators found.</p>
-        </div>
       </section>
 
       {/* Project Calculators Section */}
@@ -189,10 +172,6 @@ const websiteSchema = {
           ))}
         </div>
 
-        {/* No results state */}
-        <div id="no-project-results" class="hidden text-center py-8">
-          <p class="text-muted-foreground">No matching project calculators found.</p>
-        </div>
       </section>
 
       {/* How It Works Section */}
@@ -254,54 +233,5 @@ const websiteSchema = {
       <a href="https://madebysami.notion.site/2fe361401cd480fc9fcfdf4871d199b1?pvs=105" style="color: white; text-decoration: none; font-weight: 700; display: inline-block; padding: 8px 16px; border-radius: 6px; background-color: #004B8D; transition: all 0.3s ease; font-size: 0.8rem; text-transform: uppercase; letter-spacing: 0.5px; flex-shrink: 0;">Share feedback</a>
     </div>
   </main>
+  </main>
 </SelcoLayout>
-
-<script>
-  const searchInput = document.getElementById('search-calculators') as HTMLInputElement;
-  const handySection = document.querySelector('[data-section="handy-calculators"]');
-  const projectSection = document.querySelector('[data-section="project-calculators"]');
-  const noHandyResults = document.getElementById('no-handy-results');
-  const noProjectResults = document.getElementById('no-project-results');
-
-  if (searchInput) {
-    searchInput.addEventListener('input', () => {
-      const query = searchInput.value.toLowerCase().trim();
-
-      // Filter handy calculators
-      if (handySection) {
-        const handyCards = handySection.querySelectorAll('a[data-name]');
-        let handyVisible = 0;
-
-        handyCards.forEach(card => {
-          const name = (card as HTMLElement).dataset.name || '';
-          const text = card.textContent?.toLowerCase() || '';
-          const matches = !query || name.includes(query) || text.includes(query);
-          (card as HTMLElement).style.display = matches ? '' : 'none';
-          if (matches) handyVisible++;
-        });
-
-        if (noHandyResults) {
-          noHandyResults.classList.toggle('hidden', handyVisible > 0);
-        }
-      }
-
-      // Filter project calculators
-      if (projectSection) {
-        const projectCards = projectSection.querySelectorAll('a[data-name]');
-        let projectVisible = 0;
-
-        projectCards.forEach(card => {
-          const name = (card as HTMLElement).dataset.name || '';
-          const text = card.textContent?.toLowerCase() || '';
-          const matches = !query || name.includes(query) || text.includes(query);
-          (card as HTMLElement).style.display = matches ? '' : 'none';
-          if (matches) projectVisible++;
-        });
-
-        if (noProjectResults) {
-          noProjectResults.classList.toggle('hidden', projectVisible > 0);
-        }
-      }
-    });
-  }
-</script>
