@@ -259,7 +259,7 @@ const base = RAW_BASE.endsWith('/') ? RAW_BASE : `${RAW_BASE}/`;
       <span>Branches</span>
     </a>
 
-    <a href={`${base}calculators/`} class="header-icon-link">
+    <a href={`${base}unit-converter/`} class="header-icon-link">
         <i class="fas fa-calculator"></i>
         <span>Calculators</span>
     </a>
@@ -286,12 +286,12 @@ const base = RAW_BASE.endsWith('/') ? RAW_BASE : `${RAW_BASE}/`;
         </a>
       </li>
       <li>
-        <a href={`${base}projects/`} class={currentPath.includes('/projects/') ? 'active' : ''}>
+        <a href={`${base}tiling/`} class={currentPath.includes('/tiling/') || currentPath.includes('/masonry/') || currentPath.includes('/concrete-groundworks/') ? 'active' : ''}>
           <i class="fas fa-folder-open"></i> My Projects
         </a>
       </li>
       <li>
-        <a href={`${base}calculators/`} class={currentPath.includes('/calculators/') ? 'active' : ''}>
+        <a href={`${base}unit-converter/`} class={currentPath.includes('/unit-converter/') ? 'active' : ''}>
           <i class="fas fa-calculator"></i> All Calculators
         </a>
       </li>
