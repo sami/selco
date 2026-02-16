@@ -24,8 +24,8 @@ export default function MobileMenu({ currentPath, baseUrl }: MobileMenuProps) {
 
     const navLinks = [
         { href: baseUrl, label: 'Home' },
-        { href: `${baseUrl}projects/`, label: 'Projects' },
-        { href: `${baseUrl}calculators/`, label: 'Calculators' },
+        { href: `${baseUrl}tiling/`, label: 'Projects' },
+        { href: `${baseUrl}unit-converter/`, label: 'Calculators' },
     ];
 
     const normalize = (path: string) => path.endsWith('/') ? path.slice(0, -1) : path;
