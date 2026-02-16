@@ -1,0 +1,981 @@
+---
+import SelcoLayout from '../../layouts/SelcoLayout.astro';
+import SelcoSidebar from '../../components/selco/SelcoSidebar.astro';
+
+const BASE_URL = import.meta.env.BASE_URL;
+const base = BASE_URL.endsWith('/') ? BASE_URL : `${BASE_URL}/`;
+
+const breadcrumbs = [
+  { label: 'Home', href: `${base}` },
+  { label: 'Styleguide' }
+];
+
+const title = 'UI Styleguide — Design Reference';
+const description = 'Visual reference for every UI element used across the site. Use this page to maintain consistency.';
+---
+
+<SelcoLayout
+  title={title}
+  description={description}
+  showSidebar={true}
+  breadcrumbs={breadcrumbs}
+  pageTitle="UI Styleguide"
+>
+  <SelcoSidebar />
+
+  <main class="w-full">
+    <div class="space-y-16 pb-16">
+
+      <!-- ============================================================ -->
+      <!-- 1. COLOUR PALETTE                                            -->
+      <!-- ============================================================ -->
+      <section class="space-y-6">
+        <h2 class="text-2xl md:text-3xl font-bold text-surface-foreground">1. Colour Palette</h2>
+        <p class="text-muted-foreground leading-relaxed max-w-3xl">
+          Brand anchors and their semantic mappings. Every colour used in the UI comes from the design tokens defined in <code class="text-sm bg-muted/40 px-1.5 py-0.5 rounded">global.css @theme</code>.
+        </p>
+
+        <div>
+          <h3 class="font-semibold text-surface-foreground mb-3">Brand Colours</h3>
+          <div class="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+            <div class="rounded-lg border border-border overflow-hidden">
+              <div class="h-20 bg-brand-blue"></div>
+              <div class="p-3 text-sm">
+                <p class="font-semibold text-surface-foreground">Brand Blue</p>
+                <p class="text-muted-foreground">#003087</p>
+                <p class="text-xs text-muted-foreground mt-1">bg-brand-blue</p>
+              </div>
+            </div>
+            <div class="rounded-lg border border-border overflow-hidden">
+              <div class="h-20 bg-brand-yellow"></div>
+              <div class="p-3 text-sm">
+                <p class="font-semibold text-surface-foreground">Brand Yellow</p>
+                <p class="text-muted-foreground">#FFD100</p>
+                <p class="text-xs text-muted-foreground mt-1">bg-brand-yellow</p>
+              </div>
+            </div>
+            <div class="rounded-lg border border-border overflow-hidden">
+              <div class="h-20" style="background-color: #004B8D;"></div>
+              <div class="p-3 text-sm">
+                <p class="font-semibold text-surface-foreground">SELCO Blue</p>
+                <p class="text-muted-foreground">#004B8D</p>
+                <p class="text-xs text-muted-foreground mt-1">Layout scoped —selco-blue</p>
+              </div>
+            </div>
+            <div class="rounded-lg border border-border overflow-hidden">
+              <div class="h-20" style="background-color: #00264d;"></div>
+              <div class="p-3 text-sm">
+                <p class="font-semibold text-surface-foreground">SELCO Dark Blue</p>
+                <p class="text-muted-foreground">#00264d</p>
+                <p class="text-xs text-muted-foreground mt-1">Layout scoped —selco-dark-blue</p>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div>
+          <h3 class="font-semibold text-surface-foreground mb-3">Semantic Colours</h3>
+          <div class="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+            <div class="rounded-lg border border-border overflow-hidden">
+              <div class="h-16 bg-surface border-b border-border"></div>
+              <div class="p-3 text-sm">
+                <p class="font-semibold text-surface-foreground">Surface</p>
+                <p class="text-muted-foreground">#ffffff</p>
+                <p class="text-xs text-muted-foreground mt-1">bg-surface</p>
+              </div>
+            </div>
+            <div class="rounded-lg border border-border overflow-hidden">
+              <div class="h-16 bg-surface-subtle border-b border-border"></div>
+              <div class="p-3 text-sm">
+                <p class="font-semibold text-surface-foreground">Surface Subtle</p>
+                <p class="text-muted-foreground">#f8fafc</p>
+                <p class="text-xs text-muted-foreground mt-1">bg-surface-subtle</p>
+              </div>
+            </div>
+            <div class="rounded-lg border border-border overflow-hidden">
+              <div class="h-16 bg-muted border-b border-border"></div>
+              <div class="p-3 text-sm">
+                <p class="font-semibold text-surface-foreground">Muted</p>
+                <p class="text-muted-foreground">#e2e8f0</p>
+                <p class="text-xs text-muted-foreground mt-1">bg-muted</p>
+              </div>
+            </div>
+            <div class="rounded-lg border border-border overflow-hidden">
+              <div class="h-16 bg-border"></div>
+              <div class="p-3 text-sm">
+                <p class="font-semibold text-surface-foreground">Border</p>
+                <p class="text-muted-foreground">#e2e8f0</p>
+                <p class="text-xs text-muted-foreground mt-1">border-border</p>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div>
+          <h3 class="font-semibold text-surface-foreground mb-3">Text Colours</h3>
+          <div class="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+            <div class="rounded-lg border border-border p-4">
+              <p class="text-surface-foreground font-semibold">Surface Foreground</p>
+              <p class="text-xs text-muted-foreground mt-1">#0f172a — text-surface-foreground</p>
+              <p class="text-surface-foreground mt-2">Used for headings and primary text.</p>
+            </div>
+            <div class="rounded-lg border border-border p-4">
+              <p class="text-muted-foreground font-semibold">Muted Foreground</p>
+              <p class="text-xs text-muted-foreground mt-1">#334155 — text-muted-foreground</p>
+              <p class="text-muted-foreground mt-2">Used for body copy and descriptions.</p>
+            </div>
+            <div class="rounded-lg border border-border p-4">
+              <p class="text-brand-blue font-semibold">Brand Blue</p>
+              <p class="text-xs text-muted-foreground mt-1">#003087 — text-brand-blue</p>
+              <p class="text-brand-blue mt-2">Used for links and interactive accents.</p>
+            </div>
+          </div>
+        </div>
+
+        <div>
+          <h3 class="font-semibold text-surface-foreground mb-3">Feedback Colours</h3>
+          <div class="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+            <div class="rounded-lg border border-border overflow-hidden">
+              <div class="h-16 bg-destructive"></div>
+              <div class="p-3 text-sm">
+                <p class="font-semibold text-surface-foreground">Destructive</p>
+                <p class="text-muted-foreground">#ef4444</p>
+              </div>
+            </div>
+            <div class="rounded-lg border border-border overflow-hidden">
+              <div class="h-16 bg-success"></div>
+              <div class="p-3 text-sm">
+                <p class="font-semibold text-surface-foreground">Success</p>
+                <p class="text-muted-foreground">#10b981</p>
+              </div>
+            </div>
+            <div class="rounded-lg border border-border overflow-hidden">
+              <div class="h-16 bg-brand-yellow/10 border-l-4 border-brand-yellow"></div>
+              <div class="p-3 text-sm">
+                <p class="font-semibold text-surface-foreground">Warning / Tip</p>
+                <p class="text-muted-foreground">brand-yellow/10 + border</p>
+              </div>
+            </div>
+            <div class="rounded-lg border border-border overflow-hidden">
+              <div class="h-16 bg-brand-blue/5"></div>
+              <div class="p-3 text-sm">
+                <p class="font-semibold text-surface-foreground">Info Tint</p>
+                <p class="text-muted-foreground">brand-blue/5</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+
+      <!-- ============================================================ -->
+      <!-- 2. TYPOGRAPHY                                                -->
+      <!-- ============================================================ -->
+      <section class="space-y-6">
+        <h2 class="text-2xl md:text-3xl font-bold text-surface-foreground">2. Typography</h2>
+        <p class="text-muted-foreground leading-relaxed max-w-3xl">
+          Font stack: <code class="text-sm bg-muted/40 px-1.5 py-0.5 rounded">system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif</code>. Page title (h1) uses Arial Black via the layout.
+        </p>
+
+        <div class="space-y-8 max-w-3xl">
+          <div class="border-b border-border pb-6">
+            <p class="text-xs text-muted-foreground uppercase tracking-wider mb-2">h1 — Page Title (from SelcoLayout)</p>
+            <h1 style="font-family: 'Arial Black', sans-serif; font-size: 2.2rem; color: #00264d; text-transform: uppercase; letter-spacing: -1px; margin: 0;">Page Title</h1>
+            <p class="text-xs text-muted-foreground mt-2">Arial Black · 2.2rem · uppercase · letter-spacing -1px · selco-dark-blue</p>
+          </div>
+
+          <div class="border-b border-border pb-6">
+            <p class="text-xs text-muted-foreground uppercase tracking-wider mb-2">h2 — Section Heading</p>
+            <h2 class="text-2xl md:text-3xl font-bold text-surface-foreground">Section Heading</h2>
+            <p class="text-xs text-muted-foreground mt-2">text-2xl md:text-3xl · font-bold · text-surface-foreground</p>
+          </div>
+
+          <div class="border-b border-border pb-6">
+            <p class="text-xs text-muted-foreground uppercase tracking-wider mb-2">h3 — Sub-section Heading (large)</p>
+            <h3 class="text-lg font-semibold text-surface-foreground">Sub-section Heading</h3>
+            <p class="text-xs text-muted-foreground mt-2">text-lg · font-semibold · text-surface-foreground</p>
+          </div>
+
+          <div class="border-b border-border pb-6">
+            <p class="text-xs text-muted-foreground uppercase tracking-wider mb-2">h3 — Card Title / Label</p>
+            <h3 class="font-semibold text-surface-foreground">Card Title</h3>
+            <p class="text-xs text-muted-foreground mt-2">font-semibold · text-surface-foreground (default size)</p>
+          </div>
+
+          <div class="border-b border-border pb-6">
+            <p class="text-xs text-muted-foreground uppercase tracking-wider mb-2">h3 — Sub-section Heading (xl)</p>
+            <h3 class="text-xl font-semibold text-surface-foreground">Related Calculators</h3>
+            <p class="text-xs text-muted-foreground mt-2">text-xl · font-semibold · text-surface-foreground</p>
+          </div>
+
+          <div class="border-b border-border pb-6">
+            <p class="text-xs text-muted-foreground uppercase tracking-wider mb-2">Body — Intro (large)</p>
+            <p class="text-lg text-muted-foreground leading-relaxed">
+              Estimate every material for your project in one go. Select a project type, enter your dimensions, and get a full materials list with wastage included.
+            </p>
+            <p class="text-xs text-muted-foreground mt-2">text-lg · text-muted-foreground · leading-relaxed</p>
+          </div>
+
+          <div class="border-b border-border pb-6">
+            <p class="text-xs text-muted-foreground uppercase tracking-wider mb-2">Body — Standard</p>
+            <p class="text-muted-foreground leading-relaxed">
+              All conversion factors follow standard SI definitions. Rounding is handled automatically to avoid floating-point errors.
+            </p>
+            <p class="text-xs text-muted-foreground mt-2">text-muted-foreground · leading-relaxed</p>
+          </div>
+
+          <div class="border-b border-border pb-6">
+            <p class="text-xs text-muted-foreground uppercase tracking-wider mb-2">Body — Small / Description</p>
+            <p class="text-sm text-muted-foreground leading-relaxed">
+              Accessories and tools are also listed on the summary page as a checklist.
+            </p>
+            <p class="text-xs text-muted-foreground mt-2">text-sm · text-muted-foreground · leading-relaxed</p>
+          </div>
+
+          <div class="border-b border-border pb-6">
+            <p class="text-xs text-muted-foreground uppercase tracking-wider mb-2">Body — Bold inline label</p>
+            <p class="font-semibold text-surface-foreground">When you need this converter:</p>
+            <p class="text-xs text-muted-foreground mt-2">font-semibold · text-surface-foreground</p>
+          </div>
+
+          <div class="border-b border-border pb-6">
+            <p class="text-xs text-muted-foreground uppercase tracking-wider mb-2">Section subtitle</p>
+            <p class="text-muted-foreground text-base">Quick utility tools for everyday conversions and calculations.</p>
+            <p class="text-xs text-muted-foreground mt-2">text-muted-foreground · text-base — used directly under h2</p>
+          </div>
+
+          <div>
+            <p class="text-xs text-muted-foreground uppercase tracking-wider mb-2">Inline code</p>
+            <p class="text-muted-foreground leading-relaxed">
+              Tokens are defined in <code class="text-sm bg-muted/40 px-1.5 py-0.5 rounded">global.css</code> using Tailwind v4 <code class="text-sm bg-muted/40 px-1.5 py-0.5 rounded">@theme</code> blocks.
+            </p>
+            <p class="text-xs text-muted-foreground mt-2">text-sm · bg-muted/40 · px-1.5 py-0.5 · rounded</p>
+          </div>
+        </div>
+      </section>
+
+
+      <!-- ============================================================ -->
+      <!-- 3. CARDS                                                     -->
+      <!-- ============================================================ -->
+      <section class="space-y-6">
+        <h2 class="text-2xl md:text-3xl font-bold text-surface-foreground">3. Cards</h2>
+        <p class="text-muted-foreground leading-relaxed max-w-3xl">
+          Cards use <code class="text-sm bg-muted/40 px-1.5 py-0.5 rounded">rounded-lg</code> consistently. The <code class="text-sm bg-muted/40 px-1.5 py-0.5 rounded">card-shadow</code> utility adds a subtle elevation. Radii token: <code class="text-sm bg-muted/40 px-1.5 py-0.5 rounded">--radius-card: 16px</code>.
+        </p>
+
+        <div class="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+          <!-- Standard card -->
+          <div>
+            <p class="text-xs text-muted-foreground uppercase tracking-wider mb-3">Standard Card</p>
+            <div class="rounded-lg border border-border bg-surface p-5 card-shadow">
+              <h3 class="font-semibold text-surface-foreground">Card Title</h3>
+              <p class="mt-2 text-sm text-muted-foreground leading-relaxed">Card description text. Used for static content cards that don't link anywhere.</p>
+            </div>
+          </div>
+
+          <!-- Hoverable card (link) -->
+          <div>
+            <p class="text-xs text-muted-foreground uppercase tracking-wider mb-3">Hoverable Card (Link)</p>
+            <a href="#cards" class="group rounded-lg border border-border bg-surface p-5 card-shadow hover:border-brand-blue/40 hover:-translate-y-0.5 hover:shadow-md transition-all duration-200 block">
+              <h3 class="font-semibold text-surface-foreground group-hover:text-brand-blue transition-colors">Clickable Card</h3>
+              <p class="mt-2 text-sm text-muted-foreground leading-relaxed">Hover to see the lift effect and blue border. Title turns brand-blue on hover.</p>
+            </a>
+          </div>
+
+          <!-- Disabled card -->
+          <div>
+            <p class="text-xs text-muted-foreground uppercase tracking-wider mb-3">Disabled Card</p>
+            <a href="#" aria-disabled="true" class="group rounded-lg border border-border bg-surface p-5 card-shadow opacity-60 pointer-events-none block">
+              <h3 class="font-semibold text-surface-foreground">Coming Soon</h3>
+              <p class="mt-2 text-sm text-muted-foreground leading-relaxed">Greyed out with <code>opacity-60</code> and <code>pointer-events-none</code>.</p>
+            </a>
+          </div>
+        </div>
+
+        <div class="grid gap-6 sm:grid-cols-2">
+          <!-- Content card (rounded-xl variant) -->
+          <div>
+            <p class="text-xs text-muted-foreground uppercase tracking-wider mb-3">Content Card (rounded-xl)</p>
+            <div class="rounded-xl border border-border bg-surface p-5">
+              <h3 class="font-semibold text-surface-foreground">Calculated for every tiling job</h3>
+              <ol class="mt-3 space-y-2 text-muted-foreground text-sm list-decimal list-inside">
+                <li>Tiles — quantities including wastage by laying pattern.</li>
+                <li>Tile adhesive — weight based on area and coverage rate.</li>
+                <li>Grout — quantity based on tile size, joint width, and depth.</li>
+              </ol>
+            </div>
+          </div>
+
+          <!-- Calculator wrapper card -->
+          <div>
+            <p class="text-xs text-muted-foreground uppercase tracking-wider mb-3">Calculator Wrapper (rounded-2xl)</p>
+            <div class="rounded-2xl border border-border bg-surface p-6 shadow-sm">
+              <p class="text-muted-foreground text-sm">Interactive calculator components are wrapped in this larger-radius container with <code class="text-xs bg-muted/40 px-1 py-0.5 rounded">shadow-sm</code>.</p>
+            </div>
+          </div>
+        </div>
+      </section>
+
+
+      <!-- ============================================================ -->
+      <!-- 4. BUTTONS & LINKS                                           -->
+      <!-- ============================================================ -->
+      <section class="space-y-6">
+        <h2 class="text-2xl md:text-3xl font-bold text-surface-foreground">4. Buttons & Links</h2>
+        <p class="text-muted-foreground leading-relaxed max-w-3xl">
+          Button radius token: <code class="text-sm bg-muted/40 px-1.5 py-0.5 rounded">--radius-button: 8px</code>. Primary actions use SELCO Blue; accent uses Brand Yellow.
+        </p>
+
+        <div class="space-y-8">
+          <div>
+            <p class="text-xs text-muted-foreground uppercase tracking-wider mb-3">Primary Button</p>
+            <div class="flex flex-wrap gap-4 items-center">
+              <button type="button" class="inline-flex items-center px-5 py-2.5 rounded-lg bg-brand-blue text-white font-bold text-sm uppercase tracking-wide hover:bg-brand-blue/90 transition-colors">
+                Primary Action
+              </button>
+              <button type="button" class="inline-flex items-center px-5 py-2.5 rounded-lg bg-brand-blue text-white font-bold text-sm uppercase tracking-wide opacity-60 pointer-events-none">
+                Disabled
+              </button>
+            </div>
+          </div>
+
+          <div>
+            <p class="text-xs text-muted-foreground uppercase tracking-wider mb-3">Accent Button</p>
+            <div class="flex flex-wrap gap-4 items-center">
+              <button type="button" class="inline-flex items-center px-5 py-2.5 rounded-lg bg-brand-yellow text-brand-blue font-bold text-sm uppercase tracking-wide hover:bg-brand-yellow/90 transition-colors">
+                Accent Action
+              </button>
+            </div>
+          </div>
+
+          <div>
+            <p class="text-xs text-muted-foreground uppercase tracking-wider mb-3">Outline / Ghost Button</p>
+            <div class="flex flex-wrap gap-4 items-center">
+              <button type="button" class="inline-flex items-center px-5 py-2.5 rounded-lg bg-surface border border-border text-surface-foreground font-medium text-sm hover:border-brand-blue transition-colors">
+                Outline Button
+              </button>
+              <button type="button" class="inline-flex items-center px-5 py-2.5 rounded-lg bg-surface border border-border text-surface-foreground font-medium text-sm opacity-60 pointer-events-none">
+                Disabled
+              </button>
+            </div>
+          </div>
+
+          <div>
+            <p class="text-xs text-muted-foreground uppercase tracking-wider mb-3">Nav-style Link Buttons (Related Calculators)</p>
+            <div class="flex flex-wrap gap-3">
+              <a href="#buttons" class="inline-flex items-center px-4 py-2 rounded-lg bg-surface border border-border hover:border-brand-blue transition-colors text-sm font-medium">
+                ← Back to Homepage
+              </a>
+              <a href="#buttons" class="inline-flex items-center px-4 py-2 rounded-lg bg-surface border border-border hover:border-brand-blue transition-colors text-sm font-medium">
+                Tiling Calculator
+              </a>
+              <a href="#" aria-disabled="true" class="inline-flex items-center px-4 py-2 rounded-lg bg-surface border border-border text-sm font-medium opacity-60 pointer-events-none">
+                Concrete Calculator
+              </a>
+            </div>
+          </div>
+
+          <div>
+            <p class="text-xs text-muted-foreground uppercase tracking-wider mb-3">Inline Links</p>
+            <p class="text-muted-foreground leading-relaxed">
+              Standard text with an <a href="#links" class="text-brand-blue underline hover:text-brand-blue/80 transition-colors">inline link</a> styled in brand-blue with underline. Used in tables and body copy.
+            </p>
+          </div>
+
+          <div>
+            <p class="text-xs text-muted-foreground uppercase tracking-wider mb-3">Feedback Button (Content Footer)</p>
+            <a href="#buttons" style="color: white; text-decoration: none; font-weight: 700; display: inline-block; padding: 8px 16px; border-radius: 6px; background-color: #004B8D; transition: all 0.3s ease; font-size: 0.8rem; text-transform: uppercase; letter-spacing: 0.5px;">Share feedback</a>
+            <p class="text-xs text-muted-foreground mt-2">Inline-styled — matches content-footer pattern. Hover: yellow bg + dark text + lift.</p>
+          </div>
+        </div>
+      </section>
+
+
+      <!-- ============================================================ -->
+      <!-- 5. LISTS                                                     -->
+      <!-- ============================================================ -->
+      <section class="space-y-6">
+        <h2 class="text-2xl md:text-3xl font-bold text-surface-foreground">5. Lists</h2>
+
+        <div class="grid gap-8 md:grid-cols-2 max-w-4xl">
+          <div>
+            <p class="text-xs text-muted-foreground uppercase tracking-wider mb-3">Ordered List (inline numbers)</p>
+            <ol class="space-y-3 text-muted-foreground list-decimal list-inside">
+              <li>Select the category (length, area, volume, or weight).</li>
+              <li>Enter the value you want to convert.</li>
+              <li>Choose your "from" and "to" units.</li>
+              <li>The result appears instantly.</li>
+            </ol>
+          </div>
+
+          <div>
+            <p class="text-xs text-muted-foreground uppercase tracking-wider mb-3">Unordered List (disc)</p>
+            <ul class="space-y-2 text-muted-foreground list-disc list-inside">
+              <li>A customer gives dimensions in feet but the product data sheet uses metres.</li>
+              <li>You need to convert square metres to square feet for a flooring quote.</li>
+              <li>Aggregate is sold in tonnes but you calculated in cubic metres.</li>
+            </ul>
+          </div>
+        </div>
+
+        <div class="max-w-3xl">
+          <p class="text-xs text-muted-foreground uppercase tracking-wider mb-3">Numbered Steps (brand-blue accent) — "How It Works"</p>
+          <ol class="space-y-4 text-muted-foreground">
+            <li class="flex gap-4">
+              <span class="font-bold text-brand-blue flex-shrink-0">1.</span>
+              <div>
+                <strong class="text-surface-foreground block">Pick a project</strong>
+                <p>Choose Tiling, Masonry, or Concrete & Groundworks.</p>
+              </div>
+            </li>
+            <li class="flex gap-4">
+              <span class="font-bold text-brand-blue flex-shrink-0">2.</span>
+              <div>
+                <strong class="text-surface-foreground block">Enter your measurements</strong>
+                <p>Input dimensions like length, width, and depth.</p>
+              </div>
+            </li>
+            <li class="flex gap-4">
+              <span class="font-bold text-brand-blue flex-shrink-0">3.</span>
+              <div>
+                <strong class="text-surface-foreground block">Get your full materials list</strong>
+                <p>A summary page shows every material and quantity, with wastage included.</p>
+              </div>
+            </li>
+          </ol>
+        </div>
+      </section>
+
+
+      <!-- ============================================================ -->
+      <!-- 6. FAQ / ACCORDION                                           -->
+      <!-- ============================================================ -->
+      <section class="space-y-6">
+        <h2 class="text-2xl md:text-3xl font-bold text-surface-foreground">6. FAQ / Accordion</h2>
+        <p class="text-muted-foreground leading-relaxed max-w-3xl">
+          Interactive FAQs use native <code class="text-sm bg-muted/40 px-1.5 py-0.5 rounded">&lt;details&gt;</code> with a rotating arrow indicator. This is the canonical pattern for all FAQ sections.
+        </p>
+
+        <div class="space-y-4 max-w-3xl">
+          <details class="border border-border rounded-lg p-4 group">
+            <summary class="cursor-pointer font-semibold text-surface-foreground hover:text-brand-blue transition-colors flex items-center gap-2">
+              How accurate are the calculations?
+              <span class="inline-block group-open:rotate-180 transition-transform">▼</span>
+            </summary>
+            <p class="mt-4 text-muted-foreground leading-relaxed">All calculations use industry-standard formulas and manufacturer coverage rates. Results include a configurable wastage percentage to account for cuts and breakage.</p>
+          </details>
+
+          <details class="border border-border rounded-lg p-4 group" open>
+            <summary class="cursor-pointer font-semibold text-surface-foreground hover:text-brand-blue transition-colors flex items-center gap-2">
+              What units are supported?
+              <span class="inline-block group-open:rotate-180 transition-transform">▼</span>
+            </summary>
+            <p class="mt-4 text-muted-foreground leading-relaxed">Both metric (metres, millimetres, kilograms) and imperial (feet, inches, yards). The Unit Converter handles conversions between them.</p>
+          </details>
+
+          <details class="border border-border rounded-lg p-4 group">
+            <summary class="cursor-pointer font-semibold text-surface-foreground hover:text-brand-blue transition-colors flex items-center gap-2">
+              Do I need to create an account?
+              <span class="inline-block group-open:rotate-180 transition-transform">▼</span>
+            </summary>
+            <p class="mt-4 text-muted-foreground leading-relaxed">No. All calculators run in your browser with no sign-up, no login, and no data stored.</p>
+          </details>
+        </div>
+
+        <div class="max-w-3xl mt-6">
+          <p class="text-xs text-muted-foreground uppercase tracking-wider mb-3">Static FAQ Cards (alternative — used on Tiling page)</p>
+          <div class="space-y-4">
+            <div class="rounded-xl border border-border bg-surface p-5">
+              <h3 class="font-semibold text-surface-foreground">How many tiles do I need per square metre?</h3>
+              <p class="text-sm text-muted-foreground mt-2">It depends on tile size. For 300×300mm tiles: approximately 11 per m². For 600×600mm tiles: approximately 3 per m².</p>
+            </div>
+            <div class="rounded-xl border border-border bg-surface p-5">
+              <h3 class="font-semibold text-surface-foreground">What wastage percentage should I use?</h3>
+              <p class="text-sm text-muted-foreground mt-2">The calculator suggests a wastage percentage based on your laying pattern: 10% for grid, 12% for brick bond, 15% for diagonal or herringbone.</p>
+            </div>
+          </div>
+          <p class="text-xs text-muted-foreground mt-3">⚠ Note: Two FAQ patterns exist. The <code class="text-xs bg-muted/40 px-1 py-0.5 rounded">&lt;details&gt;</code> accordion should be the canonical choice for consistency.</p>
+        </div>
+      </section>
+
+
+      <!-- ============================================================ -->
+      <!-- 7. CALLOUTS / TIPS                                           -->
+      <!-- ============================================================ -->
+      <section class="space-y-6">
+        <h2 class="text-2xl md:text-3xl font-bold text-surface-foreground">7. Callouts & Tips</h2>
+        <p class="text-muted-foreground leading-relaxed max-w-3xl">
+          Used to highlight important information, tips, and disclaimers.
+        </p>
+
+        <div class="space-y-6 max-w-3xl">
+          <div>
+            <p class="text-xs text-muted-foreground uppercase tracking-wider mb-3">Tip / Warning Callout</p>
+            <div class="bg-brand-yellow/10 border-l-4 border-brand-yellow p-4 rounded">
+              <p class="text-surface-foreground font-semibold">Tip:</p>
+              <p class="text-muted-foreground mt-1">
+                Always double-check which unit system the product label uses before ordering. Mixing up square feet and square metres is one of the most common ordering mistakes.
+              </p>
+            </div>
+          </div>
+
+          <div>
+            <p class="text-xs text-muted-foreground uppercase tracking-wider mb-3">Info Callout (no title)</p>
+            <div class="bg-brand-yellow/10 border-l-4 border-brand-yellow p-4 rounded">
+              <p class="text-muted-foreground text-sm leading-relaxed">
+                Bulk density varies depending on moisture content and compaction. These are typical values for ordering purposes. Always check the supplier's data sheet for the specific product.
+              </p>
+            </div>
+          </div>
+
+          <div>
+            <p class="text-xs text-muted-foreground uppercase tracking-wider mb-3">Destructive / Error Callout</p>
+            <div class="bg-destructive/10 border-l-4 border-destructive p-4 rounded">
+              <p class="text-surface-foreground font-semibold">Error:</p>
+              <p class="text-muted-foreground mt-1">
+                Please enter a valid measurement. Width and height must be greater than zero.
+              </p>
+            </div>
+          </div>
+
+          <div>
+            <p class="text-xs text-muted-foreground uppercase tracking-wider mb-3">Success Callout</p>
+            <div class="bg-success/10 border-l-4 border-success p-4 rounded">
+              <p class="text-surface-foreground font-semibold">Calculation complete</p>
+              <p class="text-muted-foreground mt-1">
+                Your materials list is ready. Review the summary below and adjust quantities as needed.
+              </p>
+            </div>
+          </div>
+        </div>
+      </section>
+
+
+      <!-- ============================================================ -->
+      <!-- 8. TABLES                                                    -->
+      <!-- ============================================================ -->
+      <section class="space-y-6">
+        <h2 class="text-2xl md:text-3xl font-bold text-surface-foreground">8. Tables</h2>
+        <p class="text-muted-foreground leading-relaxed max-w-3xl">
+          Two header styles exist. Standardise on the <code class="text-sm bg-muted/40 px-1.5 py-0.5 rounded">bg-brand-blue/5</code> tinted header for consistency.
+        </p>
+
+        <div class="overflow-x-auto max-w-4xl">
+          <p class="text-xs text-muted-foreground uppercase tracking-wider mb-3">Data Table (canonical style)</p>
+          <table class="w-full border-collapse bg-surface rounded-lg overflow-hidden">
+            <thead>
+              <tr class="bg-brand-blue/5 border-b border-border">
+                <th class="text-left p-3 text-sm font-semibold text-surface-foreground">Material</th>
+                <th class="text-left p-3 text-sm font-semibold text-surface-foreground">Bulk Density (kg/m³)</th>
+                <th class="text-left p-3 text-sm font-semibold text-surface-foreground">Source</th>
+              </tr>
+            </thead>
+            <tbody class="text-sm text-muted-foreground">
+              <tr class="border-b border-border">
+                <td class="p-3">Ordinary Portland Cement</td>
+                <td class="p-3 font-medium">1,500</td>
+                <td class="p-3">BS EN 197-1:2011</td>
+              </tr>
+              <tr class="border-b border-border">
+                <td class="p-3">Sharp sand</td>
+                <td class="p-3 font-medium">1,600</td>
+                <td class="p-3">BS EN 12620:2002+A1:2008</td>
+              </tr>
+              <tr>
+                <td class="p-3">Gravel/aggregate 20mm</td>
+                <td class="p-3 font-medium">1,750</td>
+                <td class="p-3">BS EN 12620:2002+A1:2008</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+        <div class="overflow-x-auto max-w-4xl mt-8">
+          <p class="text-xs text-muted-foreground uppercase tracking-wider mb-3">Product Reference Table (with links)</p>
+          <div class="border border-border rounded-xl overflow-hidden">
+            <table class="min-w-full text-sm">
+              <thead class="bg-brand-blue/5">
+                <tr>
+                  <th class="p-3 text-left font-semibold text-surface-foreground">Product</th>
+                  <th class="p-3 text-left font-semibold text-surface-foreground">Used in step</th>
+                  <th class="p-3 text-left font-semibold text-surface-foreground">Reference value</th>
+                  <th class="p-3 text-left font-semibold text-surface-foreground">TDS link</th>
+                </tr>
+              </thead>
+              <tbody class="divide-y divide-border">
+                <tr>
+                  <td class="p-3">Dunlop CX-24 Essential</td>
+                  <td class="p-3">Adhesive</td>
+                  <td class="p-3">2.0 kg/m² at 3mm bed</td>
+                  <td class="p-3"><a href="#tables" class="text-brand-blue underline">TDS</a></td>
+                </tr>
+                <tr>
+                  <td class="p-3">Mapei Ultracolor Plus</td>
+                  <td class="p-3">Grout</td>
+                  <td class="p-3">~0.5 kg/m² (300×300×10mm)</td>
+                  <td class="p-3"><a href="#tables" class="text-brand-blue underline">TDS</a></td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </section>
+
+
+      <!-- ============================================================ -->
+      <!-- 9. FORM ELEMENTS                                             -->
+      <!-- ============================================================ -->
+      <section class="space-y-6">
+        <h2 class="text-2xl md:text-3xl font-bold text-surface-foreground">9. Form Elements</h2>
+        <p class="text-muted-foreground leading-relaxed max-w-3xl">
+          Input radius token: <code class="text-sm bg-muted/40 px-1.5 py-0.5 rounded">--radius-input: 8px</code>. Form elements should use consistent padding, border colour, and focus ring.
+        </p>
+
+        <div class="grid gap-6 md:grid-cols-2 max-w-3xl">
+          <div>
+            <label class="block text-sm font-semibold text-surface-foreground mb-1.5">Text Input</label>
+            <input
+              type="text"
+              placeholder="Enter a value…"
+              class="w-full px-3 py-2 rounded-lg border border-border bg-surface text-surface-foreground placeholder:text-muted-foreground text-sm focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-brand-blue/50"
+            />
+            <p class="text-xs text-muted-foreground mt-1.5">rounded-lg · border-border · focus-ring</p>
+          </div>
+
+          <div>
+            <label class="block text-sm font-semibold text-surface-foreground mb-1.5">Number Input</label>
+            <input
+              type="number"
+              placeholder="0.00"
+              class="w-full px-3 py-2 rounded-lg border border-border bg-surface text-surface-foreground placeholder:text-muted-foreground text-sm focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-brand-blue/50"
+            />
+          </div>
+
+          <div>
+            <label class="block text-sm font-semibold text-surface-foreground mb-1.5">Select / Dropdown</label>
+            <select class="w-full px-3 py-2 rounded-lg border border-border bg-surface text-surface-foreground text-sm focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-brand-blue/50">
+              <option>Length</option>
+              <option>Area</option>
+              <option>Volume</option>
+              <option>Weight</option>
+            </select>
+          </div>
+
+          <div>
+            <label class="block text-sm font-semibold text-surface-foreground mb-1.5">Disabled Input</label>
+            <input
+              type="text"
+              value="Not editable"
+              disabled
+              class="w-full px-3 py-2 rounded-lg border border-border bg-muted/30 text-muted-foreground text-sm cursor-not-allowed"
+            />
+          </div>
+        </div>
+
+        <div class="max-w-3xl">
+          <label class="block text-sm font-semibold text-surface-foreground mb-1.5">Input with label and helper text</label>
+          <input
+            type="number"
+            placeholder="e.g. 300"
+            class="w-full max-w-xs px-3 py-2 rounded-lg border border-border bg-surface text-surface-foreground placeholder:text-muted-foreground text-sm focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-brand-blue/50"
+          />
+          <p class="text-xs text-muted-foreground mt-1.5">Tile width in millimetres. Common sizes: 100, 200, 300, 600.</p>
+        </div>
+      </section>
+
+
+      <!-- ============================================================ -->
+      <!-- 10. GRID PATTERNS                                            -->
+      <!-- ============================================================ -->
+      <section class="space-y-6">
+        <h2 class="text-2xl md:text-3xl font-bold text-surface-foreground">10. Grid Patterns</h2>
+        <p class="text-muted-foreground leading-relaxed max-w-3xl">
+          Card grids use responsive columns. Standard pattern: <code class="text-sm bg-muted/40 px-1.5 py-0.5 rounded">grid gap-4 sm:grid-cols-2 lg:grid-cols-3</code>.
+        </p>
+
+        <div>
+          <p class="text-xs text-muted-foreground uppercase tracking-wider mb-3">3-Column Grid (1 → 2 → 3)</p>
+          <div class="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+            {[1, 2, 3].map((n) => (
+              <div class="rounded-lg border border-border bg-surface p-5 card-shadow">
+                <h3 class="font-semibold text-surface-foreground">Card {n}</h3>
+                <p class="mt-2 text-sm text-muted-foreground">Grid item example.</p>
+              </div>
+            ))}
+          </div>
+        </div>
+
+        <div>
+          <p class="text-xs text-muted-foreground uppercase tracking-wider mb-3">2-Column Grid (1 → 2)</p>
+          <div class="grid gap-6 md:grid-cols-2 max-w-4xl">
+            {[1, 2].map((n) => (
+              <div class="rounded-xl border border-border bg-surface p-5">
+                <h3 class="font-semibold text-surface-foreground">Content Block {n}</h3>
+                <p class="mt-2 text-sm text-muted-foreground">Used for side-by-side content panels.</p>
+              </div>
+            ))}
+          </div>
+        </div>
+
+        <div>
+          <p class="text-xs text-muted-foreground uppercase tracking-wider mb-3">4-Column Grid (colour swatches)</p>
+          <div class="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+            {[1, 2, 3, 4].map((n) => (
+              <div class="rounded-lg border border-border bg-surface p-4 text-center">
+                <p class="text-sm text-muted-foreground">Item {n}</p>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+
+      <!-- ============================================================ -->
+      <!-- 11. SPACING REFERENCE                                        -->
+      <!-- ============================================================ -->
+      <section class="space-y-6">
+        <h2 class="text-2xl md:text-3xl font-bold text-surface-foreground">11. Spacing Reference</h2>
+        <p class="text-muted-foreground leading-relaxed max-w-3xl">
+          Consistent vertical spacing keeps pages visually balanced.
+        </p>
+
+        <div class="max-w-3xl overflow-x-auto">
+          <table class="w-full border-collapse bg-surface rounded-lg overflow-hidden">
+            <thead>
+              <tr class="bg-brand-blue/5 border-b border-border">
+                <th class="text-left p-3 text-sm font-semibold text-surface-foreground">Context</th>
+                <th class="text-left p-3 text-sm font-semibold text-surface-foreground">Class</th>
+                <th class="text-left p-3 text-sm font-semibold text-surface-foreground">Value</th>
+              </tr>
+            </thead>
+            <tbody class="text-sm text-muted-foreground">
+              <tr class="border-b border-border">
+                <td class="p-3">Between major page sections</td>
+                <td class="p-3 font-medium">space-y-12</td>
+                <td class="p-3">3rem (48px)</td>
+              </tr>
+              <tr class="border-b border-border">
+                <td class="p-3">Within a section</td>
+                <td class="p-3 font-medium">space-y-6</td>
+                <td class="p-3">1.5rem (24px)</td>
+              </tr>
+              <tr class="border-b border-border">
+                <td class="p-3">Within a sub-section / card group</td>
+                <td class="p-3 font-medium">space-y-4</td>
+                <td class="p-3">1rem (16px)</td>
+              </tr>
+              <tr class="border-b border-border">
+                <td class="p-3">Between list items</td>
+                <td class="p-3 font-medium">space-y-2 or space-y-3</td>
+                <td class="p-3">0.5–0.75rem</td>
+              </tr>
+              <tr class="border-b border-border">
+                <td class="p-3">Card grid gap</td>
+                <td class="p-3 font-medium">gap-4</td>
+                <td class="p-3">1rem (16px)</td>
+              </tr>
+              <tr class="border-b border-border">
+                <td class="p-3">Page bottom padding</td>
+                <td class="p-3 font-medium">pb-12</td>
+                <td class="p-3">3rem (48px)</td>
+              </tr>
+              <tr class="border-b border-border">
+                <td class="p-3">Text content max-width</td>
+                <td class="p-3 font-medium">max-w-3xl</td>
+                <td class="p-3">48rem (768px)</td>
+              </tr>
+              <tr>
+                <td class="p-3">Wider content max-width</td>
+                <td class="p-3 font-medium">max-w-4xl</td>
+                <td class="p-3">56rem (896px)</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </section>
+
+
+      <!-- ============================================================ -->
+      <!-- 12. CONTENT FOOTER                                           -->
+      <!-- ============================================================ -->
+      <section class="space-y-6">
+        <h2 class="text-2xl md:text-3xl font-bold text-surface-foreground">12. Content Footer (Disclaimer + Feedback)</h2>
+        <p class="text-muted-foreground leading-relaxed max-w-3xl">
+          Every calculator page ends with a disclaimer and feedback link. Currently inline-styled — should be extracted to a shared component for consistency.
+        </p>
+
+        <div class="content-footer" style="padding: 20px 24px; border: 2px solid #004B8D; border-radius: 8px; background: linear-gradient(135deg, #f0f7ff 0%, #e6f2ff 100%); font-size: 0.8rem; color: #004B8D; line-height: 1.6; box-shadow: 0 2px 8px rgba(0, 43, 128, 0.1); display: flex; gap: 20px; align-items: center; justify-content: space-between; flex-wrap: wrap; max-width: 48rem;">
+          <span class="content-footer-disclaimer" style="display: block; color: #00264d; font-weight: 700; font-size: 0.85rem; padding: 10px 12px; background-color: rgba(255, 205, 0, 0.15); border-left: 3px solid #FFCD00; border-radius: 4px; flex: 1; min-width: 200px;">Disclaimer: Calculations are estimates only. Always verify product coverage and site conditions before ordering.</span>
+          <a href="#content-footer" style="color: white; text-decoration: none; font-weight: 700; display: inline-block; padding: 8px 16px; border-radius: 6px; background-color: #004B8D; transition: all 0.3s ease; font-size: 0.8rem; text-transform: uppercase; letter-spacing: 0.5px; flex-shrink: 0;">Share feedback</a>
+        </div>
+      </section>
+
+
+      <!-- ============================================================ -->
+      <!-- 13. DESIGN TOKENS SUMMARY                                    -->
+      <!-- ============================================================ -->
+      <section class="space-y-6">
+        <h2 class="text-2xl md:text-3xl font-bold text-surface-foreground">13. Design Tokens Summary</h2>
+        <p class="text-muted-foreground leading-relaxed max-w-3xl">
+          All tokens defined in <code class="text-sm bg-muted/40 px-1.5 py-0.5 rounded">src/styles/global.css @theme</code> and available as Tailwind utilities.
+        </p>
+
+        <div class="overflow-x-auto max-w-4xl">
+          <table class="w-full border-collapse bg-surface rounded-lg overflow-hidden">
+            <thead>
+              <tr class="bg-brand-blue/5 border-b border-border">
+                <th class="text-left p-3 text-sm font-semibold text-surface-foreground">Token</th>
+                <th class="text-left p-3 text-sm font-semibold text-surface-foreground">Value</th>
+                <th class="text-left p-3 text-sm font-semibold text-surface-foreground">Usage</th>
+              </tr>
+            </thead>
+            <tbody class="text-sm text-muted-foreground">
+              <tr class="border-b border-border">
+                <td class="p-3 font-medium">--color-brand-blue</td>
+                <td class="p-3">#003087</td>
+                <td class="p-3">Primary brand, links, interactive accents</td>
+              </tr>
+              <tr class="border-b border-border">
+                <td class="p-3 font-medium">--color-brand-yellow</td>
+                <td class="p-3">#FFD100</td>
+                <td class="p-3">Accent, callout borders, highlights</td>
+              </tr>
+              <tr class="border-b border-border">
+                <td class="p-3 font-medium">--color-surface</td>
+                <td class="p-3">#ffffff</td>
+                <td class="p-3">Card backgrounds, form inputs</td>
+              </tr>
+              <tr class="border-b border-border">
+                <td class="p-3 font-medium">--color-surface-subtle</td>
+                <td class="p-3">#f8fafc</td>
+                <td class="p-3">Page background</td>
+              </tr>
+              <tr class="border-b border-border">
+                <td class="p-3 font-medium">--color-surface-foreground</td>
+                <td class="p-3">#0f172a</td>
+                <td class="p-3">Headings, primary text</td>
+              </tr>
+              <tr class="border-b border-border">
+                <td class="p-3 font-medium">--color-muted-foreground</td>
+                <td class="p-3">#334155</td>
+                <td class="p-3">Body copy, descriptions</td>
+              </tr>
+              <tr class="border-b border-border">
+                <td class="p-3 font-medium">--color-border</td>
+                <td class="p-3">#e2e8f0</td>
+                <td class="p-3">Card borders, dividers, table rows</td>
+              </tr>
+              <tr class="border-b border-border">
+                <td class="p-3 font-medium">--color-destructive</td>
+                <td class="p-3">#ef4444</td>
+                <td class="p-3">Errors, validation</td>
+              </tr>
+              <tr class="border-b border-border">
+                <td class="p-3 font-medium">--color-success</td>
+                <td class="p-3">#10b981</td>
+                <td class="p-3">Success states, completion</td>
+              </tr>
+              <tr class="border-b border-border">
+                <td class="p-3 font-medium">--radius-card</td>
+                <td class="p-3">16px</td>
+                <td class="p-3">Card corners</td>
+              </tr>
+              <tr class="border-b border-border">
+                <td class="p-3 font-medium">--radius-button</td>
+                <td class="p-3">8px</td>
+                <td class="p-3">Button corners</td>
+              </tr>
+              <tr>
+                <td class="p-3 font-medium">--radius-input</td>
+                <td class="p-3">8px</td>
+                <td class="p-3">Input / select corners</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </section>
+
+
+      <!-- ============================================================ -->
+      <!-- 14. CUSTOM UTILITIES                                         -->
+      <!-- ============================================================ -->
+      <section class="space-y-6">
+        <h2 class="text-2xl md:text-3xl font-bold text-surface-foreground">14. Custom Utilities</h2>
+        <p class="text-muted-foreground leading-relaxed max-w-3xl">
+          Defined via <code class="text-sm bg-muted/40 px-1.5 py-0.5 rounded">@utility</code> in global.css for reuse across the site.
+        </p>
+
+        <div class="grid gap-6 md:grid-cols-3 max-w-4xl">
+          <div class="rounded-lg border border-border bg-surface p-5 card-shadow">
+            <h3 class="font-semibold text-surface-foreground">card-shadow</h3>
+            <p class="text-sm text-muted-foreground mt-2">Subtle elevation for cards. Combines two box-shadows at low opacity.</p>
+          </div>
+
+          <div class="rounded-lg border border-border bg-surface p-5 card-hover">
+            <h3 class="font-semibold text-surface-foreground">card-hover</h3>
+            <p class="text-sm text-muted-foreground mt-2">Hover me — transition + shadow + translate-y. Combines card-shadow with lift.</p>
+          </div>
+
+          <div>
+            <p class="text-xs text-muted-foreground uppercase tracking-wider mb-3">focus-ring</p>
+            <input
+              type="text"
+              placeholder="Click to see focus ring"
+              class="w-full px-3 py-2 rounded-lg border border-border bg-surface text-surface-foreground placeholder:text-muted-foreground text-sm focus-ring"
+            />
+            <p class="text-xs text-muted-foreground mt-2">ring-2 ring-offset-2 ring-brand-blue/50</p>
+          </div>
+        </div>
+      </section>
+
+
+      <!-- ============================================================ -->
+      <!-- 15. CONSISTENCY NOTES                                        -->
+      <!-- ============================================================ -->
+      <section class="space-y-6">
+        <h2 class="text-2xl md:text-3xl font-bold text-surface-foreground">15. Consistency Notes</h2>
+        <p class="text-muted-foreground leading-relaxed max-w-3xl">
+          Observations from the current codebase. Address these when revisiting individual pages.
+        </p>
+
+        <div class="space-y-4 max-w-3xl">
+          <div class="bg-brand-yellow/10 border-l-4 border-brand-yellow p-4 rounded">
+            <p class="text-surface-foreground font-semibold">Card radius inconsistency</p>
+            <p class="text-muted-foreground mt-1 text-sm">
+              Homepage uses <code class="text-xs bg-muted/40 px-1 py-0.5 rounded">rounded-lg</code> for cards. Tiling page uses <code class="text-xs bg-muted/40 px-1 py-0.5 rounded">rounded-xl</code> for content cards. Standardise on <code class="text-xs bg-muted/40 px-1 py-0.5 rounded">rounded-lg</code> for link cards and <code class="text-xs bg-muted/40 px-1 py-0.5 rounded">rounded-xl</code> for static content cards — or pick one.</p>
+          </div>
+
+          <div class="bg-brand-yellow/10 border-l-4 border-brand-yellow p-4 rounded">
+            <p class="text-surface-foreground font-semibold">FAQ pattern mismatch</p>
+            <p class="text-muted-foreground mt-1 text-sm">
+              Homepage and Unit Converter use <code class="text-xs bg-muted/40 px-1 py-0.5 rounded">&lt;details&gt;</code> accordions. Tiling page uses static cards. Pick one pattern for all pages.
+            </p>
+          </div>
+
+          <div class="bg-brand-yellow/10 border-l-4 border-brand-yellow p-4 rounded">
+            <p class="text-surface-foreground font-semibold">Content footer is inline-styled</p>
+            <p class="text-muted-foreground mt-1 text-sm">
+              The disclaimer + feedback block is copy-pasted with identical inline styles on every page. Extract to a shared Astro component (<code class="text-xs bg-muted/40 px-1 py-0.5 rounded">ContentFooter.astro</code>) for single-source maintenance.
+            </p>
+          </div>
+
+          <div class="bg-brand-yellow/10 border-l-4 border-brand-yellow p-4 rounded">
+            <p class="text-surface-foreground font-semibold">Table header tint varies</p>
+            <p class="text-muted-foreground mt-1 text-sm">
+              Unit Converter uses <code class="text-xs bg-muted/40 px-1 py-0.5 rounded">bg-brand-blue/5</code>. Tiling page uses <code class="text-xs bg-muted/40 px-1 py-0.5 rounded">bg-muted/40</code>. Standardise on <code class="text-xs bg-muted/40 px-1 py-0.5 rounded">bg-brand-blue/5</code> for brand alignment.
+            </p>
+          </div>
+
+          <div class="bg-brand-yellow/10 border-l-4 border-brand-yellow p-4 rounded">
+            <p class="text-surface-foreground font-semibold">Section spacing varies</p>
+            <p class="text-muted-foreground mt-1 text-sm">
+              Homepage uses <code class="text-xs bg-muted/40 px-1 py-0.5 rounded">space-y-12</code> on the outer wrapper. Tiling page uses <code class="text-xs bg-muted/40 px-1 py-0.5 rounded">space-y-6</code> with <code class="text-xs bg-muted/40 px-1 py-0.5 rounded">mt-12</code> on individual sections. Standardise on the <code class="text-xs bg-muted/40 px-1 py-0.5 rounded">space-y-12</code> wrapper pattern.
+            </p>
+          </div>
+        </div>
+      </section>
+
+    </div>
+  </main>
+</SelcoLayout>

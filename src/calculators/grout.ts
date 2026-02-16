@@ -36,7 +36,7 @@ export function calculateGrout(input: GroutInput): GroutResult {
         throw new Error('Wastage must be between 0 and 100.');
     }
 
-    const groutDensity = 1.7; // kg/L, BS EN 13888:2009
+    const groutDensity = 2.0; // kg/L, BS EN 13888:2009
 
     const kgPerM2 =
         ((tileWidth + tileHeight) / (tileWidth * tileHeight)) *

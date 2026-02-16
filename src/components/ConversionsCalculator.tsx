@@ -129,7 +129,7 @@ export default function ConversionsCalculator() {
         <div className="space-y-6">
             {/* Header */}
             <div>
-                <h2 className="text-xl font-bold text-surface-foreground">Unit Converter</h2>
+                <h2 className="text-2xl md:text-3xl font-bold text-surface-foreground">Unit Converter</h2>
                 <p className="text-sm text-muted-foreground">Convert between metric and imperial measurements.</p>
             </div>
 
