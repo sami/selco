@@ -1,0 +1,345 @@
+---
+import SelcoLayout from '../../layouts/SelcoLayout.astro';
+import SelcoSidebar from '../../components/selco/SelcoSidebar.astro';
+import TilingProjectWizard from '../../components/TilingProjectWizard.tsx';
+
+const BASE_URL = import.meta.env.BASE_URL;
+const base = BASE_URL.endsWith('/') ? BASE_URL : `${BASE_URL}/`;
+
+const breadcrumbs = [
+  { label: 'Home', href: `${base}` },
+  { label: 'Tiling Project' }
+];
+
+const title = 'Tiling Project Calculator — Calculate All Your Tiling Materials';
+const description = 'Tiling project calculator for tradespeople. Calculate tiles, adhesive, grout, spacers, primer, backer board, tanking, and self-levelling compound in one guided flow. Enter your dimensions once and get quantities for every material.';
+
+const faqs = [
+  {
+    question: 'How many tiles do I need per square metre?',
+    answer: 'It depends on tile size. For 300×300mm tiles: approximately 11 per m². For 600×600mm tiles: approximately 3 per m². For 600×300mm tiles: approximately 6 per m². The calculator handles this automatically based on your tile dimensions.'
+  },
+  {
+    question: 'What wastage percentage should I use?',
+    answer: 'The calculator suggests a wastage percentage based on your laying pattern: 10% for grid, 12% for brick bond, 15% for diagonal or herringbone. For large-format tiles (600mm+) in small or complex rooms, increase to 20% regardless of pattern.'
+  },
+  {
+    question: 'Do I need backer board?',
+    answer: 'For wet areas (showers, bath surrounds, wet rooms), yes. Backer board provides a stable, moisture-resistant substrate for tiling. For dry walls on sound plaster or for floor tiling on solid concrete, backer board is not necessary.'
+  },
+  {
+    question: 'Do I need tanking?',
+    answer: 'If you are tiling inside a shower enclosure or wet room, tanking is essential. It waterproofs the substrate behind the tiles. For a standard bathroom wall away from direct water, tanking is not required.'
+  },
+  {
+    question: 'Do I need self-levelling compound?',
+    answer: 'Only if the floor is uneven. If the variation is more than 3mm over 2 metres, self-levelling compound will give you a flat surface to tile onto.'
+  },
+  {
+    question: 'What adhesive coverage rate should I use?',
+    answer: 'Check the product data sheet. Most standard-set adhesives cover 2.0–3.0 kg/m² at a 3mm bed depth. Increase the rate for large-format tiles or uneven substrates.'
+  },
+  {
+    question: 'What grout joint width should I use?',
+    answer: '2–3mm for wall tiles. 3–5mm for floor tiles. Smaller joints give a cleaner look but are harder to fill evenly. Larger joints are easier to work and suit rustic or handmade tiles.'
+  },
+  {
+    question: 'What notched trowel size do I need?',
+    answer: '6mm notch for tiles up to 300×300mm. 10mm notch for tiles up to 600×600mm. 12mm notch for larger format tiles. The notch size controls bed depth and adhesive coverage.'
+  }
+];
+
+const faqSchema = {
+  '@context': 'https://schema.org',
+  '@type': 'FAQPage',
+  mainEntity: faqs.map((faq) => ({
+    '@type': 'Question',
+    name: faq.question,
+    acceptedAnswer: {
+      '@type': 'Answer',
+      text: faq.answer,
+    },
+  })),
+};
+
+const howToSchema = {
+  '@context': 'https://schema.org',
+  '@type': 'HowTo',
+  name: 'How to calculate a tiling project',
+  description: 'Step-by-step guide to calculate tiles, adhesive, grout, spacers, primer, backer board, tanking, and self-levelling compound.',
+  step: [
+    { '@type': 'HowToStep', name: 'Enter your area and tile details', text: 'Input width and height, choose floor or wall, select tile size, grout joint width, and laying pattern.' },
+    { '@type': 'HowToStep', name: 'Review tiles', text: 'Check tiles needed before and after wastage.' },
+    { '@type': 'HowToStep', name: 'Calculate adhesive', text: 'Set bed depth and coverage rate to get adhesive bags required.' },
+    { '@type': 'HowToStep', name: 'Calculate grout', text: 'Enter tile depth and joint width to calculate grout bags.' },
+    { '@type': 'HowToStep', name: 'Calculate spacers', text: 'Spacer count adjusts by laying pattern.' },
+    { '@type': 'HowToStep', name: 'Primer', text: 'Optional primer quantity based on coverage and coats.' },
+    { '@type': 'HowToStep', name: 'Backer board', text: 'Optional board count with wastage.' },
+    { '@type': 'HowToStep', name: 'Tanking', text: 'Optional waterproofing membrane quantity.' },
+    { '@type': 'HowToStep', name: 'Self-levelling compound', text: 'Optional floor leveller bags based on depth and coverage.' },
+  ],
+};
+---
+
+<SelcoLayout
+  title={title}
+  description={description}
+  pageTitle="Trade Projects Calculator"
+  breadcrumbs={breadcrumbs}
+  showSidebar
+>
+  <SelcoSidebar />
+
+  <main class="w-full">
+    <script type="application/ld+json" set:html={JSON.stringify(howToSchema)} />
+    <script type="application/ld+json" set:html={JSON.stringify(faqSchema)} />
+
+    <div class="space-y-6">
+      <section class="space-y-6">
+        <div>
+          <h2 class="text-2xl md:text-3xl font-bold text-surface-foreground">Tiling Project Calculator — Calculate All Your Tiling Materials</h2>
+          <p class="text-muted-foreground mt-3 max-w-3xl">
+            Calculate tiles, adhesive, grout, spacers, primer, backer board, tanking, and self-levelling compound in one guided flow. Enter your dimensions once and the wizard carries them through every step.
+          </p>
+        </div>
+
+        <div class="rounded-2xl border border-border bg-surface p-6 shadow-sm">
+          <TilingProjectWizard client:load />
+        </div>
+      </section>
+
+      <section class="space-y-6 max-w-4xl mt-12">
+        <h2 class="text-2xl md:text-3xl font-bold text-surface-foreground">What’s Included in This Project Calculator</h2>
+        <p class="text-muted-foreground">
+          The Tiling Project calculator covers up to nine materials in one flow. The first five steps run for every job. The remaining four are optional and depend on the application.
+        </p>
+        <div class="grid gap-6 md:grid-cols-2">
+          <div class="rounded-xl border border-border bg-surface p-5">
+            <h3 class="font-semibold text-surface-foreground">Calculated for every tiling job</h3>
+            <ol class="mt-3 space-y-2 text-muted-foreground text-sm list-decimal list-inside">
+              <li>Tiles — quantities including wastage by laying pattern.</li>
+              <li>Tile adhesive — weight based on area and coverage rate.</li>
+              <li>Grout — quantity based on tile size, joint width, and depth.</li>
+              <li>Tile spacers — packs based on tile count and pattern.</li>
+              <li>Primer — litres based on area and substrate type.</li>
+            </ol>
+          </div>
+          <div class="rounded-xl border border-border bg-surface p-5">
+            <h3 class="font-semibold text-surface-foreground">Optional steps (skippable)</h3>
+            <ol class="mt-3 space-y-2 text-muted-foreground text-sm list-decimal list-inside">
+              <li>Backer board — number of boards for wet areas.</li>
+              <li>Tanking / waterproofing — liquid membrane quantity.</li>
+              <li>Self-levelling compound — floor leveller for uneven floors.</li>
+            </ol>
+            <p class="text-xs text-muted-foreground mt-3">Accessories and tools are also listed on the summary page as a checklist.</p>
+          </div>
+        </div>
+      </section>
+
+      <section class="space-y-6 max-w-4xl mt-12">
+        <h2 class="text-2xl md:text-3xl font-bold text-surface-foreground">Step-by-Step Guide</h2>
+        <div class="space-y-4 text-muted-foreground">
+          <h3 class="text-lg font-semibold text-surface-foreground">Before you start</h3>
+          <p>Measure the area you want to tile and note your tile size in millimetres. Common presets include 100×200mm metro tiles, 300×600mm rectangles, and 600×600mm squares.</p>
+
+          <h3 class="text-lg font-semibold text-surface-foreground">Step 1: Enter your area and tile details</h3>
+          <p>Enter the width and height (or length) of the area, choose floor or wall, select a tile size preset or custom size, pick your laying pattern, and set the grout joint width.</p>
+
+          <h3 class="text-lg font-semibold text-surface-foreground">Step 2: Review tile quantities</h3>
+          <p>The calculator shows tile quantities before and after wastage. Wastage defaults to 10% for grid, 12% for brick bond, and 15% for diagonal or herringbone. Increase for complex rooms or large-format tiles.</p>
+
+          <h3 class="text-lg font-semibold text-surface-foreground">Step 3: Check adhesive quantities</h3>
+          <p>Adjust bed depth and coverage rate based on your product’s data sheet. Uneven substrates or large-format tiles usually need a higher bed depth.</p>
+
+          <h3 class="text-lg font-semibold text-surface-foreground">Step 4: Check grout quantities</h3>
+          <p>Grout depends on tile size, joint width, and tile depth. Smaller tiles and wider joints use more grout per square metre.</p>
+
+          <h3 class="text-lg font-semibold text-surface-foreground">Step 5: Check spacer quantities</h3>
+          <p>Spacer count adjusts by pattern: 4 per tile for grid/diagonal, 3 for brick bond, 2 for herringbone.</p>
+
+          <h3 class="text-lg font-semibold text-surface-foreground">Step 6: Primer (optional)</h3>
+          <p>Porous substrates need more primer per square metre than non-porous ones. Adjust coverage and coats to match your product.</p>
+
+          <h3 class="text-lg font-semibold text-surface-foreground">Step 7: Backer board (optional)</h3>
+          <p>For wet areas. Enter the board size and allow 10% wastage for cuts.</p>
+
+          <h3 class="text-lg font-semibold text-surface-foreground">Step 8: Tanking (optional)</h3>
+          <p>Liquid membrane applied in two coats to wet areas. Uses the total area from Step 1.</p>
+
+          <h3 class="text-lg font-semibold text-surface-foreground">Step 9: Self-levelling compound (optional)</h3>
+          <p>Only shown for floor applications. Enter average depth; 2–3mm is typical for light corrections.</p>
+        </div>
+      </section>
+
+      <section class="space-y-6 max-w-4xl mt-12">
+        <h2 class="text-2xl md:text-3xl font-bold text-surface-foreground">What You Will Need</h2>
+        <div class="space-y-4 text-muted-foreground">
+          <h3 class="text-lg font-semibold text-surface-foreground">Calculated materials</h3>
+          <ul class="list-disc list-inside space-y-2">
+            <li><strong>Tiles</strong> — depends on area, tile size, pattern, and wastage.</li>
+            <li><strong>Tile adhesive</strong> — sold in 20kg bags; coverage varies by bed depth.</li>
+            <li><strong>Grout</strong> — sold in 5kg bags; depends on tile size and joint width.</li>
+            <li><strong>Tile spacers</strong> — packs of 100 or 250.</li>
+            <li><strong>Primer</strong> — improves bond on porous or dusty substrates.</li>
+            <li><strong>Backer board (optional)</strong> — cement board substrate for wet areas.</li>
+            <li><strong>Tanking (optional)</strong> — waterproof membrane for wet areas.</li>
+            <li><strong>Self-levelling compound (optional)</strong> — for uneven floors before tiling.</li>
+          </ul>
+
+          <h3 class="text-lg font-semibold text-surface-foreground">Accessories (suggested, not calculated)</h3>
+          <ul class="list-disc list-inside space-y-2">
+            <li>Tile trim / edge profiles</li>
+            <li>Silicone sealant</li>
+            <li>Tanking tape</li>
+            <li>Backer board screws and washers</li>
+            <li>Tile levelling system (clips and wedges)</li>
+            <li>Decoupling membrane for floors</li>
+          </ul>
+
+          <h3 class="text-lg font-semibold text-surface-foreground">Tools (suggested, not calculated)</h3>
+          <ul class="list-disc list-inside space-y-2">
+            <li>Notched trowel (6mm, 10mm, 12mm)</li>
+            <li>Tile cutter (manual or wet)</li>
+            <li>Grout float</li>
+            <li>Mixing drill and paddle</li>
+            <li>Spirit level (1200mm)</li>
+            <li>Sponge and bucket</li>
+            <li>Tape measure and tile nippers</li>
+            <li>Knee pads (floor tiling)</li>
+          </ul>
+        </div>
+      </section>
+
+      <section class="space-y-6 max-w-4xl mt-12">
+        <h2 class="text-2xl md:text-3xl font-bold text-surface-foreground">Frequently Asked Questions</h2>
+        <div class="space-y-4">
+          {faqs.map((faq) => (
+            <div class="rounded-xl border border-border bg-surface p-5">
+              <h3 class="font-semibold text-surface-foreground">{faq.question}</h3>
+              <p class="text-sm text-muted-foreground mt-2">{faq.answer}</p>
+            </div>
+          ))}
+        </div>
+      </section>
+
+      <section class="space-y-6 max-w-4xl mt-12">
+        <h2 class="text-2xl md:text-3xl font-bold text-surface-foreground">Internal Links</h2>
+        <div class="flex flex-wrap gap-3">
+          <a href={base} class="inline-flex items-center px-4 py-2 rounded-lg bg-surface border border-border hover:border-brand-blue transition-colors text-sm font-medium">
+            ← Back to Homepage
+          </a>
+          <a href="#" aria-disabled="true" class="inline-flex items-center px-4 py-2 rounded-lg bg-surface border border-border text-sm font-medium opacity-60 pointer-events-none">
+            Masonry Project Calculator
+          </a>
+          <a href="#" aria-disabled="true" class="inline-flex items-center px-4 py-2 rounded-lg bg-surface border border-border text-sm font-medium opacity-60 pointer-events-none">
+            Concrete &amp; Groundworks Project Calculator
+          </a>
+          <a href={`${base}unit-converter/`} class="inline-flex items-center px-4 py-2 rounded-lg bg-surface border border-border hover:border-brand-blue transition-colors text-sm font-medium">
+            Unit Converter
+          </a>
+        </div>
+      </section>
+
+      <section class="space-y-6 max-w-5xl mt-12">
+        <h2 class="text-2xl md:text-3xl font-bold text-surface-foreground">Product Data Sheet References</h2>
+        <div class="overflow-x-auto border border-border rounded-xl">
+          <table class="min-w-full text-sm">
+            <thead class="bg-muted/40">
+              <tr>
+                <th class="p-3 text-left font-semibold">Product</th>
+                <th class="p-3 text-left font-semibold">Used in step</th>
+                <th class="p-3 text-left font-semibold">Reference value</th>
+                <th class="p-3 text-left font-semibold">TDS link</th>
+              </tr>
+            </thead>
+            <tbody class="divide-y divide-border">
+              <tr>
+                <td class="p-3">Dunlop CX-24 Essential</td>
+                <td class="p-3">Adhesive</td>
+                <td class="p-3">2.0 kg/m² at 3mm bed (walls); 3.5 kg/m² (floors)</td>
+                <td class="p-3"><a href="https://www.selcobw.com/media/files/CS527732458%20Technical%20Data%20Sheet.pdf" class="text-brand-blue underline">TDS</a></td>
+              </tr>
+              <tr>
+                <td class="p-3">Mapei Adesilex P9</td>
+                <td class="p-3">Adhesive</td>
+                <td class="p-3">2.5–3.0 kg/m² (trowel n.5, normal sizes)</td>
+                <td class="p-3"><a href="https://www.mapei.com/gb/en/products-and-solutions/products/detail/adesilex-p9" class="text-brand-blue underline">TDS</a></td>
+              </tr>
+              <tr>
+                <td class="p-3">Mapei Keraquick</td>
+                <td class="p-3">Adhesive</td>
+                <td class="p-3">2–5 kg/m² (varies by trowel); ~2.5 typical</td>
+                <td class="p-3"><a href="https://www.mapei.com/gb/en/products-and-solutions/products/detail/keraquick" class="text-brand-blue underline">TDS</a></td>
+              </tr>
+              <tr>
+                <td class="p-3">Dunlop CF-24 Flexible</td>
+                <td class="p-3">Adhesive</td>
+                <td class="p-3">2.0 kg/m² at 3mm bed</td>
+                <td class="p-3"><a href="https://www.notion.so/2f2361401cd48059affb000b06d7f3c9?pvs=21" class="text-brand-blue underline">TDS</a></td>
+              </tr>
+              <tr>
+                <td class="p-3">Mapei Ultracolor Plus</td>
+                <td class="p-3">Grout</td>
+                <td class="p-3">~0.5 kg/m² (300×300×10mm, 5mm joints)</td>
+                <td class="p-3"><a href="https://www.mapei.com/gb/en/products-and-solutions/products/detail/ultracolor-plus" class="text-brand-blue underline">TDS</a></td>
+              </tr>
+              <tr>
+                <td class="p-3">Dunlop GX-500</td>
+                <td class="p-3">Grout</td>
+                <td class="p-3">0.38 kg/m² (300×300×7mm, 3mm joints)</td>
+                <td class="p-3">TDS</td>
+              </tr>
+              <tr>
+                <td class="p-3">Mapei Eco Prim Grip</td>
+                <td class="p-3">Primer</td>
+                <td class="p-3">4–5 m²/L (porous substrate)</td>
+                <td class="p-3"><a href="https://www.mapei.com/gb/en/products-and-solutions/products/detail/eco-prim-grip" class="text-brand-blue underline">TDS</a></td>
+              </tr>
+              <tr>
+                <td class="p-3">Dunlop Multi-Purpose Primer</td>
+                <td class="p-3">Primer</td>
+                <td class="p-3">8–10 m²/L (non-porous)</td>
+                <td class="p-3"><a href="https://www.dunloptrade.com/products/primers" class="text-brand-blue underline">TDS</a></td>
+              </tr>
+              <tr>
+                <td class="p-3">Hardiebacker 500</td>
+                <td class="p-3">Backer board</td>
+                <td class="p-3">1200 × 800mm, 12mm thick</td>
+                <td class="p-3"><a href="https://www.jameshardie.co.uk/products/hardiebacker-500-cement-board" class="text-brand-blue underline">TDS</a></td>
+              </tr>
+              <tr>
+                <td class="p-3">Dunlop Waterproof Membrane</td>
+                <td class="p-3">Tanking</td>
+                <td class="p-3">0.7 kg/m² per coat</td>
+                <td class="p-3"><a href="https://www.dunloptrade.com/products/waterproofing" class="text-brand-blue underline">TDS</a></td>
+              </tr>
+              <tr>
+                <td class="p-3">Mapei Mapelastic AquaDefense</td>
+                <td class="p-3">Tanking</td>
+                <td class="p-3">0.5 kg/m² per coat</td>
+                <td class="p-3"><a href="https://www.mapei.com/gb/en/products-and-solutions/products/detail/mapelastic-aquadefense" class="text-brand-blue underline">TDS</a></td>
+              </tr>
+              <tr>
+                <td class="p-3">Mapei Ultraplan Renovation Screed</td>
+                <td class="p-3">Self-levelling compound</td>
+                <td class="p-3">1.8 kg/m² per mm depth</td>
+                <td class="p-3"><a href="https://www.mapei.com/gb/en/products-and-solutions/products/detail/ultraplan-renovation-screed" class="text-brand-blue underline">TDS</a></td>
+              </tr>
+              <tr>
+                <td class="p-3">LX-360 Fibre Leveller</td>
+                <td class="p-3">Self-levelling compound</td>
+                <td class="p-3">1.7 kg/m² per mm depth</td>
+                <td class="p-3"><a href="https://dunloptrade.com/product/lx-360-fibre-leveller/" class="text-brand-blue underline">TDS</a></td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </section>
+
+      <div class="content-footer" style="padding: 20px 24px; margin-top: 60px; border: 2px solid #004B8D; border-radius: 8px; background: linear-gradient(135deg, #f0f7ff 0%, #e6f2ff 100%); font-size: 0.8rem; color: #004B8D; line-height: 1.6; box-shadow: 0 2px 8px rgba(0, 43, 128, 0.1); display: flex; gap: 20px; align-items: center; justify-content: space-between; flex-wrap: wrap;">
+        <span class="content-footer-disclaimer" style="display: block; color: #00264d; font-weight: 700; font-size: 0.85rem; padding: 10px 12px; background-color: rgba(255, 205, 0, 0.15); border-left: 3px solid #FFCD00; border-radius: 4px; flex: 1; min-width: 200px;">Disclaimer: Calculations are estimates only. Always verify product coverage and site conditions before ordering.</span>
+        <a href="https://madebysami.notion.site/2fe361401cd480fc9fcfdf4871d199b1?pvs=105" style="color: white; text-decoration: none; font-weight: 700; display: inline-block; padding: 8px 16px; border-radius: 6px; background-color: #004B8D; transition: all 0.3s ease; font-size: 0.8rem; text-transform: uppercase; letter-spacing: 0.5px; flex-shrink: 0;">Share feedback</a>
+      </div>
+    </div>
+  </main>
+</SelcoLayout>
