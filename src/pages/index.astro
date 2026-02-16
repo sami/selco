@@ -15,7 +15,7 @@ const description = "Project calculators for tradespeople. Calculate all materia
 const handyCalculators = [
   {
     title: 'Unit Converter',
-    description: 'Convert between metric and imperial units for length, area, volume, and weight. Useful when product data sheets and site measurements use different systems.',
+    description: 'Convert between metric and imperial units for length, area, volume, and weight. Useful when data sheets and site measurements use different units.',
     href: `${base}unit-converter/`
   }
 ];
@@ -43,10 +43,10 @@ const projectCalculators = [
 const faqs = [
   {
     question: 'How accurate are the calculations?',
-    answer: 'All calculations use industry-standard formulas and manufacturer coverage rates. Results include a configurable wastage percentage to account for cuts and breakage. They are calculations based on standard formulas, not exact quantities. Always round up when ordering.'
+    answer: 'All calculations use industry-standard formulas and manufacturer coverage rates. Results include a configurable wastage percentage to account for cuts and breakage. Always round up when ordering.'
   },
   {
-    question: 'What is wastage and why does it matter?',
+    question: 'What is wastage? Why does wastage matter?',
     answer: 'Wastage accounts for offcuts, breakage, and pattern matching. A typical allowance is 10% for tiles and 5% for bricks. Skipping wastage often means a return trip to the merchant.'
   },
   {
@@ -139,18 +139,13 @@ const websiteSchema = {
             </a>
           ))}
         </div>
-        
-        <p class="text-sm text-muted-foreground italic">
-          More handy calculators coming soon: Coverage Calculator, Sheet Material Cutting Planner.
-        </p>
-
       </section>
 
       {/* Project Calculators Section */}
       <section class="space-y-6">
         <div>
           <h2 class="text-2xl md:text-3xl font-bold text-surface-foreground mb-2">Project Calculators</h2>
-          <p class="text-muted-foreground text-base">The main product. Each project calculator chains every related material into a single guided flow.</p>
+          <p class="text-muted-foreground text-base">Each project calculator chains every related material into a single guided flow.</p>
         </div>
         
         <div class="grid gap-4 sm:grid-cols-2 lg:grid-cols-3" data-section="project-calculators">
