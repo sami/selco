@@ -3,46 +3,76 @@ import React, { useState } from 'react';
 const WASTAGE_OPTIONS = [0, 5, 10, 15];
 
 type InputMode = 'area' | 'dimensions';
+type AreaUnit = 'm²' | 'sq ft';
+type LengthUnit = 'm' | 'cm' | 'mm' | 'in';
+
+const AREA_MULTIPLIERS: Record<AreaUnit, number> = {
+    'm²': 1,
+    'sq ft': 0.092903,
+};
+
+const LENGTH_MULTIPLIERS: Record<LengthUnit, number> = {
+    'm': 1,
+    'cm': 0.01,
+    'mm': 0.001,
+    'in': 0.0254,
+};
 
 export default function CoverageCalculator() {
     const [areaStr, setAreaStr] = useState<string>('');
+    const [areaUnit, setAreaUnit] = useState<AreaUnit>('m²');
+
     const [inputType, setInputType] = useState<InputMode>('area');
+
     const [coverageStr, setCoverageStr] = useState<string>('');
+    const [coverageUnit, setCoverageUnit] = useState<AreaUnit>('m²');
+
     const [unitLengthStr, setUnitLengthStr] = useState<string>('');
+    const [unitLengthUnit, setUnitLengthUnit] = useState<LengthUnit>('m');
+
     const [unitWidthStr, setUnitWidthStr] = useState<string>('');
+    const [unitWidthUnit, setUnitWidthUnit] = useState<LengthUnit>('m');
+
     const [wastage, setWastage] = useState<number>(10);
 
-    const parsedArea = parseFloat(areaStr);
+    const parsedAreaInput = parseFloat(areaStr);
+    const parsedAreaInSqm = parsedAreaInput * AREA_MULTIPLIERS[areaUnit];
 
-    let parsedCoverage: number;
+    let parsedCoverageInSqm = 0;
     let isCoverageValid = false;
 
     if (inputType === 'area') {
-        parsedCoverage = parseFloat(coverageStr);
-        isCoverageValid = !isNaN(parsedCoverage) && parsedCoverage > 0;
+        const parsedCoverageInput = parseFloat(coverageStr);
+        if (!isNaN(parsedCoverageInput) && parsedCoverageInput > 0) {
+            parsedCoverageInSqm = parsedCoverageInput * AREA_MULTIPLIERS[coverageUnit];
+            isCoverageValid = true;
+        }
     } else {
         const l = parseFloat(unitLengthStr);
         const w = parseFloat(unitWidthStr);
         if (!isNaN(l) && l > 0 && !isNaN(w) && w > 0) {
-            parsedCoverage = l * w;
+            const lengthInMeters = l * LENGTH_MULTIPLIERS[unitLengthUnit];
+            const widthInMeters = w * LENGTH_MULTIPLIERS[unitWidthUnit];
+            parsedCoverageInSqm = lengthInMeters * widthInMeters;
             isCoverageValid = true;
-        } else {
-            parsedCoverage = NaN;
         }
     }
 
-    const isValid = !isNaN(parsedArea) && parsedArea > 0 && isCoverageValid;
+    const isValid = !isNaN(parsedAreaInSqm) && parsedAreaInSqm > 0 && isCoverageValid;
 
     let units = 0;
-    let maxArea = 0;
+    let maxAreaInSqm = 0;
     let hasWastage = false;
 
     if (isValid) {
-        const areaWithWastage = parsedArea * (1 + wastage / 100);
-        units = Math.ceil(areaWithWastage / parsedCoverage);
-        maxArea = units * parsedCoverage;
+        const areaWithWastageSqm = parsedAreaInSqm * (1 + wastage / 100);
+        units = Math.ceil(areaWithWastageSqm / parsedCoverageInSqm);
+        maxAreaInSqm = units * parsedCoverageInSqm;
         hasWastage = wastage > 0;
     }
+
+    // A helper to display the selected max area unit properly
+    const maxAreaDisplay = Number(maxAreaInSqm / AREA_MULTIPLIERS[areaUnit]).toFixed(2).replace(/\.00$/, '');
 
     return (
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6 w-full max-w-5xl mx-auto">
@@ -52,17 +82,26 @@ export default function CoverageCalculator() {
 
                 <div className="space-y-6">
                     <div>
-                        <label htmlFor="area-input" className="form-label">Total area to cover (m²)</label>
-                        <input
-                            id="area-input"
-                            type="number"
-                            value={areaStr}
-                            onChange={(e) => setAreaStr(e.target.value)}
-                            placeholder="e.g. 15"
-                            className="form-input"
-                            min="0"
-                            step="any"
-                        />
+                        <label className="form-label">Total area to cover</label>
+                        <div className="flex shadow-sm rounded-lg">
+                            <input
+                                type="number"
+                                value={areaStr}
+                                onChange={(e) => setAreaStr(e.target.value)}
+                                placeholder="e.g. 15"
+                                className="form-input rounded-r-none border-r-0 focus:z-10 w-full"
+                                min="0"
+                                step="any"
+                            />
+                            <select
+                                className="form-select w-auto min-w-[80px] rounded-l-none border-l-border-default focus:z-10 bg-gray-50 text-text-main font-medium cursor-pointer"
+                                value={areaUnit}
+                                onChange={(e) => setAreaUnit(e.target.value as AreaUnit)}
+                            >
+                                <option value="m²">m²</option>
+                                <option value="sq ft">sq ft</option>
+                            </select>
+                        </div>
                     </div>
 
                     <div className="p-4 bg-muted/10 rounded-xl border border-border-default space-y-4">
@@ -90,52 +129,83 @@ export default function CoverageCalculator() {
 
                         {inputType === 'area' ? (
                             <div>
-                                <p className="field-description mb-2 mt-0">Enter the total square metres a single unit covers.</p>
-                                <input
-                                    id="coverage-input"
-                                    type="number"
-                                    value={coverageStr}
-                                    onChange={(e) => setCoverageStr(e.target.value)}
-                                    placeholder="e.g. 1.5"
-                                    className="form-input"
-                                    min="0"
-                                    step="any"
-                                />
+                                <p className="field-description mb-2 mt-0">Enter the total area a single unit covers.</p>
+                                <div className="flex shadow-sm rounded-lg">
+                                    <input
+                                        type="number"
+                                        value={coverageStr}
+                                        onChange={(e) => setCoverageStr(e.target.value)}
+                                        placeholder="e.g. 1.5"
+                                        className="form-input rounded-r-none border-r-0 focus:z-10 w-full"
+                                        min="0"
+                                        step="any"
+                                    />
+                                    <select
+                                        className="form-select w-auto min-w-[80px] rounded-l-none border-l-border-default focus:z-10 bg-gray-50 text-text-main font-medium cursor-pointer"
+                                        value={coverageUnit}
+                                        onChange={(e) => setCoverageUnit(e.target.value as AreaUnit)}
+                                    >
+                                        <option value="m²">m²</option>
+                                        <option value="sq ft">sq ft</option>
+                                    </select>
+                                </div>
                             </div>
                         ) : (
                             <div>
                                 <p className="field-description mb-2 mt-0">Enter the dimensions of a single sheet, board, or roll.</p>
-                                <div className="grid grid-cols-2 gap-4">
+                                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                                     <div>
-                                        <label htmlFor="length-input" className="form-label text-sm text-muted-foreground font-normal mb-1">Length (m)</label>
-                                        <input
-                                            id="length-input"
-                                            type="number"
-                                            value={unitLengthStr}
-                                            onChange={(e) => setUnitLengthStr(e.target.value)}
-                                            placeholder="e.g. 2.4"
-                                            className="form-input"
-                                            min="0"
-                                            step="any"
-                                        />
+                                        <label className="form-label text-sm text-muted-foreground font-normal mb-1">Length</label>
+                                        <div className="flex shadow-sm rounded-lg">
+                                            <input
+                                                type="number"
+                                                value={unitLengthStr}
+                                                onChange={(e) => setUnitLengthStr(e.target.value)}
+                                                placeholder="e.g. 2.4"
+                                                className="form-input rounded-r-none border-r-0 focus:z-10 w-full"
+                                                min="0"
+                                                step="any"
+                                            />
+                                            <select
+                                                className="form-select w-[70px] rounded-l-none border-l-border-default focus:z-10 bg-gray-50 text-text-main font-medium px-2 cursor-pointer"
+                                                value={unitLengthUnit}
+                                                onChange={(e) => setUnitLengthUnit(e.target.value as LengthUnit)}
+                                            >
+                                                <option value="m">m</option>
+                                                <option value="cm">cm</option>
+                                                <option value="mm">mm</option>
+                                                <option value="in">in</option>
+                                            </select>
+                                        </div>
                                     </div>
                                     <div>
-                                        <label htmlFor="width-input" className="form-label text-sm text-muted-foreground font-normal mb-1">Width (m)</label>
-                                        <input
-                                            id="width-input"
-                                            type="number"
-                                            value={unitWidthStr}
-                                            onChange={(e) => setUnitWidthStr(e.target.value)}
-                                            placeholder="e.g. 1.2"
-                                            className="form-input"
-                                            min="0"
-                                            step="any"
-                                        />
+                                        <label className="form-label text-sm text-muted-foreground font-normal mb-1">Width</label>
+                                        <div className="flex shadow-sm rounded-lg">
+                                            <input
+                                                type="number"
+                                                value={unitWidthStr}
+                                                onChange={(e) => setUnitWidthStr(e.target.value)}
+                                                placeholder="e.g. 1.2"
+                                                className="form-input rounded-r-none border-r-0 focus:z-10 w-full"
+                                                min="0"
+                                                step="any"
+                                            />
+                                            <select
+                                                className="form-select w-[70px] rounded-l-none border-l-border-default focus:z-10 bg-gray-50 text-text-main font-medium px-2 cursor-pointer"
+                                                value={unitWidthUnit}
+                                                onChange={(e) => setUnitWidthUnit(e.target.value as LengthUnit)}
+                                            >
+                                                <option value="m">m</option>
+                                                <option value="cm">cm</option>
+                                                <option value="mm">mm</option>
+                                                <option value="in">in</option>
+                                            </select>
+                                        </div>
                                     </div>
                                 </div>
                                 {isCoverageValid && (
-                                    <p className="text-sm font-medium text-brand-blue mt-3">
-                                        Calculated coverage: {parsedCoverage.toFixed(2).replace(/\.00$/, '')} m² per unit
+                                    <p className="text-sm font-medium text-primary mt-3">
+                                        Calculated coverage: {(parsedCoverageInSqm / AREA_MULTIPLIERS[areaUnit]).toFixed(2).replace(/\.00$/, '')} {areaUnit} per unit
                                     </p>
                                 )}
                             </div>
@@ -194,7 +264,7 @@ export default function CoverageCalculator() {
                                 </p>
                             )}
                             <p className="text-sm text-text-muted">
-                                {units} {units === 1 ? 'unit' : 'units'} will cover up to <span className="font-semibold">{maxArea.toFixed(2).replace(/\.00$/, '')} m²</span>.
+                                {units} {units === 1 ? 'unit' : 'units'} will cover up to <span className="font-semibold">{maxAreaDisplay} {areaUnit}</span>.
                             </p>
                         </div>
                     </div>
