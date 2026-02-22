@@ -5,6 +5,7 @@ const WASTAGE_OPTIONS = [0, 5, 10, 15];
 const BOARD_PRESETS = [
     { label: '2440 x 1220mm', length: 2.44, width: 1.22, description: 'Standard Plywood / MDF' },
     { label: '2400 x 1200mm', length: 2.4, width: 1.2, description: 'Standard Plasterboard' },
+    { label: '2400 x 600mm', length: 2.4, width: 0.6, description: 'Flooring Boards' },
     { label: '1800 x 900mm', length: 1.8, width: 0.9, description: 'Small Plasterboard' },
     { label: '1200 x 800mm', length: 1.2, width: 0.8, description: 'Tile Backer Board' },
     { label: '1200 x 600mm', length: 1.2, width: 0.6, description: 'Tile Backer / Insulation' },
@@ -83,8 +84,8 @@ export default function CoverageCalculator() {
                                     type="button"
                                     onClick={() => setSelectedPresetIndex(index)}
                                     className={`text-left px-4 py-3 rounded-lg border transition-colors focus:focus-ring flex flex-col ${selectedPresetIndex === index
-                                            ? 'bg-primary/5 border-primary shadow-sm'
-                                            : 'bg-bg-section border-border-default hover:border-primary/50'
+                                        ? 'bg-primary/5 border-primary shadow-sm'
+                                        : 'bg-bg-section border-border-default hover:border-primary/50'
                                         }`}
                                 >
                                     <span className={`font-bold text-sm ${selectedPresetIndex === index ? 'text-primary-dark' : 'text-text-main'}`}>
@@ -98,8 +99,8 @@ export default function CoverageCalculator() {
                                 type="button"
                                 onClick={() => setSelectedPresetIndex(-1)}
                                 className={`text-left px-4 py-3 rounded-lg border transition-colors focus:focus-ring flex flex-col ${selectedPresetIndex === -1
-                                        ? 'bg-primary/5 border-primary shadow-sm'
-                                        : 'bg-bg-section border-border-default hover:border-primary/50'
+                                    ? 'bg-primary/5 border-primary shadow-sm'
+                                    : 'bg-bg-section border-border-default hover:border-primary/50'
                                     }`}
                             >
                                 <span className={`font-bold text-sm ${selectedPresetIndex === -1 ? 'text-primary-dark' : 'text-text-main'}`}>
