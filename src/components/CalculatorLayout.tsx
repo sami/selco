@@ -248,7 +248,7 @@ export default function CalculatorLayout({
                 hover:brightness-105 active:scale-[0.98]
                 disabled:opacity-60 disabled:cursor-not-allowed
                 transition-all duration-150
-                focus-ring
+                focus:focus-ring
               "
                         >
                             {isCalculating ? 'Calculating...' : 'Calculate'}

@@ -123,7 +123,7 @@ export default function AdhesiveCalculator() {
                                 role="radio"
                                 aria-checked={applicationType === 'dry'}
                                 onClick={() => setApplicationType('dry')}
-                                className={`flex-1 px-4 py-2.5 rounded-lg text-sm font-medium transition-all duration-200 focus-ring ${applicationType === 'dry'
+                                className={`flex-1 px-4 py-2.5 rounded-lg text-sm font-medium transition-all duration-200 focus:focus-ring ${applicationType === 'dry'
                                     ? 'bg-brand-blue text-white shadow-sm'
                                     : 'bg-muted/30 text-muted-foreground hover:bg-muted/50 border border-border'
                                     }`}
@@ -135,7 +135,7 @@ export default function AdhesiveCalculator() {
                                 role="radio"
                                 aria-checked={applicationType === 'wet'}
                                 onClick={() => setApplicationType('wet')}
-                                className={`flex-1 px-4 py-2.5 rounded-lg text-sm font-medium transition-all duration-200 focus-ring ${applicationType === 'wet'
+                                className={`flex-1 px-4 py-2.5 rounded-lg text-sm font-medium transition-all duration-200 focus:focus-ring ${applicationType === 'wet'
                                     ? 'bg-brand-blue text-white shadow-sm'
                                     : 'bg-muted/30 text-muted-foreground hover:bg-muted/50 border border-border'
                                     }`}

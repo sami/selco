@@ -141,7 +141,7 @@ export default function ConversionsCalculator() {
                         role="tab"
                         aria-selected={conversionType === tab.key}
                         onClick={() => handleTypeChange(tab)}
-                        className={`px-4 py-2 rounded-full text-sm font-medium transition-all duration-200 focus-ring ${conversionType === tab.key
+                        className={`px-4 py-2 rounded-full text-sm font-medium transition-all duration-200 focus:focus-ring ${conversionType === tab.key
                             ? 'bg-brand-blue/10 text-brand-blue font-semibold'
                             : 'text-muted-foreground hover:bg-muted/50 hover:text-surface-foreground'
                             }`}
@@ -226,7 +226,7 @@ export default function ConversionsCalculator() {
                             <button
                                 type="button"
                                 onClick={handleSwap}
-                                className="w-10 h-10 rounded-lg border border-border bg-muted/30 flex items-center justify-center hover:bg-muted transition-colors focus-ring mb-0.5 text-sm font-medium text-muted-foreground"
+                                className="w-10 h-10 rounded-lg border border-border bg-muted/30 flex items-center justify-center hover:bg-muted transition-colors focus:focus-ring mb-0.5 text-sm font-medium text-muted-foreground"
                                 aria-label="Swap units"
                             >
                                 ⇄

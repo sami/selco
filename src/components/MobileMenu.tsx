@@ -35,7 +35,7 @@ export default function MobileMenu({ currentPath, baseUrl }: MobileMenuProps) {
         <div className="md:hidden">
             <button
                 onClick={() => setIsOpen(true)}
-                className="p-2 text-ui-blue-dark hover:bg-ui-blue-light/50 rounded-md transition-colors focus-ring"
+                className="p-2 text-ui-blue-dark hover:bg-ui-blue-light/50 rounded-md transition-colors focus:focus-ring"
                 aria-label="Open menu"
                 aria-expanded={isOpen}
             >
@@ -63,7 +63,7 @@ export default function MobileMenu({ currentPath, baseUrl }: MobileMenuProps) {
                                 <span className="font-bold text-lg text-brand-blue">Menu</span>
                                 <button
                                     onClick={() => setIsOpen(false)}
-                                    className="p-2 text-muted-foreground hover:bg-muted rounded-md transition-colors focus-ring"
+                                    className="p-2 text-muted-foreground hover:bg-muted rounded-md transition-colors focus:focus-ring"
                                     aria-label="Close menu"
                                 >
                                     <X className="w-6 h-6" />
