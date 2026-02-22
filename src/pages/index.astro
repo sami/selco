@@ -26,37 +26,41 @@ const calculators = [
     title: 'Hard flooring',
     description: 'Work out quantities for laminate, engineered wood, or vinyl click flooring including underlay.',
     href: `${base}hard-flooring/`,
-    type: 'project'
+    comingSoon: true
   },
   {
     title: 'Brick & block wall',
     description: 'Calculate bricks or blocks, sand, cement, and wall ties for single-skin or cavity walls.',
     href: `${base}brick-wall/`,
-    type: 'project'
+    comingSoon: true
   },
   {
     title: 'Decking',
     description: 'Estimate decking boards, joists, screws, and concrete posts for outdoor decking areas.',
     href: `${base}decking/`,
-    type: 'project'
+    comingSoon: true
+  },
+  {
+    title: 'Cladding',
+    description: 'Calculate boards, battens, and fixings needed for exterior or interior cladding.',
+    href: `${base}cladding/`,
+    comingSoon: true
   },
   {
     title: 'Unit converter',
     description: 'Convert between metric and imperial units for length, area, volume, and weight.',
-    href: `${base}unit-converter/`,
-    type: 'handy'
+    href: `${base}unit-converter/`
   },
   {
     title: 'Coverage',
     description: 'Quickly work out how many tubs or bags you need based on manufacturer coverage rates.',
-    href: `${base}coverage/`,
-    type: 'handy'
+    href: `${base}coverage/`
   },
   {
     title: 'Board cutting optimiser',
     description: 'Plan your cuts to get the most parts out of standard plywood or plasterboard sheets.',
     href: `${base}board-cutting/`,
-    type: 'handy'
+    comingSoon: true
   }
 ];
 ---
@@ -89,15 +93,27 @@ const calculators = [
         </div>
         
         <div class="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-          {calculators.map(calc => (
-            <a
-              href={calc.href}
-              class="group card card-hover block"
-            >
-              <h3 class="text-lg font-bold text-text-main group-hover:text-primary transition-colors mb-2">{calc.title}</h3>
-              <p class="text-sm text-text-muted leading-relaxed">{calc.description}</p>
-            </a>
-          ))}
+          {calculators.map(calc => {
+            const Element = calc.comingSoon ? 'div' : 'a';
+            return (
+              <Element
+                href={!calc.comingSoon ? calc.href : undefined}
+                class={`group card block ${calc.comingSoon ? 'opacity-60 grayscale-[50%]' : 'card-hover cursor-pointer'}`}
+              >
+                <div class="flex items-start justify-between gap-2 mb-2">
+                  <h3 class={`text-lg font-bold text-text-main ${!calc.comingSoon ? 'group-hover:text-primary transition-colors' : ''}`}>
+                    {calc.title}
+                  </h3>
+                  {calc.comingSoon && (
+                    <span class="inline-flex items-center rounded-full bg-border-default/50 border border-border-default px-2.5 py-0.5 text-[0.65rem] font-bold tracking-wider uppercase text-text-muted whitespace-nowrap">
+                      Coming soon
+                    </span>
+                  )}
+                </div>
+                <p class="text-sm text-text-muted leading-relaxed">{calc.description}</p>
+              </Element>
+            );
+          })}
         </div>
       </section>
 
