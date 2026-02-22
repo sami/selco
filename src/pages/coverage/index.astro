@@ -2,19 +2,18 @@
 import SelcoLayout from '../../layouts/SelcoLayout.astro';
 import Disclaimer from '../../components/Disclaimer.astro';
 import SelcoSidebar from '../../components/selco/SelcoSidebar.astro';
-import UnitConverter from '../../components/UnitConverter.tsx';
+import CoverageCalculator from '../../components/calculators/CoverageCalculator.tsx';
 
 const BASE_URL = import.meta.env.BASE_URL;
 const base = BASE_URL.endsWith('/') ? BASE_URL : `${BASE_URL}/`;
 
 const breadcrumbs = [
   { label: 'Home', href: `${base}` },
-  { label: 'Unit converter' }
+  { label: 'Coverage calculator' }
 ];
 
-const title = "Unit Converter - Trade Materials Calculators";
-const description = "Convert between metric and imperial units for length, area, volume and weight. Fast and accurate conversions for the trades.";
-
+const title = "Coverage Calculator - Trade Materials Calculators";
+const description = "Work out exactly how many units (packs, sheets, or rolls) you need based on the area you have to cover. Fast and accurate calculations for the trades.";
 ---
 
 <SelcoLayout
@@ -22,7 +21,7 @@ const description = "Convert between metric and imperial units for length, area,
   description={description}
   showSidebar={true}
   breadcrumbs={breadcrumbs}
-  pageTitle="Unit converter"
+  pageTitle="Coverage calculator"
 >
   <SelcoSidebar />
 
@@ -31,15 +30,15 @@ const description = "Convert between metric and imperial units for length, area,
       
       {/* Header Section */}
       <section class="page-section pt-0 pb-4 max-w-3xl">
-        <h1 class="text-3xl md:text-4xl font-extrabold text-primary-dark mb-4">Unit converter</h1>
+        <h1 class="text-3xl md:text-4xl font-extrabold text-primary-dark mb-4">Coverage calculator</h1>
         <p class="text-lg text-text-muted leading-relaxed">
-          Convert between metric and imperial units for length, area, volume and weight.
+          Work out exactly how many units (packs, sheets, or rolls) you need based on the area you have to cover.
         </p>
       </section>
 
       {/* Calculator React Island */}
       <section class="w-full">
-        <UnitConverter client:load />
+        <CoverageCalculator client:load />
       </section>
 
     </div>
@@ -47,7 +46,7 @@ const description = "Convert between metric and imperial units for length, area,
     {/* Shared Disclaimer Footer */}
     <div class="mt-16 flex flex-col sm:flex-row gap-4 items-center justify-between p-6 rounded-xl border-2 border-primary-nav bg-gradient-to-br from-primary-nav/5 to-transparent shadow-sm">
       <div class="flex-1 w-full text-left">
-        <Disclaimer text="Calculations are estimates only. Always verify values before placing orders." />
+        <Disclaimer text="Calculations are estimates only. Always verify values and product coverage before placing orders." />
       </div>
       <a 
         href="https://madebysami.notion.site/2fe361401cd480fc9fcfdf4871d199b1?pvs=105" 
