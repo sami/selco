@@ -1,0 +1,607 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>TMA 02 Redesign Decisions — Selco Trade Calculator</title>
+<style>
+  :root {
+    --blue: #003087; --yellow: #FFCD00; --nav: #1b3a6e;
+    --red: #dc2626; --green: #16a34a; --orange: #ea580c; --amber: #d97706;
+    --gray: #6b7280; --bg: #f8fafc; --white: #ffffff;
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { font-family: system-ui, -apple-system, sans-serif; color: #1f2937; line-height: 1.6; background: var(--bg); font-size: 0.925rem; }
+  .container { max-width: 1180px; margin: 0 auto; padding: 2rem 1.5rem; }
+
+  header { background: var(--blue); color: white; padding: 2rem 0; }
+  header h1 { font-size: 1.9rem; font-weight: 800; }
+  header .meta { color: rgba(255,255,255,0.7); margin-top: 0.4rem; font-size: 0.85rem; }
+  header .tag { display: inline-block; background: var(--yellow); color: var(--blue); font-weight: 800; font-size: 0.7rem; padding: 3px 8px; border-radius: 4px; letter-spacing: 0.5px; vertical-align: middle; margin-left: 8px; }
+
+  h2 { font-size: 1.35rem; font-weight: 700; color: var(--blue); margin: 2.5rem 0 0.75rem; padding-bottom: 0.5rem; border-bottom: 3px solid var(--yellow); }
+  h3 { font-size: 1rem; font-weight: 700; color: var(--nav); margin: 1.5rem 0 0.5rem; }
+
+  /* TOC */
+  .toc { background: white; border: 1px solid #e5e7eb; border-radius: 10px; padding: 1.25rem 1.5rem; margin: 1.5rem 0; }
+  .toc-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 0.25rem 2rem; margin-top: 0.75rem; }
+  .toc a { color: var(--blue); text-decoration: none; font-size: 0.875rem; }
+  .toc a:hover { text-decoration: underline; }
+
+  /* Stats bar */
+  .stats { display: grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); gap: 1rem; margin: 1.5rem 0; }
+  .stat { background: white; border: 1px solid #e5e7eb; border-radius: 10px; padding: 1rem; text-align: center; }
+  .stat .n { font-size: 2rem; font-weight: 800; color: var(--blue); line-height: 1; }
+  .stat .lbl { font-size: 0.75rem; color: var(--gray); margin-top: 0.3rem; }
+
+  /* Decision table */
+  .decision-table { width: 100%; border-collapse: collapse; margin: 1rem 0 2rem; font-size: 0.85rem; }
+  .decision-table th { background: var(--blue); color: white; padding: 0.6rem 0.75rem; text-align: left; font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.5px; white-space: nowrap; }
+  .decision-table td { padding: 0.65rem 0.75rem; border-bottom: 1px solid #e5e7eb; vertical-align: top; }
+  .decision-table tr:hover td { background: #f8fafc; }
+  .decision-table tr:last-child td { border-bottom: none; }
+  .decision-table td:first-child { font-weight: 700; color: #1f2937; white-space: nowrap; }
+  .decision-table td:nth-child(2) { color: var(--gray); font-size: 0.82rem; }
+  .decision-table td:nth-child(3) { color: var(--red); font-size: 0.82rem; }
+  .decision-table td:nth-child(4) { color: #065f46; font-size: 0.82rem; }
+  .decision-table td:nth-child(5) { color: var(--nav); font-size: 0.82rem; }
+
+  /* Priority pill */
+  .p0 { display: inline-block; background: #fef2f2; color: var(--red); font-weight: 700; font-size: 0.7rem; padding: 1px 6px; border-radius: 4px; border: 1px solid #fecaca; white-space: nowrap; }
+  .p1 { display: inline-block; background: #fff7ed; color: var(--orange); font-weight: 700; font-size: 0.7rem; padding: 1px 6px; border-radius: 4px; border: 1px solid #fed7aa; white-space: nowrap; }
+  .p2 { display: inline-block; background: #fffbeb; color: var(--amber); font-weight: 700; font-size: 0.7rem; padding: 1px 6px; border-radius: 4px; border: 1px solid #fde68a; white-space: nowrap; }
+  .p3 { display: inline-block; background: #f0fdf4; color: var(--green); font-weight: 700; font-size: 0.7rem; padding: 1px 6px; border-radius: 4px; border: 1px solid #bbf7d0; white-space: nowrap; }
+
+  /* Evidence box */
+  .evidence { background: white; border: 1px solid #e5e7eb; border-radius: 8px; padding: 1rem 1.25rem; margin: 0.75rem 0; }
+  .evidence h4 { font-size: 0.875rem; font-weight: 700; margin-bottom: 0.5rem; color: #1f2937; }
+  .evidence ul { padding-left: 1.25rem; }
+  .evidence li { margin: 0.25rem 0; color: var(--gray); font-size: 0.85rem; }
+  .evidence code { background: #f1f5f9; padding: 0.1rem 0.35rem; border-radius: 3px; font-size: 0.8em; color: #0f172a; }
+
+  /* Prototype frame */
+  .prototype-box { background: linear-gradient(135deg, #f0f7ff 0%, #e6f2ff 100%); border: 2px solid var(--blue); border-radius: 12px; padding: 1.5rem; margin: 1.5rem 0; }
+  .prototype-box h3 { color: var(--blue); margin-top: 0; }
+  .verdict-grid { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 1rem; margin-top: 1rem; }
+  .verdict-col h4 { font-size: 0.8rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 0.5rem; }
+  .verdict-col ul { padding-left: 1.1rem; }
+  .verdict-col li { font-size: 0.82rem; margin: 0.25rem 0; }
+  .col-validated h4 { color: var(--green); }
+  .col-invalidated h4 { color: var(--red); }
+  .col-open h4 { color: var(--amber); }
+
+  code { background: #f1f5f9; padding: 0.15rem 0.4rem; border-radius: 4px; font-size: 0.82em; }
+  .ref { font-size: 0.75rem; color: var(--gray); }
+
+  @media (max-width: 768px) {
+    .verdict-grid { grid-template-columns: 1fr; }
+    .decision-table { display: block; overflow-x: auto; }
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="container">
+    <h1>TMA 02 Redesign Decisions <span class="tag">DECISION LOG</span></h1>
+    <div class="meta">
+      Selco Trade Calculator · Sami Bashraheel Y4347284 · TM470-26B ·
+      Generated 17 March 2026 · Based on prototype audit, UX evaluation, and Ju's TMA 01 feedback
+    </div>
+  </div>
+</header>
+
+<div class="container">
+
+<nav class="toc">
+  <strong>Contents</strong>
+  <div class="toc-grid">
+    <div>
+      <div><a href="#prototype">0. TMA 01 as Prototype</a></div>
+      <div><a href="#architecture">1. Architecture Decisions (6)</a></div>
+      <div><a href="#ux">2. UX Decisions (7)</a></div>
+    </div>
+    <div>
+      <div><a href="#visual">3. Visual Design Decisions (5)</a></div>
+      <div><a href="#technology">4. Technology Decisions (4)</a></div>
+      <div><a href="#summary">5. Priority Summary</a></div>
+    </div>
+  </div>
+</nav>
+
+<div class="stats">
+  <div class="stat"><div class="n" style="color:var(--red)">4</div><div class="lbl">P0 Critical fixes</div></div>
+  <div class="stat"><div class="n" style="color:var(--orange)">9</div><div class="lbl">P1 High-priority</div></div>
+  <div class="stat"><div class="n" style="color:var(--amber)">7</div><div class="lbl">P2 Medium-priority</div></div>
+  <div class="stat"><div class="n" style="color:var(--green)">2</div><div class="lbl">P3 Nice-to-have</div></div>
+  <div class="stat"><div class="n">22</div><div class="lbl">Total decisions</div></div>
+  <div class="stat"><div class="n">5</div><div class="lbl">Keep unchanged</div></div>
+</div>
+
+<!-- ======================================================
+     0. TMA 01 AS PROTOTYPE
+     ====================================================== -->
+<h2 id="prototype">0. TMA 01 Output — Framed as a Prototype</h2>
+
+<p>The first iteration of TMA 470 delivered a working prototype rather than a production application.
+This is appropriate for the planning and discovery phase, and consistent with the iterative lifecycle
+chosen in Section 4 of TMA 01. The table below records what the prototype validated, invalidated,
+and left open — providing a traceable basis for the TMA 02 design decisions that follow.</p>
+
+<div class="prototype-box">
+  <h3>Prototype Outcomes (Weeks 1–4, Feb–Mar 2026)</h3>
+  <div class="verdict-grid">
+    <div class="verdict-col col-validated">
+      <h4>✅ Validated</h4>
+      <ul>
+        <li>Astro + React islands delivers fast static HTML with selective hydration</li>
+        <li>Three-layer separation (pure logic → configs → pages) works; same functions reused in standalone pages and wizard without modification</li>
+        <li>Stateless application model is sufficient for trade use (per-job calculation, no need to persist)</li>
+        <li>Mobile-first layout: TSA survey confirmed on-site phone as primary device</li>
+        <li>Multi-material wizard concept: colleague interest on internal platform confirmed demand</li>
+        <li>100% logic-layer test coverage is achievable and catches real bugs (IEEE 754 floating-point)</li>
+        <li>SELCO branding feasible using publicly available brand colours</li>
+      </ul>
+    </div>
+    <div class="verdict-col col-invalidated">
+      <h4>❌ Invalidated</h4>
+      <ul>
+        <li>"Save to project" state persistence — added complexity without user value; removed in Week 3 product pivot</li>
+        <li>Vite + React SPA — pivoted to Astro in Week 2 for static performance and hydration control</li>
+        <li>Single-file calculator approach — organic growth to three-layer architecture revealed the need for explicit separation of concerns from the outset</li>
+        <li>Three competing CSS token systems are unworkable — phantom tokens cause invisible interactive elements</li>
+      </ul>
+    </div>
+    <div class="verdict-col col-open">
+      <h4>⚠️ Open / TMA 02 to address</h4>
+      <ul>
+        <li>Post-implementation TSA feedback — evaluation not yet run</li>
+        <li>Masonry, concrete, paint, insulation calculators not yet built</li>
+        <li>Product range mapping (bag sizes → purchase quantities) partially implemented</li>
+        <li>Accessibility audit findings not yet fixed (WCAG AA target not yet met)</li>
+        <li>Focus ring, button visibility, contrast issues identified but not resolved</li>
+      </ul>
+    </div>
+  </div>
+</div>
+
+<p class="ref">
+  Evidence base: Prototype audit (docs/audit/audit-report.html), UX evaluation (docs/audit/ux-evaluation.html),
+  TMA 01 progress log (Appendix 2, Weeks 1–4), Ju's PT3 feedback (57/100, March 2026).
+</p>
+
+<!-- ======================================================
+     1. ARCHITECTURE DECISIONS
+     ====================================================== -->
+<h2 id="architecture">1. Architecture Decisions</h2>
+
+<table class="decision-table">
+  <thead>
+    <tr>
+      <th>ID</th>
+      <th>Area</th>
+      <th>Current State</th>
+      <th>Problem</th>
+      <th>Redesign Decision</th>
+      <th>Rationale</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>A-1 <span class="p0">P0</span></td>
+      <td>CSS token system</td>
+      <td>Three competing systems: (1) Tailwind <code>@theme</code> in <code>global.css</code> with real tokens, (2) <code>SelcoLayout.astro</code> inline <code>:root</code> with 11 hardcoded hex variables, (3) 12 phantom tokens used in <code>CalculatorLayout.tsx</code> and wizard that are never defined anywhere</td>
+      <td>Phantom tokens (<code>--color-brand-blue</code>, <code>--color-brand-yellow</code>, <code>--color-surface</code>, <code>--color-border</code>, <code>--radius-card</code>, etc.) resolve to <code>transparent</code> / no value. This causes: invisible Next button, invisible Calculate button, invisible focus rings, invisible results text, invisible error alerts.</td>
+      <td>Consolidate to a <strong>single <code>@theme</code> block</strong> in <code>global.css</code>. Define all 12 currently-phantom tokens. Deprecate the <code>SelcoLayout</code> inline <code>:root</code> block and migrate its values into <code>@theme</code>. All components use only Tailwind utility classes referencing <code>@theme</code> tokens.</td>
+      <td>Tailwind v4's <code>@theme</code> is the canonical design token mechanism. A single source of truth prevents the token drift that caused B-2, F-6, and 5 other visual failures. Aligns with TM354's separation of concerns principle.</td>
+    </tr>
+    <tr>
+      <td>A-2 <span class="p1">P1</span></td>
+      <td>Layout files</td>
+      <td>Two layout files: <code>BaseLayout.astro</code> (Tailwind-based, used by early pages) and <code>SelcoLayout.astro</code> (inline CSS, used by all current pages). <code>BaseLayout</code> is effectively unused.</td>
+      <td>Dual layout files create divergent styling contexts. Components styled for one layout may not work in the other. Increases maintenance surface.</td>
+      <td><strong>Extend <code>SelcoLayout.astro</code></strong> to source all styling from the unified <code>@theme</code> tokens (resolved by A-1). <strong>Remove <code>BaseLayout.astro</code></strong> or archive it. All pages use <code>SelcoLayout</code>.</td>
+      <td>The SELCO chrome (header, nav strip, info bar, footer) in <code>SelcoLayout</code> is correct. The problem is the styling approach, not the component structure. Removing the duplicate reduces the risk of future token drift.</td>
+    </tr>
+    <tr>
+      <td>A-3 <span class="p1">P1</span></td>
+      <td>CalculatorLayout component</td>
+      <td><code>CalculatorLayout.tsx</code> is a well-designed shared React component: two-column form/results layout, field groups, error handling, empty state. Used by Coverage Calculator and Unit Converter. <em>Not</em> used by the Tiling Wizard.</td>
+      <td>All styling in <code>CalculatorLayout.tsx</code> references phantom tokens (see A-1). The component is architecturally correct but visually broken.</td>
+      <td><strong>Keep the component</strong>. Replace all phantom token references with the unified tokens defined in A-1. Consider extending it to handle the tiling wizard layout so there is one shared calculator shell.</td>
+      <td>The component is a good abstraction: it enforces consistent form/results structure across calculators. The fix is purely the token references, not the architecture. Reuse aligns with TM352's DRY principle.</td>
+    </tr>
+    <tr>
+      <td>A-4 <span class="p3">P3</span></td>
+      <td>Three-layer separation</td>
+      <td>Pure calculation logic (TypeScript functions) → project configuration objects → Astro page routes. The same pure functions are used in both standalone calculator pages and wizard steps without modification. 46 passing tests at 100% logic coverage.</td>
+      <td>No problem. This architecture is working correctly and is validated by the prototype.</td>
+      <td><strong>Keep unchanged.</strong> Continue applying the three-layer pattern to all new calculator modules (masonry, concrete, paint, insulation).</td>
+      <td>The tiling wizard reused existing standalone calculator logic without modification — this is the pattern working as intended. Aligns with TM352 component-based design and TM354 separation of concerns.</td>
+    </tr>
+    <tr>
+      <td>A-5 <span class="p2">P2</span></td>
+      <td>Navigation architecture</td>
+      <td><strong>SelcoNav</strong> (<code>SelcoNav.astro</code>): product category bar with 11 items, all <code>pointer-events: none</code> / <code>cursor: not-allowed</code>. Purely decorative. <strong>SelcoSidebar</strong>: actual working navigation — Home, Unit Converter, Tiling (live), Masonry (disabled), Concrete (disabled). Coverage Calculator is <em>absent</em> from the sidebar entirely.</td>
+      <td>Two navigation systems with completely different behaviours. Users expect the top nav to be interactive. Coverage Calculator is unreachable from any navigation — only via the homepage grid. Disabled sidebar items (Masonry, Concrete) have no "Coming soon" label and look broken.</td>
+      <td><strong>SelcoNav</strong>: Add a working "Calculators" item that links to the homepage or opens a dropdown listing all live tools. Keep the category items decorative (mirrors real Selco site) but make one item functional.<br><br><strong>SelcoSidebar</strong>: (1) Add Coverage Calculator to the sidebar. (2) Add a "Coming soon" badge to disabled items so they visually communicate intent rather than appearing broken.</td>
+      <td>N-1, N-3 findings. Tidwell (2020) Clear Entry Points: every major feature must be discoverable from the primary navigation. The Coverage Calculator existing without being navigable is a discoverability failure.</td>
+    </tr>
+    <tr>
+      <td>A-6 <span class="p2">P2</span></td>
+      <td>Breadcrumb semantics</td>
+      <td>Breadcrumbs rendered as a <code>&lt;div&gt;</code> with inline <code>&lt;a&gt;</code> and <code>&lt;span&gt;</code> elements in <code>SelcoLayout.astro</code>.</td>
+      <td>Non-semantic structure. Screen readers cannot identify the breadcrumb as a landmark. Fails WCAG 2.4.8 (Location) best practice.</td>
+      <td>Replace with <code>&lt;nav aria-label="Breadcrumb"&gt;&lt;ol&gt;&lt;li&gt;</code> structure. Add <code>aria-current="page"</code> to the final crumb.</td>
+      <td>N-4 finding. Semantic HTML is zero-cost in effort and directly improves accessibility score (currently 83/100 on Lighthouse).</td>
+    </tr>
+  </tbody>
+</table>
+
+<!-- ======================================================
+     2. UX DECISIONS
+     ====================================================== -->
+<h2 id="ux">2. UX Decisions</h2>
+
+<table class="decision-table">
+  <thead>
+    <tr>
+      <th>ID</th>
+      <th>Area</th>
+      <th>Current State</th>
+      <th>Problem</th>
+      <th>Redesign Decision</th>
+      <th>Rationale</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>U-1 <span class="p1">P1</span></td>
+      <td>Wizard progress indicator</td>
+      <td>The wizard has a segmented progress bar (a row of coloured/uncoloured div strips) and a text label "Step X of Y — [Name]". The segments are <strong>not clickable</strong>. Navigation is Next/Back only. Progress segments use <code>bg-brand-blue</code> (phantom token — invisible).</td>
+      <td>N-2 finding. Users cannot see named steps or jump to a previous step. Progress bar is invisible because the token is undefined. Tidwell's Sequence Map pattern is not implemented — only navigation arrows.</td>
+      <td>Replace the strip bar with a <strong>named step indicator</strong>: each step shown as a pill or numbered label with its name. Completed steps are clickable (navigate back). Current step is highlighted. Future steps are muted. Fix <code>bg-brand-blue</code> to resolved token (A-1).</td>
+      <td>N-2, B-2 findings. Tidwell (2020) Sequence Map: "Show users where they are in a multi-step process and let them navigate back to completed steps." Nielsen's visibility of system status heuristic. Directly addresses Ju's "vague idea of how your app will work" — a visible wizard structure communicates the tool's scope.</td>
+    </tr>
+    <tr>
+      <td>U-2 <span class="p1">P1</span></td>
+      <td>Wizard step validation</td>
+      <td>The "Next" button on Step 1 (Setup) advances even when width/height inputs are empty. Subsequent steps calculate using 0 as input, producing incorrect results silently. No required field validation on any wizard step.</td>
+      <td>F-7 finding. A user who accidentally skips Step 1 inputs receives a summary with all quantities showing 0. There is no error message and no indication that the calculation is invalid.</td>
+      <td>Add <strong>step-level validation</strong> on the Next button: required fields must have valid positive values before advancing. Show an inline error message under the invalid field. Do not use <code>window.alert()</code>.</td>
+      <td>F-4, F-7 findings. Tidwell (2020) Same-Page Error Messages: errors should appear adjacent to the field that caused them. Forgiving Format: accept decimal inputs with locale flexibility. Krug (2014): errors must be obvious and immediate.</td>
+    </tr>
+    <tr>
+      <td>U-3 <span class="p1">P1</span></td>
+      <td>Escape hatch from calculators</td>
+      <td>No "← Back to calculators" link on any calculator page. The breadcrumbs infrastructure exists in <code>SelcoLayout</code> but breadcrumbs are only rendered when the page passes the <code>breadcrumbs</code> prop.</td>
+      <td>N-5 finding. Users arriving deep in the wizard have no navigational escape other than the browser back button. Tidwell's Escape Hatch pattern is missing.</td>
+      <td>Ensure all calculator pages pass populated <code>breadcrumbs</code> to <code>SelcoLayout</code>: at minimum [Home → Calculators → Current page]. The breadcrumb will serve as the escape hatch. Fix breadcrumb semantics per A-6.</td>
+      <td>N-5 finding. Tidwell (2020) Escape Hatch: "Always give users a way out." The infrastructure already exists — this is a configuration fix, not a new feature.</td>
+    </tr>
+    <tr>
+      <td>U-4 <span class="p2">P2</span></td>
+      <td>Mobile menu accessibility</td>
+      <td>The mobile menu drawer (in <code>SelcoHeader.astro</code>) opens/closes via a hamburger button. There is no focus trap when the drawer is open, no Escape key handler, and no <code>aria-modal</code> attribute.</td>
+      <td>N-6, A-5 findings. Keyboard users can Tab through the entire page while the overlay is open. Screen readers do not announce the drawer as a modal context. Fails WCAG 2.1.2 (No Keyboard Trap) in the inverse direction — there is no trap when there should be one.</td>
+      <td>Add a <strong>focus trap</strong> to the open drawer: Tab/Shift+Tab cycle through focusable elements within the drawer only. Add an <strong>Escape key handler</strong> that closes the drawer and returns focus to the hamburger button. Add <code>aria-modal="true"</code> to the drawer element.</td>
+      <td>N-6, A-5 findings. WCAG 2.1 criterion 2.1.2. Standard pattern for any modal overlay. Relatively low implementation effort with significant accessibility impact.</td>
+    </tr>
+    <tr>
+      <td>U-5 <span class="p2">P2</span></td>
+      <td>Form error handling</td>
+      <td>Error handling is inconsistent across calculators: <code>CalculatorLayout</code> uses an <code>ErrorAlert</code> component (but without <code>role="alert"</code>). One calculator uses <code>window.alert()</code>. <code>ProjectListsCalculator</code> uses placeholder-only inputs with no visible labels. Errors appear only on form submission, not on blur.</td>
+      <td>F-2, F-5 findings. <code>window.alert()</code> is inaccessible and breaks mobile UX. Missing <code>role="alert"</code> means screen readers do not announce errors. Placeholder-only fields fail WCAG 1.3.5.</td>
+      <td>(1) Add <code>role="alert"</code> and <code>aria-live="polite"</code> to all error display components. (2) Replace <code>window.alert()</code> with inline error messages. (3) Add visible <code>&lt;label&gt;</code> elements to all inputs in <code>ProjectListsCalculator</code>. (4) Add <code>aria-describedby</code> linking each input to its error message element.</td>
+      <td>F-2, F-5, A-4 findings. WCAG 1.3.1 (Info and Relationships), 3.3.1 (Error Identification). Tidwell (2020) Same-Page Error Messages.</td>
+    </tr>
+    <tr>
+      <td>U-6 <span class="p2">P2</span></td>
+      <td>Skip link</td>
+      <td><code>SelcoLayout.astro</code> has no skip navigation link. <code>BaseLayout.astro</code> (now unused) had one.</td>
+      <td>A-2 finding. Keyboard and screen reader users must Tab through the entire header, nav strip, and info bar before reaching the main content on every page load.</td>
+      <td>Add a visually hidden skip link as the first focusable element in <code>SelcoLayout</code>: <code>&lt;a href="#main-content" class="sr-only focus:not-sr-only"&gt;Skip to main content&lt;/a&gt;</code>. Add <code>id="main-content"</code> to the <code>&lt;main&gt;</code> element.</td>
+      <td>A-2 finding. WCAG 2.4.1 (Bypass Blocks). Standard two-line fix. Was present in the original <code>BaseLayout</code> and was lost in the SelcoLayout migration.</td>
+    </tr>
+    <tr>
+      <td>U-7 <span class="p3">P3</span></td>
+      <td>Touch target sizes</td>
+      <td>Some toggle buttons (unit switcher m²/ft² pills in the wizard, some icon buttons) render at below 44×44px.</td>
+      <td>A-7 finding. WCAG 2.5.5 (Target Size) recommends minimum 44×44px for touch targets. Small targets increase error rate on mobile, which is the primary use context.</td>
+      <td>Enforce <code>min-h-[44px] min-w-[44px]</code> on all interactive buttons. Specifically fix the unit toggle pills in the wizard and any icon-only buttons.</td>
+      <td>A-7 finding. On-site mobile use confirmed as primary context (TSA survey). Wroblewski (2011) Mobile First: touch targets must be appropriately sized for finger input.</td>
+    </tr>
+  </tbody>
+</table>
+
+<!-- ======================================================
+     3. VISUAL DESIGN DECISIONS
+     ====================================================== -->
+<h2 id="visual">3. Visual Design Decisions</h2>
+
+<div class="evidence">
+  <h4>Overall design approach: Minor tweaks, not a fresh template</h4>
+  The SELCO branding is already in place and correctly reflects the real selcobw.com visual identity.
+  The redesign does <em>not</em> require a visual overhaul. All five decisions below are fixes to
+  inconsistency and token gaps — the design direction (dark blue, yellow accent, Open Sans, sidebar layout) is correct and should be kept.
+</div>
+
+<table class="decision-table">
+  <thead>
+    <tr>
+      <th>ID</th>
+      <th>Area</th>
+      <th>Current State</th>
+      <th>Problem</th>
+      <th>Redesign Decision</th>
+      <th>Rationale</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>V-1 <span class="p0">P0</span></td>
+      <td>Brand colour tokens</td>
+      <td>Four different shades of blue used inconsistently: <code>#003087</code> (<code>global.css @theme --color-primary</code>), <code>#004B8D</code> (<code>SelcoLayout --selco-blue</code>), <code>#1b3a6e</code> (<code>SelcoLayout --selco-nav-blue</code>), <code>#00264d</code> (dark blue). Yellow: <code>#FFCD00</code> in <code>SelcoLayout</code> but never defined in <code>@theme</code>.</td>
+      <td>ST-3 finding. Multiple blue variants produce visual inconsistency. Yellow not in <code>@theme</code> means it is unavailable as a Tailwind utility class, forcing hardcoded hex values throughout.</td>
+      <td>Define a <strong>canonical colour palette</strong> in <code>@theme</code>:<br>
+        <code>--color-brand-primary: #003087</code> (Selco Blue)<br>
+        <code>--color-brand-nav: #1b3a6e</code> (nav bar — structurally distinct)<br>
+        <code>--color-brand-dark: #00264d</code> (dark blue)<br>
+        <code>--color-brand-accent: #FFCD00</code> (Selco Yellow)<br>
+        Remove <code>--selco-blue</code>, <code>--selco-nav-blue</code>, <code>--selco-dark-blue</code>, <code>--selco-yellow</code> from <code>SelcoLayout</code> inline block. Replace all usages with Tailwind utilities.
+      </td>
+      <td>ST-3, A-1 findings. A single authoritative colour palette is a prerequisite for consistent design and working interactive states. Resolves the token drift root cause identified in A-1.</td>
+    </tr>
+    <tr>
+      <td>V-2 <span class="p0">P0</span></td>
+      <td>Button system</td>
+      <td>7+ distinct button variants: <code>bg-brand-blue</code> (phantom), <code>bg-brand-yellow</code> (phantom), <code>btn-primary</code> (<code>global.css</code>), <code>btn-secondary</code>, hard-coded blue hex in <code>SelcoLayout</code> footer, ghost text-links styled as buttons, disabled variants. No consistent design system.</td>
+      <td>B-1 finding. Visual inconsistency across calculators. Two primary action buttons (Next, Calculate) are invisible because they use phantom tokens. No predictable interaction model.</td>
+      <td>Define <strong>3 canonical button variants</strong> as <code>@layer components</code> utilities in <code>global.css</code>:<br>
+        <code>.btn-primary</code>: brand-primary background, white text (navigational actions)<br>
+        <code>.btn-accent</code>: brand-accent (yellow) background, brand-dark text (primary CTAs: Calculate, Next, Start Over)<br>
+        <code>.btn-ghost</code>: transparent, brand-primary text (secondary actions: Reset, Skip)<br>
+        Delete all phantom-token button classes. Apply the three variants consistently.
+      </td>
+      <td>B-1, B-2 findings. Three variants cover all use cases in the current application. Fewer variants reduce cognitive load (Krug, 2014) and maintenance cost. The accent button (yellow on dark blue) matches SELCO's visual identity for CTAs.</td>
+    </tr>
+    <tr>
+      <td>V-3 <span class="p1">P1</span></td>
+      <td>Typography system</td>
+      <td>Three competing font families: <code>system-ui</code> declared in <code>global.css @theme</code>, <code>'Open Sans', Helvetica, Arial</code> declared in <code>SelcoLayout body</code> (but Open Sans is <em>never imported</em>), <code>'Arial Black'</code> for page titles in <code>SelcoLayout</code>.</td>
+      <td>ST-1 finding. Open Sans is declared but not loaded — all SelcoLayout pages fall back to Helvetica, creating a font mismatch between the declared intent and what renders. The <code>system-ui</code> in global.css and the unloaded Open Sans are different fonts.</td>
+      <td>Add a <strong>Google Fonts import</strong> for Open Sans (400, 600, 700, 800) to <code>SelcoLayout.astro</code> <code>&lt;head&gt;</code> with <code>display=swap</code>. Update <code>global.css @theme --font-sans</code> to include <code>'Open Sans'</code> as first preference. Keep <code>'Arial Black'</code> for <code>.page-title</code> display headings only.</td>
+      <td>ST-1 finding. Open Sans is the declared intent and the correct choice for a professional trade tool. Loading it removes the font fallback inconsistency. <code>display=swap</code> avoids render blocking (addresses the Lighthouse performance opportunity for font loading).</td>
+    </tr>
+    <tr>
+      <td>V-4 <span class="p1">P1</span></td>
+      <td>Colour contrast</td>
+      <td>Yellow <code>#FFCD00</code> on blue <code>#004B8D</code> background produces a contrast ratio of approximately 2.5:1. Used on the info strip text and in button label contexts.</td>
+      <td>A-1 finding. WCAG 2.1 Level AA requires 4.5:1 for normal text (≤18pt / non-bold), 3:1 for large text (≥18pt or bold ≥14pt). 2.5:1 fails both thresholds for normal-weight text.</td>
+      <td>For small text on coloured backgrounds: use <strong>white on brand-primary</strong> (<code>#ffffff</code> on <code>#003087</code> = 8.6:1 ✅) instead of yellow on blue. Reserve yellow-on-blue only for large/bold display text where 3:1 suffices. For the accent button (<code>.btn-accent</code>): use <code>brand-dark</code> (<code>#00264d</code>) text on yellow background (<code>#FFCD00</code> on <code>#00264d</code> = ~6.5:1 ✅).</td>
+      <td>A-1 finding. WCAG 2.1 Success Criterion 1.4.3. The fix also makes button text more legible for users in bright outdoor environments (on-site mobile use).</td>
+    </tr>
+    <tr>
+      <td>V-5 <span class="p2">P2</span></td>
+      <td>Focus ring system</td>
+      <td>Two focus ring definitions exist: <code>@utility focus-ring</code> in <code>global.css</code> (working — uses <code>--color-primary/50</code>, a real token) and <code>focus:ring-2 focus:ring-[--color-brand-blue]/30</code> in <code>CalculatorLayout.tsx</code> (broken — <code>--color-brand-blue</code> is phantom).</td>
+      <td>F-6 finding. Focus is invisible on all inputs in calculators using <code>CalculatorLayout</code>. Fails WCAG 2.4.7 (Focus Visible).</td>
+      <td>Delete the phantom focus ring in <code>CalculatorLayout.tsx</code>. Apply the global <code>focus-ring</code> utility class consistently to all interactive elements (inputs, selects, buttons). After V-1 defines <code>--color-brand-primary</code>, update <code>focus-ring</code> to use it as the ring colour.</td>
+      <td>F-6, A-6 findings. WCAG 2.4.7. A single consistent focus ring is simpler to maintain and produces a uniform keyboard navigation experience. The working <code>focus-ring</code> utility already exists — this is a removal and application, not a new implementation.</td>
+    </tr>
+  </tbody>
+</table>
+
+<!-- ======================================================
+     4. TECHNOLOGY DECISIONS
+     ====================================================== -->
+<h2 id="technology">4. Technology Decisions</h2>
+
+<table class="decision-table">
+  <thead>
+    <tr>
+      <th>ID</th>
+      <th>Area</th>
+      <th>Current State</th>
+      <th>Problem / Opportunity</th>
+      <th>Decision</th>
+      <th>Rationale</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>T-1 <span class="p3">P3</span></td>
+      <td>Tailwind CSS v4</td>
+      <td>Already using Tailwind v4 with <code>@theme</code>, <code>@layer</code>, and <code>@utility</code>. A build issue with the <code>focus-ring</code> utility was resolved in Week 4.</td>
+      <td>No problem. The v4 approach is correct and the build issue is resolved.</td>
+      <td><strong>Keep unchanged.</strong> Continue using Tailwind v4 <code>@theme</code> as the token system. Do not downgrade to v3.</td>
+      <td>Tailwind v4's <code>@theme</code> is more powerful than v3's <code>theme.extend</code> — it generates CSS custom properties that can be referenced from any CSS context, not just Tailwind utilities. This is the mechanism needed to fix the phantom token problem.</td>
+    </tr>
+    <tr>
+      <td>T-2 <span class="p0">P0</span></td>
+      <td>Phantom token audit</td>
+      <td>12 undefined CSS custom properties used across 8+ component files. Identified: <code>--color-brand-blue</code>, <code>--color-brand-yellow</code>, <code>--color-surface</code>, <code>--color-surface-foreground</code>, <code>--color-border</code>, <code>--color-muted-foreground</code>, <code>--color-success</code>, <code>--color-destructive</code>, <code>--radius-card</code>, <code>--radius-input</code>, <code>--radius-button</code>.</td>
+      <td>These tokens produce silent failures — no build error, no console warning. The application appears to build successfully but renders with invisible interactive elements.</td>
+      <td>Add a <strong>CI lint step</strong> that greps for undefined CSS custom property references. Run as part of the GitHub Actions build. Additionally: resolve all 12 phantom tokens in <code>global.css @theme</code> as the immediate fix.</td>
+      <td>T-2 finding from code audit. A lint step prevents this category of silent failure from recurring in future iterations. Without it, adding new component styles could reintroduce phantom tokens. Low implementation effort (a <code>grep</code> script in the CI workflow).</td>
+    </tr>
+    <tr>
+      <td>T-3 <span class="p2">P2</span></td>
+      <td>Accessibility testing</td>
+      <td>No automated accessibility testing in the test suite or CI pipeline. Accessibility issues (A-1 through A-7) were found manually during the UX audit.</td>
+      <td>Manual accessibility testing found 7 distinct issues. Without automated testing, these can silently regress between iterations.</td>
+      <td>Add <strong>axe-core</strong> as a Playwright integration (or standalone node script) in the CI pipeline. Run against the deployed GitHub Pages URL on each push. Fail the build on any new <code>critical</code> or <code>serious</code> violations.</td>
+      <td>A-1 through A-7 findings. The target is WCAG 2.1 Level AA (stated in TMA 01 scope). Automated testing creates a regression safety net. axe-core is the industry-standard tool used by the BBC, GOV.UK, and NHS Digital. Low false-positive rate for <code>critical</code>/<code>serious</code> violations.</td>
+    </tr>
+    <tr>
+      <td>T-4 <span class="p2">P2</span></td>
+      <td>Font loading</td>
+      <td>Open Sans declared in <code>SelcoLayout</code> body font stack but not imported. Font Awesome loaded from CDN as a render-blocking stylesheet (<code>cdnjs.cloudflare.com/...all.min.css</code>, the entire 1000+ icon bundle).</td>
+      <td>Open Sans not loading = Helvetica fallback on all SelcoLayout pages (ST-1). Font Awesome full bundle = ~150KB of unused CSS, contributing ~2200ms to FCP (Lighthouse performance opportunity).</td>
+      <td>(1) Add Google Fonts import for Open Sans in <code>SelcoLayout.astro</code> (see V-3). (2) Defer Font Awesome: either switch to Lucide React (tree-shakeable, zero unused CSS) or add <code>media="print" onload="this.media='all'"</code> to the Font Awesome link to prevent render blocking.</td>
+      <td>ST-1, performance audit findings. Lighthouse identified Font Awesome as the primary render-blocking resource (~2200ms FCP savings). The icons used in the app are a small subset — tree-shaking via Lucide would reduce this to near-zero CSS overhead.</td>
+    </tr>
+  </tbody>
+</table>
+
+<!-- ======================================================
+     5. PRIORITY SUMMARY
+     ====================================================== -->
+<h2 id="summary">5. Priority Summary</h2>
+
+<table class="decision-table">
+  <thead>
+    <tr>
+      <th>Priority</th>
+      <th>Decision ID</th>
+      <th>Action</th>
+      <th>Effort</th>
+      <th>Impact</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td><span class="p0">P0 Critical</span></td>
+      <td>A-1, T-2</td>
+      <td>Define all 12 phantom CSS tokens in <code>global.css @theme</code>. Fixes invisible buttons, focus rings, results text.</td>
+      <td>1–2h</td>
+      <td>Unblocks all interactive elements. Single highest-leverage fix in the codebase.</td>
+    </tr>
+    <tr>
+      <td><span class="p0">P0 Critical</span></td>
+      <td>V-1</td>
+      <td>Consolidate brand colours into canonical <code>@theme</code> palette. Remove SelcoLayout inline <code>:root</code> colour variables.</td>
+      <td>2–4h</td>
+      <td>Eliminates colour inconsistency across all pages. Prerequisite for V-2, V-3, V-5.</td>
+    </tr>
+    <tr>
+      <td><span class="p0">P0 Critical</span></td>
+      <td>V-2</td>
+      <td>Define 3 canonical button variants (<code>btn-primary</code>, <code>btn-accent</code>, <code>btn-ghost</code>). Apply consistently.</td>
+      <td>2–3h</td>
+      <td>Fixes invisible Next/Calculate/Start Over buttons. Makes all wizard CTAs visible and consistent.</td>
+    </tr>
+    <tr>
+      <td><span class="p1">P1 High</span></td>
+      <td>A-2, A-3</td>
+      <td>Deprecate BaseLayout. Fix CalculatorLayout tokens (resolved by A-1).</td>
+      <td>1–2h</td>
+      <td>Removes dual-layout maintenance burden. Fixes all calculator visual failures.</td>
+    </tr>
+    <tr>
+      <td><span class="p1">P1 High</span></td>
+      <td>A-5</td>
+      <td>Add Calculators item to SelcoNav. Add Coverage Calculator to sidebar. Add "Coming soon" badges.</td>
+      <td>2h</td>
+      <td>Fixes N-1 navigation discoverability. Makes the three-tool suite fully navigable.</td>
+    </tr>
+    <tr>
+      <td><span class="p1">P1 High</span></td>
+      <td>U-1</td>
+      <td>Replace strip progress bar with named, clickable step indicators in the tiling wizard.</td>
+      <td>3–4h</td>
+      <td>Implements Sequence Map pattern. Makes the wizard's 10-step scope immediately visible.</td>
+    </tr>
+    <tr>
+      <td><span class="p1">P1 High</span></td>
+      <td>U-2</td>
+      <td>Add step-level validation in wizard before advancing. Inline error messages.</td>
+      <td>2–3h</td>
+      <td>Prevents silent wrong-calculation errors. Addresses F-7.</td>
+    </tr>
+    <tr>
+      <td><span class="p1">P1 High</span></td>
+      <td>V-3</td>
+      <td>Import Open Sans from Google Fonts. Update <code>@theme --font-sans</code>.</td>
+      <td>30min</td>
+      <td>Fixes ST-1 font mismatch. Ensures declared intent matches rendered output.</td>
+    </tr>
+    <tr>
+      <td><span class="p1">P1 High</span></td>
+      <td>V-4</td>
+      <td>Replace yellow-on-blue small text with white-on-blue. Fix accent button contrast.</td>
+      <td>1–2h</td>
+      <td>Achieves WCAG AA contrast on all interactive text. Addresses A-1.</td>
+    </tr>
+    <tr>
+      <td><span class="p1">P1 High</span></td>
+      <td>V-5</td>
+      <td>Delete phantom focus ring in CalculatorLayout. Apply global <code>focus-ring</code> utility consistently.</td>
+      <td>1h</td>
+      <td>Fixes invisible focus ring on all calculator inputs. Achieves WCAG 2.4.7.</td>
+    </tr>
+    <tr>
+      <td><span class="p2">P2 Medium</span></td>
+      <td>A-6</td>
+      <td>Replace <code>&lt;div&gt;</code> breadcrumb with <code>&lt;nav aria-label="Breadcrumb"&gt;&lt;ol&gt;</code> structure.</td>
+      <td>30min</td>
+      <td>Semantic HTML. Improves Lighthouse accessibility score.</td>
+    </tr>
+    <tr>
+      <td><span class="p2">P2 Medium</span></td>
+      <td>U-3</td>
+      <td>Populate breadcrumbs prop on all calculator pages. Breadcrumb serves as escape hatch.</td>
+      <td>1h</td>
+      <td>Implements Escape Hatch pattern. Uses existing infrastructure — zero new code needed.</td>
+    </tr>
+    <tr>
+      <td><span class="p2">P2 Medium</span></td>
+      <td>U-4</td>
+      <td>Add focus trap and Escape key handler to mobile menu.</td>
+      <td>2h</td>
+      <td>Fixes A-5 accessibility issue. WCAG 2.1.2 compliance.</td>
+    </tr>
+    <tr>
+      <td><span class="p2">P2 Medium</span></td>
+      <td>U-5</td>
+      <td>Add <code>role="alert"</code> to error components. Replace <code>window.alert()</code>. Add labels to ProjectListsCalculator.</td>
+      <td>2h</td>
+      <td>Screen reader accessible errors. WCAG 1.3.1 compliance.</td>
+    </tr>
+    <tr>
+      <td><span class="p2">P2 Medium</span></td>
+      <td>U-6</td>
+      <td>Add skip link to SelcoLayout.</td>
+      <td>15min</td>
+      <td>WCAG 2.4.1. Highest ratio of accessibility benefit to implementation effort.</td>
+    </tr>
+    <tr>
+      <td><span class="p2">P2 Medium</span></td>
+      <td>T-3</td>
+      <td>Add axe-core CI accessibility check against deployed URL.</td>
+      <td>3–4h</td>
+      <td>Prevents accessibility regression. Provides evidence for TMA 02 evaluation section.</td>
+    </tr>
+    <tr>
+      <td><span class="p2">P2 Medium</span></td>
+      <td>T-4</td>
+      <td>Import Open Sans. Defer Font Awesome or switch to Lucide.</td>
+      <td>2–4h</td>
+      <td>Addresses ~2200ms FCP Lighthouse opportunity. Reduces CSS bundle by ~15KB unused rules.</td>
+    </tr>
+    <tr>
+      <td><span class="p3">P3 Low</span></td>
+      <td>U-7</td>
+      <td>Enforce 44×44px minimum on toggle buttons and icon buttons.</td>
+      <td>1h</td>
+      <td>WCAG 2.5.5. Mobile usability improvement for on-site use.</td>
+    </tr>
+    <tr>
+      <td><span class="p3">P3 Low</span></td>
+      <td>T-1</td>
+      <td>Keep Tailwind CSS v4 unchanged.</td>
+      <td>0</td>
+      <td>No action needed. Architecture is validated.</td>
+    </tr>
+  </tbody>
+</table>
+
+<hr style="margin: 2rem 0; border-color: #e5e7eb;">
+<p style="font-size:0.8rem; color:var(--gray)">
+  Generated 17 March 2026 · Sami Bashraheel Y4347284 · TM470-26B ·
+  Evidence sources: prototype audit report, UX evaluation report, TMA 01 submission (Y4347284_TM470-26B_TMA01.docx), Ju's PT3 feedback form.
+</p>
+
+</div>
+</body>
+</html>

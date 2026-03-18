@@ -1,0 +1,530 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>TMA 02 Report Outputs — Selco Trade Calculator</title>
+<style>
+  :root { --blue: #003087; --yellow: #FFCD00; --nav: #1b3a6e; --red: #dc2626; --green: #16a34a; --orange: #ea580c; --amber: #d97706; --gray: #6b7280; }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { font-family: system-ui, -apple-system, sans-serif; color: #1f2937; line-height: 1.6; background: #f8fafc; font-size: 0.925rem; }
+  .container { max-width: 1100px; margin: 0 auto; padding: 2rem 1.5rem; }
+  header { background: var(--blue); color: white; padding: 2rem 0; }
+  header h1 { font-size: 1.8rem; font-weight: 800; }
+  header .meta { color: rgba(255,255,255,0.7); margin-top: 0.4rem; font-size: 0.85rem; }
+  h2 { font-size: 1.3rem; font-weight: 700; color: var(--blue); margin: 2.5rem 0 0.75rem; padding-bottom: 0.5rem; border-bottom: 3px solid var(--yellow); }
+  h3 { font-size: 1rem; font-weight: 700; color: var(--nav); margin: 1.5rem 0 0.5rem; }
+  p { margin: 0.5rem 0; }
+  ul, ol { padding-left: 1.5rem; }
+  li { margin: 0.3rem 0; }
+  code { background: #f1f5f9; padding: 0.1rem 0.35rem; border-radius: 3px; font-size: 0.82em; }
+
+  /* Prose blocks */
+  .prose-block { background: white; border: 1px solid #e5e7eb; border-radius: 10px; padding: 1.25rem 1.5rem; margin: 1rem 0; }
+  .prose-block .label { font-size: 0.7rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px; color: var(--gray); margin-bottom: 0.5rem; }
+  .prose-block blockquote { background: #f0f7ff; border-left: 4px solid var(--blue); padding: 0.75rem 1rem; margin: 0.75rem 0; font-style: italic; border-radius: 0 6px 6px 0; }
+  .prose-block .source-note { font-size: 0.78rem; color: var(--gray); margin-top: 0.5rem; }
+
+  /* Figure grid */
+  .figure-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 1rem; margin: 1rem 0; }
+  .figure-card { background: white; border: 1px solid #e5e7eb; border-radius: 8px; overflow: hidden; }
+  .figure-card img { width: 100%; height: 180px; object-fit: cover; object-position: top; display: block; }
+  .figure-card .caption { padding: 0.5rem 0.75rem; font-size: 0.8rem; }
+  .figure-card .fig-num { font-weight: 700; color: var(--blue); }
+  .figure-card .fig-title { color: #1f2937; }
+  .figure-card .fig-note { color: var(--gray); font-size: 0.75rem; }
+
+  /* Table */
+  table { width: 100%; border-collapse: collapse; margin: 1rem 0; font-size: 0.85rem; }
+  th { background: var(--blue); color: white; padding: 0.5rem 0.75rem; text-align: left; font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.5px; }
+  td { padding: 0.6rem 0.75rem; border-bottom: 1px solid #e5e7eb; vertical-align: top; }
+  tr:hover td { background: #f8fafc; }
+  tr:last-child td { border-bottom: none; }
+
+  /* Scores */
+  .scores { display: grid; grid-template-columns: repeat(4, 1fr); gap: 1rem; margin: 1rem 0; }
+  .score-card { background: white; border: 1px solid #e5e7eb; border-radius: 10px; padding: 1rem; text-align: center; }
+  .score-card .n { font-size: 2.2rem; font-weight: 800; line-height: 1; }
+  .score-card .lbl { font-size: 0.75rem; color: var(--gray); margin-top: 0.3rem; }
+  .green { color: var(--green); } .orange { color: var(--orange); } .red { color: var(--red); }
+
+  /* Source tag */
+  .src { display: inline-block; background: #eff6ff; color: var(--blue); font-size: 0.72rem; padding: 1px 6px; border-radius: 4px; border: 1px solid #bfdbfe; font-weight: 600; white-space: nowrap; margin-left: 3px; }
+
+  @media (max-width: 640px) {
+    .scores { grid-template-columns: repeat(2, 1fr); }
+    .figure-grid { grid-template-columns: 1fr; }
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="container">
+    <h1>TMA 02 Report Outputs</h1>
+    <div class="meta">
+      Selco Trade Calculator · Sami Bashraheel Y4347284 · TM470-26B · 17 March 2026 ·
+      Figures, prose drafts, Lighthouse data, and source-linked decisions for TMA 02 sections
+    </div>
+  </div>
+</header>
+
+<div class="container">
+
+<!-- ======================================================
+     SECTION 1: FIGURE MANIFEST
+     ====================================================== -->
+<h2 id="figures">Section 7 — Project Work: Numbered Figures</h2>
+
+<p>
+  These are the <strong>before-state</strong> screenshots of the TMA 01 prototype, numbered for use
+  as figures in TMA 02's Work Done section. All figures captured from the deployed prototype at
+  <code>sami.github.io/selco</code> on 17 March 2026. Source files are in
+  <code>docs/audit/tma02-figures/</code>.
+</p>
+
+<div class="figure-grid">
+  <div class="figure-card">
+    <img src="tma02-figures/fig-7-1-homepage-dashboard.png" alt="Homepage dashboard">
+    <div class="caption">
+      <div><span class="fig-num">Figure 7.1</span> <span class="fig-title">Homepage dashboard (desktop, 1440×900)</span></div>
+      <div class="fig-note">Card grid with 3 live calculators and 5 coming-soon states. Selco-branded header, nav strip, info bar, sidebar. (Bashraheel, 2026)</div>
+    </div>
+  </div>
+  <div class="figure-card">
+    <img src="tma02-figures/fig-7-2-wizard-step1-setup.png" alt="Tiling wizard Step 1">
+    <div class="caption">
+      <div><span class="fig-num">Figure 7.2</span> <span class="fig-title">Tiling Project Wizard — Step 1: Setup</span></div>
+      <div class="fig-note">Area dimensions, unit toggle, tile size, pattern selection. Linear progress bar (invisible due to B-2 bug). (Bashraheel, 2026)</div>
+    </div>
+  </div>
+  <div class="figure-card">
+    <img src="tma02-figures/fig-7-3-wizard-step2-tiles.png" alt="Tiling wizard Step 2">
+    <div class="caption">
+      <div><span class="fig-num">Figure 7.3</span> <span class="fig-title">Tiling Project Wizard — Step 2: Tiles</span></div>
+      <div class="fig-note">Tile quantity result with wastage. Shows multi-material wizard concept at step 2 of 10. (Bashraheel, 2026)</div>
+    </div>
+  </div>
+  <div class="figure-card">
+    <img src="tma02-figures/fig-7-4-wizard-step10-summary.png" alt="Tiling wizard Step 10 summary">
+    <div class="caption">
+      <div><span class="fig-num">Figure 7.4</span> <span class="fig-title">Tiling Project Wizard — Step 10: Summary</span></div>
+      <div class="fig-note">Full shopping list for all 9 material types. Mapped to purchase units (bags, packs, bottles, tubs, boards). (Bashraheel, 2026)</div>
+    </div>
+  </div>
+  <div class="figure-card">
+    <img src="tma02-figures/fig-7-5-coverage-calculator.png" alt="Board Coverage Calculator">
+    <div class="caption">
+      <div><span class="fig-num">Figure 7.5</span> <span class="fig-title">Board Coverage Calculator — with results</span></div>
+      <div class="fig-note">6 UK board size presets, wastage toggle, real-time results panel. Two-column CalculatorLayout. (Bashraheel, 2026)</div>
+    </div>
+  </div>
+  <div class="figure-card">
+    <img src="tma02-figures/fig-7-6-unit-converter.png" alt="Unit Converter">
+    <div class="caption">
+      <div><span class="fig-num">Figure 7.6</span> <span class="fig-title">Unit Converter — with results</span></div>
+      <div class="fig-note">Four conversion families (Length, Area, Volume, Weight). Real-time conversion, Copy button, clean two-panel layout. (Bashraheel, 2026)</div>
+    </div>
+  </div>
+  <div class="figure-card">
+    <img src="tma02-figures/fig-7-7-homepage-mobile.png" alt="Homepage on mobile">
+    <div class="caption">
+      <div><span class="fig-num">Figure 7.7</span> <span class="fig-title">Homepage — mobile (375×812)</span></div>
+      <div class="fig-note">Single-column card layout, hamburger menu visible, sidebar collapsed to "In this section" toggle. (Bashraheel, 2026)</div>
+    </div>
+  </div>
+  <div class="figure-card">
+    <img src="tma02-figures/fig-7-8-wizard-mobile.png" alt="Wizard on mobile">
+    <div class="caption">
+      <div><span class="fig-num">Figure 7.8</span> <span class="fig-title">Tiling Wizard — mobile (375×812)</span></div>
+      <div class="fig-note">Step 1 on mobile. Stacked form inputs, adequate touch targets, single-column layout. (Bashraheel, 2026)</div>
+    </div>
+  </div>
+  <div class="figure-card">
+    <img src="tma02-figures/fig-7-9-bug-invisible-button.png" alt="Bug: invisible Next button">
+    <div class="caption">
+      <div><span class="fig-num">Figure 7.9</span> <span class="fig-title">Bug B-2: Invisible Next button (annotated)</span></div>
+      <div class="fig-note"><code>bg-brand-blue</code> resolves to transparent. Red outline added to show button position. (Bashraheel, 2026)</div>
+    </div>
+  </div>
+  <div class="figure-card">
+    <img src="tma02-figures/fig-7-10-bug-invisible-focus.png" alt="Bug: invisible focus ring">
+    <div class="caption">
+      <div><span class="fig-num">Figure 7.10</span> <span class="fig-title">Bug F-6: Invisible focus ring (annotated)</span></div>
+      <div class="fig-note"><code>ring-[--color-brand-blue]/30</code> resolves to transparent. WCAG 2.4.7 failure. (Bashraheel, 2026)</div>
+    </div>
+  </div>
+  <div class="figure-card">
+    <img src="tma02-figures/fig-7-11-sidebar-navigation.png" alt="Sidebar navigation">
+    <div class="caption">
+      <div><span class="fig-num">Figure 7.11</span> <span class="fig-title">Sidebar navigation (desktop, 1440×900)</span></div>
+      <div class="fig-note">Live tools: Unit Converter, Tiling. Disabled without label: Masonry, Concrete. Coverage Calculator absent. (Bashraheel, 2026)</div>
+    </div>
+  </div>
+</div>
+
+<!-- ======================================================
+     SECTION 2: LIGHTHOUSE APPENDIX
+     ====================================================== -->
+<h2 id="lighthouse">Appendix: Lighthouse Audit Results</h2>
+
+<p>
+  Lighthouse audits were run against the deployed prototype at <code>sami.github.io/selco</code>
+  on 17 March 2026 using Google Chrome DevTools Lighthouse v12 in desktop simulation mode.
+  Two pages were tested: the homepage (<code>/selco/</code>) and the Tiling Wizard (<code>/selco/tiling/</code>).
+</p>
+
+<h3>Summary Scores</h3>
+<div class="scores">
+  <div class="score-card">
+    <div class="n orange">85 / 78</div>
+    <div class="lbl">Performance<br>Homepage / Tiling</div>
+  </div>
+  <div class="score-card">
+    <div class="n orange">83 / 85</div>
+    <div class="lbl">Accessibility<br>Homepage / Tiling</div>
+  </div>
+  <div class="score-card">
+    <div class="n green">96 / 96</div>
+    <div class="lbl">Best Practices<br>Homepage / Tiling</div>
+  </div>
+  <div class="score-card">
+    <div class="n green">100 / 100</div>
+    <div class="lbl">SEO<br>Homepage / Tiling</div>
+  </div>
+</div>
+
+<h3>Core Web Vitals</h3>
+<table>
+  <thead>
+    <tr><th>Metric</th><th>Homepage</th><th>Tiling Wizard</th><th>Target</th></tr>
+  </thead>
+  <tbody>
+    <tr><td>First Contentful Paint (FCP)</td><td class="orange">3.2 s</td><td class="orange">3.3 s</td><td>&lt; 1.8 s</td></tr>
+    <tr><td>Largest Contentful Paint (LCP)</td><td class="orange">3.2 s</td><td class="orange">3.3 s</td><td>&lt; 2.5 s</td></tr>
+    <tr><td>Total Blocking Time (TBT)</td><td class="green">0 ms</td><td class="green">0 ms</td><td>&lt; 200 ms</td></tr>
+    <tr><td>Cumulative Layout Shift (CLS)</td><td class="green">0.019</td><td class="green">0</td><td>&lt; 0.1</td></tr>
+    <tr><td>Speed Index</td><td class="orange">4.6 s</td><td class="red">8.4 s</td><td>&lt; 3.4 s</td></tr>
+  </tbody>
+</table>
+
+<h3>Performance Opportunities Identified</h3>
+<table>
+  <thead>
+    <tr><th>Opportunity</th><th>Estimated Saving</th><th>Root Cause</th></tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Eliminate render-blocking resources</td>
+      <td>~2,200 ms FCP</td>
+      <td>Font Awesome CDN stylesheet loaded synchronously in <code>&lt;head&gt;</code>. Blocks rendering until the full ~150 KB CSS bundle is parsed, even though only ~20 icons are used.</td>
+    </tr>
+    <tr>
+      <td>Reduce unused CSS</td>
+      <td>15 KiB</td>
+      <td>Full Font Awesome bundle included; most icon classes unused on any given page.</td>
+    </tr>
+    <tr>
+      <td>Reduce unused JavaScript</td>
+      <td>33 KiB (Tiling page)</td>
+      <td>React island bundle includes all calculator logic upfront. Tree-shaking and code-splitting could reduce this.</td>
+    </tr>
+    <tr>
+      <td>Add <code>font-display: swap</code></td>
+      <td>~50 ms</td>
+      <td>Google Fonts (once added) should include <code>display=swap</code> parameter to avoid invisible text during font load.</td>
+    </tr>
+    <tr>
+      <td>Add explicit <code>width</code>/<code>height</code> on images</td>
+      <td>CLS improvement</td>
+      <td>Some card images lack explicit dimensions, causing layout shift during load.</td>
+    </tr>
+  </tbody>
+</table>
+
+<h3>Accessibility Failures (Lighthouse)</h3>
+<table>
+  <thead>
+    <tr><th>Rule</th><th>Element</th><th>Issue</th></tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td><code>button-name</code></td>
+      <td>Search button (<code>&lt;button disabled&gt;</code> in header)</td>
+      <td>No accessible name. Missing <code>aria-label</code>.</td>
+    </tr>
+    <tr>
+      <td><code>color-contrast</code></td>
+      <td>"Coming Soon" badge text, muted card descriptions, heading text on coloured card backgrounds</td>
+      <td>Contrast ratio below 4.5:1 WCAG AA threshold.</td>
+    </tr>
+    <tr>
+      <td><code>heading-order</code></td>
+      <td><code>&lt;h4&gt;</code> in "DEMO ONLY" footer banner</td>
+      <td>Skips h3 level in heading hierarchy.</td>
+    </tr>
+    <tr>
+      <td><code>link-name</code></td>
+      <td>5 icon-only links in footer (social/nav icons)</td>
+      <td>No accessible name. Missing <code>aria-label</code>.</td>
+    </tr>
+  </tbody>
+</table>
+
+<!-- ======================================================
+     SECTION 3: PROSE DRAFTS FOR TMA 02
+     ====================================================== -->
+<h2 id="prose">Prose Drafts for TMA 02 Sections</h2>
+
+<h3>3.1 — Project Description: prototype review summary (2–3 sentences)</h3>
+
+<div class="prose-block">
+  <div class="label">For use in: Section 1 (Description) / Section 6 (Progress Review)</div>
+  <blockquote>
+    The first iteration of the project, completed for TMA 01, produced a working prototype comprising
+    three calculator tools — a ten-step Tiling Project Wizard, a Board Coverage Calculator, and a
+    Unit Converter — deployed to GitHub Pages across 105 commits with 100% logic-layer test coverage
+    (Bashraheel, 2026). A structured audit of the prototype against UX evaluation criteria
+    (Tidwell, 2020; Nielsen, 1994) and WCAG 2.1 Level AA identified twenty-two redesign decisions,
+    including a critical phantom token failure that rendered interactive buttons and focus indicators
+    invisible across all wizard and calculator pages. TMA 02 addresses these findings through a
+    consolidated CSS token system, a revised wizard navigation structure, and the addition of
+    masonry calculator modules, building directly on the validated three-layer architecture
+    established in the first iteration.
+  </blockquote>
+  <div class="source-note">
+    Citations needed: Bashraheel (2026) for prototype, Tidwell (2020), Nielsen (1994) for evaluation criteria, WCAG 2.1 for accessibility standard.
+  </div>
+</div>
+
+<h3>3.2 — Project Description: problem and solution (2 sentences)</h3>
+
+<div class="prose-block">
+  <div class="label">For use in: Section 1 (Description) — showing current state vs. proposed solution concretely</div>
+  <blockquote>
+    The TMA 01 prototype demonstrated that a mobile-first, multi-material estimation tool is
+    technically feasible using a static Astro architecture with React islands: all three calculator
+    flows produce correct results, the application deploys continuously via GitHub Actions, and the
+    interface renders consistently across desktop, tablet, and mobile viewports (see Figure 7.1–7.8).
+    However, the prototype also revealed that the CSS token system used to implement the Selco brand
+    identity was incomplete, causing key interactive elements — including the wizard's Next button,
+    the Coverage Calculator's Calculate button, and all input focus rings — to render as transparent,
+    creating a functional barrier that must be resolved before any user evaluation can be conducted
+    (see Figures 7.9–7.10).
+  </blockquote>
+  <div class="source-note">
+    References Figure 7.1–7.10 from this document. Suitable for a "Current state" sub-section.
+  </div>
+</div>
+
+<h3>3.3 — Work Done section: opening paragraph</h3>
+
+<div class="prose-block">
+  <div class="label">For use in: Section 7 (Work Done) — opening paragraph before figures</div>
+  <blockquote>
+    The TMA 01 prototype was developed across four weekly iterations between 31 January and 3 March
+    2026 (Appendix 2: Progress Log). The application follows a three-layer architecture — pure
+    calculation logic in TypeScript, project configuration objects, and Astro page routes — a
+    pattern that proved its value when the same tile, adhesive, grout, and spacer functions were
+    reused without modification in both the standalone calculator pages and the ten-step wizard
+    flow (Bashraheel, 2026). Figure 7.1 shows the homepage dashboard as delivered; Figures 7.2
+    through 7.4 document the Tiling Wizard from initial setup through to the full-project summary;
+    Figures 7.5 and 7.6 show the Board Coverage Calculator and Unit Converter; Figures 7.7 and 7.8
+    confirm the mobile-responsive layout on a 375 × 812 px viewport. Figures 7.9 and 7.10 annotate
+    the two critical visual bugs identified during the post-iteration UX audit, which TMA 02
+    addresses as its first priority.
+  </blockquote>
+  <div class="source-note">
+    This paragraph introduces all 11 figures and frames TMA01 as a prototype with a specific handover point to TMA02 work.
+  </div>
+</div>
+
+<h3>3.4 — Reflection: one sentence on iteration learning</h3>
+
+<div class="prose-block">
+  <div class="label">For use in: Reflection section — following Gibbs' cycle on implementation</div>
+  <blockquote>
+    The phantom token failure, where twelve CSS custom properties were referenced throughout the
+    application but never defined, illustrates a gap between the intended design system and its
+    implementation: a lesson that informed the TMA 02 decision to add a CI lint step that will
+    fail the build if any undefined token reference is introduced, preventing this category of
+    silent failure from recurring in future iterations.
+  </blockquote>
+  <div class="source-note">
+    Applies Gibbs' (1988) cycle: Description → Feelings → Evaluation → Analysis → Conclusion → Action plan. The action plan is the CI lint step (decision T-2 in redesign-decisions.html).
+  </div>
+</div>
+
+<!-- ======================================================
+     SECTION 4: REDESIGN DECISIONS × SOURCES
+     ====================================================== -->
+<h2 id="sources">Redesign Decisions Linked to Academic Sources</h2>
+
+<p>
+  This table maps each redesign decision to the academic sources and standards it is grounded in,
+  for use in TMA 02's <strong>Account of Related Literature</strong> and <strong>Evaluation Criteria</strong> sections.
+  All decisions that reference sources should appear in both the decision narrative and the references list.
+</p>
+
+<table>
+  <thead>
+    <tr>
+      <th>Decision</th>
+      <th>Description</th>
+      <th>Sources</th>
+      <th>Where to cite in TMA 02</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>U-1</td>
+      <td>Wizard named + clickable progress indicator</td>
+      <td>
+        <span class="src">Tidwell 2020</span> Sequence Map pattern: "show users where they are in a multi-step process"<br>
+        <span class="src">Nielsen 1994</span> Heuristic 1: Visibility of system status
+      </td>
+      <td>Literature review (wizard navigation patterns); Evaluation criteria (test: user can identify current wizard step without reading step counter text)</td>
+    </tr>
+    <tr>
+      <td>U-2</td>
+      <td>Step-level validation before advancing</td>
+      <td>
+        <span class="src">Tidwell 2020</span> Same-Page Error Messages; Forgiving Format<br>
+        <span class="src">Krug 2014</span> Errors must be obvious and immediate; cognitive load<br>
+        <span class="src">Nielsen 1994</span> Heuristic 5: Error prevention; Heuristic 9: Help users recognise and recover from errors
+      </td>
+      <td>Literature review (form validation UX); Evaluation criteria (test: submitting empty Step 1 shows inline error and prevents advancement)</td>
+    </tr>
+    <tr>
+      <td>U-3</td>
+      <td>Escape hatch / breadcrumb navigation</td>
+      <td>
+        <span class="src">Tidwell 2020</span> Escape Hatch: "always give users a way out"<br>
+        <span class="src">Nielsen 1994</span> Heuristic 3: User control and freedom
+      </td>
+      <td>Literature review (navigation patterns); Evaluation criteria (test: user can return to homepage from any wizard step without using browser back)</td>
+    </tr>
+    <tr>
+      <td>U-4</td>
+      <td>Mobile menu focus trap + Escape key</td>
+      <td>
+        <span class="src">WCAG 2.1</span> Success Criterion 2.1.2: No Keyboard Trap<br>
+        <span class="src">Tidwell 2020</span> Modal Panel pattern: contains focus within overlay
+      </td>
+      <td>LSEPI/EDI section (Equality Act 2010, accessibility); Evaluation criteria (test: keyboard user can navigate and close menu without mouse)</td>
+    </tr>
+    <tr>
+      <td>U-5</td>
+      <td>Role="alert" on errors, inline messages replace window.alert()</td>
+      <td>
+        <span class="src">WCAG 2.1</span> SC 1.3.1: Info and Relationships; SC 3.3.1: Error Identification; SC 3.3.3: Error Suggestion<br>
+        <span class="src">Tidwell 2020</span> Same-Page Error Messages<br>
+        <span class="src">Krug 2014</span> Don't Make Me Think: errors must be immediately obvious
+      </td>
+      <td>Accessibility section; Evaluation criteria (test: screen reader announces error on invalid input)</td>
+    </tr>
+    <tr>
+      <td>U-6</td>
+      <td>Skip navigation link</td>
+      <td>
+        <span class="src">WCAG 2.1</span> SC 2.4.1: Bypass Blocks<br>
+        <span class="src">Equality Act 2010</span> Duty to make reasonable adjustments for disabled users
+      </td>
+      <td>LSEPI/EDI; Evaluation criteria (test: keyboard user reaches main content within 2 key presses)</td>
+    </tr>
+    <tr>
+      <td>V-2</td>
+      <td>3 canonical button variants (primary, accent, ghost)</td>
+      <td>
+        <span class="src">Krug 2014</span> Consistent visual language reduces cognitive load<br>
+        <span class="src">Tidwell 2020</span> Consistent Visual Language pattern: "repeated elements build user expectations"
+      </td>
+      <td>Literature review (visual design consistency); Evaluation criteria (test: all primary CTAs are visually identical across calculators)</td>
+    </tr>
+    <tr>
+      <td>V-3</td>
+      <td>Import Open Sans; unify typography</td>
+      <td>
+        <span class="src">Tidwell 2020</span> Typography: typeface consistency across screens<br>
+        <span class="src">Wroblewski 2011</span> Mobile First: legibility is critical for on-site use
+      </td>
+      <td>Literature review (typography, mobile-first design); no specific evaluation criterion needed (resolved by consistent font loading)</td>
+    </tr>
+    <tr>
+      <td>V-4</td>
+      <td>Colour contrast fix (white on blue for small text)</td>
+      <td>
+        <span class="src">WCAG 2.1</span> SC 1.4.3: Contrast (Minimum) — 4.5:1 normal text, 3:1 large text<br>
+        <span class="src">Equality Act 2010</span> SC 1.4.11: Non-text Contrast<br>
+        <span class="src">Tidwell 2020</span> Colour Coding: use colour to reinforce, not as sole differentiator
+      </td>
+      <td>LSEPI/EDI; Accessibility section; Evaluation criteria (test: all text passes WCAG AA contrast check via automated axe-core scan)</td>
+    </tr>
+    <tr>
+      <td>V-5</td>
+      <td>Unified focus ring (delete phantom, apply global utility)</td>
+      <td>
+        <span class="src">WCAG 2.1</span> SC 2.4.7: Focus Visible<br>
+        <span class="src">WCAG 2.1</span> SC 2.4.11 (Level AA enhanced): Focus Appearance
+      </td>
+      <td>Accessibility section; Evaluation criteria (test: every interactive element shows a visible focus indicator on keyboard navigation)</td>
+    </tr>
+    <tr>
+      <td>A-5</td>
+      <td>Add Calculators to nav; add Coverage Calculator to sidebar</td>
+      <td>
+        <span class="src">Tidwell 2020</span> Clear Entry Points: "every major section reachable from global nav"<br>
+        <span class="src">Tidwell 2020</span> Hub and Spoke navigation pattern<br>
+        <span class="src">Nielsen 1994</span> Heuristic 6: Recognition rather than recall
+      </td>
+      <td>Literature review (navigation patterns); Evaluation criteria (test: Coverage Calculator reachable in ≤2 clicks from homepage)</td>
+    </tr>
+    <tr>
+      <td>T-3</td>
+      <td>Add axe-core accessibility CI check</td>
+      <td>
+        <span class="src">WCAG 2.1</span> Level AA as stated target in TMA 01 scope<br>
+        <span class="src">BS EN 301 549</span> European standard for accessible ICT products
+      </td>
+      <td>Testing section; provides evidence for accessibility evaluation criterion in TMA 02 report</td>
+    </tr>
+    <tr>
+      <td>T-4</td>
+      <td>Defer Font Awesome / switch to Lucide</td>
+      <td>
+        <span class="src">Wroblewski 2011</span> Mobile First: performance is a UX feature, especially on mobile networks<br>
+        <span class="src">Lighthouse 2026</span> ~2,200 ms FCP saving identified
+      </td>
+      <td>Technical architecture section; Performance evaluation criterion (test: FCP &lt; 2 s on mobile throttled connection)</td>
+    </tr>
+  </tbody>
+</table>
+
+<!-- ======================================================
+     SECTION 5: MISSING REFERENCES FOR TMA02 REFERENCES LIST
+     ====================================================== -->
+<h2 id="references">New References Required for TMA 02</h2>
+
+<p>These sources are cited in the redesign decisions above but were <em>not</em> in the TMA 01 references list.
+Add to Section 8: References in TMA 02.</p>
+
+<ul>
+  <li>Tidwell, J. (2020) <em>Designing Interfaces: Patterns for Effective Interaction Design</em>. 3rd edn. Sebastopol: O'Reilly Media.</li>
+  <li>World Wide Web Consortium (2018) <em>Web Content Accessibility Guidelines (WCAG) 2.1</em>. Available at: https://www.w3.org/TR/WCAG21/ (Accessed: 17 March 2026).</li>
+  <li>axe-core (2024) <em>Accessibility testing engine</em>. Deque Systems. Available at: https://github.com/dequelabs/axe-core (Accessed: 17 March 2026).</li>
+  <li>Gibbs, G. (1988) — <em>already in TMA 01 references list</em> ✅</li>
+  <li>Nielsen, J. (1994) — <em>already in TMA 01 references list</em> ✅</li>
+  <li>Krug, S. (2014) — <em>already in TMA 01 references list</em> ✅</li>
+  <li>Wroblewski, L. (2011) — <em>already in TMA 01 references list</em> ✅</li>
+</ul>
+
+<hr style="margin: 2rem 0; border-color: #e5e7eb;">
+<p style="font-size: 0.8rem; color: var(--gray);">
+  Generated 17 March 2026 · Sami Bashraheel Y4347284 · TM470-26B ·
+  Before-state figures saved to <code>docs/audit/tma02-figures/</code> (11 PNG files) ·
+  Source documents: audit-report.html, ux-evaluation.html, tma01-feedback-analysis.md, redesign-decisions.html
+</p>
+
+</div>
+</body>
+</html>
