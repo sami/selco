@@ -1,8 +1,8 @@
 ---
-import SelcoHeader from '../components/selco/SelcoHeader.astro';
-import SelcoNav from '../components/selco/SelcoNav.astro';
-import SelcoFooter from '../components/selco/SelcoFooter.astro';
-import '../styles/global.css';
+import SelcoHeader from "../components/selco/SelcoHeader.astro";
+import SelcoNav from "../components/selco/SelcoNav.astro";
+import SelcoFooter from "../components/selco/SelcoFooter.astro";
+import "../styles/global.css";
 
 interface Props {
   title: string;
@@ -12,24 +12,33 @@ interface Props {
   pageTitle?: string;
 }
 
-const { title, description = '', showSidebar = false, breadcrumbs = [], pageTitle } = Astro.props;
+const {
+  title,
+  description = "",
+  showSidebar = false,
+  breadcrumbs = [],
+  pageTitle,
+} = Astro.props;
 const resolvedPageTitle = pageTitle === undefined ? title : pageTitle;
 const RAW_BASE = import.meta.env.BASE_URL;
-const base = RAW_BASE.endsWith('/') ? RAW_BASE : `${RAW_BASE}/`;
+const base = RAW_BASE.endsWith("/") ? RAW_BASE : `${RAW_BASE}/`;
 ---
 
 <!doctype html>
 <html lang="en-GB">
   <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>{title}</title>
-    {description && <meta name="description" content={description}>}
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    {description && <meta name="description" content={description} />}
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css"
+    />
     <style>
       :root {
-        --selco-yellow: #FFCD00;
-        --selco-blue: #004B8D;
+        --selco-yellow: #ffcd00;
+        --selco-blue: #004b8d;
         --selco-dark-blue: #00264d;
         --selco-nav-blue: #1b3a6e;
         --text-dark: #333333;
@@ -46,7 +55,7 @@ const base = RAW_BASE.endsWith('/') ? RAW_BASE : `${RAW_BASE}/`;
       }
 
       body {
-        font-family: 'Open Sans', Helvetica, Arial, sans-serif;
+        font-family: "Open Sans", Helvetica, Arial, sans-serif;
         color: var(--text-dark);
         background-color: var(--white);
         line-height: 1.5;
@@ -137,7 +146,7 @@ const base = RAW_BASE.endsWith('/') ? RAW_BASE : `${RAW_BASE}/`;
         box-sizing: border-box;
       }
       .page-title {
-        font-family: 'Arial Black', sans-serif;
+        font-family: "Arial Black", sans-serif;
         font-size: 2.2rem;
         color: var(--selco-dark-blue);
         text-transform: uppercase;
@@ -247,20 +256,20 @@ const base = RAW_BASE.endsWith('/') ? RAW_BASE : `${RAW_BASE}/`;
           gap: 0;
         }
       }
-      
+
       @media (max-width: 1024px) {
         .top-bar-inner {
-            display: none;
+          display: none;
         }
         .top-bar {
-            display: none;
+          display: none;
         }
         .breadcrumbs {
-            padding: 10px 15px 0; /* Align with content padding (15px) */
-            text-align: left;
-            width: 100%;
-            box-sizing: border-box;
-            margin: 0;
+          padding: 10px 15px 0; /* Align with content padding (15px) */
+          text-align: left;
+          width: 100%;
+          box-sizing: border-box;
+          margin: 0;
         }
       }
     </style>
@@ -290,34 +299,44 @@ const base = RAW_BASE.endsWith('/') ? RAW_BASE : `${RAW_BASE}/`;
     <!-- Info Strip -->
     <div class="info-strip">
       <div class="info-strip-inner">
-        <span class="info-item"><i class="fas fa-headset"></i> <strong>Dial & Deliver:</strong> Got a Trade Card? Call us on <span class="underline">03331 886 388</span> to place an order.</span>
-        <span class="info-item"><i class="fas fa-truck"></i> <strong>Click & Deliver:</strong> FREE Delivery on orders over £150 ex VAT.</span>
+        <span class="info-item"
+          ><i class="fas fa-headset"></i>
+          <strong>Dial & Deliver:</strong> Got a Trade Card? Call us on <span
+            style="text-decoration: underline;">03331 886 388</span
+          > to place an order.</span
+        >
+        <span class="info-item"
+          ><i class="fas fa-truck"></i>
+          <strong>Click & Deliver:</strong> FREE Delivery on orders over £150 ex VAT.</span
+        >
       </div>
     </div>
 
     <!-- Breadcrumbs -->
-    {breadcrumbs.length > 0 && (
-      <div class="breadcrumbs">
-        {breadcrumbs.map((crumb, index) => (
-          <>
-            {crumb.href ? (
-              <a href={crumb.href}>{crumb.label}</a>
-            ) : (
-              <span class="current">{crumb.label}</span>
-            )}
-            {index < breadcrumbs.length - 1 && <span>/</span>}
-          </>
-        ))}
-      </div>
-    )}
+    {
+      breadcrumbs.length > 0 && (
+        <div class="breadcrumbs">
+          {breadcrumbs.map((crumb, index) => (
+            <>
+              {crumb.href ? (
+                <a href={crumb.href}>{crumb.label}</a>
+              ) : (
+                <span class="current">{crumb.label}</span>
+              )}
+              {index < breadcrumbs.length - 1 && <span>/</span>}
+            </>
+          ))}
+        </div>
+      )
+    }
 
-    {resolvedPageTitle && (
-      <div class="page-title-container">
-        <h1 class="page-title">{resolvedPageTitle}</h1>
-      </div>
-    )}
-
-
+    {
+      resolvedPageTitle && (
+        <div class="page-title-container">
+          <h1 class="page-title">{resolvedPageTitle}</h1>
+        </div>
+      )
+    }
 
     <!-- Main Content -->
     <div class:list={["main-container", { "with-sidebar": showSidebar }]}>

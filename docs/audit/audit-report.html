@@ -1,0 +1,315 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>TMA 01 Prototype Audit Report</title>
+<style>
+  :root { --blue: #003087; --yellow: #FFCD00; --red: #dc2626; --green: #16a34a; --orange: #ea580c; --gray: #6b7280; }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { font-family: system-ui, -apple-system, sans-serif; color: #1f2937; line-height: 1.6; background: #f8fafc; }
+  .container { max-width: 1100px; margin: 0 auto; padding: 2rem 1.5rem; }
+  header { background: var(--blue); color: white; padding: 2rem 0; }
+  header h1 { font-size: 2rem; font-weight: 800; }
+  header .meta { color: rgba(255,255,255,0.7); margin-top: 0.5rem; font-size: 0.9rem; }
+  h2 { font-size: 1.5rem; font-weight: 700; color: var(--blue); margin: 2.5rem 0 1rem; padding-bottom: 0.5rem; border-bottom: 2px solid var(--yellow); }
+  h3 { font-size: 1.15rem; font-weight: 600; margin: 1.5rem 0 0.75rem; }
+  .scores { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 1rem; margin: 1.5rem 0; }
+  .score-card { background: white; border-radius: 12px; padding: 1.25rem; text-align: center; border: 1px solid #e5e7eb; }
+  .score-card .label { font-size: 0.85rem; color: var(--gray); font-weight: 500; margin-bottom: 0.5rem; }
+  .score-card .values { display: flex; justify-content: center; gap: 1.5rem; }
+  .score-card .value { font-size: 2rem; font-weight: 800; }
+  .score-card .page-label { font-size: 0.7rem; color: var(--gray); }
+  .green { color: var(--green); }
+  .orange { color: var(--orange); }
+  .red { color: var(--red); }
+  table { width: 100%; border-collapse: collapse; margin: 1rem 0; font-size: 0.9rem; }
+  th, td { padding: 0.6rem 0.75rem; text-align: left; border-bottom: 1px solid #e5e7eb; }
+  th { background: #f1f5f9; font-weight: 600; font-size: 0.8rem; text-transform: uppercase; color: var(--gray); }
+  .severity-critical { background: #fef2f2; color: var(--red); font-weight: 700; }
+  .severity-medium { background: #fff7ed; color: var(--orange); font-weight: 700; }
+  .severity-low { background: #f0fdf4; color: var(--green); font-weight: 700; }
+  .screenshot { margin: 1rem 0; border-radius: 8px; overflow: hidden; border: 1px solid #e5e7eb; background: white; }
+  .screenshot img { width: 100%; display: block; }
+  .screenshot figcaption { padding: 0.5rem 0.75rem; font-size: 0.8rem; color: var(--gray); background: #f8fafc; border-top: 1px solid #e5e7eb; }
+  .screenshot-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 1rem; margin: 1rem 0; }
+  .screenshot-grid .screenshot img { height: 250px; object-fit: cover; object-position: top; }
+  .bug-box { border-left: 4px solid var(--red); background: #fef2f2; padding: 1rem 1.25rem; border-radius: 0 8px 8px 0; margin: 1rem 0; }
+  .bug-box h4 { color: var(--red); margin-bottom: 0.5rem; }
+  .good-box { border-left: 4px solid var(--green); background: #f0fdf4; padding: 1rem 1.25rem; border-radius: 0 8px 8px 0; margin: 1rem 0; }
+  .good-box h4 { color: var(--green); margin-bottom: 0.5rem; }
+  .metric-row { display: flex; gap: 1rem; flex-wrap: wrap; margin: 0.5rem 0; }
+  .metric { background: white; border: 1px solid #e5e7eb; border-radius: 8px; padding: 0.5rem 1rem; font-size: 0.85rem; }
+  .metric strong { font-size: 1.1rem; }
+  code { background: #f1f5f9; padding: 0.15rem 0.4rem; border-radius: 4px; font-size: 0.85em; }
+  ul { padding-left: 1.5rem; margin: 0.5rem 0; }
+  li { margin: 0.3rem 0; }
+  .toc { background: white; border: 1px solid #e5e7eb; border-radius: 12px; padding: 1.5rem; margin: 1.5rem 0; }
+  .toc ol { padding-left: 1.25rem; }
+  .toc a { color: var(--blue); text-decoration: none; }
+  .toc a:hover { text-decoration: underline; }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="container">
+    <h1>TMA 01 Prototype Audit Report</h1>
+    <div class="meta">
+      Site: sami.github.io/selco &middot;
+      Date: 17 March 2026 &middot;
+      Viewports tested: Desktop (1280&times;900), Phone (375&times;812), Tablet (768&times;1024)
+    </div>
+  </div>
+</header>
+
+<div class="container">
+
+<nav class="toc">
+  <strong>Contents</strong>
+  <ol>
+    <li><a href="#lighthouse">Lighthouse Scores</a></li>
+    <li><a href="#bugs">Bugs Found</a></li>
+    <li><a href="#calculators">Calculator Flow Walkthroughs</a></li>
+    <li><a href="#responsive">Responsive Testing</a></li>
+    <li><a href="#a11y">Accessibility Issues</a></li>
+    <li><a href="#performance">Performance Opportunities</a></li>
+    <li><a href="#works-well">What Works Well</a></li>
+    <li><a href="#actions">Priority Actions</a></li>
+  </ol>
+</nav>
+
+<!-- ========== LIGHTHOUSE ========== -->
+<h2 id="lighthouse">1. Lighthouse Scores</h2>
+
+<div class="scores">
+  <div class="score-card">
+    <div class="label">Performance</div>
+    <div class="values">
+      <div><div class="value orange">85</div><div class="page-label">Homepage</div></div>
+      <div><div class="value orange">78</div><div class="page-label">Tiling</div></div>
+    </div>
+  </div>
+  <div class="score-card">
+    <div class="label">Accessibility</div>
+    <div class="values">
+      <div><div class="value orange">83</div><div class="page-label">Homepage</div></div>
+      <div><div class="value orange">85</div><div class="page-label">Tiling</div></div>
+    </div>
+  </div>
+  <div class="score-card">
+    <div class="label">Best Practices</div>
+    <div class="values">
+      <div><div class="value green">96</div><div class="page-label">Homepage</div></div>
+      <div><div class="value green">96</div><div class="page-label">Tiling</div></div>
+    </div>
+  </div>
+  <div class="score-card">
+    <div class="label">SEO</div>
+    <div class="values">
+      <div><div class="value green">100</div><div class="page-label">Homepage</div></div>
+      <div><div class="value green">100</div><div class="page-label">Tiling</div></div>
+    </div>
+  </div>
+</div>
+
+<h3>Key Performance Metrics</h3>
+<table>
+  <thead><tr><th>Metric</th><th>Homepage</th><th>Tiling Page</th></tr></thead>
+  <tbody>
+    <tr><td>First Contentful Paint</td><td>3.2s</td><td>3.3s</td></tr>
+    <tr><td>Largest Contentful Paint</td><td>3.2s</td><td>3.3s</td></tr>
+    <tr><td>Total Blocking Time</td><td>0ms</td><td>0ms</td></tr>
+    <tr><td>Cumulative Layout Shift</td><td>0.019</td><td>0</td></tr>
+    <tr><td>Speed Index</td><td>4.6s</td><td>8.4s</td></tr>
+  </tbody>
+</table>
+
+<!-- ========== BUGS ========== -->
+<h2 id="bugs">2. Bugs Found</h2>
+
+<div class="bug-box">
+  <h4>Bug #1 &mdash; Critical: Next Button Invisible</h4>
+  <p>The <code>bg-brand-blue</code> Tailwind utility is used ~40 times across the codebase but <strong>never defined</strong> in the <code>@theme</code> block of <code>global.css</code>. The theme defines <code>--color-primary: #003087</code> but no <code>--color-brand-blue</code>.</p>
+  <p style="margin-top:0.5rem"><strong>Impact:</strong> The wizard's Next button, Start Over button, progress bar, and unit toggle all have white text on a transparent background &mdash; effectively invisible to users.</p>
+  <p style="margin-top:0.5rem"><strong>Fix:</strong> Add <code>--color-brand-blue: #003087;</code> to the <code>@theme</code> block, or replace all <code>brand-blue</code> references with <code>primary</code>.</p>
+</div>
+
+<figure class="screenshot">
+  <img src="screenshots/11-bug-invisible-next-button.png" alt="Invisible Next button highlighted with red outline">
+  <figcaption>The Next button (red outline added for visibility) has white text on a transparent background. Users cannot see it.</figcaption>
+</figure>
+
+<div class="bug-box" style="border-left-color: var(--orange); background: #fff7ed;">
+  <h4 style="color: var(--orange);">Bug #2 &mdash; Medium: Pluralisation Error</h4>
+  <p>When a quantity equals 1, the display reads "1 bags", "1 bottles" instead of "1 bag", "1 bottle". Affects the Grout step, Primer step, and Summary table's Purchase qty column.</p>
+  <p style="margin-top:0.5rem"><strong>Fix:</strong> Add conditional pluralisation: <code>n === 1 ? 'bag' : 'bags'</code></p>
+</div>
+
+<!-- ========== CALCULATOR WALKTHROUGHS ========== -->
+<h2 id="calculators">3. Calculator Flow Walkthroughs</h2>
+
+<h3>3.1 Homepage Dashboard</h3>
+<figure class="screenshot">
+  <img src="screenshots/01-homepage-desktop.png" alt="Homepage desktop view">
+  <figcaption>Desktop homepage: header, navigation bar, info strip, sidebar, calculator grid with 3 active and 5 coming-soon cards.</figcaption>
+</figure>
+
+<h3>3.2 Tiling Project Calculator (10 Steps)</h3>
+<p>Tested with: 4.5m &times; 3.2m floor, Grid pattern, 300&times;600mm tiles, 3mm grout joints. All calculations verified correct.</p>
+
+<div class="screenshot-grid">
+  <figure class="screenshot">
+    <img src="screenshots/04-tiling-step1-filled.png" alt="Step 1 with values filled">
+    <figcaption>Step 1: Area &amp; tile setup (4.5m &times; 3.2m)</figcaption>
+  </figure>
+  <figure class="screenshot">
+    <img src="screenshots/05-tiling-step2-tiles.png" alt="Step 2 tiles calculation">
+    <figcaption>Step 2: Tiles &mdash; 79 base + 10% wastage = 87 tiles</figcaption>
+  </figure>
+  <figure class="screenshot">
+    <img src="screenshots/06-tiling-step4-grout.png" alt="Step 4 grout with pluralisation bug">
+    <figcaption>Step 4: Grout &mdash; note "1 bags" pluralisation bug</figcaption>
+  </figure>
+  <figure class="screenshot">
+    <img src="screenshots/08-tiling-summary-table.png" alt="Summary shopping list table">
+    <figcaption>Step 10: Summary table with all 9 materials</figcaption>
+  </figure>
+</div>
+
+<h3>3.3 Board Coverage Calculator</h3>
+<p>Tested with 25 m&sup2;, multiple board presets, and all wastage levels (None/5%/10%/15%). All calculations correct.</p>
+<figure class="screenshot">
+  <img src="screenshots/09-coverage-desktop.png" alt="Coverage calculator with results">
+  <figcaption>Coverage Calculator: 25 m&sup2; with 2400&times;1200mm plasterboard, 10% wastage = 10 boards</figcaption>
+</figure>
+
+<h3>3.4 Unit Converter</h3>
+<p>Tested all 4 families (Length, Area, Volume, Weight) including zero-value edge case. All conversions correct to 2 decimal places.</p>
+<figure class="screenshot">
+  <img src="screenshots/10-unit-converter-desktop.png" alt="Unit converter">
+  <figcaption>Unit Converter: clean two-panel layout with real-time conversion and Copy button</figcaption>
+</figure>
+
+<!-- ========== RESPONSIVE ========== -->
+<h2 id="responsive">4. Responsive Testing</h2>
+
+<h3>4.1 Phone (375&times;812)</h3>
+<div class="screenshot-grid">
+  <figure class="screenshot">
+    <img src="screenshots/12-homepage-mobile.png" alt="Homepage on mobile">
+    <figcaption>Mobile homepage: hamburger menu, collapsed sidebar as "In this section" dropdown, stacked cards</figcaption>
+  </figure>
+  <figure class="screenshot">
+    <img src="screenshots/14-tiling-mobile.png" alt="Tiling calculator on mobile">
+    <figcaption>Mobile tiling: form inputs stack vertically, good touch targets</figcaption>
+  </figure>
+  <figure class="screenshot">
+    <img src="screenshots/15-coverage-mobile.png" alt="Coverage calculator on mobile">
+    <figcaption>Mobile coverage: full-width layout, board presets stack correctly</figcaption>
+  </figure>
+</div>
+
+<div class="good-box">
+  <h4>Mobile: Mostly Good</h4>
+  <ul>
+    <li>Sidebar collapses to "In this section" dropdown</li>
+    <li>Calculator cards stack in single column</li>
+    <li>Form inputs stack vertically with adequate touch targets</li>
+    <li>Hamburger menu drawer opens/closes smoothly with overlay</li>
+  </ul>
+</div>
+
+<h3>4.2 Tablet (768&times;1024)</h3>
+<div class="screenshot-grid">
+  <figure class="screenshot">
+    <img src="screenshots/17-homepage-tablet.png" alt="Homepage on tablet">
+    <figcaption>Tablet homepage: cards in 2-column grid, sidebar collapsed</figcaption>
+  </figure>
+  <figure class="screenshot">
+    <img src="screenshots/16-tiling-tablet.png" alt="Tiling calculator on tablet">
+    <figcaption>Tablet tiling: form fields side-by-side, wizard card full-width</figcaption>
+  </figure>
+</div>
+
+<!-- ========== ACCESSIBILITY ========== -->
+<h2 id="a11y">5. Accessibility Issues</h2>
+
+<table>
+  <thead><tr><th>Issue</th><th>Elements</th><th>Severity</th></tr></thead>
+  <tbody>
+    <tr>
+      <td>Buttons without accessible name</td>
+      <td>Search button (<code>&lt;button disabled&gt;</code>) missing <code>aria-label</code></td>
+      <td class="severity-critical">Fail</td>
+    </tr>
+    <tr>
+      <td>Insufficient colour contrast</td>
+      <td>"Coming Soon" badge text, muted description text, heading text on cards</td>
+      <td class="severity-critical">Fail</td>
+    </tr>
+    <tr>
+      <td>Heading order skipped</td>
+      <td><code>&lt;h4&gt;</code> in DEMO ONLY footer banner (skips h3)</td>
+      <td class="severity-medium">Warning</td>
+    </tr>
+    <tr>
+      <td>Links without discernible name</td>
+      <td>5 icon-only links in footer (social/nav icons) missing <code>aria-label</code></td>
+      <td class="severity-critical">Fail</td>
+    </tr>
+  </tbody>
+</table>
+
+<!-- ========== PERFORMANCE ========== -->
+<h2 id="performance">6. Performance Opportunities</h2>
+
+<table>
+  <thead><tr><th>Opportunity</th><th>Est. Savings</th><th>Effort</th></tr></thead>
+  <tbody>
+    <tr><td>Remove render-blocking Font Awesome CDN CSS</td><td>~2,200ms FCP</td><td class="severity-medium">Medium</td></tr>
+    <tr><td>Reduce unused CSS (Font Awesome full bundle)</td><td>15 KiB</td><td class="severity-low">Low</td></tr>
+    <tr><td>Reduce unused JS (tiling page)</td><td>33 KiB</td><td class="severity-low">Low</td></tr>
+    <tr><td>Add <code>font-display: swap</code></td><td>50ms</td><td class="severity-low">Low</td></tr>
+    <tr><td>Add explicit <code>width</code>/<code>height</code> to images</td><td>CLS improvement</td><td class="severity-low">Low</td></tr>
+    <tr><td>Set longer cache lifetimes for static assets</td><td>12&ndash;74 KiB</td><td class="severity-low">Low</td></tr>
+  </tbody>
+</table>
+
+<!-- ========== WORKS WELL ========== -->
+<h2 id="works-well">7. What Works Well</h2>
+
+<div class="good-box">
+  <h4>Strengths</h4>
+  <ul>
+    <li>All 3 calculator flows complete end-to-end with <strong>correct maths</strong></li>
+    <li>Homepage dashboard with coming-soon states renders correctly</li>
+    <li>Mobile hamburger menu drawer works smoothly</li>
+    <li>Unit Converter handles all 4 families and edge cases (zero value)</li>
+    <li>Coverage Calculator preset switching and wastage toggles are responsive in real-time</li>
+    <li><strong>Zero application-level console errors</strong></li>
+    <li><strong>SEO: 100</strong> on both pages</li>
+    <li><strong>Best Practices: 96</strong> on both pages</li>
+    <li>TBT of 0ms &mdash; no long tasks blocking the main thread</li>
+    <li>CLS near zero &mdash; stable layout with no unexpected shifts</li>
+    <li>Clean separation of calculator logic (pure TS) from UI components</li>
+  </ul>
+</div>
+
+<!-- ========== ACTIONS ========== -->
+<h2 id="actions">8. Priority Actions</h2>
+
+<table>
+  <thead><tr><th>#</th><th>Action</th><th>Severity</th><th>Effort</th></tr></thead>
+  <tbody>
+    <tr><td>1</td><td>Fix <code>bg-brand-blue</code> CSS &mdash; add to <code>@theme</code> or replace with <code>bg-primary</code> (~40 usages)</td><td class="severity-critical">Critical</td><td>Low</td></tr>
+    <tr><td>2</td><td>Add pluralisation logic &mdash; conditional "bag"/"bags" when quantity is 1</td><td class="severity-medium">Medium</td><td>Low</td></tr>
+    <tr><td>3</td><td>Add <code>aria-label</code> to icon-only buttons and links</td><td class="severity-medium">Medium</td><td>Low</td></tr>
+    <tr><td>4</td><td>Improve colour contrast on muted text and coming-soon badges</td><td class="severity-medium">Medium</td><td>Low</td></tr>
+    <tr><td>5</td><td>Defer Font Awesome or replace with tree-shaken Lucide imports</td><td class="severity-low">Low</td><td>Medium</td></tr>
+  </tbody>
+</table>
+
+</div>
+</body>
+</html>

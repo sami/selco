@@ -1,0 +1,702 @@
+<!DOCTYPE html>
+<html lang="en-GB">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>UX &amp; Visual Design Evaluation — Selco Trade Calculator Prototype</title>
+<style>
+  :root {
+    --blue: #003087;
+    --yellow: #FFCD00;
+    --red: #dc2626;
+    --green: #16a34a;
+    --amber: #d97706;
+    --grey-50: #f9fafb;
+    --grey-100: #f3f4f6;
+    --grey-200: #e5e7eb;
+    --grey-700: #374151;
+    --grey-900: #111827;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: system-ui, -apple-system, sans-serif; color: var(--grey-900); line-height: 1.6; background: var(--grey-50); }
+  .container { max-width: 1200px; margin: 0 auto; padding: 2rem 1.5rem; }
+
+  /* Header */
+  .report-header { background: var(--blue); color: white; padding: 3rem 0; margin-bottom: 2rem; }
+  .report-header h1 { font-size: 2rem; margin-bottom: 0.5rem; }
+  .report-header .subtitle { font-size: 1.1rem; opacity: 0.85; }
+  .report-header .meta { margin-top: 1rem; font-size: 0.85rem; opacity: 0.7; }
+
+  /* Navigation */
+  .toc { background: white; border: 1px solid var(--grey-200); border-radius: 12px; padding: 1.5rem 2rem; margin-bottom: 2rem; }
+  .toc h2 { font-size: 1rem; text-transform: uppercase; letter-spacing: 0.05em; color: var(--grey-700); margin-bottom: 0.75rem; }
+  .toc ol { padding-left: 1.25rem; }
+  .toc li { margin-bottom: 0.35rem; }
+  .toc a { color: var(--blue); text-decoration: none; }
+  .toc a:hover { text-decoration: underline; }
+
+  /* Sections */
+  section { background: white; border: 1px solid var(--grey-200); border-radius: 12px; padding: 2rem; margin-bottom: 2rem; }
+  section h2 { font-size: 1.5rem; color: var(--blue); margin-bottom: 1rem; border-bottom: 2px solid var(--yellow); padding-bottom: 0.5rem; }
+  section h3 { font-size: 1.15rem; color: var(--grey-900); margin: 1.5rem 0 0.75rem; }
+  section h4 { font-size: 1rem; color: var(--grey-700); margin: 1rem 0 0.5rem; }
+
+  /* Tables */
+  table { width: 100%; border-collapse: collapse; font-size: 0.9rem; margin: 1rem 0; }
+  th, td { padding: 0.6rem 0.75rem; text-align: left; border-bottom: 1px solid var(--grey-200); }
+  th { background: var(--grey-100); font-weight: 600; color: var(--grey-700); font-size: 0.8rem; text-transform: uppercase; letter-spacing: 0.03em; }
+  tr:hover td { background: var(--grey-50); }
+
+  /* Status badges */
+  .pass { background: #dcfce7; color: #166534; padding: 2px 8px; border-radius: 4px; font-weight: 600; font-size: 0.8rem; }
+  .fail { background: #fef2f2; color: #991b1b; padding: 2px 8px; border-radius: 4px; font-weight: 600; font-size: 0.8rem; }
+  .partial { background: #fffbeb; color: #92400e; padding: 2px 8px; border-radius: 4px; font-weight: 600; font-size: 0.8rem; }
+  .missing { background: #fef2f2; color: #991b1b; padding: 2px 8px; border-radius: 4px; font-weight: 600; font-size: 0.8rem; }
+
+  /* Finding cards */
+  .finding { border-left: 4px solid var(--blue); padding: 1rem 1.25rem; margin: 1rem 0; background: var(--grey-50); border-radius: 0 8px 8px 0; }
+  .finding.critical { border-left-color: var(--red); }
+  .finding.warning { border-left-color: var(--amber); }
+  .finding.info { border-left-color: var(--blue); }
+  .finding-id { font-weight: 700; color: var(--blue); font-size: 0.85rem; text-transform: uppercase; }
+  .finding.critical .finding-id { color: var(--red); }
+  .finding.warning .finding-id { color: var(--amber); }
+  .finding p { margin: 0.4rem 0; }
+  .finding ul { margin: 0.4rem 0 0.4rem 1.5rem; }
+  .finding code { background: var(--grey-100); padding: 1px 5px; border-radius: 3px; font-size: 0.85em; }
+
+  /* Screenshot grids */
+  .screenshot-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 1rem; margin: 1rem 0; }
+  .screenshot-card { border: 1px solid var(--grey-200); border-radius: 8px; overflow: hidden; }
+  .screenshot-card img { width: 100%; height: auto; display: block; }
+  .screenshot-card .caption { padding: 0.5rem 0.75rem; font-size: 0.8rem; color: var(--grey-700); background: var(--grey-100); font-weight: 500; }
+
+  .screenshot-row { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1rem; margin: 1rem 0; }
+  .screenshot-row.two-col { grid-template-columns: repeat(2, 1fr); }
+
+  /* Wizard step gallery */
+  .wizard-gallery { display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 0.75rem; margin: 1rem 0; }
+  .wizard-gallery .screenshot-card { font-size: 0.75rem; }
+
+  /* Priority pills */
+  .priority { display: inline-block; padding: 2px 10px; border-radius: 12px; font-size: 0.75rem; font-weight: 700; margin-right: 0.5rem; }
+  .priority.p0 { background: #fef2f2; color: #991b1b; }
+  .priority.p1 { background: #fff7ed; color: #9a3412; }
+  .priority.p2 { background: #fffbeb; color: #92400e; }
+  .priority.p3 { background: #f0fdf4; color: #166534; }
+
+  /* Code blocks */
+  pre { background: var(--grey-900); color: #e5e7eb; padding: 1rem; border-radius: 8px; overflow-x: auto; font-size: 0.85rem; margin: 0.75rem 0; }
+
+  /* Responsive */
+  @media (max-width: 768px) {
+    .screenshot-row { grid-template-columns: 1fr; }
+    .wizard-gallery { grid-template-columns: repeat(2, 1fr); }
+    section { padding: 1.25rem; }
+  }
+
+  /* Print */
+  @media print {
+    .report-header { background: white; color: black; border-bottom: 3px solid var(--blue); }
+    section { break-inside: avoid; border: 1px solid #ccc; }
+    .screenshot-card img { max-height: 300px; object-fit: contain; }
+  }
+</style>
+</head>
+<body>
+
+<!-- ═══════════════════════════════════════════════════════════════ -->
+<!-- HEADER                                                        -->
+<!-- ═══════════════════════════════════════════════════════════════ -->
+<div class="report-header">
+  <div class="container">
+    <h1>UX &amp; Visual Design Evaluation</h1>
+    <div class="subtitle">Selco Trade Materials Calculator — TMA 01 Prototype</div>
+    <div class="meta">Generated 17 March 2026 &middot; 27 screenshots captured &middot; Site: <a href="https://sami.github.io/selco" style="color: var(--yellow);">sami.github.io/selco</a></div>
+  </div>
+</div>
+
+<div class="container">
+
+<!-- ═══════════════════════════════════════════════════════════════ -->
+<!-- TABLE OF CONTENTS                                             -->
+<!-- ═══════════════════════════════════════════════════════════════ -->
+<nav class="toc">
+  <h2>Contents</h2>
+  <ol>
+    <li><a href="#screenshots">Screenshot Baseline (Before / After Reference)</a></li>
+    <li><a href="#navigation">Navigation Pain Points</a></li>
+    <li><a href="#visual">Visual Inconsistencies — Spacing, Typography, Colour, Buttons</a></li>
+    <li><a href="#forms">Form Input Review</a></li>
+    <li><a href="#accessibility">Accessibility Basics</a></li>
+    <li><a href="#tidwell">Tidwell (2020) Pattern Analysis</a></li>
+    <li><a href="#recommendations">Priority Recommendations</a></li>
+  </ol>
+</nav>
+
+<!-- ═══════════════════════════════════════════════════════════════ -->
+<!-- 1. SCREENSHOTS                                                -->
+<!-- ═══════════════════════════════════════════════════════════════ -->
+<section id="screenshots">
+  <h2>1. Screenshot Baseline</h2>
+  <p>27 screenshots captured across every page and calculator step at desktop (1440&times;900), tablet (768&times;1024), and mobile (375&times;812) viewports. These serve as the <strong>&ldquo;before&rdquo;</strong> reference for future redesign comparison.</p>
+
+  <h3>Homepage &mdash; Responsive Comparison</h3>
+  <div class="screenshot-row">
+    <div class="screenshot-card">
+      <img src="ux-screenshots/01-homepage-desktop.png" alt="Homepage desktop 1440px" loading="lazy">
+      <div class="caption">Desktop (1440px)</div>
+    </div>
+    <div class="screenshot-card">
+      <img src="ux-screenshots/03-homepage-tablet.png" alt="Homepage tablet 768px" loading="lazy">
+      <div class="caption">Tablet (768px)</div>
+    </div>
+    <div class="screenshot-card">
+      <img src="ux-screenshots/02-homepage-mobile.png" alt="Homepage mobile 375px" loading="lazy">
+      <div class="caption">Mobile (375px)</div>
+    </div>
+  </div>
+
+  <h3>Tiling Wizard &mdash; All 10 Steps (Desktop)</h3>
+  <div class="wizard-gallery">
+    <div class="screenshot-card">
+      <img src="ux-screenshots/04-tiling-step1-setup.png" alt="Step 1: Setup" loading="lazy">
+      <div class="caption">Step 1: Setup</div>
+    </div>
+    <div class="screenshot-card">
+      <img src="ux-screenshots/05-tiling-step2-tiles.png" alt="Step 2: Tiles" loading="lazy">
+      <div class="caption">Step 2: Tiles</div>
+    </div>
+    <div class="screenshot-card">
+      <img src="ux-screenshots/06-tiling-step3-adhesive.png" alt="Step 3: Adhesive" loading="lazy">
+      <div class="caption">Step 3: Adhesive</div>
+    </div>
+    <div class="screenshot-card">
+      <img src="ux-screenshots/07-tiling-step4-grout.png" alt="Step 4: Grout" loading="lazy">
+      <div class="caption">Step 4: Grout</div>
+    </div>
+    <div class="screenshot-card">
+      <img src="ux-screenshots/08-tiling-step5-spacers.png" alt="Step 5: Spacers" loading="lazy">
+      <div class="caption">Step 5: Spacers</div>
+    </div>
+    <div class="screenshot-card">
+      <img src="ux-screenshots/09-tiling-step6-primer.png" alt="Step 6: Primer" loading="lazy">
+      <div class="caption">Step 6: Primer</div>
+    </div>
+    <div class="screenshot-card">
+      <img src="ux-screenshots/10-tiling-step7-backerboard.png" alt="Step 7: Backer Board" loading="lazy">
+      <div class="caption">Step 7: Backer Board</div>
+    </div>
+    <div class="screenshot-card">
+      <img src="ux-screenshots/11-tiling-step8-tanking.png" alt="Step 8: Tanking" loading="lazy">
+      <div class="caption">Step 8: Tanking</div>
+    </div>
+    <div class="screenshot-card">
+      <img src="ux-screenshots/12-tiling-step9-slc.png" alt="Step 9: SLC" loading="lazy">
+      <div class="caption">Step 9: SLC</div>
+    </div>
+    <div class="screenshot-card">
+      <img src="ux-screenshots/13-tiling-step10-summary.png" alt="Step 10: Summary" loading="lazy">
+      <div class="caption">Step 10: Summary</div>
+    </div>
+  </div>
+
+  <h3>Tiling Wizard &mdash; Mobile Comparison</h3>
+  <div class="screenshot-row two-col">
+    <div class="screenshot-card">
+      <img src="ux-screenshots/14-tiling-step1-mobile.png" alt="Tiling Step 1 mobile" loading="lazy">
+      <div class="caption">Step 1: Setup (Mobile)</div>
+    </div>
+    <div class="screenshot-card">
+      <img src="ux-screenshots/15-tiling-summary-mobile.png" alt="Tiling Summary mobile" loading="lazy">
+      <div class="caption">Step 10: Summary (Mobile)</div>
+    </div>
+  </div>
+
+  <h3>Coverage Calculator</h3>
+  <div class="screenshot-row">
+    <div class="screenshot-card">
+      <img src="ux-screenshots/16-coverage-empty.png" alt="Coverage empty state" loading="lazy">
+      <div class="caption">Empty State (Desktop)</div>
+    </div>
+    <div class="screenshot-card">
+      <img src="ux-screenshots/17-coverage-results.png" alt="Coverage with results" loading="lazy">
+      <div class="caption">With Results (Desktop)</div>
+    </div>
+    <div class="screenshot-card">
+      <img src="ux-screenshots/18-coverage-mobile.png" alt="Coverage mobile" loading="lazy">
+      <div class="caption">Mobile (375px)</div>
+    </div>
+  </div>
+
+  <h3>Unit Converter</h3>
+  <div class="screenshot-row">
+    <div class="screenshot-card">
+      <img src="ux-screenshots/19-converter-empty.png" alt="Converter empty state" loading="lazy">
+      <div class="caption">Empty State (Desktop)</div>
+    </div>
+    <div class="screenshot-card">
+      <img src="ux-screenshots/20-converter-results.png" alt="Converter with results" loading="lazy">
+      <div class="caption">With Results (Desktop)</div>
+    </div>
+    <div class="screenshot-card">
+      <img src="ux-screenshots/21-converter-mobile.png" alt="Converter mobile" loading="lazy">
+      <div class="caption">Mobile (375px)</div>
+    </div>
+  </div>
+
+  <h3>Navigation Components</h3>
+  <div class="screenshot-grid">
+    <div class="screenshot-card">
+      <img src="ux-screenshots/22-nav-header-desktop.png" alt="Desktop header navigation" loading="lazy">
+      <div class="caption">Header &mdash; Desktop</div>
+    </div>
+    <div class="screenshot-card">
+      <img src="ux-screenshots/23-nav-mobile-drawer.png" alt="Mobile navigation drawer" loading="lazy">
+      <div class="caption">Mobile Drawer (Open)</div>
+    </div>
+    <div class="screenshot-card">
+      <img src="ux-screenshots/24-nav-sidebar-desktop.png" alt="Sidebar desktop" loading="lazy">
+      <div class="caption">Sidebar &mdash; Desktop</div>
+    </div>
+    <div class="screenshot-card">
+      <img src="ux-screenshots/25-nav-sidebar-mobile.png" alt="Sidebar collapsed mobile" loading="lazy">
+      <div class="caption">Sidebar &mdash; Mobile (Collapsed)</div>
+    </div>
+  </div>
+
+  <h3>Annotated Bugs</h3>
+  <div class="screenshot-row two-col">
+    <div class="screenshot-card">
+      <img src="ux-screenshots/26-bug-invisible-button.png" alt="Invisible Next button bug" loading="lazy">
+      <div class="caption">Bug: Next button invisible (bg-brand-blue &rarr; transparent)</div>
+    </div>
+    <div class="screenshot-card">
+      <img src="ux-screenshots/27-bug-invisible-focus.png" alt="Invisible focus ring bug" loading="lazy">
+      <div class="caption">Bug: Focus ring invisible (--color-brand-blue undefined)</div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════════════════════════════════════════════════════════ -->
+<!-- 2. NAVIGATION PAIN POINTS                                     -->
+<!-- ═══════════════════════════════════════════════════════════════ -->
+<section id="navigation">
+  <h2>2. Navigation Pain Points</h2>
+  <p>How does a user move between calculators? The site uses a <strong>hub-and-spoke</strong> model (homepage &rarr; individual calculator), but several gaps make inter-calculator navigation difficult.</p>
+
+  <div class="finding critical">
+    <div class="finding-id">N-1 &middot; Coverage Calculator Missing from Main Nav</div>
+    <p>The header navigation shows: <strong>Home</strong>, <strong>Projects &rarr; Tiling</strong>, <strong>Calculators &rarr; Unit Converter</strong>. The Coverage Calculator is only reachable from the homepage card grid or the sidebar &mdash; users who navigate away from the homepage have no top-level route back to it.</p>
+    <p><strong>Impact:</strong> Users cannot discover or return to the Coverage Calculator from the top nav.</p>
+  </div>
+
+  <div class="finding critical">
+    <div class="finding-id">N-2 &middot; Wizard Offers No Random-Access to Steps</div>
+    <p>The 10-step Tiling Wizard only allows <strong>Next/Back</strong> navigation. The step indicator shows plain text &ldquo;Step 3 of 10&rdquo; but is not clickable. There is no visual progress bar.</p>
+    <p><strong>Tidwell pattern:</strong> <em>Sequence Map</em> (2020, ch. 3) recommends clickable progress indicators so users can review and edit earlier inputs without stepping backwards linearly.</p>
+    <p><strong>Impact:</strong> A user on Step 8 who wants to change their tile size on Step 1 must click Back 7 times.</p>
+  </div>
+
+  <div class="finding warning">
+    <div class="finding-id">N-3 &middot; Disabled Nav Items with No Explanation</div>
+    <p>The sidebar shows &ldquo;Masonry Calculator&rdquo; and &ldquo;Concrete &amp; Groundworks&rdquo; as disabled/greyed links with no tooltip, label, or &ldquo;Coming soon&rdquo; badge. They look broken rather than intentional. Meanwhile, homepage cards <em>do</em> show &ldquo;Coming soon&rdquo; labels &mdash; an inconsistency.</p>
+  </div>
+
+  <div class="finding warning">
+    <div class="finding-id">N-4 &middot; Breadcrumbs Not Semantic</div>
+    <p>Breadcrumbs in <code>SelcoLayout.astro</code> use <code>&lt;div&gt; + &lt;a&gt; + &lt;span&gt;</code> instead of the correct <code>&lt;nav aria-label=&quot;Breadcrumb&quot;&gt;&lt;ol&gt;</code> structure. Fails WCAG 2.1 and Tidwell&rsquo;s <em>Breadcrumbs</em> pattern (2020, ch. 3).</p>
+  </div>
+
+  <div class="finding warning">
+    <div class="finding-id">N-5 &middot; No &ldquo;Back to Calculators&rdquo; Escape Hatch</div>
+    <p>Once inside the Tiling Wizard, the only way back to the calculator index is the browser back button or the sidebar. No explicit <strong>&larr; Back to calculators</strong> link exists at the top of calculator pages.</p>
+    <p><strong>Tidwell pattern:</strong> <em>Escape Hatch</em> (2020, ch. 3) &mdash; always provide a clear way out of a flow.</p>
+  </div>
+
+  <div class="finding critical">
+    <div class="finding-id">N-6 &middot; Mobile Nav Drawer Has No Focus Trap</div>
+    <p><code>MobileMenu.tsx</code> opens a slide-in panel, but keyboard users can Tab past it into the page behind. No <code>Escape</code> key handler to close. Fails Tidwell&rsquo;s <em>Modal Panel</em> pattern (2020, ch. 3) and WCAG 2.1 focus management.</p>
+  </div>
+</section>
+
+<!-- ═══════════════════════════════════════════════════════════════ -->
+<!-- 3. VISUAL INCONSISTENCIES                                     -->
+<!-- ═══════════════════════════════════════════════════════════════ -->
+<section id="visual">
+  <h2>3. Visual Inconsistencies</h2>
+
+  <h3>Three Competing Design Token Systems</h3>
+  <p>The most significant visual design issue is that <strong>three separate colour/token systems</strong> coexist, one of which is entirely phantom (undefined):</p>
+
+  <table>
+    <thead>
+      <tr><th>System</th><th>File</th><th>Example Variables</th><th>Used By</th></tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><strong>Tailwind @theme</strong></td>
+        <td><code>global.css</code></td>
+        <td><code>--color-primary</code>, <code>--color-accent</code>, <code>--color-text-main</code></td>
+        <td>global.css utilities, TilingProjectWizard</td>
+      </tr>
+      <tr>
+        <td><strong>SelcoLayout inline</strong></td>
+        <td><code>SelcoLayout.astro &lt;style&gt;</code></td>
+        <td><code>--selco-yellow</code>, <code>--selco-blue</code>, <code>--text-dark</code></td>
+        <td>Header, nav, breadcrumbs, footer chrome</td>
+      </tr>
+      <tr style="background: #fef2f2;">
+        <td><strong>Phantom tokens</strong> <span class="fail">UNDEFINED</span></td>
+        <td>Referenced but <strong>never defined anywhere</strong></td>
+        <td><code>--color-brand-blue</code>, <code>--color-brand-yellow</code>, <code>--color-surface</code>, <code>--radius-input</code>, <code>--radius-card</code>, <code>--color-destructive</code> &hellip;(12 total)</td>
+        <td>CalculatorLayout.tsx &amp; all its consumers</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <div class="finding critical">
+    <div class="finding-id">Impact of Phantom Tokens</div>
+    <p>12 undefined CSS custom properties cause cascading visual failures:</p>
+    <ul>
+      <li>Invisible <strong>Calculate</strong> button (<code>bg-[--color-brand-yellow]</code> &rarr; transparent)</li>
+      <li>Invisible <strong>focus rings</strong> (<code>focus:ring-[--color-brand-blue]/30</code> &rarr; transparent)</li>
+      <li>Invisible <strong>error alerts</strong> (<code>bg-[--color-destructive]/10</code> &rarr; transparent)</li>
+      <li>No <strong>border radius</strong> on inputs/cards (<code>rounded-[--radius-input]</code> &rarr; 0)</li>
+      <li>Invisible <strong>primary results</strong> text (<code>text-[--color-brand-blue]</code> &rarr; transparent)</li>
+    </ul>
+  </div>
+
+  <h3>ST-1: Three Font Families</h3>
+  <table>
+    <thead><tr><th>Context</th><th>Font Stack</th><th>Source</th></tr></thead>
+    <tbody>
+      <tr><td>Global base</td><td><code>system-ui, -apple-system, BlinkMacSystemFont, &hellip;</code></td><td><code>@theme --font-sans</code></td></tr>
+      <tr><td>SelcoLayout body</td><td><code>"Open Sans", Helvetica, Arial</code></td><td>Inline <code>&lt;style&gt;</code></td></tr>
+      <tr><td>Page titles</td><td><code>"Arial Black", sans-serif</code></td><td><code>.page-title</code> class</td></tr>
+    </tbody>
+  </table>
+  <p><strong>Issue:</strong> Open Sans is declared but <em>never imported</em> (no <code>@import</code> or Google Fonts <code>&lt;link&gt;</code>), so it silently falls back to Helvetica/Arial. Three uncoordinated font stacks create inconsistent rendering.</p>
+
+  <h3>ST-2: Spacing Scale Not Normalised</h3>
+  <div class="finding info">
+    <div class="finding-id">Two Spacing Systems</div>
+    <ul>
+      <li><code>SelcoLayout</code> uses pixel values: <code>8px</code>, <code>10px</code>, <code>15px</code>, <code>20px</code>, <code>28px</code>, <code>30px</code>, <code>60px</code></li>
+      <li>Components use Tailwind scale: <code>gap-2</code> (8px), <code>gap-4</code> (16px), <code>gap-6</code> (24px), <code>gap-8</code> (32px)</li>
+    </ul>
+    <p>These two systems produce subtly different spacing rhythms when SelcoLayout chrome sits alongside Tailwind-powered calculator content.</p>
+  </div>
+
+  <h3>ST-3: Container Max-Widths</h3>
+  <table>
+    <thead><tr><th>Context</th><th>Max Width</th><th>Match?</th></tr></thead>
+    <tbody>
+      <tr><td>SelcoLayout</td><td><code>1280px</code> (hardcoded)</td><td>&mdash;</td></tr>
+      <tr><td><code>.page-section</code> (global.css)</td><td><code>max-w-7xl</code> = 1280px</td><td><span class="pass">Match</span></td></tr>
+      <tr><td>BaseLayout</td><td><code>max-w-5xl</code> = 1024px</td><td><span class="fail">Narrower</span></td></tr>
+    </tbody>
+  </table>
+
+  <h3>ST-4: Border-Radius Inconsistency</h3>
+  <div class="finding warning">
+    <div class="finding-id">4+ Radius Values in Use</div>
+    <ul>
+      <li><code>global.css</code>: <code>rounded-lg</code> (inputs), <code>rounded-xl</code> (cards)</li>
+      <li><code>CalculatorLayout</code>: <code>rounded-[--radius-input]</code>, <code>rounded-[--radius-card]</code>, <code>rounded-[--radius-button]</code> &mdash; all resolve to <strong>0</strong> (undefined)</li>
+      <li><code>TilingProjectWizard</code>: <code>rounded-lg</code> (buttons), <code>rounded-2xl</code> (cards)</li>
+    </ul>
+  </div>
+
+  <h3>B-1: 7+ Distinct Button Patterns</h3>
+  <table>
+    <thead><tr><th>Variant</th><th>Classes</th><th>Location</th></tr></thead>
+    <tbody>
+      <tr><td><code>.btn-primary</code></td><td>Blue bg, white text, <code>px-6 py-3</code></td><td><code>global.css</code></td></tr>
+      <tr><td><code>.btn-secondary</code></td><td>White bg, blue border, <code>px-6 py-3</code></td><td><code>global.css</code></td></tr>
+      <tr><td>Calculate button</td><td><code>bg-[--color-brand-yellow]</code> (transparent!), <code>px-8 h-12</code></td><td><code>CalculatorLayout.tsx</code></td></tr>
+      <tr><td>Next / Start Over</td><td><code>bg-brand-blue text-white</code>, <code>px-4 py-2</code></td><td><code>TilingProjectWizard.tsx</code></td></tr>
+      <tr><td>Back button</td><td><code>border border-border bg-surface</code>, <code>px-4 py-2</code></td><td><code>TilingProjectWizard.tsx</code></td></tr>
+      <tr><td>Toggle / Preset</td><td>Conditional <code>bg-primary/5</code>, <code>px-4 py-2</code></td><td><code>CoverageCalculator.tsx</code></td></tr>
+      <tr><td>Reset link</td><td>Text-only, no button chrome</td><td><code>CalculatorLayout.tsx</code></td></tr>
+      <tr><td>Copy Result</td><td><code>.btn-secondary</code></td><td><code>UnitConverter.tsx</code></td></tr>
+    </tbody>
+  </table>
+  <p><strong>Issue:</strong> No single source of truth. Size, padding, font-weight, and colour vary per component with no documented design system.</p>
+
+  <h3>B-2: Invisible Next Button (Root Cause Confirmed)</h3>
+  <div class="finding critical">
+    <div class="finding-id">Critical &middot; Invisible Buttons</div>
+    <p><code>TilingProjectWizard.tsx</code> line 1012 uses <code>bg-brand-blue text-white</code>. Tailwind 4 maps <code>bg-brand-blue</code> &rarr; <code>var(--color-brand-blue)</code> &rarr; <strong>undefined</strong> &rarr; <code>rgba(0,0,0,0)</code>. White text on transparent background = invisible button.</p>
+    <p>The same issue affects the <strong>Calculate</strong> button in <code>CalculatorLayout.tsx</code> which uses <code>bg-[--color-brand-yellow]</code>.</p>
+  </div>
+</section>
+
+<!-- ═══════════════════════════════════════════════════════════════ -->
+<!-- 4. FORM INPUT REVIEW                                          -->
+<!-- ═══════════════════════════════════════════════════════════════ -->
+<section id="forms">
+  <h2>4. Form Input Review</h2>
+
+  <div class="finding critical">
+    <div class="finding-id">F-1 &middot; ProjectListsCalculator Has No Labels</div>
+    <p><code>ProjectListsCalculator.tsx</code> lines 74&ndash;94: all 3 inputs (item name, quantity, unit price) use <strong>placeholder text only</strong> &mdash; no <code>&lt;label&gt;</code> elements. Screen reader users cannot identify these fields.</p>
+    <p>All other calculators use <code>FormInput</code> with proper <code>&lt;label htmlFor&gt;</code> associations &mdash; this component is the sole outlier.</p>
+  </div>
+
+  <div class="finding critical">
+    <div class="finding-id">F-2 &middot; Error States Inconsistent</div>
+    <table>
+      <thead><tr><th>Component</th><th>Error Handling</th><th>Quality</th></tr></thead>
+      <tbody>
+        <tr><td><code>CalculatorLayout.tsx</code></td><td><code>ErrorAlert</code> component (but lacks <code>role="alert"</code>)</td><td><span class="partial">Partial</span></td></tr>
+        <tr><td><code>GroutCalculator.tsx</code></td><td>Inline <code>validateInputs()</code> with <code>setError()</code></td><td><span class="pass">Good</span></td></tr>
+        <tr><td><code>TilingProjectWizard.tsx</code></td><td><code>window.alert()</code> for &ldquo;Please enter valid dimensions&rdquo;</td><td><span class="fail">Bad</span></td></tr>
+        <tr><td><code>CoverageCalculator.tsx</code></td><td>No validation at all</td><td><span class="fail">None</span></td></tr>
+        <tr><td><code>UnitConverter.tsx</code></td><td>No validation at all</td><td><span class="fail">None</span></td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="finding info">
+    <div class="finding-id">F-3 &middot; Input Types Appropriate</div>
+    <p>All numeric fields use <code>type="number"</code> with <code>min</code>, <code>max</code>, <code>step</code> attributes. Placeholder format is consistent (&ldquo;e.g. 12.5&rdquo; pattern). This is well done.</p>
+  </div>
+
+  <div class="finding warning">
+    <div class="finding-id">F-4 &middot; No Inline Validation</div>
+    <p>Errors only appear on Calculate button click, not on field blur. Tidwell&rsquo;s <em>Same-Page Error Messages</em> pattern (2020, ch. 10) recommends inline feedback next to the problem field, not a banner at the top of the form.</p>
+  </div>
+
+  <div class="finding warning">
+    <div class="finding-id">F-5 &middot; No Field-Level Error Association</div>
+    <ul>
+      <li>No <code>aria-describedby</code> linking error messages to their input fields</li>
+      <li>No <code>aria-invalid</code> attribute set on fields in error state</li>
+      <li>Screen reader users cannot determine which field caused an error</li>
+    </ul>
+  </div>
+
+  <div class="finding critical">
+    <div class="finding-id">F-6 &middot; Focus Ring Invisible in CalculatorLayout</div>
+    <p><code>FormInput</code> uses <code>focus:ring-2 focus:ring-[--color-brand-blue]/30</code> &mdash; resolves to transparent because <code>--color-brand-blue</code> is undefined. The global <code>.focus-ring</code> utility (<code>ring-2 ring-primary/50</code>) works correctly but <code>CalculatorLayout</code> doesn&rsquo;t use it.</p>
+  </div>
+
+  <div class="finding warning">
+    <div class="finding-id">F-7 &middot; Wizard Steps Lack Validation</div>
+    <p>Users can click Next on empty steps in the Tiling Wizard without entering any data. No required-field enforcement between wizard steps.</p>
+  </div>
+</section>
+
+<!-- ═══════════════════════════════════════════════════════════════ -->
+<!-- 5. ACCESSIBILITY                                              -->
+<!-- ═══════════════════════════════════════════════════════════════ -->
+<section id="accessibility">
+  <h2>5. Accessibility Basics</h2>
+
+  <h3>A-1: Colour Contrast</h3>
+  <table>
+    <thead><tr><th>Combination</th><th>Ratio</th><th>WCAG AA (4.5:1)</th></tr></thead>
+    <tbody>
+      <tr><td>Yellow <code>#FFCD00</code> on blue <code>#004B8D</code></td><td>~2.5:1</td><td><span class="fail">Fail</span></td></tr>
+      <tr><td>White <code>#fff</code> on blue <code>#003087</code></td><td>~8.6:1</td><td><span class="pass">Pass</span></td></tr>
+      <tr><td>Muted <code>#6b7280</code> on white <code>#fff</code></td><td>~5.5:1</td><td><span class="pass">Pass</span></td></tr>
+      <tr><td>Primary <code>#003087</code> on white <code>#fff</code></td><td>~8.6:1</td><td><span class="pass">Pass</span></td></tr>
+    </tbody>
+  </table>
+
+  <div class="finding critical">
+    <div class="finding-id">A-2 &middot; No Skip Link in SelcoLayout</div>
+    <p><code>BaseLayout.astro</code> has a &ldquo;Skip to content&rdquo; link, but <code>SelcoLayout.astro</code> &mdash; which <strong>all calculator pages use</strong> &mdash; has none. Keyboard users must tab through the entire header, nav, and sidebar before reaching page content.</p>
+  </div>
+
+  <div class="finding warning">
+    <div class="finding-id">A-3 &middot; Heading Hierarchy Violations</div>
+    <ul>
+      <li><code>SelcoLayout</code> renders <code>&lt;h1&gt;</code> via <code>.page-title</code>, then calculator components render their own <code>&lt;h1&gt;</code> &rarr; <strong>duplicate h1</strong> on page</li>
+      <li><code>TilingProjectWizard.tsx</code> jumps from no <code>&lt;h2&gt;</code> directly to <code>&lt;h3&gt;</code> (lines 972, 983) &mdash; <strong>skipped heading level</strong></li>
+      <li><code>CalculatorLayout</code> renders its own <code>&lt;h1&gt;</code> (line 209) &mdash; conflicts with SelcoLayout&rsquo;s</li>
+    </ul>
+  </div>
+
+  <div class="finding warning">
+    <div class="finding-id">A-4 &middot; ARIA Missing on Interactive Widgets</div>
+    <ul>
+      <li>Preset selection buttons (<code>CoverageCalculator</code>) lack <code>aria-pressed</code></li>
+      <li>Unit toggle buttons (<code>TilingProjectWizard</code>) lack <code>aria-pressed</code> or <code>role="radiogroup"</code></li>
+      <li><code>ErrorAlert</code> component lacks <code>role="alert"</code></li>
+      <li>Step indicator has no <code>aria-live</code> region &mdash; step changes not announced</li>
+    </ul>
+  </div>
+
+  <div class="finding critical">
+    <div class="finding-id">A-5 &middot; Mobile Menu Not Accessible</div>
+    <ul>
+      <li>No focus trap &mdash; Tab key escapes the menu into the page behind</li>
+      <li>No <code>Escape</code> key listener to close the drawer</li>
+      <li>No <code>aria-modal="true"</code> on the panel</li>
+    </ul>
+  </div>
+
+  <div class="finding info">
+    <div class="finding-id">A-6 &middot; Good Patterns Already in Use</div>
+    <ul>
+      <li>Form <code>&lt;fieldset&gt;</code>/<code>&lt;legend&gt;</code> groupings provide good screen reader context</li>
+      <li><code>role="radiogroup"</code> used correctly in AdhesiveCalculator and TilingWizard</li>
+      <li><code>role="tablist"</code> with <code>aria-selected</code> used correctly in ConversionsCalculator</li>
+    </ul>
+  </div>
+
+  <div class="finding warning">
+    <div class="finding-id">A-7 &middot; Touch Target Size</div>
+    <p>Most buttons meet the 44&times;44px minimum. However, toggle/preset buttons at <code>px-4 py-2</code> produce &asymp;32px height &mdash; below iOS Human Interface Guidelines minimum.</p>
+  </div>
+</section>
+
+<!-- ═══════════════════════════════════════════════════════════════ -->
+<!-- 6. TIDWELL (2020) PATTERN ANALYSIS                            -->
+<!-- ═══════════════════════════════════════════════════════════════ -->
+<section id="tidwell">
+  <h2>6. Tidwell (2020) Pattern Analysis</h2>
+  <p>Evaluated against Jennifer Tidwell&rsquo;s <em>Designing Interfaces</em> (3rd edition, 2020). Patterns assessed across four categories with evidence from the live prototype.</p>
+
+  <h3>Getting Around (Navigation)</h3>
+  <table>
+    <thead><tr><th>Pattern</th><th>Status</th><th>Evidence</th></tr></thead>
+    <tbody>
+      <tr><td>Clear Entry Points</td><td><span class="pass">Present</span></td><td>Homepage grid of 8 calculator cards with icons, titles, and descriptions</td></tr>
+      <tr><td>Hub and Spoke</td><td><span class="pass">Present</span></td><td>Homepage hub &rarr; each calculator is a spoke</td></tr>
+      <tr><td>Pyramid</td><td><span class="partial">Partial</span></td><td>2-level hierarchy (home &rarr; calculator) but no deeper nesting</td></tr>
+      <tr><td>Sequence Map</td><td><span class="missing">Missing</span></td><td>10-step wizard shows &ldquo;Step N of 10&rdquo; text only &mdash; no clickable progress bar</td></tr>
+      <tr><td>Breadcrumbs</td><td><span class="partial">Partial</span></td><td>Visually present but non-semantic (<code>&lt;div&gt;</code> instead of <code>&lt;nav&gt;&lt;ol&gt;</code>)</td></tr>
+      <tr><td>Modal Panel</td><td><span class="missing">Missing</span></td><td>Mobile menu lacks focus trap and Escape key handling</td></tr>
+      <tr><td>Escape Hatch</td><td><span class="missing">Missing</span></td><td>No &ldquo;back to calculators&rdquo; link within calculator pages</td></tr>
+    </tbody>
+  </table>
+
+  <h3>Organising the Page</h3>
+  <table>
+    <thead><tr><th>Pattern</th><th>Status</th><th>Evidence</th></tr></thead>
+    <tbody>
+      <tr><td>Visual Framework</td><td><span class="partial">Partial</span></td><td>Consistent header/footer chrome, but 3 competing token systems break internal visual unity</td></tr>
+      <tr><td>Center Stage</td><td><span class="pass">Present</span></td><td>Calculator form is primary content; results panel is secondary</td></tr>
+      <tr><td>Grid of Equals</td><td><span class="pass">Present</span></td><td>Homepage uses 3-column responsive card grid</td></tr>
+      <tr><td>Titled Sections</td><td><span class="pass">Present</span></td><td><code>&lt;fieldset&gt;&lt;legend&gt;</code> groups form sections well</td></tr>
+      <tr><td>Module Tabs</td><td><span class="pass">Present</span></td><td>ConversionsCalculator uses proper ARIA tab pattern</td></tr>
+      <tr><td>Collapsible Panels</td><td><span class="partial">Partial</span></td><td>Sidebar collapses on mobile; wizard optional steps should also collapse</td></tr>
+      <tr><td>Responsive Disclosure</td><td><span class="missing">Missing</span></td><td>No progressive disclosure &mdash; all 10 wizard steps forced linear even when optional</td></tr>
+    </tbody>
+  </table>
+
+  <h3>Getting Input from Users</h3>
+  <table>
+    <thead><tr><th>Pattern</th><th>Status</th><th>Evidence</th></tr></thead>
+    <tbody>
+      <tr><td>Forgiving Format</td><td><span class="missing">Missing</span></td><td>No unit parsing (typing &ldquo;4.5m&rdquo; rejected), no comma tolerance</td></tr>
+      <tr><td>Structured Format</td><td><span class="pass">Present</span></td><td>Separate fields for length/width, preset dropdowns</td></tr>
+      <tr><td>Fill-in-the-Blanks</td><td><span class="pass">Present</span></td><td>Form inputs with labels in natural reading order</td></tr>
+      <tr><td>Input Hints</td><td><span class="partial">Partial</span></td><td>Placeholders (&ldquo;e.g. 12.5&rdquo;) present but no persistent helper text below fields</td></tr>
+      <tr><td>Good Defaults</td><td><span class="partial">Partial</span></td><td>Some presets (300&times;600 tile) but wastage defaults to 0% not a sensible 10%</td></tr>
+      <tr><td>Autocompletion</td><td><span class="missing">Missing</span></td><td>No autocomplete on any input &mdash; tile sizes and material names would benefit</td></tr>
+      <tr><td>Dropdown Chooser</td><td><span class="pass">Present</span></td><td>Tile presets, unit selectors, material type selectors</td></tr>
+      <tr><td>Same-Page Error Messages</td><td><span class="missing">Missing</span></td><td>Errors show as banner at form top, not inline next to the problem field</td></tr>
+      <tr><td>Input Feedback</td><td><span class="partial">Partial</span></td><td>Results panel updates on submit, but no real-time feedback as user types</td></tr>
+    </tbody>
+  </table>
+
+  <h3>Showing Complex Data</h3>
+  <table>
+    <thead><tr><th>Pattern</th><th>Status</th><th>Evidence</th></tr></thead>
+    <tbody>
+      <tr><td>Overview Plus Detail</td><td><span class="missing">Missing</span></td><td>Wizard summary shows flat table &mdash; no expandable breakdown per material</td></tr>
+      <tr><td>Dashboard</td><td><span class="partial">Partial</span></td><td>Homepage is a dashboard of calculators but shows no data or status</td></tr>
+      <tr><td>Datatips</td><td><span class="missing">Missing</span></td><td>No tooltips anywhere &mdash; abbreviations, coverage rates, wastage % unexplained</td></tr>
+      <tr><td>Data Spotlight</td><td><span class="partial">Partial</span></td><td>Primary result gets blue highlight, but invisible due to phantom CSS token</td></tr>
+    </tbody>
+  </table>
+
+  <h3>Making It Look Good</h3>
+  <table>
+    <thead><tr><th>Pattern</th><th>Status</th><th>Evidence</th></tr></thead>
+    <tbody>
+      <tr><td>Consistent Visual Language</td><td><span class="fail">Broken</span></td><td>3 token systems, 3 font families, 7+ button variants</td></tr>
+      <tr><td>Colour Coding</td><td><span class="partial">Partial</span></td><td>Blue = primary, yellow = CTA &mdash; but inconsistently applied across components</td></tr>
+      <tr><td>Typography Hierarchy</td><td><span class="partial">Partial</span></td><td><code>global.css</code> defines clean h1&ndash;h3 scale but SelcoLayout overrides with inline 2.2rem</td></tr>
+      <tr><td>White Space</td><td><span class="partial">Partial</span></td><td>Good within components; spacing rhythm breaks between layout chrome and content</td></tr>
+    </tbody>
+  </table>
+
+  <h3>Pattern Summary</h3>
+  <table>
+    <thead><tr><th></th><th>Count</th><th>Patterns</th></tr></thead>
+    <tbody>
+      <tr><td><span class="pass">Present</span></td><td>9</td><td>Clear Entry Points, Hub &amp; Spoke, Center Stage, Grid of Equals, Titled Sections, Module Tabs, Structured Format, Fill-in-the-Blanks, Dropdown Chooser</td></tr>
+      <tr><td><span class="partial">Partial</span></td><td>12</td><td>Pyramid, Breadcrumbs, Visual Framework, Collapsible Panels, Input Hints, Good Defaults, Input Feedback, Dashboard, Data Spotlight, Colour Coding, Typography, White Space</td></tr>
+      <tr><td><span class="missing">Missing</span></td><td>10</td><td>Sequence Map, Modal Panel, Escape Hatch, Responsive Disclosure, Forgiving Format, Autocompletion, Same-Page Error Messages, Overview Plus Detail, Datatips, Consistent Visual Language</td></tr>
+    </tbody>
+  </table>
+</section>
+
+<!-- ═══════════════════════════════════════════════════════════════ -->
+<!-- 7. PRIORITY RECOMMENDATIONS                                   -->
+<!-- ═══════════════════════════════════════════════════════════════ -->
+<section id="recommendations">
+  <h2>7. Priority Recommendations</h2>
+
+  <h3><span class="priority p0">P0</span> Broken &mdash; Must Fix</h3>
+  <table>
+    <thead><tr><th>#</th><th>Action</th><th>Ref</th></tr></thead>
+    <tbody>
+      <tr><td>1</td><td>Define the 12 phantom CSS tokens in <code>global.css @theme</code> so CalculatorLayout buttons, focus rings, and error states become visible</td><td>B-2, F-6</td></tr>
+      <tr><td>2</td><td>Fix Next button &mdash; add <code>--color-brand-blue: #003087</code> to <code>@theme</code> or change class to <code>bg-primary</code></td><td>B-2</td></tr>
+    </tbody>
+  </table>
+
+  <h3><span class="priority p1">P1</span> Accessibility Blockers</h3>
+  <table>
+    <thead><tr><th>#</th><th>Action</th><th>Ref</th></tr></thead>
+    <tbody>
+      <tr><td>3</td><td>Add <code>role="alert"</code> to ErrorAlert component</td><td>F-2, A-4</td></tr>
+      <tr><td>4</td><td>Add skip link to <code>SelcoLayout.astro</code></td><td>A-2</td></tr>
+      <tr><td>5</td><td>Add focus trap + Escape handler to mobile menu</td><td>N-6, A-5</td></tr>
+      <tr><td>6</td><td>Fix heading hierarchy (remove duplicate h1, fix h3 skip)</td><td>A-3</td></tr>
+      <tr><td>7</td><td>Add <code>aria-pressed</code> to toggle/preset buttons</td><td>A-4</td></tr>
+      <tr><td>8</td><td>Fix yellow-on-blue contrast (darken text or lighten background)</td><td>A-1</td></tr>
+    </tbody>
+  </table>
+
+  <h3><span class="priority p2">P2</span> UX Improvements</h3>
+  <table>
+    <thead><tr><th>#</th><th>Action</th><th>Tidwell Pattern</th></tr></thead>
+    <tbody>
+      <tr><td>9</td><td>Implement clickable progress bar for wizard steps</td><td>Sequence Map</td></tr>
+      <tr><td>10</td><td>Add Coverage Calculator to main nav</td><td>Clear Entry Points</td></tr>
+      <tr><td>11</td><td>Add &ldquo;&larr; Back to calculators&rdquo; link at top of calculator pages</td><td>Escape Hatch</td></tr>
+      <tr><td>12</td><td>Add inline field-level validation with <code>aria-describedby</code> and <code>aria-invalid</code></td><td>Same-Page Error Messages</td></tr>
+      <tr><td>13</td><td>Add &ldquo;Coming soon&rdquo; badge to disabled sidebar links</td><td>&mdash;</td></tr>
+      <tr><td>14</td><td>Replace <code>window.alert()</code> with inline error in TilingProjectWizard</td><td>Same-Page Error Messages</td></tr>
+    </tbody>
+  </table>
+
+  <h3><span class="priority p3">P3</span> Design System Consolidation</h3>
+  <table>
+    <thead><tr><th>#</th><th>Action</th><th>Tidwell Pattern</th></tr></thead>
+    <tbody>
+      <tr><td>15</td><td>Unify to single token system &mdash; migrate SelcoLayout inline CSS to Tailwind <code>@theme</code></td><td>Consistent Visual Language</td></tr>
+      <tr><td>16</td><td>Choose one font stack (system-ui or import Open Sans)</td><td>Typography Hierarchy</td></tr>
+      <tr><td>17</td><td>Define max 3 button variants (primary, secondary, ghost) with consistent sizing</td><td>Consistent Visual Language</td></tr>
+      <tr><td>18</td><td>Standardise border-radius to 2 values: <code>rounded-lg</code> and <code>rounded-xl</code></td><td>Visual Framework</td></tr>
+      <tr><td>19</td><td>Add persistent helper text below form inputs</td><td>Input Hints</td></tr>
+      <tr><td>20</td><td>Add tooltips for technical terms (coverage rates, wastage percentages)</td><td>Datatips</td></tr>
+    </tbody>
+  </table>
+</section>
+
+</div><!-- /.container -->
+
+<footer style="text-align:center; padding:2rem; font-size:0.8rem; color:var(--grey-700); border-top:1px solid var(--grey-200); margin-top:1rem;">
+  UX &amp; Visual Design Evaluation &middot; Generated 17 March 2026 &middot; Selco Trade Materials Calculator &middot; TM470 TMA 02
+</footer>
+
+</body>
+</html>
