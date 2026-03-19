@@ -1,0 +1,92 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 200">
+  <!-- Background -->
+  <rect width="1200" height="200" fill="#04204b"/>
+
+  <!-- Top-right corner geometric pattern: dot grid in #253081 -->
+  <g fill="#253081">
+    <circle cx="870" cy="15" r="2"/><circle cx="890" cy="15" r="2"/><circle cx="910" cy="15" r="2"/><circle cx="930" cy="15" r="2"/><circle cx="950" cy="15" r="2"/><circle cx="970" cy="15" r="2"/><circle cx="990" cy="15" r="2"/><circle cx="1010" cy="15" r="2"/><circle cx="1030" cy="15" r="2"/><circle cx="1050" cy="15" r="2"/><circle cx="1070" cy="15" r="2"/><circle cx="1090" cy="15" r="2"/><circle cx="1110" cy="15" r="2"/><circle cx="1130" cy="15" r="2"/><circle cx="1150" cy="15" r="2"/><circle cx="1170" cy="15" r="2"/>
+    <circle cx="870" cy="35" r="2"/><circle cx="890" cy="35" r="2"/><circle cx="910" cy="35" r="2"/><circle cx="930" cy="35" r="2"/><circle cx="950" cy="35" r="2"/><circle cx="970" cy="35" r="2"/><circle cx="990" cy="35" r="2"/><circle cx="1010" cy="35" r="2"/><circle cx="1030" cy="35" r="2"/><circle cx="1050" cy="35" r="2"/><circle cx="1070" cy="35" r="2"/><circle cx="1090" cy="35" r="2"/><circle cx="1110" cy="35" r="2"/><circle cx="1130" cy="35" r="2"/><circle cx="1150" cy="35" r="2"/><circle cx="1170" cy="35" r="2"/>
+    <circle cx="870" cy="55" r="2"/><circle cx="890" cy="55" r="2"/><circle cx="910" cy="55" r="2"/><circle cx="930" cy="55" r="2"/><circle cx="950" cy="55" r="2"/><circle cx="970" cy="55" r="2"/><circle cx="990" cy="55" r="2"/><circle cx="1010" cy="55" r="2"/><circle cx="1030" cy="55" r="2"/><circle cx="1050" cy="55" r="2"/><circle cx="1070" cy="55" r="2"/><circle cx="1090" cy="55" r="2"/><circle cx="1110" cy="55" r="2"/><circle cx="1130" cy="55" r="2"/><circle cx="1150" cy="55" r="2"/><circle cx="1170" cy="55" r="2"/>
+  </g>
+
+  <!-- Diagonal divider -->
+  <polygon points="310,0 370,0 340,200 280,200" fill="#253081"/>
+
+  <!-- MOTIF ZONE: Ruler with measurement markings -->
+  <!-- Ruler body: 300px wide x 36px tall, y=30 -->
+  <rect x="20" y="30" width="300" height="36" fill="#ffffff" rx="3"/>
+
+  <!-- Ruler top edge line -->
+  <rect x="20" y="30" width="300" height="3" fill="#04204b" opacity="0.15"/>
+
+  <!-- Major ticks every 20px (labelled 1-8 at x=57,77,97,117,137,157,177,197,217,237,257,277,297) -->
+  <!-- Actually: label intervals. Start at x=57 for tick "1", every 30px. 8 labels. -->
+  <!-- Major ticks: x = 57, 87, 117, 147, 177, 207, 237, 267, 297 -->
+  <!-- Minor ticks every ~7.5px between majors -->
+
+  <!-- Major ticks (full height, navy, going up from top edge) -->
+  <rect x="57"  y="30" width="2" height="16" fill="#04204b"/>
+  <rect x="87"  y="30" width="2" height="16" fill="#04204b"/>
+  <rect x="117" y="30" width="2" height="16" fill="#04204b"/>
+  <rect x="147" y="30" width="2" height="16" fill="#04204b"/>
+  <rect x="177" y="30" width="2" height="16" fill="#04204b"/>
+  <rect x="207" y="30" width="2" height="16" fill="#04204b"/>
+  <rect x="237" y="30" width="2" height="16" fill="#04204b"/>
+  <rect x="267" y="30" width="2" height="16" fill="#04204b"/>
+
+  <!-- Half-major ticks -->
+  <rect x="72"  y="30" width="1" height="10" fill="#04204b" opacity="0.6"/>
+  <rect x="102" y="30" width="1" height="10" fill="#04204b" opacity="0.6"/>
+  <rect x="132" y="30" width="1" height="10" fill="#04204b" opacity="0.6"/>
+  <rect x="162" y="30" width="1" height="10" fill="#04204b" opacity="0.6"/>
+  <rect x="192" y="30" width="1" height="10" fill="#04204b" opacity="0.6"/>
+  <rect x="222" y="30" width="1" height="10" fill="#04204b" opacity="0.6"/>
+  <rect x="252" y="30" width="1" height="10" fill="#04204b" opacity="0.6"/>
+  <rect x="282" y="30" width="1" height="10" fill="#04204b" opacity="0.6"/>
+
+  <!-- Minor ticks (quarter divisions) -->
+  <rect x="65"  y="30" width="1" height="6" fill="#04204b" opacity="0.4"/>
+  <rect x="79"  y="30" width="1" height="6" fill="#04204b" opacity="0.4"/>
+  <rect x="95"  y="30" width="1" height="6" fill="#04204b" opacity="0.4"/>
+  <rect x="109" y="30" width="1" height="6" fill="#04204b" opacity="0.4"/>
+  <rect x="125" y="30" width="1" height="6" fill="#04204b" opacity="0.4"/>
+  <rect x="139" y="30" width="1" height="6" fill="#04204b" opacity="0.4"/>
+  <rect x="155" y="30" width="1" height="6" fill="#04204b" opacity="0.4"/>
+  <rect x="169" y="30" width="1" height="6" fill="#04204b" opacity="0.4"/>
+  <rect x="185" y="30" width="1" height="6" fill="#04204b" opacity="0.4"/>
+  <rect x="199" y="30" width="1" height="6" fill="#04204b" opacity="0.4"/>
+  <rect x="215" y="30" width="1" height="6" fill="#04204b" opacity="0.4"/>
+  <rect x="229" y="30" width="1" height="6" fill="#04204b" opacity="0.4"/>
+  <rect x="245" y="30" width="1" height="6" fill="#04204b" opacity="0.4"/>
+  <rect x="259" y="30" width="1" height="6" fill="#04204b" opacity="0.4"/>
+  <rect x="275" y="30" width="1" height="6" fill="#04204b" opacity="0.4"/>
+  <rect x="289" y="30" width="1" height="6" fill="#04204b" opacity="0.4"/>
+
+  <!-- Major tick labels in yellow, inside ruler body -->
+  <text x="54"  y="57" font-family="'Open Sans', Arial, sans-serif" font-size="9" font-weight="700" fill="#ffd407">1</text>
+  <text x="84"  y="57" font-family="'Open Sans', Arial, sans-serif" font-size="9" font-weight="700" fill="#ffd407">2</text>
+  <text x="114" y="57" font-family="'Open Sans', Arial, sans-serif" font-size="9" font-weight="700" fill="#ffd407">3</text>
+  <text x="144" y="57" font-family="'Open Sans', Arial, sans-serif" font-size="9" font-weight="700" fill="#ffd407">4</text>
+  <text x="174" y="57" font-family="'Open Sans', Arial, sans-serif" font-size="9" font-weight="700" fill="#ffd407">5</text>
+  <text x="204" y="57" font-family="'Open Sans', Arial, sans-serif" font-size="9" font-weight="700" fill="#ffd407">6</text>
+  <text x="234" y="57" font-family="'Open Sans', Arial, sans-serif" font-size="9" font-weight="700" fill="#ffd407">7</text>
+  <text x="264" y="57" font-family="'Open Sans', Arial, sans-serif" font-size="9" font-weight="700" fill="#ffd407">8</text>
+
+  <!-- Calculation symbols grid below ruler -->
+  <!-- 2x4 grid: symbols at y=90, 120; x=60,120,190,260 -->
+  <!-- Row 1: divide, multiply, plus, equals -->
+  <text x="53"  y="110" font-family="'Open Sans', Arial, sans-serif" font-size="28" font-weight="700" fill="#ffd407">&#247;</text>
+  <text x="118" y="110" font-family="'Open Sans', Arial, sans-serif" font-size="28" font-weight="700" fill="#ffd407">&#215;</text>
+  <text x="188" y="110" font-family="'Open Sans', Arial, sans-serif" font-size="28" font-weight="700" fill="#ffd407">+</text>
+  <text x="255" y="110" font-family="'Open Sans', Arial, sans-serif" font-size="28" font-weight="700" fill="#ffd407">=</text>
+
+  <!-- Row 2: symbols dimmer for depth -->
+  <text x="53"  y="150" font-family="'Open Sans', Arial, sans-serif" font-size="22" font-weight="400" fill="#ffd407" opacity="0.45">%</text>
+  <text x="118" y="150" font-family="'Open Sans', Arial, sans-serif" font-size="22" font-weight="400" fill="#ffd407" opacity="0.45">m&#178;</text>
+  <text x="188" y="150" font-family="'Open Sans', Arial, sans-serif" font-size="22" font-weight="400" fill="#ffd407" opacity="0.45">ft</text>
+  <text x="252" y="150" font-family="'Open Sans', Arial, sans-serif" font-size="22" font-weight="400" fill="#ffd407" opacity="0.45">cm</text>
+
+  <!-- TEXT ZONE -->
+  <text x="400" y="88" font-family="'Open Sans', Arial, sans-serif" font-size="32" font-weight="700" fill="#ffffff">Handy Calculators</text>
+  <text x="400" y="121" font-family="'Open Sans', Arial, sans-serif" font-size="16" font-weight="400" fill="#ffd407">Unit conversions, coverage &amp; cutting</text>
+</svg>

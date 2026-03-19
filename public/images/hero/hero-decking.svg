@@ -1,0 +1,50 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 200">
+  <!-- Background -->
+  <rect width="1200" height="200" fill="#04204b"/>
+
+  <!-- Top-right corner geometric pattern: dot grid in #253081 -->
+  <g fill="#253081">
+    <circle cx="870" cy="15" r="2"/><circle cx="890" cy="15" r="2"/><circle cx="910" cy="15" r="2"/><circle cx="930" cy="15" r="2"/><circle cx="950" cy="15" r="2"/><circle cx="970" cy="15" r="2"/><circle cx="990" cy="15" r="2"/><circle cx="1010" cy="15" r="2"/><circle cx="1030" cy="15" r="2"/><circle cx="1050" cy="15" r="2"/><circle cx="1070" cy="15" r="2"/><circle cx="1090" cy="15" r="2"/><circle cx="1110" cy="15" r="2"/><circle cx="1130" cy="15" r="2"/><circle cx="1150" cy="15" r="2"/><circle cx="1170" cy="15" r="2"/>
+    <circle cx="870" cy="35" r="2"/><circle cx="890" cy="35" r="2"/><circle cx="910" cy="35" r="2"/><circle cx="930" cy="35" r="2"/><circle cx="950" cy="35" r="2"/><circle cx="970" cy="35" r="2"/><circle cx="990" cy="35" r="2"/><circle cx="1010" cy="35" r="2"/><circle cx="1030" cy="35" r="2"/><circle cx="1050" cy="35" r="2"/><circle cx="1070" cy="35" r="2"/><circle cx="1090" cy="35" r="2"/><circle cx="1110" cy="35" r="2"/><circle cx="1130" cy="35" r="2"/><circle cx="1150" cy="35" r="2"/><circle cx="1170" cy="35" r="2"/>
+    <circle cx="870" cy="55" r="2"/><circle cx="890" cy="55" r="2"/><circle cx="910" cy="55" r="2"/><circle cx="930" cy="55" r="2"/><circle cx="950" cy="55" r="2"/><circle cx="970" cy="55" r="2"/><circle cx="990" cy="55" r="2"/><circle cx="1010" cy="55" r="2"/><circle cx="1030" cy="55" r="2"/><circle cx="1050" cy="55" r="2"/><circle cx="1070" cy="55" r="2"/><circle cx="1090" cy="55" r="2"/><circle cx="1110" cy="55" r="2"/><circle cx="1130" cy="55" r="2"/><circle cx="1150" cy="55" r="2"/><circle cx="1170" cy="55" r="2"/>
+  </g>
+
+  <!-- Diagonal divider -->
+  <polygon points="310,0 370,0 340,200 280,200" fill="#253081"/>
+
+  <!-- MOTIF ZONE: 6 deck boards + joists visible at bottom -->
+  <!-- Board: 300px wide x 18px tall, 6px gap. 6 boards -->
+  <!-- Total height: 6*18 + 5*6 = 138px. Start y=14 -->
+
+  <!-- Joist sections visible at bottom of each board (perpendicular) - shown as rectangles -->
+  <!-- Joists run perpendicular (horizontal lines under the boards) -->
+  <!-- Show joist cut ends at bottom: 3 joists at x=60, 160, 260 -->
+  <rect x="55" y="155" width="18" height="30" fill="#ffd407" rx="1"/>
+  <rect x="155" y="155" width="18" height="30" fill="#ffd407" rx="1"/>
+  <rect x="255" y="155" width="18" height="30" fill="#ffd407" rx="1"/>
+
+  <!-- Board 1: y=14, full opacity -->
+  <rect x="20" y="14" width="320" height="18" fill="#ffffff" rx="1"/>
+  <!-- Board 2: y=38, slight opacity variation -->
+  <rect x="20" y="38" width="320" height="18" fill="#ffffff" opacity="0.92" rx="1"/>
+  <!-- Board 3: y=62 -->
+  <rect x="20" y="62" width="320" height="18" fill="#ffffff" rx="1"/>
+  <!-- Board 4: y=86 -->
+  <rect x="20" y="86" width="320" height="18" fill="#ffffff" opacity="0.92" rx="1"/>
+  <!-- Board 5: y=110 -->
+  <rect x="20" y="110" width="320" height="18" fill="#ffffff" rx="1"/>
+  <!-- Board 6: y=134 -->
+  <rect x="20" y="134" width="320" height="18" fill="#ffffff" opacity="0.92" rx="1"/>
+
+  <!-- Subtle longitudinal groove lines on boards (deck board texture) -->
+  <line x1="20" y1="21" x2="340" y2="21" stroke="#f2f6fa" stroke-width="0.6"/>
+  <line x1="20" y1="45" x2="340" y2="45" stroke="#f2f6fa" stroke-width="0.6"/>
+  <line x1="20" y1="69" x2="340" y2="69" stroke="#f2f6fa" stroke-width="0.6"/>
+  <line x1="20" y1="93" x2="340" y2="93" stroke="#f2f6fa" stroke-width="0.6"/>
+  <line x1="20" y1="117" x2="340" y2="117" stroke="#f2f6fa" stroke-width="0.6"/>
+  <line x1="20" y1="141" x2="340" y2="141" stroke="#f2f6fa" stroke-width="0.6"/>
+
+  <!-- TEXT ZONE -->
+  <text x="400" y="95" font-family="'Open Sans', Arial, sans-serif" font-size="32" font-weight="700" fill="#ffffff">Decking Calculator</text>
+  <text x="400" y="128" font-family="'Open Sans', Arial, sans-serif" font-size="16" font-weight="400" fill="#ffd407">Boards, joists &amp; fixings</text>
+</svg>

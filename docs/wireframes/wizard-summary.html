@@ -1,0 +1,1196 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Wireframe — Tiling Calculator: Summary — SELCO Trade Materials Calculator</title>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    /* ── Typography ── */
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Arial, sans-serif;
+      font-size: 15px;
+      line-height: 1.5;
+      color: #1a1a1a;
+      background: #f2f6fa;
+    }
+
+    /* ── Annotation helpers ── */
+    .annotation-box {
+      background: #e8edf5;
+      border: 1.5px dashed #8fa3bf;
+      color: #3a5070;
+      font-size: 11px;
+      font-style: italic;
+      padding: 6px 10px;
+      text-align: center;
+    }
+    .annotation-inline {
+      display: inline-block;
+      background: #fff8d0;
+      border: 1px solid #e6c200;
+      border-radius: 3px;
+      color: #6b4f00;
+      font-size: 10px;
+      font-style: italic;
+      padding: 1px 5px;
+      margin-left: 6px;
+      vertical-align: middle;
+    }
+    .annotation-note {
+      font-size: 10px;
+      color: #6b7a8a;
+      font-style: italic;
+      margin-top: 4px;
+    }
+
+    /* ── SELCO Header placeholder ── */
+    .site-header {
+      background: #e8edf5;
+      border: 1.5px dashed #8fa3bf;
+      color: #3a5070;
+      font-size: 12px;
+      font-style: italic;
+      padding: 0 20px;
+      height: 60px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+    .site-header-logo {
+      font-weight: 700;
+      font-size: 14px;
+      color: #04204b;
+      font-style: normal;
+      letter-spacing: .04em;
+    }
+
+    /* ── Page layout ── */
+    .page-wrapper {
+      display: flex;
+      min-height: calc(100vh - 60px - 60px);
+    }
+
+    /* ────────────────────────────────────────────
+       SIDEBAR — Step Rail (all completed)
+    ──────────────────────────────────────────── */
+    .step-sidebar {
+      width: 260px;
+      flex-shrink: 0;
+      background: #04204b;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .sidebar-escape {
+      display: block;
+      color: #ffffff;
+      text-decoration: none;
+      font-size: 13px;
+      padding: 14px 20px;
+      opacity: .85;
+      transition: opacity .15s;
+    }
+    .sidebar-escape:hover { opacity: 1; text-decoration: underline; }
+
+    .sidebar-divider {
+      border: none;
+      border-top: 1px solid #253081;
+      margin: 0;
+    }
+
+    .sidebar-calculator-label {
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: .12em;
+      text-transform: uppercase;
+      color: #ffd407;
+      padding: 14px 20px 8px;
+    }
+
+    .step-list {
+      list-style: none;
+      flex: 1;
+    }
+    .step-list li {
+      position: relative;
+    }
+    .step-item {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 11px 20px;
+      color: #b0bfd8;
+      font-size: 14px;
+      text-decoration: none;
+      cursor: default;
+    }
+    .step-item.completed {
+      color: #ffffff;
+      cursor: pointer;
+      text-decoration: underline;
+      text-underline-offset: 2px;
+    }
+    .step-item.completed:hover { color: #ffd407; }
+    .step-item.active {
+      color: #ffffff;
+      font-weight: 700;
+      background: #0a2d5e;
+      cursor: default;
+      text-decoration: none;
+    }
+    .step-item.active::before {
+      content: '';
+      position: absolute;
+      left: 0;
+      top: 0;
+      bottom: 0;
+      width: 4px;
+      background: #ffd407;
+    }
+
+    .step-circle {
+      width: 26px;
+      height: 26px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 12px;
+      font-weight: 700;
+      flex-shrink: 0;
+    }
+    .step-circle.completed-circle {
+      background: #ffd407;
+      color: #04204b;
+    }
+    .step-circle.active-circle {
+      background: #ffd407;
+      color: #04204b;
+    }
+
+    .sidebar-progress {
+      padding: 14px 20px 6px;
+      font-size: 12px;
+      color: #ffd407;
+      font-weight: 600;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .sidebar-new-calc {
+      display: block;
+      color: #ffd407;
+      text-decoration: none;
+      font-size: 13px;
+      font-weight: 500;
+      padding: 4px 20px 14px;
+      opacity: .9;
+    }
+    .sidebar-new-calc:hover { opacity: 1; text-decoration: underline; }
+
+    .sidebar-annotation {
+      padding: 10px 14px 16px;
+      font-size: 10px;
+      color: #6b85aa;
+      font-style: italic;
+      line-height: 1.45;
+      border-top: 1px solid #253081;
+    }
+
+    /* ────────────────────────────────────────────
+       MAIN CONTENT
+    ──────────────────────────────────────────── */
+    .main-content {
+      flex: 1;
+      background: #ffffff;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .hero-strip {
+      height: 120px;
+      background: #e8edf5;
+      border-bottom: 1.5px dashed #8fa3bf;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: #3a5070;
+      font-size: 12px;
+      font-style: italic;
+    }
+    .hero-strip-inner { text-align: center; }
+    .hero-strip-label {
+      font-size: 14px;
+      font-weight: 600;
+      color: #253081;
+      margin-bottom: 4px;
+    }
+
+    .content-zone {
+      padding: 24px 36px 40px;
+      flex: 1;
+    }
+
+    /* Breadcrumb */
+    .breadcrumb {
+      list-style: none;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 12px;
+      color: #6b7a8a;
+      margin-bottom: 20px;
+    }
+    .breadcrumb li + li::before {
+      content: '›';
+      margin-right: 6px;
+      color: #aab4bf;
+    }
+    .breadcrumb a {
+      color: #253081;
+      text-decoration: none;
+    }
+    .breadcrumb a:hover { text-decoration: underline; }
+    .breadcrumb li:last-child { color: #04204b; font-weight: 600; }
+
+    /* Page heading */
+    .page-heading {
+      font-size: 26px;
+      font-weight: 700;
+      color: #04204b;
+      margin-bottom: 10px;
+    }
+
+    /* Input summary pill row */
+    .summary-pills {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-bottom: 28px;
+    }
+    .summary-pill {
+      background: #f2f6fa;
+      border: 1px solid #d0d9e5;
+      border-radius: 20px;
+      font-size: 12px;
+      color: #3a5070;
+      padding: 4px 12px;
+      font-weight: 500;
+    }
+
+    /* ── Materials Table ── */
+    /* TABLE: Materials list — primary deliverable of wizard flow */
+    .materials-table-wrapper {
+      margin-bottom: 28px;
+    }
+    .materials-table-heading {
+      font-size: 15px;
+      font-weight: 700;
+      color: #04204b;
+      margin-bottom: 10px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .materials-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 13.5px;
+      border: 1px solid #d0d9e5;
+      border-radius: 6px;
+      overflow: hidden;
+    }
+    .materials-table thead tr {
+      background: #04204b;
+      color: #ffffff;
+    }
+    .materials-table th {
+      padding: 12px 14px;
+      text-align: left;
+      font-size: 12px;
+      font-weight: 700;
+      letter-spacing: .05em;
+      text-transform: uppercase;
+    }
+    .materials-table td {
+      padding: 11px 14px;
+      border-bottom: 1px solid #e5eaf0;
+      vertical-align: middle;
+    }
+    .materials-table tbody tr:nth-child(even) {
+      background: #f2f6fa;
+    }
+    .materials-table tbody tr:nth-child(odd) {
+      background: #ffffff;
+    }
+    .materials-table tbody tr:hover {
+      background: #eaf0f8;
+    }
+    .materials-table tbody tr:last-child td {
+      border-bottom: none;
+    }
+    .quantity-cell {
+      font-weight: 700;
+      color: #04204b;
+      font-size: 15px;
+    }
+    .notes-cell {
+      color: #5a6a7a;
+      font-size: 12px;
+      font-style: italic;
+    }
+    .table-disclaimer {
+      font-size: 11px;
+      color: #8a96a4;
+      margin-top: 8px;
+      font-style: italic;
+    }
+
+    /* ── Collapsible sections ── */
+    /* COLLAPSIBLE: Calculation breakdown — Tidwell (2020) Collapsible Panels — progressive disclosure */
+    .collapsible-section {
+      border: 1.5px solid #d0d9e5;
+      border-radius: 6px;
+      margin-bottom: 20px;
+      overflow: hidden;
+    }
+    .collapsible-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 13px 18px;
+      background: #f8fafc;
+      cursor: pointer;
+      border: none;
+      width: 100%;
+      text-align: left;
+      font-size: 14px;
+      font-weight: 600;
+      color: #253081;
+      gap: 8px;
+    }
+    .collapsible-header:hover { background: #f0f5fb; }
+    .collapsible-icon { font-size: 12px; color: #8a96a4; }
+
+    .collapsible-body {
+      padding: 16px 18px;
+      background: #ffffff;
+      border-top: 1px solid #e5eaf0;
+    }
+
+    /* Input summary table */
+    .input-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 13px;
+    }
+    .input-table th {
+      text-align: left;
+      font-size: 11px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: .06em;
+      color: #6b7a8a;
+      padding: 6px 12px;
+      border-bottom: 2px solid #e5eaf0;
+    }
+    .input-table td {
+      padding: 8px 12px;
+      border-bottom: 1px solid #f0f3f7;
+      color: #2a3a4a;
+    }
+    .input-table td:last-child {
+      font-weight: 600;
+      color: #04204b;
+    }
+    .input-table tr:last-child td { border-bottom: none; }
+    .input-table td.step-col {
+      font-size: 11px;
+      color: #8a96a4;
+    }
+
+    .edit-link {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      color: #253081;
+      font-size: 13px;
+      text-decoration: underline;
+      text-underline-offset: 2px;
+      margin-top: 14px;
+      cursor: pointer;
+    }
+    .edit-link:hover { color: #04204b; }
+
+    /* ── Action buttons ── */
+    /* ACTIONS: Print / Copy / New — Krug (2014) primary action is obvious, secondary actions are present but subordinate */
+    .action-buttons {
+      margin-top: 28px;
+      padding-top: 22px;
+      border-top: 1px solid #e5eaf0;
+    }
+    .action-buttons-heading {
+      font-size: 12px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: .07em;
+      color: #8a96a4;
+      margin-bottom: 14px;
+    }
+    .action-row {
+      display: flex;
+      gap: 12px;
+      align-items: center;
+      flex-wrap: wrap;
+      margin-bottom: 14px;
+    }
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 7px;
+      font-size: 14px;
+      font-weight: 600;
+      padding: 10px 22px;
+      border-radius: 4px;
+      border: 2px solid transparent;
+      cursor: pointer;
+      text-decoration: none;
+      transition: opacity .15s;
+    }
+    .btn-primary {
+      background: #04204b;
+      color: #ffffff;
+      border-color: #04204b;
+    }
+    .btn-accent {
+      background: #ffd407;
+      color: #04204b;
+      border-color: #ffd407;
+    }
+    .btn-ghost {
+      background: transparent;
+      color: #04204b;
+      border-color: #04204b;
+    }
+    .btn:hover { opacity: .85; }
+    .btn-sm {
+      font-size: 13px;
+      padding: 8px 18px;
+    }
+
+    .related-calc-label {
+      font-size: 11px;
+      color: #8a96a4;
+      margin-bottom: 6px;
+    }
+
+    /* ── Site Footer ── */
+    .site-footer {
+      background: #e8edf5;
+      border: 1.5px dashed #8fa3bf;
+      border-top: none;
+      color: #3a5070;
+      font-size: 12px;
+      font-style: italic;
+      padding: 0 20px;
+      height: 60px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    /* ────────────────────────────────────────────
+       MOBILE VIEW SECTION
+    ──────────────────────────────────────────── */
+    .mobile-section-divider {
+      background: #04204b;
+      color: #ffd407;
+      text-align: center;
+      font-size: 13px;
+      font-weight: 700;
+      letter-spacing: .1em;
+      padding: 14px;
+      margin-top: 40px;
+    }
+
+    .mobile-frame {
+      width: 375px;
+      margin: 24px auto;
+      border: 2px solid #253081;
+      border-radius: 8px;
+      overflow: hidden;
+      box-shadow: 0 4px 20px rgba(4,32,75,.15);
+    }
+    .mobile-frame-label {
+      background: #253081;
+      color: #ffd407;
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: .08em;
+      text-align: center;
+      padding: 5px;
+    }
+
+    .mobile-complete-pill {
+      background: #04204b;
+      padding: 10px 16px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .mobile-complete-pill-inner {
+      background: #ffd407;
+      color: #04204b;
+      font-size: 13px;
+      font-weight: 700;
+      border-radius: 20px;
+      padding: 5px 18px;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .mobile-hero {
+      height: 70px;
+      background: #e8edf5;
+      border-bottom: 1.5px dashed #8fa3bf;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 11px;
+      color: #3a5070;
+      font-style: italic;
+    }
+
+    .mobile-content {
+      padding: 14px 14px 18px;
+      background: #fff;
+    }
+
+    .mobile-page-heading {
+      font-size: 18px;
+      font-weight: 700;
+      color: #04204b;
+      margin-bottom: 6px;
+    }
+
+    .mobile-pills {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 5px;
+      margin-bottom: 14px;
+    }
+    .mobile-pill {
+      background: #f2f6fa;
+      border: 1px solid #d0d9e5;
+      border-radius: 20px;
+      font-size: 10px;
+      color: #3a5070;
+      padding: 3px 9px;
+    }
+
+    /* Mobile table — horizontal scroll */
+    .mobile-table-wrapper {
+      overflow-x: auto;
+      -webkit-overflow-scrolling: touch;
+      margin-bottom: 14px;
+      border: 1px solid #d0d9e5;
+      border-radius: 5px;
+    }
+    /* annotation: overflow-x: auto on mobile — table scrolls horizontally */
+    .mobile-materials-table {
+      min-width: 520px;
+      border-collapse: collapse;
+      font-size: 12px;
+    }
+    .mobile-materials-table thead tr { background: #04204b; color: #fff; }
+    .mobile-materials-table th {
+      padding: 9px 10px;
+      text-align: left;
+      font-size: 10px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: .05em;
+    }
+    .mobile-materials-table td {
+      padding: 8px 10px;
+      border-bottom: 1px solid #e5eaf0;
+    }
+    .mobile-materials-table tbody tr:nth-child(even) { background: #f2f6fa; }
+    .mobile-materials-table tbody tr:last-child td { border-bottom: none; }
+
+    .mobile-table-annotation {
+      font-size: 10px;
+      color: #8a96a4;
+      font-style: italic;
+      margin-bottom: 12px;
+    }
+
+    /* Mobile action buttons — stacked full width */
+    .mobile-action-buttons {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+    .mobile-btn {
+      width: 100%;
+      text-align: center;
+      padding: 12px 8px;
+      font-size: 14px;
+      font-weight: 600;
+      border-radius: 4px;
+      border: 2px solid transparent;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+    }
+    .mobile-btn-primary {
+      background: #04204b;
+      color: #ffffff;
+      border-color: #04204b;
+    }
+    .mobile-btn-accent {
+      background: #ffd407;
+      color: #04204b;
+      border-color: #ffd407;
+    }
+    .mobile-btn-ghost {
+      background: transparent;
+      color: #04204b;
+      border-color: #04204b;
+    }
+
+    /* ────────────────────────────────────────────
+       ANNOTATION LEGEND
+    ──────────────────────────────────────────── */
+    .annotation-legend {
+      max-width: 900px;
+      margin: 36px auto 48px;
+      border: 1.5px solid #d0d9e5;
+      border-radius: 6px;
+      overflow: hidden;
+    }
+    .legend-header {
+      background: #04204b;
+      color: #ffd407;
+      font-size: 12px;
+      font-weight: 700;
+      letter-spacing: .08em;
+      text-transform: uppercase;
+      padding: 10px 18px;
+    }
+    .legend-body {
+      background: #f9fafb;
+      padding: 16px 18px;
+    }
+    .legend-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 8px 24px;
+    }
+    .legend-item {
+      font-size: 11px;
+      color: #3a4a5a;
+      line-height: 1.5;
+      display: flex;
+      gap: 6px;
+    }
+    .legend-item::before {
+      content: '▸';
+      color: #253081;
+      flex-shrink: 0;
+    }
+  </style>
+</head>
+<body>
+
+<!-- ═══════════════════════════════════════════════════════════════
+     DESKTOP VIEW — Summary / Results Page (Step 6 of 6)
+     SUMMARY PAGE: Final step of Sequence Map — Tidwell (2020) Ch.9
+════════════════════════════════════════════════════════════════════ -->
+
+<header class="site-header" role="banner">
+  <span class="site-header-logo">SELCO BUILDERS WAREHOUSE</span>
+  <span>SELCO Site Template: Header — preserved (navigation, account, basket)</span>
+</header>
+
+<div class="page-wrapper">
+
+  <!-- ══════════════════════════════════════════
+       LEFT: STEP RAIL SIDEBAR — All 6 steps complete
+  ═══════════════════════════════════════════ -->
+  <aside class="step-sidebar" aria-label="Wizard step navigation — all steps complete">
+
+    <a href="#" class="sidebar-escape" aria-label="Return to all calculators">← All Calculators</a>
+    <hr class="sidebar-divider">
+    <div class="sidebar-calculator-label" aria-hidden="true">Tiling Calculator</div>
+
+    <ol class="step-list" aria-label="Calculator steps — all complete">
+
+      <!-- Steps 1–5: all completed, all clickable -->
+      <li>
+        <a href="#" class="step-item completed"
+           aria-label="Step 1: Room Setup — completed, click to revisit"
+           aria-current="false">
+          <span class="step-circle completed-circle" aria-hidden="true">✓</span>
+          <span>Room Setup</span>
+        </a>
+      </li>
+      <li>
+        <a href="#" class="step-item completed"
+           aria-label="Step 2: Tile Selection — completed, click to revisit">
+          <span class="step-circle completed-circle" aria-hidden="true">✓</span>
+          <span>Tile Selection</span>
+        </a>
+      </li>
+      <li>
+        <a href="#" class="step-item completed"
+           aria-label="Step 3: Adhesive &amp; Spacers — completed, click to revisit">
+          <span class="step-circle completed-circle" aria-hidden="true">✓</span>
+          <span>Adhesive &amp; Spacers</span>
+        </a>
+      </li>
+      <li>
+        <a href="#" class="step-item completed"
+           aria-label="Step 4: Grout &amp; Finish — completed, click to revisit">
+          <span class="step-circle completed-circle" aria-hidden="true">✓</span>
+          <span>Grout &amp; Finish</span>
+        </a>
+      </li>
+      <li>
+        <a href="#" class="step-item completed"
+           aria-label="Step 5: Layout &amp; Cut Optimisation — completed, click to revisit">
+          <span class="step-circle completed-circle" aria-hidden="true">✓</span>
+          <span>Layout &amp; Cut Optimisation</span>
+        </a>
+      </li>
+
+      <!-- Step 6: Summary — active (current page) -->
+      <li>
+        <span class="step-item active"
+              aria-label="Step 6: Summary — current page"
+              aria-current="page">
+          <span class="step-circle active-circle" aria-hidden="true">✓</span>
+          <span>Summary</span>
+        </span>
+      </li>
+
+    </ol>
+
+    <div class="sidebar-progress" aria-live="polite">
+      <span>6 of 6 steps complete</span>
+      <span style="color:#ffd407;" aria-hidden="true">✓</span>
+    </div>
+
+    <a href="#" class="sidebar-new-calc">↩ Start New Calculation</a>
+
+    <div class="sidebar-annotation">
+      SEQUENCE MAP — Tidwell (2020) Ch.9<br>
+      All 6 steps completed (✓ yellow) · All clickable for review<br>
+      Step 6 "Summary" = active — accent bar marks current position<br>
+      WCAG SC 3.3.4: any step revisitable
+    </div>
+
+  </aside>
+
+  <!-- ══════════════════════════════════════════
+       RIGHT: SUMMARY CONTENT
+  ═══════════════════════════════════════════ -->
+  <main class="main-content" id="main-content">
+
+    <div class="hero-strip" role="img" aria-label="Tiling calculator illustration">
+      <div class="hero-strip-inner">
+        <div class="hero-strip-label">SVG Hero — hero-tiling.svg</div>
+        <div>Tile grid / trowel motif — 120px height — full width of content area</div>
+      </div>
+    </div>
+
+    <div class="content-zone">
+
+      <!-- Breadcrumb -->
+      <nav aria-label="Breadcrumb">
+        <ol class="breadcrumb">
+          <li><a href="#">Home</a></li>
+          <li><a href="#">Tiling Calculator</a></li>
+          <li aria-current="page">Summary</li>
+        </ol>
+      </nav>
+
+      <!-- Page heading -->
+      <h1 class="page-heading">Your Tiling Materials List</h1>
+
+      <!-- Input summary pill row — compact representation of all entered values -->
+      <div class="summary-pills" role="region" aria-label="Calculation inputs summary">
+        <span class="summary-pill">Bathroom 2.4m × 3.2m</span>
+        <span class="summary-pill">300 × 300mm ceramic tiles</span>
+        <span class="summary-pill">Flexible adhesive</span>
+        <span class="summary-pill">3mm spacers</span>
+        <span class="summary-pill">Mid-grey grout (unsanded)</span>
+        <span class="summary-pill">10% wastage allowance</span>
+      </div>
+      <!-- annotation: pill badges summarise every wizard input at a glance — reduces need to scroll to input summary table -->
+
+      <!-- ── MATERIALS TABLE ── -->
+      <!-- TABLE: Materials list — primary deliverable of wizard flow -->
+      <div class="materials-table-wrapper">
+        <div class="materials-table-heading">
+          Materials List
+          <span class="annotation-inline">Primary deliverable — Tidwell (2020) Ch.9</span>
+        </div>
+
+        <table class="materials-table" aria-label="Calculated materials quantities">
+          <thead>
+            <tr>
+              <th scope="col">Material</th>
+              <th scope="col">Quantity</th>
+              <th scope="col">Unit</th>
+              <th scope="col">Notes</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>Floor tiles (300 × 300mm)</td>
+              <td class="quantity-cell">128</td>
+              <td>pcs</td>
+              <td class="notes-cell">+ 10% wastage included</td>
+            </tr>
+            <tr>
+              <td>Wall tiles (300 × 300mm)</td>
+              <td class="quantity-cell">96</td>
+              <td>pcs</td>
+              <td class="notes-cell">+ 10% wastage included</td>
+            </tr>
+            <tr>
+              <td>Flexible tile adhesive</td>
+              <td class="quantity-cell">4</td>
+              <td>bags (20kg)</td>
+              <td class="notes-cell">Coverage: 4–5 m² per bag</td>
+            </tr>
+            <tr>
+              <td>3mm tile spacers</td>
+              <td class="quantity-cell">2</td>
+              <td>packs (500)</td>
+              <td class="notes-cell"></td>
+            </tr>
+            <tr>
+              <td>Unsanded grout (mid grey)</td>
+              <td class="quantity-cell">2</td>
+              <td>bags (5kg)</td>
+              <td class="notes-cell"></td>
+            </tr>
+            <tr>
+              <td>DPC strip (if floor)</td>
+              <td class="quantity-cell">8</td>
+              <td>m</td>
+              <td class="notes-cell">Perimeter treatment</td>
+            </tr>
+          </tbody>
+        </table>
+
+        <p class="table-disclaimer">
+          * Quantities include standard wastage allowances. Verify with your merchant.
+        </p>
+      </div>
+
+      <!-- ── CALCULATION BREAKDOWN (collapsed) ── -->
+      <!-- COLLAPSIBLE: Calculation breakdown — Tidwell (2020) Collapsible Panels — progressive disclosure -->
+      <div class="collapsible-section">
+        <button type="button" class="collapsible-header"
+                aria-expanded="false"
+                aria-controls="calc-breakdown-panel">
+          <span>+ View Calculation Breakdown</span>
+          <span class="collapsible-icon annotation-inline">collapsed — progressive disclosure</span>
+        </button>
+        <div id="calc-breakdown-panel" hidden aria-hidden="true" class="collapsible-body">
+          <!-- Revealed on click: step-by-step formula breakdown e.g. Area = W × H, tiles = area / tile area × (1 + wastage) -->
+          <p style="font-size:13px;color:#5a6a7a;">Calculation steps would display here: area derivation, tile count formula, adhesive coverage calculation etc.</p>
+        </div>
+      </div>
+
+      <!-- ── INPUT SUMMARY (open by default) ── -->
+      <!-- EDIT LINK: ← Edit any step — WCAG SC 3.3.4 Error Prevention — review and correct -->
+      <div class="collapsible-section">
+        <button type="button" class="collapsible-header"
+                aria-expanded="true"
+                aria-controls="input-summary-panel"
+                style="background:#f0f5fb;">
+          <span>− Your Inputs</span>
+          <span class="collapsible-icon annotation-inline">expanded by default</span>
+        </button>
+        <div id="input-summary-panel" class="collapsible-body" aria-hidden="false">
+
+          <table class="input-table" aria-label="Summary of all entered values">
+            <thead>
+              <tr>
+                <th scope="col">Step</th>
+                <th scope="col">Input</th>
+                <th scope="col">Value</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td class="step-col">Room Setup</td>
+                <td>Room width</td>
+                <td>2,400 mm</td>
+              </tr>
+              <tr>
+                <td class="step-col">Room Setup</td>
+                <td>Room height</td>
+                <td>3,200 mm</td>
+              </tr>
+              <tr>
+                <td class="step-col">Tile Selection</td>
+                <td>Tile size</td>
+                <td>300 × 300 mm</td>
+              </tr>
+              <tr>
+                <td class="step-col">Tile Selection</td>
+                <td>Finish</td>
+                <td>Ceramic</td>
+              </tr>
+              <tr>
+                <td class="step-col">Adhesive</td>
+                <td>Type</td>
+                <td>Flexible</td>
+              </tr>
+              <tr>
+                <td class="step-col">Spacers</td>
+                <td>Gap size</td>
+                <td>3 mm</td>
+              </tr>
+            </tbody>
+          </table>
+
+          <a href="#" class="edit-link" aria-label="Return to any step to change your inputs — WCAG SC 3.3.4">
+            ← Edit any step
+          </a>
+          <p class="annotation-note">Return to any step to change your inputs — WCAG SC 3.3.4 Error Prevention</p>
+
+        </div>
+      </div>
+
+      <!-- ── ACTION BUTTONS ── -->
+      <!-- ACTIONS: Print / Copy / New — Krug (2014) primary action is obvious, secondary actions are present but subordinate -->
+      <div class="action-buttons" role="region" aria-label="Actions">
+        <div class="action-buttons-heading">Actions</div>
+
+        <div class="action-row">
+          <!-- btn-primary: navy bg, white text — main print action -->
+          <button class="btn btn-primary" type="button" aria-label="Print materials list">
+            <span aria-hidden="true">🖨</span> Print Materials List
+          </button>
+          <!-- btn-ghost: secondary — copy to clipboard -->
+          <button class="btn btn-ghost" type="button" aria-label="Copy materials list to clipboard">
+            <span aria-hidden="true">📋</span> Copy to Clipboard
+          </button>
+          <!-- btn-ghost: secondary — start over -->
+          <button class="btn btn-ghost" type="button" aria-label="Start a new calculation">
+            <span aria-hidden="true">↩</span> Start New Calculation
+          </button>
+        </div>
+
+        <!-- Related calculator suggestion — subordinate, accent button -->
+        <div>
+          <div class="related-calc-label">Related calculator</div>
+          <a href="#" class="btn btn-accent btn-sm" aria-label="Continue to Board Coverage calculator">
+            → Continue to Board Coverage
+          </a>
+          <span class="annotation-inline">btn-accent — related upsell suggestion, subordinate to primary</span>
+        </div>
+
+      </div>
+      <!-- annotation: Krug (2014) — print is the most-used action for trade buyers, so btn-primary; clipboard and reset are supporting actions, so btn-ghost -->
+
+    </div>
+    <!-- end content-zone -->
+
+  </main>
+</div>
+<!-- end page-wrapper -->
+
+<footer class="site-footer" role="contentinfo">
+  SELCO Site Template: Footer — preserved (links, legal, contact)
+</footer>
+
+
+<!-- ═══════════════════════════════════════════════════════════════
+     MOBILE VIEW (375px)
+════════════════════════════════════════════════════════════════════ -->
+<div class="mobile-section-divider">— MOBILE VIEW (375px) — SUMMARY PAGE —</div>
+
+<div class="mobile-frame" role="region" aria-label="Mobile view simulation — 375px viewport">
+  <div class="mobile-frame-label">375px viewport — iPhone SE / small Android</div>
+
+  <!-- Mobile header -->
+  <div class="annotation-box" style="height:44px;display:flex;align-items:center;justify-content:center;">
+    SELCO Site Template: Header (mobile)
+  </div>
+
+  <!-- Mobile: sidebar replaced by complete pill -->
+  <!-- annotation: sidebar collapses; single status pill replaces step rail on mobile at summary step -->
+  <div class="mobile-complete-pill" role="status" aria-label="All steps complete">
+    <span class="mobile-complete-pill-inner">
+      Step 6 of 6 &nbsp;✓&nbsp; Complete
+    </span>
+  </div>
+
+  <!-- Mobile hero -->
+  <div class="mobile-hero">
+    SVG Hero — hero-tiling.svg — 375px width
+  </div>
+
+  <div class="mobile-content">
+
+    <h1 class="mobile-page-heading">Your Tiling Materials List</h1>
+
+    <!-- Input summary pills -->
+    <div class="mobile-pills">
+      <span class="mobile-pill">2.4m × 3.2m</span>
+      <span class="mobile-pill">300×300mm ceramic</span>
+      <span class="mobile-pill">Flexible adhesive</span>
+      <span class="mobile-pill">3mm spacers</span>
+    </div>
+
+    <!-- Materials table — horizontal scroll on mobile -->
+    <div class="mobile-table-annotation">
+      Table scrolls horizontally — overflow-x: auto applied on mobile
+    </div>
+    <div class="mobile-table-wrapper" role="region" aria-label="Materials list — scroll horizontally" tabindex="0">
+      <table class="mobile-materials-table" aria-label="Calculated materials quantities">
+        <thead>
+          <tr>
+            <th scope="col">Material</th>
+            <th scope="col">Qty</th>
+            <th scope="col">Unit</th>
+            <th scope="col">Notes</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>Floor tiles (300×300mm)</td>
+            <td><strong>128</strong></td>
+            <td>pcs</td>
+            <td>+10% wastage</td>
+          </tr>
+          <tr>
+            <td>Wall tiles (300×300mm)</td>
+            <td><strong>96</strong></td>
+            <td>pcs</td>
+            <td>+10% wastage</td>
+          </tr>
+          <tr>
+            <td>Flexible tile adhesive</td>
+            <td><strong>4</strong></td>
+            <td>bags (20kg)</td>
+            <td>4–5 m²/bag</td>
+          </tr>
+          <tr>
+            <td>3mm tile spacers</td>
+            <td><strong>2</strong></td>
+            <td>packs (500)</td>
+            <td></td>
+          </tr>
+          <tr>
+            <td>Unsanded grout</td>
+            <td><strong>2</strong></td>
+            <td>bags (5kg)</td>
+            <td></td>
+          </tr>
+          <tr>
+            <td>DPC strip</td>
+            <td><strong>8</strong></td>
+            <td>m</td>
+            <td>Perimeter</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+    <!-- annotation: overflow-x: auto on mobile — table container is scrollable horizontally; tabindex="0" allows keyboard scroll -->
+
+    <!-- Mobile action buttons — stacked full width -->
+    <div class="mobile-action-buttons">
+      <button class="mobile-btn mobile-btn-primary" type="button">
+        <span aria-hidden="true">🖨</span> Print Materials List
+      </button>
+      <button class="mobile-btn mobile-btn-ghost" type="button">
+        <span aria-hidden="true">📋</span> Copy to Clipboard
+      </button>
+      <button class="mobile-btn mobile-btn-ghost" type="button">
+        <span aria-hidden="true">↩</span> Start New Calculation
+      </button>
+      <a href="#" class="mobile-btn mobile-btn-accent" style="text-decoration:none;">
+        → Continue to Board Coverage
+      </a>
+    </div>
+    <!-- annotation: on mobile, all action buttons stack full-width — touch targets minimum 44px height — Krug (2014) priority order preserved vertically -->
+
+  </div>
+
+  <!-- Mobile footer -->
+  <div class="annotation-box" style="height:44px;display:flex;align-items:center;justify-content:center;">
+    SELCO Site Template: Footer (mobile)
+  </div>
+
+</div>
+<!-- end mobile-frame -->
+
+
+<!-- ═══════════════════════════════════════════════════════════════
+     ANNOTATION LEGEND
+════════════════════════════════════════════════════════════════════ -->
+<div class="annotation-legend" role="region" aria-label="Wireframe annotation legend">
+  <div class="legend-header">Wireframe Annotation Legend — wizard-summary.html</div>
+  <div class="legend-body">
+    <div class="legend-grid">
+      <div class="legend-item">
+        Summary page: final step of Sequence Map — Tidwell (2020) Ch.9; all steps complete; sidebar shows full ✓ state for all 6 steps
+      </div>
+      <div class="legend-item">
+        WCAG 2.1 SC 3.3.4 (Error Prevention): every step remains clickable on the summary page — user can return to review or correct any input before using results
+      </div>
+      <div class="legend-item">
+        Materials table: primary deliverable of the wizard flow — navy header row, alternating white/#f2f6fa rows; quantities bold and prominent; semantic th[scope] for screen readers
+      </div>
+      <div class="legend-item">
+        Input summary table: collapsed view of all entered values; confirms to user what was calculated; WCAG SC 3.3.4 — "Edit any step" link provides route back for corrections
+      </div>
+      <div class="legend-item">
+        Calculation breakdown: Tidwell (2020) Collapsible Panels — progressive disclosure; collapsed by default to avoid overwhelming trade users who only need quantities; available to those who want to verify methodology
+      </div>
+      <div class="legend-item">
+        btn-primary (Print Materials List — navy): most expected action for trade buyers — Krug (2014); visually dominant; leftmost in action row
+      </div>
+      <div class="legend-item">
+        btn-ghost (Copy to Clipboard, Start New Calculation): secondary actions — present but visually subordinate to primary; consistent border-only styling — Nielsen H4 Consistency
+      </div>
+      <div class="legend-item">
+        btn-accent (Continue to Board Coverage — yellow): related calculator upsell; cross-tool suggestion; smaller size (btn-sm) signals it is supplementary, not the main action
+      </div>
+      <div class="legend-item">
+        Input summary pills: quick visual confirmation row — compact coloured badges summarise all 6 steps' key values at the top of the page; reduces need to open input table
+      </div>
+      <div class="legend-item">
+        Mobile: sidebar replaced by "Step 6 of 6 ✓ Complete" pill — sufficient status indicator; no step rail required on summary page; single-line, prominent yellow pill
+      </div>
+      <div class="legend-item">
+        Mobile table: overflow-x: auto on container; tabindex="0" allows keyboard scrolling; minimum column widths preserved in mobile-materials-table for legibility
+      </div>
+      <div class="legend-item">
+        Mobile action buttons: full-width stacked column; touch target minimum 44px; priority order preserved vertically (Print first, secondary actions below)
+      </div>
+      <div class="legend-item">
+        SELCO brand colours: Navy #04204b (table header, headings, primary btn, sidebar) · Blue #253081 (dividers, breadcrumb links) · Yellow #ffd407 (accent btn, complete pill, sidebar indicators) · Light grey #f2f6fa (alternating rows, page bg) · White #ffffff (content area, odd rows)
+      </div>
+      <div class="legend-item">
+        Disclaimer text below table: trade context — merchant stock may vary; quantities are advisory; reinforces that tool is a planning aid, not a guaranteed order list
+      </div>
+    </div>
+  </div>
+</div>
+
+</body>
+</html>

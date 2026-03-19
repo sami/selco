@@ -1,0 +1,1178 @@
+<!DOCTYPE html>
+<html lang="en-GB">
+<!--
+  ============================================================
+  WIREFRAME: "Tiling a Bathroom" — Project Guide (Project Flow)
+  Project:   SELCO Trade Materials Calculator (TM470)
+  Author:    Sami — Open University TMA 02
+  Date:      2026-03-19
+  Layout:    Full-width WITH sidebar (showSidebar=true)
+             Sidebar: 260px / Main: 1fr — SelcoLayout.astro .with-sidebar
+  ============================================================
+  ANNOTATION COLOUR KEY (see legend at bottom of page):
+    - Grey  box  (#d1d5db bg, #6b7280 text) = Site template / chrome zone
+    - Blue  box  (#dbeafe bg, #1e40af text) = Layout / structural annotation
+    - Green box  (#dcfce7 bg, #166534 text) = Interaction / behaviour note
+    - Amber box  (#fef9c3 bg, #854d0e text) = Accessibility / WCAG note
+    - Pink  box  (#fce7f3 bg, #9d174d text) = Design decision / pattern ref
+    - Orange box (#ffedd5 bg, #9a3412 text) = Phase / progress indicator note
+  ============================================================
+-->
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Wireframe — Tiling a Bathroom (Project Flow) — SELCO TM470</title>
+  <style>
+    /* ── Reset ─────────────────────────────────────────────── */
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    /* ── SELCO Brand Tokens ────────────────────────────────── */
+    :root {
+      --navy:       #04204b;
+      --blue:       #253081;
+      --yellow:     #ffd407;
+      --light-grey: #f2f6fa;
+      --white:      #ffffff;
+      --text-dark:  #1f2937;
+      --text-mid:   #4b5563;
+      --text-muted: #9ca3af;
+      --border:     #04204b;
+      --radius:     4px;
+      --error:      #dc2626;
+      --success:    #16a34a;
+    }
+
+    body {
+      font-family: 'Arial', Helvetica, sans-serif;
+      font-size: 15px;
+      line-height: 1.5;
+      color: var(--text-dark);
+      background: var(--light-grey);
+    }
+
+    /* ── Annotation Chip Styles ────────────────────────────── */
+    .ann {
+      display: inline-block;
+      font-size: 10px;
+      font-weight: 700;
+      letter-spacing: 0.4px;
+      padding: 2px 7px;
+      border-radius: 3px;
+      text-transform: uppercase;
+      margin-bottom: 4px;
+      font-family: 'Courier New', monospace;
+    }
+    .ann-chrome   { background: #d1d5db; color: #374151; }
+    .ann-layout   { background: #dbeafe; color: #1e40af; }
+    .ann-interact { background: #dcfce7; color: #166534; }
+    .ann-access   { background: #fef9c3; color: #854d0e; }
+    .ann-pattern  { background: #fce7f3; color: #9d174d; }
+    .ann-phase    { background: #ffedd5; color: #9a3412; }
+
+    .zone {
+      position: relative;
+      border: 1.5px dashed #9ca3af;
+      border-radius: 4px;
+      margin-bottom: 6px;
+    }
+    .zone-chrome   { border-color: #9ca3af; background: #f3f4f6; }
+    .zone-layout   { border-color: #93c5fd; background: #eff6ff; }
+    .zone-interact { border-color: #86efac; background: #f0fdf4; }
+    .zone-access   { border-color: #fde68a; background: #fffbeb; }
+    .zone-phase    { border-color: #fdba74; background: #fff7ed; }
+
+    /* ── Site Chrome: Top Bar ──────────────────────────────── */
+    .top-bar {
+      background: var(--navy);
+      color: #fff;
+      font-size: 11px;
+      font-weight: 700;
+      padding: 6px 0;
+    }
+    .top-bar-inner {
+      max-width: 1280px;
+      margin: 0 auto;
+      padding: 0 16px;
+      display: flex;
+      justify-content: space-between;
+    }
+    .top-bar a { color: rgba(255,255,255,0.75); text-decoration: none; margin: 0 8px; text-transform: uppercase; font-size: 10px; }
+
+    /* ── Site Chrome: Main Header ──────────────────────────── */
+    .site-header {
+      background: var(--yellow);
+      padding: 10px 0;
+    }
+    .header-inner {
+      max-width: 1280px;
+      margin: 0 auto;
+      padding: 0 16px;
+      display: flex;
+      align-items: center;
+      gap: 16px;
+    }
+    .logo-wordmark {
+      font-size: 22px;
+      font-weight: 900;
+      color: var(--navy);
+      text-transform: uppercase;
+      letter-spacing: -1px;
+      white-space: nowrap;
+    }
+    .logo-wordmark span { color: var(--blue); font-size: 13px; font-weight: 700; display: block; letter-spacing: 0; text-transform: none; }
+    .search-bar { flex: 1; display: flex; max-width: 560px; }
+    .search-bar input { width: 100%; padding: 9px 14px; border: 1px solid #ccc; border-right: none; border-radius: var(--radius) 0 0 var(--radius); font-size: 14px; color: var(--text-mid); background: #fff; }
+    .search-bar button { background: var(--navy); color: #fff; border: none; padding: 0 16px; border-radius: 0 var(--radius) var(--radius) 0; font-size: 16px; cursor: default; }
+    .header-icons { display: flex; gap: 20px; }
+    .header-icon { display: flex; flex-direction: column; align-items: center; color: var(--navy); font-size: 11px; font-weight: 700; text-decoration: none; gap: 2px; }
+    .header-icon .icon { font-size: 18px; }
+
+    /* ── Site Chrome: Category Nav ─────────────────────────── */
+    .cat-nav { background: var(--blue); color: #fff; }
+    .cat-nav-inner { max-width: 1280px; margin: 0 auto; padding: 0 16px; display: flex; gap: 1px; overflow-x: auto; }
+    .cat-nav-item { padding: 11px 10px; font-size: 10px; font-weight: 700; text-transform: uppercase; white-space: nowrap; color: rgba(255,255,255,0.75); border-right: 1px solid rgba(255,255,255,0.1); text-align: center; line-height: 1.3; }
+
+    /* ── SVG Hero Strip ────────────────────────────────────── */
+    .hero-strip {
+      background: var(--navy);
+      height: 200px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      position: relative;
+      overflow: hidden;
+    }
+    /* Tile grid motif */
+    .hero-strip::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background-image:
+        linear-gradient(rgba(255,255,255,0.06) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(255,255,255,0.06) 1px, transparent 1px);
+      background-size: 48px 48px;
+    }
+    .hero-strip::after {
+      content: '';
+      position: absolute;
+      inset: 8px;
+      border: 2px solid rgba(255,212,7,0.2);
+      border-radius: 2px;
+    }
+    .hero-text { position: relative; z-index: 1; text-align: center; color: #fff; }
+    .hero-title { display: block; font-size: 32px; font-weight: 900; letter-spacing: -0.5px; }
+    .hero-sub   { display: block; font-size: 12px; color: rgba(255,255,255,0.5); margin-top: 6px; }
+
+    /* ── Page layout: sidebar + main ──────────────────────── */
+    .page-outer {
+      max-width: 1280px;
+      margin: 0 auto;
+      padding: 0 16px 60px;
+    }
+    .breadcrumb {
+      padding: 20px 0 10px;
+      font-size: 12px;
+      color: var(--blue);
+      font-weight: 600;
+    }
+    .breadcrumb a { color: var(--blue); text-decoration: none; }
+    .breadcrumb span { color: #ccc; margin: 0 5px; font-weight: normal; }
+    .breadcrumb .current { color: var(--text-muted); font-weight: normal; }
+
+    /* Two-column grid: sidebar 260px + main 1fr */
+    .two-col {
+      display: grid;
+      grid-template-columns: 260px 1fr;
+      gap: 30px;
+      align-items: start;
+    }
+
+    /* ── Sidebar ───────────────────────────────────────────── */
+    .sidebar {
+      background: #f4f4f4;
+      border-radius: var(--radius);
+      overflow: hidden;
+    }
+    .sidebar-header {
+      background: var(--navy);
+      color: #fff;
+      padding: 12px 16px;
+      font-size: 13px;
+      font-weight: 700;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    .sidebar-escape {
+      display: block;
+      padding: 10px 16px;
+      font-size: 12px;
+      font-weight: 700;
+      color: var(--navy);
+      text-decoration: none;
+      border-bottom: 1px solid #ddd;
+      background: #fff;
+    }
+    .sidebar-section-label {
+      display: block;
+      padding: 8px 16px;
+      font-size: 10px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      color: #666;
+      background: #e8e8e8;
+      border-bottom: 1px solid #ddd;
+    }
+    .sidebar-list { list-style: none; }
+    .sidebar-list li a {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding: 10px 16px;
+      font-size: 13px;
+      color: #555;
+      text-decoration: none;
+      border-bottom: 1px solid #ddd;
+    }
+    .sidebar-list li a::before { content: '\25B6'; font-size: 9px; color: #bbb; }
+    .sidebar-list li a:hover { background: #fff; color: var(--blue); }
+    .sidebar-list li a.active {
+      font-weight: 700;
+      color: var(--navy);
+      background: #fff;
+      border-left: 3px solid var(--yellow);
+      padding-left: 13px;
+    }
+    .sidebar-list li a.active::before { color: var(--yellow); }
+    .sidebar-list li a.disabled { opacity: 0.45; pointer-events: none; }
+
+    /* ── Main content area ─────────────────────────────────── */
+    .main-content { min-width: 0; }
+
+    .page-heading {
+      font-size: 28px;
+      font-weight: 900;
+      color: var(--navy);
+      text-transform: uppercase;
+      letter-spacing: -0.5px;
+      margin-bottom: 24px;
+    }
+
+    /* ── Phase progress indicator ──────────────────────────── */
+    /*
+      PHASE indicator — Tidwell (2020) Sequence Map (Ch.9) —
+      named phases, clickable completed phases.
+      Four horizontal pills. Phase 3 highlighted in yellow (active).
+      Completed phases (1,2) have a tick. Phase 4 is locked / greyed.
+    */
+    .phase-bar {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 6px;
+      margin-bottom: 28px;
+    }
+    .phase-pill {
+      position: relative;
+      padding: 10px 12px;
+      border-radius: 20px;
+      text-align: center;
+      font-size: 12px;
+      font-weight: 700;
+      border: 2px solid transparent;
+    }
+    .phase-pill.completed {
+      background: #f0fdf4;
+      border-color: var(--success);
+      color: var(--success);
+      cursor: pointer;
+    }
+    .phase-pill.active {
+      background: var(--yellow);
+      border-color: var(--navy);
+      color: var(--navy);
+    }
+    .phase-pill.locked {
+      background: #f3f4f6;
+      border-color: #e5e7eb;
+      color: #9ca3af;
+    }
+    .phase-num { display: block; font-size: 10px; margin-bottom: 2px; opacity: 0.7; }
+    .phase-name { display: block; font-size: 11px; line-height: 1.3; }
+    .phase-connector {
+      position: absolute;
+      top: 50%;
+      right: -9px;
+      transform: translateY(-50%);
+      font-size: 14px;
+      color: #d1d5db;
+      z-index: 1;
+    }
+
+    /* ── Phase accordion sections ──────────────────────────── */
+    .phase-section {
+      border: 1.5px solid #e5e7eb;
+      border-radius: 6px;
+      margin-bottom: 10px;
+      overflow: hidden;
+    }
+    .phase-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 14px 18px;
+      cursor: default;
+    }
+    .phase-header.completed { background: #f0fdf4; border-bottom: 1.5px solid #bbf7d0; }
+    .phase-header.active { background: #fff; border-left: 4px solid var(--yellow); border-bottom: 1.5px solid #e5e7eb; }
+    .phase-header.locked { background: #f9fafb; }
+
+    .phase-header-left { display: flex; align-items: center; gap: 12px; }
+    .phase-icon {
+      width: 30px;
+      height: 30px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 14px;
+      font-weight: 900;
+      flex-shrink: 0;
+    }
+    .phase-icon.completed { background: #dcfce7; color: var(--success); }
+    .phase-icon.active    { background: var(--yellow); color: var(--navy); }
+    .phase-icon.locked    { background: #f3f4f6; color: #9ca3af; }
+
+    .phase-title { font-size: 14px; font-weight: 700; color: var(--navy); }
+    .phase-subtitle { font-size: 12px; color: var(--text-mid); }
+    .phase-summary { font-size: 12px; color: var(--text-muted); font-style: italic; }
+    .phase-status-chip {
+      font-size: 10px;
+      font-weight: 700;
+      padding: 3px 8px;
+      border-radius: 10px;
+      text-transform: uppercase;
+      letter-spacing: 0.3px;
+    }
+    .chip-done   { background: #dcfce7; color: var(--success); }
+    .chip-active { background: var(--yellow); color: var(--navy); }
+    .chip-locked { background: #f3f4f6; color: #9ca3af; }
+
+    .phase-body { padding: 20px; background: #fff; }
+
+    /* ── Embedded wizard annotation box ───────────────────── */
+    .embedded-wizard {
+      background: #f2f6fa;
+      border: 2px dashed #93c5fd;
+      border-radius: 6px;
+      padding: 20px;
+      text-align: center;
+      color: var(--text-mid);
+      margin-bottom: 16px;
+    }
+    .embedded-wizard .comp-label {
+      font-size: 11px;
+      font-weight: 900;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      color: #1e40af;
+      display: block;
+      margin-bottom: 8px;
+    }
+    .embedded-wizard .comp-name {
+      font-size: 13px;
+      font-weight: 700;
+      color: var(--navy);
+      display: block;
+      margin-bottom: 4px;
+    }
+    .embedded-wizard .comp-step {
+      font-size: 12px;
+      color: var(--text-mid);
+      display: block;
+      margin-bottom: 16px;
+    }
+
+    /* Wizard step indicators (mini) */
+    .wizard-steps {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+      margin-bottom: 16px;
+    }
+    .wiz-step {
+      width: 28px;
+      height: 28px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 11px;
+      font-weight: 700;
+    }
+    .wiz-step.done    { background: #dcfce7; color: var(--success); border: 1.5px solid var(--success); }
+    .wiz-step.current { background: var(--navy); color: #fff; border: 1.5px solid var(--navy); }
+    .wiz-step.todo    { background: #f3f4f6; color: #9ca3af; border: 1.5px solid #e5e7eb; }
+    .wiz-connector    { width: 18px; height: 2px; background: #d1d5db; }
+    .wiz-connector.done { background: var(--success); }
+
+    /* Wizard sub-form area */
+    .wiz-sub-form { background: #fff; border: 1px solid #e5e7eb; border-radius: 4px; padding: 14px; text-align: left; }
+    .form-label { display: block; font-size: 12px; font-weight: 700; color: var(--text-dark); margin-bottom: 4px; }
+    .form-input, .form-select {
+      display: block; width: 100%; padding: 8px 10px;
+      border: 1px solid var(--navy); border-radius: var(--radius);
+      font-size: 13px; color: var(--text-dark); background: #fff;
+      appearance: none; -webkit-appearance: none;
+      margin-bottom: 12px;
+    }
+    .form-select {
+      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%2304204b' d='M6 8L1 3h10z'/%3E%3C/svg%3E");
+      background-repeat: no-repeat;
+      background-position: right 10px center;
+      padding-right: 28px;
+    }
+    .wiz-nav { display: flex; justify-content: space-between; margin-top: 12px; }
+
+    /* Running sub-total */
+    .subtotal-bar {
+      display: flex;
+      gap: 16px;
+      flex-wrap: wrap;
+      padding: 10px 14px;
+      background: #fffbeb;
+      border: 1.5px solid #fde68a;
+      border-radius: 4px;
+      font-size: 12px;
+      font-weight: 700;
+      color: var(--navy);
+      margin-bottom: 0;
+    }
+    .subtotal-item { display: flex; flex-direction: column; align-items: center; }
+    .subtotal-val  { font-size: 18px; font-weight: 900; color: var(--navy); }
+    .subtotal-lbl  { font-size: 10px; color: var(--text-mid); font-weight: 600; }
+
+    /* Locked phase */
+    .locked-note {
+      padding: 16px 20px;
+      background: #f9fafb;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      font-size: 13px;
+      color: #9ca3af;
+      font-style: italic;
+    }
+
+    /* ── Materials Summary (sticky sidebar inset) ─────────── */
+    /*
+      ZONE: Sticky materials summary — Tidwell (2020) Data Spotlight —
+      key result always visible as user scrolls.
+      Positioned as sticky within the main content area.
+    */
+    .materials-summary {
+      border: 1.5px solid #e5e7eb;
+      border-radius: 6px;
+      overflow: hidden;
+      margin-top: 16px;
+    }
+    .ms-header {
+      background: var(--navy);
+      color: #fff;
+      padding: 10px 16px;
+      font-size: 12px;
+      font-weight: 700;
+    }
+    .ms-header small { display: block; font-size: 10px; color: rgba(255,255,255,0.6); font-weight: 400; margin-top: 2px; }
+    .ms-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 12px;
+    }
+    .ms-table th {
+      background: #f2f6fa;
+      padding: 8px 12px;
+      text-align: left;
+      font-size: 10px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.4px;
+      color: var(--text-mid);
+      border-bottom: 1px solid #e5e7eb;
+    }
+    .ms-table td {
+      padding: 8px 12px;
+      border-bottom: 1px solid #f3f4f6;
+      color: var(--text-dark);
+    }
+    .ms-table tr:last-child td { border-bottom: none; }
+    .ms-qty { font-weight: 700; color: var(--navy); }
+    .ms-tbc { color: var(--text-muted); font-style: italic; }
+    .ms-footer {
+      padding: 12px 16px;
+      background: #f9fafb;
+      border-top: 1px solid #e5e7eb;
+    }
+
+    /* ── Buttons ───────────────────────────────────────────── */
+    .btn-primary {
+      display: inline-block;
+      background: var(--navy);
+      color: #fff;
+      font-size: 13px;
+      font-weight: 700;
+      padding: 10px 22px;
+      border: none;
+      border-radius: var(--radius);
+      cursor: default;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+    .btn-accent {
+      display: inline-block;
+      background: var(--yellow);
+      color: var(--navy);
+      font-size: 13px;
+      font-weight: 700;
+      padding: 10px 22px;
+      border: none;
+      border-radius: var(--radius);
+      cursor: default;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+    .btn-ghost {
+      display: inline-block;
+      background: transparent;
+      color: var(--navy);
+      font-size: 12px;
+      font-weight: 700;
+      padding: 8px 16px;
+      border: 1.5px solid var(--navy);
+      border-radius: var(--radius);
+      cursor: default;
+    }
+
+    /* ── Site Footer ───────────────────────────────────────── */
+    .site-footer {
+      background: var(--navy);
+      color: rgba(255,255,255,0.7);
+      padding: 40px 0 20px;
+      margin-top: 60px;
+    }
+    .footer-inner {
+      max-width: 1280px;
+      margin: 0 auto;
+      padding: 0 16px;
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 30px;
+      margin-bottom: 30px;
+    }
+    .footer-col h4 { color: #fff; font-size: 13px; margin-bottom: 12px; }
+    .footer-col ul { list-style: none; }
+    .footer-col li { font-size: 12px; margin-bottom: 6px; color: rgba(255,255,255,0.6); }
+    .footer-copy {
+      max-width: 1280px;
+      margin: 0 auto;
+      padding: 16px 16px 0;
+      border-top: 1px solid rgba(255,255,255,0.1);
+      text-align: center;
+      font-size: 11px;
+      color: rgba(255,255,255,0.5);
+    }
+
+    /* ── Annotation Legend ─────────────────────────────────── */
+    .legend {
+      max-width: 1100px;
+      margin: 48px auto 0;
+      padding: 20px 24px;
+      background: #fff;
+      border: 1.5px solid #e2e8f0;
+      border-radius: 6px;
+    }
+    .legend h3 { font-size: 13px; font-weight: 900; text-transform: uppercase; letter-spacing: 0.5px; color: var(--navy); margin-bottom: 14px; }
+    .legend-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; }
+    .legend-item { display: flex; align-items: flex-start; gap: 8px; font-size: 12px; }
+    .legend-swatch { width: 28px; height: 20px; border-radius: 3px; flex-shrink: 0; border: 1px solid rgba(0,0,0,0.08); margin-top: 2px; }
+  </style>
+</head>
+<body>
+
+<!-- ============================================================
+     ZONE: SELCO Site Template — Top Bar
+     SelcoHeader.astro — navy #04204b background.
+     ============================================================ -->
+<div class="zone zone-chrome" style="margin-bottom:0; border-radius:0; border-left:none; border-right:none; border-top:none;">
+  <div style="padding:2px 8px 0;"><span class="ann ann-chrome">Site Chrome — top-bar — SelcoHeader.astro — navy #04204b</span></div>
+  <div class="top-bar">
+    <div class="top-bar-inner">
+      <div><a>MATERIALS</a><a>CAREERS</a><a>BLOG</a></div>
+      <div><a>First Time Log In</a><a>Get a Trade Card</a></div>
+    </div>
+  </div>
+</div>
+
+<!-- ============================================================
+     ZONE: SELCO Site Template — Main Header (yellow bar)
+     SelcoHeader.astro — background: #ffd407.
+     ============================================================ -->
+<div class="zone zone-chrome" style="border-radius:0; border-left:none; border-right:none; margin-bottom:0;">
+  <div style="padding:2px 8px 0;"><span class="ann ann-chrome">Site Chrome — SelcoHeader.astro — yellow #ffd407 background</span></div>
+  <div class="site-header">
+    <div class="header-inner">
+      <div class="logo-wordmark">SELCO<span>Builders Warehouse</span></div>
+      <div class="search-bar">
+        <input type="text" placeholder="Search (e.g. Tiles, Adhesive, Grout)" disabled />
+        <button disabled>&#128269;</button>
+      </div>
+      <div class="header-icons">
+        <a class="header-icon"><span class="icon">&#128205;</span>Branches</a>
+        <a class="header-icon"><span class="icon">&#128337;</span>Calculators</a>
+        <a class="header-icon"><span class="icon">&#128274;</span>Log In</a>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ============================================================
+     ZONE: SELCO Site Template — Category Navigation bar
+     SelcoNav.astro — background: #253081.
+     ============================================================ -->
+<div class="zone zone-chrome" style="border-radius:0; border-left:none; border-right:none; margin-bottom:0;">
+  <div style="padding:2px 8px 0;"><span class="ann ann-chrome">Site Chrome — SelcoNav.astro — category nav — #253081</span></div>
+  <div class="cat-nav">
+    <div class="cat-nav-inner">
+      <div class="cat-nav-item">&#127968;</div>
+      <div class="cat-nav-item">Building<br>Materials</div>
+      <div class="cat-nav-item">Timber &amp;<br>Joinery</div>
+      <div class="cat-nav-item">Landscaping &amp;<br>Fencing</div>
+      <div class="cat-nav-item" style="color:#fff; font-weight:900; opacity:1;">Kitchens &amp;<br>Bathrooms</div>
+      <div class="cat-nav-item" style="color:#ffd407; font-weight:900; opacity:1; border-bottom:2px solid #ffd407;">Flooring &amp;<br>Tiling</div>
+      <div class="cat-nav-item">Plumbing &amp;<br>Heating</div>
+      <div class="cat-nav-item">Tools, Equipment<br>&amp; Workwear</div>
+      <div class="cat-nav-item">Painting &amp;<br>Decorating</div>
+      <div class="cat-nav-item">Electrical, Lighting<br>&amp; Ventilation</div>
+      <div class="cat-nav-item">Fixings &amp;<br>Adhesives</div>
+    </div>
+  </div>
+</div>
+
+<!-- ============================================================
+     ZONE: SVG Hero Strip
+     hero-tiling.svg — navy background (#04204b), tile grid motif.
+     Height: 200px. Full width. Richer hero for project page (vs 140px handy calc).
+     ============================================================ -->
+<div class="zone zone-layout" style="border-radius:0; border-left:none; border-right:none; margin-bottom:0;">
+  <div style="padding:2px 8px 0;"><span class="ann ann-layout">SVG Hero — hero-tiling.svg — navy bg #04204b — tile grid motif — 200px</span></div>
+  <div class="hero-strip">
+    <div class="hero-text">
+      <span class="hero-title">TILING CALCULATOR</span>
+      <span class="hero-sub">hero-tiling.svg — navy background, tile grid motif overlay</span>
+    </div>
+  </div>
+</div>
+
+<!-- ============================================================
+     PAGE BODY — showSidebar=true — two-column layout (260px + 1fr)
+     SelcoLayout.astro — main-container.with-sidebar
+     ============================================================ -->
+<div class="zone zone-layout" style="border-radius:0; border-left:none; border-right:none; min-height:600px;">
+  <div style="padding:4px 8px 0;">
+    <span class="ann ann-layout">Page Body — SelcoLayout.astro — showSidebar=true — grid: 260px + 1fr — max-width 1280px</span>
+    <span class="ann ann-pattern">Two-group sidebar: PROJECT CALCULATORS (Tiling active) / HANDY CALCULATORS</span>
+  </div>
+
+  <div class="page-outer">
+
+    <!-- Breadcrumb -->
+    <div class="zone zone-layout" style="margin-bottom:4px; display:inline-block; width:100%;">
+      <div style="padding:2px 8px;"><span class="ann ann-layout">Breadcrumb — nav &gt; ol &gt; li — SelcoLayout.astro breadcrumbs prop</span></div>
+      <nav aria-label="Breadcrumb" class="breadcrumb">
+        <a href="#">Home</a>
+        <span>›</span>
+        <span class="current">Tiling Calculator</span>
+      </nav>
+    </div>
+
+    <!-- Two-column grid -->
+    <div class="two-col">
+
+      <!-- ══════════════════════════════════════
+           SIDEBAR (left 260px)
+           ══════════════════════════════════════ -->
+      <!--
+        ZONE: Sidebar navigation — SelcoSidebar.astro
+        Two navigation groups: PROJECT CALCULATORS + HANDY CALCULATORS.
+        Escape hatch "← All Calculators" at top.
+        Tiling is active (bold, yellow left border, white bg).
+      -->
+      <aside>
+        <div class="zone zone-layout" style="height:100%;">
+          <div style="padding:2px 8px;"><span class="ann ann-layout">Sidebar — SelcoSidebar.astro — 260px — two-group nav</span></div>
+
+          <div class="sidebar">
+            <div class="sidebar-header">Navigation</div>
+
+            <!-- Escape hatch -->
+            <a class="sidebar-escape" href="#">&#8592; All Calculators</a>
+
+            <!-- Group 1: Project Calculators -->
+            <span class="sidebar-section-label">Project Calculators</span>
+            <ul class="sidebar-list">
+              <li><a href="#" class="active">Tiling</a></li>
+              <li><a href="#" class="disabled">Masonry</a></li>
+              <li><a href="#" class="disabled">Concrete &amp; Groundworks</a></li>
+            </ul>
+
+            <!-- Group 2: Handy Calculators -->
+            <span class="sidebar-section-label">Handy Calculators</span>
+            <ul class="sidebar-list">
+              <li><a href="#">Unit Converter</a></li>
+              <li><a href="#" class="disabled">Board Coverage</a></li>
+              <li><a href="#" class="disabled">Board Cutting Optimiser</a></li>
+            </ul>
+          </div>
+        </div>
+      </aside>
+
+      <!-- ══════════════════════════════════════
+           MAIN CONTENT (right 1fr)
+           ══════════════════════════════════════ -->
+      <main class="main-content">
+
+        <!-- h1 -->
+        <h1 class="page-heading">Tiling a Bathroom</h1>
+
+        <!-- ── Phase progress indicator ─────────────────────── -->
+        <!--
+          ZONE: Project phases — Tidwell (2020) Sequence Map extended —
+          project-level progress indicator.
+          PHASE indicator — Tidwell (2020) Sequence Map (Ch.9) —
+          named phases, clickable completed phases.
+          Four pill steps. Phase 3 active (yellow). Phases 1+2 completed (green tick, clickable).
+          Phase 4 locked (grey).
+        -->
+        <!-- ZONE: Project phases — Tidwell (2020) Sequence Map extended — project-level progress indicator -->
+        <!-- PHASE indicator — Tidwell (2020) Sequence Map (Ch.9) — named phases, clickable completed phases -->
+        <div class="zone zone-phase">
+          <div style="padding:2px 8px;">
+            <span class="ann ann-phase">PHASE INDICATOR — Tidwell (2020) Sequence Map (Ch.9) — named phases, clickable completed phases</span>
+            <span class="ann ann-access">Accessible: each phase is a focusable button, aria-current="step" on active — WCAG 2.4.3</span>
+          </div>
+          <div style="padding:8px 8px 12px;">
+            <div class="phase-bar">
+
+              <div class="phase-pill completed" title="Phase 1 — completed, clickable">
+                <span class="phase-num">Phase 1</span>
+                <span class="phase-name">&#10003; Measure Up</span>
+              </div>
+
+              <div class="phase-pill completed" title="Phase 2 — completed, clickable">
+                <span class="phase-num">Phase 2</span>
+                <span class="phase-name">&#10003; Choose Materials</span>
+              </div>
+
+              <div class="phase-pill active" aria-current="step" title="Phase 3 — current">
+                <span class="phase-num">Phase 3</span>
+                <span class="phase-name">Calculate Quantities</span>
+              </div>
+
+              <div class="phase-pill locked" aria-disabled="true" title="Phase 4 — locked until Phase 3 complete">
+                <span class="phase-num">Phase 4</span>
+                <span class="phase-name">&#128274; Order &amp; Install</span>
+              </div>
+
+            </div>
+          </div>
+        </div>
+
+        <!-- ── Phase accordion sections ──────────────────────── -->
+
+        <!-- Phase 1: Measure Up — COLLAPSED / COMPLETED -->
+        <div class="phase-section">
+          <div class="phase-header completed">
+            <div class="phase-header-left">
+              <div class="phase-icon completed">&#10003;</div>
+              <div>
+                <div class="phase-title">Phase 1: Measure Up</div>
+                <div class="phase-subtitle">Record your room dimensions</div>
+                <div class="phase-summary">Room: 2.4 m &times; 3.2 m &mdash; Area: 7.68 m&sup2;</div>
+              </div>
+            </div>
+            <span class="phase-status-chip chip-done">Completed</span>
+          </div>
+          <!-- Body hidden (collapsed) — annotation only -->
+          <div style="padding:6px 16px; background:#f0fdf4; font-size:11px; color:#166534; font-style:italic;">
+            [Collapsed — Phase 1 complete. Click phase header to expand and review dimensions.]
+          </div>
+        </div>
+
+        <!-- Phase 2: Choose Materials — COLLAPSED / COMPLETED -->
+        <div class="phase-section">
+          <div class="phase-header completed">
+            <div class="phase-header-left">
+              <div class="phase-icon completed">&#10003;</div>
+              <div>
+                <div class="phase-title">Phase 2: Choose Materials</div>
+                <div class="phase-subtitle">Select your tile size and finish</div>
+                <div class="phase-summary">300 &times; 300 mm ceramic &mdash; Standard adhesive &mdash; Grid pattern</div>
+              </div>
+            </div>
+            <span class="phase-status-chip chip-done">Completed</span>
+          </div>
+          <div style="padding:6px 16px; background:#f0fdf4; font-size:11px; color:#166534; font-style:italic;">
+            [Collapsed — Phase 2 complete. Click phase header to expand and review material selections.]
+          </div>
+        </div>
+
+        <!-- Phase 3: Calculate Quantities — EXPANDED / ACTIVE -->
+        <!--
+          ZONE: Embedded wizard — calculator as sub-component of project flow.
+          TilingProjectWizard.tsx mounted as a React island inside the project page.
+          Currently on Step 3 of 6: Adhesive & Spacers.
+          Running subtotal shown below the wizard step.
+        -->
+        <!-- ZONE: Embedded wizard — calculator as sub-component of project flow -->
+        <div class="phase-section" style="border-color: var(--yellow); border-width: 2px;">
+          <div class="phase-header active">
+            <div class="phase-header-left">
+              <div class="phase-icon active">3</div>
+              <div>
+                <div class="phase-title">Phase 3: Calculate Quantities</div>
+                <div class="phase-subtitle">Work through each material category</div>
+              </div>
+            </div>
+            <span class="phase-status-chip chip-active">In Progress</span>
+          </div>
+          <div class="phase-body">
+
+            <!-- Embedded wizard annotation -->
+            <div class="zone zone-interact">
+              <div style="padding:2px 8px;">
+                <span class="ann ann-interact">Embedded Wizard — TilingProjectWizard.tsx — React island — client:load — Step 3 of 6</span>
+                <span class="ann ann-pattern">Calculator as sub-component of project flow — wizard mounted inside phase body</span>
+              </div>
+
+              <div class="embedded-wizard">
+                <span class="comp-label">Embedded Component</span>
+                <span class="comp-name">TilingProjectWizard.tsx</span>
+                <span class="comp-step">Step 3 of 6 — Adhesive &amp; Spacers</span>
+
+                <!-- Wizard step progress dots -->
+                <div class="wizard-steps">
+                  <div class="wiz-step done">1</div>
+                  <div class="wiz-connector done"></div>
+                  <div class="wiz-step done">2</div>
+                  <div class="wiz-connector done"></div>
+                  <div class="wiz-step current">3</div>
+                  <div class="wiz-connector"></div>
+                  <div class="wiz-step todo">4</div>
+                  <div class="wiz-connector"></div>
+                  <div class="wiz-step todo">5</div>
+                  <div class="wiz-connector"></div>
+                  <div class="wiz-step todo">6</div>
+                </div>
+
+                <!-- Wizard sub-form (Step 3: Adhesive & Spacers) -->
+                <div class="wiz-sub-form">
+                  <div style="font-size:13px; font-weight:700; color:var(--navy); margin-bottom:12px; border-bottom:1px solid #f3f4f6; padding-bottom:8px;">
+                    Step 3 of 6: Adhesive &amp; Spacers
+                  </div>
+
+                  <label class="form-label" for="adhesive-type">Adhesive type</label>
+                  <select class="form-select" id="adhesive-type">
+                    <option selected>Standard wall &amp; floor adhesive</option>
+                    <option>Rapid-set adhesive</option>
+                    <option>Flexible adhesive</option>
+                  </select>
+
+                  <label class="form-label" for="notch-size">Trowel notch size</label>
+                  <select class="form-select" id="notch-size">
+                    <option selected>6 mm (standard floor tiles)</option>
+                    <option>3 mm (wall tiles)</option>
+                    <option>10 mm (large format)</option>
+                  </select>
+
+                  <label class="form-label" for="spacer-size">Spacer size</label>
+                  <select class="form-select" id="spacer-size">
+                    <option selected>3 mm</option>
+                    <option>2 mm</option>
+                    <option>5 mm</option>
+                  </select>
+
+                  <div style="padding:8px 12px; background:#fffbeb; border:1px solid #fde68a; border-radius:4px; font-size:12px; color:#92400e; margin-bottom:12px;">
+                    <strong>Estimated:</strong> 3 bags of adhesive (5 kg each) &bull; 128 tile spacers (1 pack of 200)
+                  </div>
+
+                  <div class="wiz-nav">
+                    <a href="#" class="btn-ghost">&#8592; Back</a>
+                    <button class="btn-primary" type="button">Next: Grout &#8594;</button>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Running sub-total -->
+            <div class="zone zone-interact" style="margin-top:12px;">
+              <div style="padding:2px 8px;">
+                <span class="ann ann-interact">Running sub-total — updates as each wizard step completes — Tidwell (2020) Data Spotlight</span>
+              </div>
+              <div style="padding:8px;">
+                <div style="font-size:11px; font-weight:700; text-transform:uppercase; letter-spacing:0.4px; color:var(--text-mid); margin-bottom:8px;">Running total so far</div>
+                <div class="subtotal-bar">
+                  <div class="subtotal-item">
+                    <span class="subtotal-val">128</span>
+                    <span class="subtotal-lbl">300mm tiles</span>
+                  </div>
+                  <div class="subtotal-item">
+                    <span class="subtotal-val">3</span>
+                    <span class="subtotal-lbl">Adhesive bags</span>
+                  </div>
+                  <div class="subtotal-item">
+                    <span class="subtotal-val" style="color:var(--text-muted); font-size:14px;">TBC</span>
+                    <span class="subtotal-lbl">Grout bags</span>
+                  </div>
+                  <div class="subtotal-item">
+                    <span class="subtotal-val" style="color:var(--text-muted); font-size:14px;">TBC</span>
+                    <span class="subtotal-lbl">Spacer packs</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+          </div><!-- end phase-body -->
+        </div><!-- end Phase 3 -->
+
+        <!-- Phase 4: Order & Install — LOCKED -->
+        <div class="phase-section" style="opacity:0.75;">
+          <div class="phase-header locked">
+            <div class="phase-header-left">
+              <div class="phase-icon locked">&#128274;</div>
+              <div>
+                <div class="phase-title" style="color:#9ca3af;">Phase 4: Order &amp; Install</div>
+                <div class="phase-subtitle" style="color:#9ca3af;">Your materials list and ordering guide</div>
+              </div>
+            </div>
+            <span class="phase-status-chip chip-locked">Locked</span>
+          </div>
+          <div class="locked-note">
+            <span style="font-size:20px;">&#128274;</span>
+            Complete Phase 3 to unlock your full materials list and ordering guide.
+          </div>
+        </div>
+
+        <!-- ── Materials Summary panel ────────────────────────── -->
+        <!--
+          ZONE: Sticky materials summary — Tidwell (2020) Data Spotlight —
+          key result always visible as user scrolls through phases.
+          In the production layout this would be position:sticky; top:20px
+          within the main content column.
+        -->
+        <!-- ZONE: Sticky materials summary — Tidwell (2020) Data Spotlight — key result always visible -->
+        <div class="zone zone-interact" style="margin-top:20px;">
+          <div style="padding:2px 8px;">
+            <span class="ann ann-interact">Sticky materials summary — Tidwell (2020) Data Spotlight — position: sticky; top: 20px — always visible</span>
+            <span class="ann ann-pattern">Running total updates as each wizard step completes — btn-accent CTA: View Full Quote</span>
+          </div>
+
+          <div style="padding:8px;">
+            <div class="materials-summary">
+              <div class="ms-header">
+                Running Total
+                <small>Updates as you complete each step</small>
+              </div>
+              <table class="ms-table">
+                <thead>
+                  <tr>
+                    <th>Item</th>
+                    <th>Qty</th>
+                    <th>Unit</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td>300 mm ceramic tiles</td>
+                    <td class="ms-qty">128</td>
+                    <td>pcs</td>
+                  </tr>
+                  <tr>
+                    <td>Standard adhesive</td>
+                    <td class="ms-qty">3</td>
+                    <td>bags</td>
+                  </tr>
+                  <tr>
+                    <td>Grout</td>
+                    <td class="ms-tbc">TBC</td>
+                    <td>bags</td>
+                  </tr>
+                  <tr>
+                    <td>Tile spacers (3 mm)</td>
+                    <td class="ms-tbc">TBC</td>
+                    <td>pack</td>
+                  </tr>
+                </tbody>
+              </table>
+              <div class="ms-footer">
+                <!-- btn-accent: yellow bg, navy text — primary CTA -->
+                <!-- BUTTON: btn-accent — yellow #ffd407 bg, navy text — View Full Quote CTA -->
+                <!-- CONTRAST: navy #04204b on yellow #ffd407 = 9.7:1 — WCAG 2.1 SC 1.4.3 AAA -->
+                <div class="zone zone-access" style="padding:4px 6px; margin-bottom:8px; display:inline-block;">
+                  <span class="ann ann-access">WCAG 2.1 SC 1.4.3 — navy #04204b on yellow #ffd407 = 9.7:1 AAA</span>
+                </div>
+                <br>
+                <button class="btn-accent" type="button">&#8594; View Full Quote</button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+      </main><!-- end main-content -->
+    </div><!-- end two-col -->
+  </div><!-- end page-outer -->
+</div><!-- end page body zone -->
+
+
+<!-- ── Site Footer ─────────────────────────────────────────────── -->
+<!--
+  ZONE: Site Chrome — SelcoFooter.astro
+  Navy background #04204b. Four column grid.
+-->
+<div class="zone zone-chrome" style="border-radius:0; border-left:none; border-right:none; border-bottom:none; margin-top:0;">
+  <div style="padding:2px 8px;"><span class="ann ann-chrome">Site Chrome — SelcoFooter.astro — navy #04204b — 4-col grid</span></div>
+  <div class="site-footer">
+    <div class="footer-inner">
+      <div class="footer-col">
+        <h4>Help</h4>
+        <ul>
+          <li>Selcobw.com Help</li>
+          <li>Buying from Selco</li>
+          <li>Branch Finder</li>
+          <li>Returns Policy</li>
+          <li>Contact Us</li>
+        </ul>
+      </div>
+      <div class="footer-col">
+        <h4>Services</h4>
+        <ul>
+          <li>Get a Trade Card</li>
+          <li>Click &amp; Collect</li>
+          <li>Click &amp; Deliver</li>
+          <li>Dial &amp; Deliver</li>
+        </ul>
+      </div>
+      <div class="footer-col">
+        <h4>About</h4>
+        <ul>
+          <li>About Selco</li>
+          <li>The Toolkit Blog</li>
+          <li>Careers</li>
+          <li>ESG Policy</li>
+        </ul>
+      </div>
+      <div class="footer-col">
+        <h4>Connect</h4>
+        <ul>
+          <li>Facebook</li>
+          <li>Instagram</li>
+          <li>Twitter / X</li>
+          <li>LinkedIn</li>
+          <li>YouTube</li>
+        </ul>
+      </div>
+    </div>
+    <div class="footer-copy">
+      &copy; 2026 Demo Application — SELCO Trade Materials Calculator — TM470 Open University Project
+    </div>
+  </div>
+</div>
+
+
+<!-- ══════════════════════════════════════════════════════════════
+     ANNOTATION LEGEND
+     ══════════════════════════════════════════════════════════════ -->
+<div style="background:var(--light-grey); padding:32px 16px;">
+  <div class="legend">
+    <h3>Wireframe Annotation Legend — Project Flow</h3>
+    <div class="legend-grid">
+
+      <div class="legend-item">
+        <div class="legend-swatch" style="background:#d1d5db; border-color:#9ca3af;"></div>
+        <div>
+          <strong>Grey zone / chip</strong><br>
+          <span style="color:#6b7280;">Site template / chrome (SelcoHeader, SelcoNav, SelcoFooter)</span>
+        </div>
+      </div>
+
+      <div class="legend-item">
+        <div class="legend-swatch" style="background:#dbeafe; border-color:#93c5fd;"></div>
+        <div>
+          <strong>Blue zone / chip</strong><br>
+          <span style="color:#6b7280;">Layout / structural annotation (sidebar, two-column grid, breadcrumb)</span>
+        </div>
+      </div>
+
+      <div class="legend-item">
+        <div class="legend-swatch" style="background:#dcfce7; border-color:#86efac;"></div>
+        <div>
+          <strong>Green zone / chip</strong><br>
+          <span style="color:#6b7280;">Interaction / behaviour (wizard, running total, sticky summary)</span>
+        </div>
+      </div>
+
+      <div class="legend-item">
+        <div class="legend-swatch" style="background:#fef9c3; border-color:#fde68a;"></div>
+        <div>
+          <strong>Amber zone / chip</strong><br>
+          <span style="color:#6b7280;">Accessibility / WCAG note (contrast, focus ring, aria)</span>
+        </div>
+      </div>
+
+      <div class="legend-item">
+        <div class="legend-swatch" style="background:#fce7f3; border-color:#f9a8d4;"></div>
+        <div>
+          <strong>Pink chip</strong><br>
+          <span style="color:#6b7280;">Design decision / pattern reference (Tidwell, Nielsen)</span>
+        </div>
+      </div>
+
+      <div class="legend-item">
+        <div class="legend-swatch" style="background:#ffedd5; border-color:#fdba74;"></div>
+        <div>
+          <strong>Orange zone / chip</strong><br>
+          <span style="color:#6b7280;">Phase / progress indicator annotation (Sequence Map)</span>
+        </div>
+      </div>
+
+    </div>
+
+    <div style="margin-top:20px; padding-top:16px; border-top:1px solid #e2e8f0; font-size:11px; color:#6b7280;">
+      <strong>Phase states:</strong>&nbsp;
+      <span style="background:#f0fdf4; color:#16a34a; border:1.5px solid #16a34a; padding:2px 8px; border-radius:10px; font-size:11px; margin-right:6px;">&#10003; Completed — green, clickable</span>
+      <span style="background:var(--yellow); color:var(--navy); border:1.5px solid var(--navy); padding:2px 8px; border-radius:10px; font-size:11px; margin-right:6px;">Active — yellow, current step</span>
+      <span style="background:#f3f4f6; color:#9ca3af; border:1.5px solid #e5e7eb; padding:2px 8px; border-radius:10px; font-size:11px;">&#128274; Locked — grey, awaiting earlier phases</span>
+    </div>
+
+    <div style="margin-top:12px; font-size:11px; color:#6b7280;">
+      <strong>Button variants:</strong>&nbsp;
+      <span style="background:#04204b; color:#fff; padding:2px 8px; border-radius:3px; font-size:11px; margin-right:6px;">btn-primary — navy #04204b, white text — Next / Calculate</span>
+      <span style="background:#ffd407; color:#04204b; padding:2px 8px; border-radius:3px; font-size:11px; margin-right:6px;">btn-accent — yellow #ffd407, navy text — View Full Quote</span>
+      <span style="border:1.5px solid #04204b; color:#04204b; padding:2px 8px; border-radius:3px; font-size:11px; background:transparent;">btn-ghost — transparent, navy border + text — Back</span>
+    </div>
+
+    <div style="margin-top:12px; font-size:11px; color:#6b7280;">
+      <strong>Key references:</strong>
+      Tidwell (2020) Sequence Map (Ch.9) — named phases, clickable completed phases &bull;
+      Tidwell (2020) Data Spotlight — sticky materials summary always visible &bull;
+      Tidwell (2020) Hub and Spoke (Ch.3) — sidebar escape hatch back to calculator hub &bull;
+      Nielsen (1994) H4 Consistency — btn-primary always navy, btn-accent always yellow &bull;
+      WCAG 2.1 SC 1.4.3 — white on #04204b = 12.1:1 AAA; #04204b on #ffd407 = 9.7:1 AAA &bull;
+      WCAG 2.4.7 — focus visible (yellow #ffd407 outline on all interactive elements) &bull;
+      WCAG 2.4.3 — aria-current="step" on active phase pill
+    </div>
+  </div>
+</div>
+
+</body>
+</html>

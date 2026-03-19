@@ -1,0 +1,66 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 200">
+  <!-- Background -->
+  <rect width="1200" height="200" fill="#04204b"/>
+
+  <!-- Top-right corner geometric pattern: dot grid in #253081 -->
+  <g fill="#253081">
+    <circle cx="870" cy="15" r="2"/><circle cx="890" cy="15" r="2"/><circle cx="910" cy="15" r="2"/><circle cx="930" cy="15" r="2"/><circle cx="950" cy="15" r="2"/><circle cx="970" cy="15" r="2"/><circle cx="990" cy="15" r="2"/><circle cx="1010" cy="15" r="2"/><circle cx="1030" cy="15" r="2"/><circle cx="1050" cy="15" r="2"/><circle cx="1070" cy="15" r="2"/><circle cx="1090" cy="15" r="2"/><circle cx="1110" cy="15" r="2"/><circle cx="1130" cy="15" r="2"/><circle cx="1150" cy="15" r="2"/><circle cx="1170" cy="15" r="2"/>
+    <circle cx="870" cy="35" r="2"/><circle cx="890" cy="35" r="2"/><circle cx="910" cy="35" r="2"/><circle cx="930" cy="35" r="2"/><circle cx="950" cy="35" r="2"/><circle cx="970" cy="35" r="2"/><circle cx="990" cy="35" r="2"/><circle cx="1010" cy="35" r="2"/><circle cx="1030" cy="35" r="2"/><circle cx="1050" cy="35" r="2"/><circle cx="1070" cy="35" r="2"/><circle cx="1090" cy="35" r="2"/><circle cx="1110" cy="35" r="2"/><circle cx="1130" cy="35" r="2"/><circle cx="1150" cy="35" r="2"/><circle cx="1170" cy="35" r="2"/>
+    <circle cx="870" cy="55" r="2"/><circle cx="890" cy="55" r="2"/><circle cx="910" cy="55" r="2"/><circle cx="930" cy="55" r="2"/><circle cx="950" cy="55" r="2"/><circle cx="970" cy="55" r="2"/><circle cx="990" cy="55" r="2"/><circle cx="1010" cy="55" r="2"/><circle cx="1030" cy="55" r="2"/><circle cx="1050" cy="55" r="2"/><circle cx="1070" cy="55" r="2"/><circle cx="1090" cy="55" r="2"/><circle cx="1110" cy="55" r="2"/><circle cx="1130" cy="55" r="2"/><circle cx="1150" cy="55" r="2"/><circle cx="1170" cy="55" r="2"/>
+  </g>
+
+  <!-- Diagonal divider -->
+  <polygon points="310,0 370,0 340,200 280,200" fill="#253081"/>
+
+  <!-- MOTIF ZONE: Stretcher bond brick pattern -->
+  <!-- Brick: 60px wide x 24px tall, mortar gap: 6px -->
+  <!-- Row height = 24 + 6 = 30px. 5 rows, total height = 5*30 - 6 = 144px -->
+  <!-- Start y = (200-144)/2 = 28. Start x for even rows = 20 -->
+  <!-- Odd rows offset by 33px -->
+
+  <!-- Mortar background fill (the whole area becomes mortar color) -->
+  <rect x="20" y="28" width="320" height="144" fill="#253081" rx="1"/>
+
+  <!-- Row 0 (even): y=28, bricks start at x=20, each brick 60px wide, gap 6px -->
+  <!-- Brick pitches: 20, 86, 152, 218, 284 (all within clipped to x<=320) -->
+  <rect x="20" y="28" width="60" height="24" fill="#ffffff" rx="1"/>
+  <rect x="86" y="28" width="60" height="24" fill="#ffffff" rx="1"/>
+  <rect x="152" y="28" width="60" height="24" fill="#ffffff" rx="1"/>
+  <rect x="218" y="28" width="60" height="24" fill="#ffffff" rx="1"/>
+  <rect x="284" y="28" width="56" height="24" fill="#ffffff" rx="1"/>
+
+  <!-- Row 1 (odd): y=58, offset +33px -->
+  <!-- Half brick start at x=-13 (clipped), then 53, 119, 185, 251, 317 -->
+  <rect x="20" y="58" width="27" height="24" fill="#ffffff" rx="1"/>
+  <rect x="53" y="58" width="60" height="24" fill="#ffffff" rx="1"/>
+  <rect x="119" y="58" width="60" height="24" fill="#ffffff" rx="1"/>
+  <rect x="185" y="58" width="60" height="24" fill="#ffffff" rx="1"/>
+  <rect x="251" y="58" width="60" height="24" fill="#ffffff" rx="1"/>
+  <rect x="317" y="58" width="23" height="24" fill="#ffffff" rx="1"/>
+
+  <!-- Row 2 (even): y=88 -->
+  <rect x="20" y="88" width="60" height="24" fill="#ffffff" rx="1"/>
+  <rect x="86" y="88" width="60" height="24" fill="#ffffff" rx="1"/>
+  <rect x="152" y="88" width="60" height="24" fill="#ffffff" rx="1"/>
+  <rect x="218" y="88" width="60" height="24" fill="#ffffff" rx="1"/>
+  <rect x="284" y="88" width="56" height="24" fill="#ffffff" rx="1"/>
+
+  <!-- Row 3 (odd): y=118 -->
+  <rect x="20" y="118" width="27" height="24" fill="#ffffff" rx="1"/>
+  <rect x="53" y="118" width="60" height="24" fill="#ffffff" rx="1"/>
+  <rect x="119" y="118" width="60" height="24" fill="#ffffff" rx="1"/>
+  <rect x="185" y="118" width="60" height="24" fill="#ffffff" rx="1"/>
+  <rect x="251" y="118" width="60" height="24" fill="#ffffff" rx="1"/>
+  <rect x="317" y="118" width="23" height="24" fill="#ffffff" rx="1"/>
+
+  <!-- Row 4 (even): y=148 -->
+  <rect x="20" y="148" width="60" height="24" fill="#ffffff" rx="1"/>
+  <rect x="86" y="148" width="60" height="24" fill="#ffffff" rx="1"/>
+  <rect x="152" y="148" width="60" height="24" fill="#ffffff" rx="1"/>
+  <rect x="218" y="148" width="60" height="24" fill="#ffffff" rx="1"/>
+  <rect x="284" y="148" width="56" height="24" fill="#ffffff" rx="1"/>
+
+  <!-- TEXT ZONE -->
+  <text x="400" y="88" font-family="'Open Sans', Arial, sans-serif" font-size="32" font-weight="700" fill="#ffffff">Brick &amp; Block Wall Calculator</text>
+  <text x="400" y="121" font-family="'Open Sans', Arial, sans-serif" font-size="16" font-weight="400" fill="#ffd407">Bricks, blocks, mortar &amp; DPC</text>
+</svg>
