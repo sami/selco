@@ -1,63 +1,38 @@
-import React, { useState, useMemo } from 'react';
+import React, { useState } from 'react';
+import { UNITS, convertUnits, type ConversionFamily } from '../calculators/conversions';
 
-type UnitFamily = 'Length' | 'Area' | 'Volume' | 'Weight';
+const FAMILY_OPTIONS: ConversionFamily[] = ['length', 'area', 'volume', 'weight', 'temperature'];
 
-interface UnitDef {
-    id: string;
-    label: string;
-    factor: number; // Factor relative to the base unit of the family
-}
-
-const UNIT_FAMILIES: Record<UnitFamily, UnitDef[]> = {
-    Length: [
-        { id: 'mm', label: 'Millimetres (mm)', factor: 0.001 },
-        { id: 'cm', label: 'Centimetres (cm)', factor: 0.01 },
-        { id: 'm', label: 'Metres (m)', factor: 1 },
-        { id: 'in', label: 'Inches (in)', factor: 0.0254 },
-        { id: 'ft', label: 'Feet (ft)', factor: 0.3048 },
-        { id: 'yd', label: 'Yards (yd)', factor: 0.9144 },
-    ],
-    Area: [
-        { id: 'mm2', label: 'Square millimetres (mm²)', factor: 0.000001 },
-        { id: 'm2', label: 'Square metres (m²)', factor: 1 },
-        { id: 'ft2', label: 'Square feet (ft²)', factor: 0.09290304 },
-        { id: 'yd2', label: 'Square yards (yd²)', factor: 0.83612736 },
-    ],
-    Volume: [
-        { id: 'ml', label: 'Millilitres (ml)', factor: 0.001 },
-        { id: 'L', label: 'Litres (L)', factor: 1 },
-        { id: 'm3', label: 'Cubic metres (m³)', factor: 1000 },
-        { id: 'ft3', label: 'Cubic feet (ft³)', factor: 28.316846592 },
-    ],
-    Weight: [
-        { id: 'g', label: 'Grams (g)', factor: 0.001 },
-        { id: 'kg', label: 'Kilograms (kg)', factor: 1 },
-        { id: 't', label: 'Tonnes (t)', factor: 1000 },
-        { id: 'lb', label: 'Pounds (lb)', factor: 0.45359237 },
-        { id: 'st', label: 'Stones (st)', factor: 6.35029318 },
-    ]
+/** Human-readable labels for each conversion family. */
+const FAMILY_LABELS: Record<ConversionFamily, string> = {
+    length: 'Length',
+    area: 'Area',
+    volume: 'Volume',
+    weight: 'Weight',
+    temperature: 'Temperature',
 };
 
-const FAMILY_OPTIONS: UnitFamily[] = ['Length', 'Area', 'Volume', 'Weight'];
+/** Default from/to unit pairs when a family is first selected. */
+const FAMILY_DEFAULTS: Record<ConversionFamily, { from: string; to: string }> = {
+    length: { from: 'm', to: 'ft' },
+    area: { from: 'm2', to: 'ft2' },
+    volume: { from: 'm3', to: 'ft3' },
+    weight: { from: 'kg', to: 'lb' },
+    temperature: { from: 'C', to: 'F' },
+};
 
 export default function UnitConverter() {
-    const [family, setFamily] = useState<UnitFamily>('Length');
+    const [family, setFamily] = useState<ConversionFamily>('length');
     const [valueStr, setValueStr] = useState<string>('1');
-    const [fromUnit, setFromUnit] = useState<string>('m');
-    const [toUnit, setToUnit] = useState<string>('ft');
+    const [fromUnit, setFromUnit] = useState<string>(FAMILY_DEFAULTS.length.from);
+    const [toUnit, setToUnit] = useState<string>(FAMILY_DEFAULTS.length.to);
     const [copied, setCopied] = useState(false);
 
-    // When family changes, reset default units
     const handleFamilyChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
-        const newFamily = e.target.value as UnitFamily;
+        const newFamily = e.target.value as ConversionFamily;
         setFamily(newFamily);
-
-        // Set sensible defaults. e.g. first two items.
-        const units = UNIT_FAMILIES[newFamily];
-        if (units && units.length > 1) {
-            setFromUnit(units[1].id); // Usually a standard metric unit
-            setToUnit(units[units.length - 2].id); // Usually an imperial unit
-        }
+        setFromUnit(FAMILY_DEFAULTS[newFamily].from);
+        setToUnit(FAMILY_DEFAULTS[newFamily].to);
         setCopied(false);
     };
 
@@ -70,9 +45,8 @@ export default function UnitConverter() {
         }
     };
 
-    const currentUnits = UNIT_FAMILIES[family] || [];
+    const currentUnits = UNITS[family] ?? [];
 
-    // Try to parse the input value
     const parsedValue = parseFloat(valueStr);
     const isValid = !isNaN(parsedValue);
 
@@ -80,22 +54,19 @@ export default function UnitConverter() {
     let fullResultText = '';
 
     if (isValid) {
-        const fromDef = currentUnits.find(u => u.id === fromUnit);
-        const toDef = currentUnits.find(u => u.id === toUnit);
-
-        if (fromDef && toDef) {
-            // Calculation: (inputValue * fromFactor) / toFactor
-            const baseValue = parsedValue * fromDef.factor;
-            const resultValue = baseValue / toDef.factor;
+        try {
+            const resultValue = convertUnits(family, fromUnit, toUnit, parsedValue);
 
             const roundedResult = resultValue.toFixed(2);
-            // Check if it's very small and we shouldn't just show 0.00
+            // Avoid showing 0.00 for very small values
             const finalResult = (resultValue > 0 && Math.abs(resultValue) < 0.005)
                 ? resultValue.toPrecision(2)
                 : roundedResult;
 
-            resultStr = `${finalResult} ${toDef.id}`;
-            fullResultText = `${parsedValue} ${fromDef.id} = ${resultStr}`;
+            resultStr = `${finalResult} ${toUnit}`;
+            fullResultText = `${parsedValue} ${fromUnit} = ${resultStr}`;
+        } catch {
+            // Invalid unit combination — show nothing
         }
     }
 
@@ -115,7 +86,7 @@ export default function UnitConverter() {
                             className="form-select"
                         >
                             {FAMILY_OPTIONS.map(fam => (
-                                <option key={fam} value={fam}>{fam}</option>
+                                <option key={fam} value={fam}>{FAMILY_LABELS[fam]}</option>
                             ))}
                         </select>
                     </div>
@@ -144,7 +115,7 @@ export default function UnitConverter() {
                                 className="form-select"
                             >
                                 {currentUnits.map(u => (
-                                    <option key={u.id} value={u.id}>{u.label}</option>
+                                    <option key={u.value} value={u.value}>{u.label}</option>
                                 ))}
                             </select>
                         </div>
@@ -158,7 +129,7 @@ export default function UnitConverter() {
                                 className="form-select"
                             >
                                 {currentUnits.map(u => (
-                                    <option key={u.id} value={u.id}>{u.label}</option>
+                                    <option key={u.value} value={u.value}>{u.label}</option>
                                 ))}
                             </select>
                         </div>
@@ -189,7 +160,7 @@ export default function UnitConverter() {
 
                         <button
                             onClick={() => handleCopy(fullResultText)}
-                            className="btn-secondary mt-6"
+                            className="btn-ghost mt-6"
                         >
                             {copied ? 'Copied!' : 'Copy result'}
                         </button>

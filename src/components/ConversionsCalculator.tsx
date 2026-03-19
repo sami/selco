@@ -166,7 +166,7 @@ export default function ConversionsCalculator() {
                                 value={inputValue}
                                 onChange={(e) => setInputValue(e.target.value)}
                                 placeholder="Enter volume in cubic metres"
-                                className="w-full rounded-lg border border-border bg-surface px-4 py-2.5 text-sm text-surface-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-brand-blue/30 focus:border-brand-blue transition-all"
+                                className="w-full rounded-lg border border-border bg-surface px-4 py-2.5 text-sm text-surface-foreground placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-navy focus-visible:ring-offset-1 transition-all"
                                 min={0}
                                 step="any"
                             />
@@ -179,7 +179,7 @@ export default function ConversionsCalculator() {
                                 id="density-material"
                                 value={densityMaterial}
                                 onChange={(e) => setDensityMaterial(e.target.value as DensityMaterial)}
-                                className="w-full rounded-lg border border-border bg-surface px-4 py-2.5 text-sm text-surface-foreground focus:outline-none focus:ring-2 focus:ring-brand-blue/30 focus:border-brand-blue transition-all"
+                                className="w-full rounded-lg border border-border bg-surface px-4 py-2.5 text-sm text-surface-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-navy focus-visible:ring-offset-1 transition-all"
                             >
                                 {materialOptions.map((opt) => (
                                     <option key={opt.value} value={opt.value}>{opt.label}</option>
@@ -200,7 +200,7 @@ export default function ConversionsCalculator() {
                                 value={inputValue}
                                 onChange={(e) => setInputValue(e.target.value)}
                                 placeholder="Enter a value"
-                                className="w-full rounded-lg border border-border bg-surface px-4 py-2.5 text-sm text-surface-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-brand-blue/30 focus:border-brand-blue transition-all"
+                                className="w-full rounded-lg border border-border bg-surface px-4 py-2.5 text-sm text-surface-foreground placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-navy focus-visible:ring-offset-1 transition-all"
                                 min={0}
                                 step="any"
                             />
@@ -215,7 +215,7 @@ export default function ConversionsCalculator() {
                                     id="from-unit"
                                     value={fromUnit}
                                     onChange={(e) => setFromUnit(e.target.value)}
-                                    className="w-full rounded-lg border border-border bg-surface px-4 py-2.5 text-sm text-surface-foreground focus:outline-none focus:ring-2 focus:ring-brand-blue/30 focus:border-brand-blue transition-all"
+                                    className="w-full rounded-lg border border-border bg-surface px-4 py-2.5 text-sm text-surface-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-navy focus-visible:ring-offset-1 transition-all"
                                 >
                                     {options.map((opt) => (
                                         <option key={opt.value} value={opt.value}>{opt.label}</option>
@@ -226,7 +226,7 @@ export default function ConversionsCalculator() {
                             <button
                                 type="button"
                                 onClick={handleSwap}
-                                className="w-10 h-10 rounded-lg border border-border bg-muted/30 flex items-center justify-center hover:bg-muted transition-colors focus:focus-ring mb-0.5 text-sm font-medium text-muted-foreground"
+                                className="w-10 h-10 rounded-lg border border-border bg-muted/30 flex items-center justify-center hover:bg-muted transition-colors focus-visible:focus-ring mb-0.5 text-sm font-medium text-muted-foreground"
                                 aria-label="Swap units"
                             >
                                 ⇄
@@ -240,7 +240,7 @@ export default function ConversionsCalculator() {
                                     id="to-unit"
                                     value={toUnit}
                                     onChange={(e) => setToUnit(e.target.value)}
-                                    className="w-full rounded-lg border border-border bg-surface px-4 py-2.5 text-sm text-surface-foreground focus:outline-none focus:ring-2 focus:ring-brand-blue/30 focus:border-brand-blue transition-all"
+                                    className="w-full rounded-lg border border-border bg-surface px-4 py-2.5 text-sm text-surface-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-navy focus-visible:ring-offset-1 transition-all"
                                 >
                                     {options.map((opt) => (
                                         <option key={opt.value} value={opt.value}>{opt.label}</option>

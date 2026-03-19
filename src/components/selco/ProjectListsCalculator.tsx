@@ -92,7 +92,7 @@ export default function ProjectListsCalculator() {
             placeholder="Price (£)"
             step="0.01"
           />
-          <button className="calc-add-btn" onClick={addItem}>
+          <button className="btn-primary" onClick={addItem}>
             ADD
           </button>
         </div>
@@ -169,15 +169,15 @@ export default function ProjectListsCalculator() {
         .calc-icon-circle {
           width: 80px;
           height: 80px;
-          background: var(--color-brand-blue);
+          background: var(--color-brand-navy);
           border-radius: 50%;
           display: flex;
           align-items: center;
           justify-content: center;
           font-size: 2.5rem;
-          color: var(--color-brand-yellow);
+          color: white;
           border: 4px solid var(--color-brand-yellow);
-          box-shadow: 0 0 0 4px var(--color-brand-blue);
+          box-shadow: 0 0 0 4px var(--color-brand-navy);
         }
         .calc-title-text {
           font-family: 'Arial Black', sans-serif;
@@ -205,18 +205,6 @@ export default function ProjectListsCalculator() {
         }
         .calc-row input.price {
           max-width: 100px;
-        }
-        .calc-add-btn {
-          background: var(--color-brand-blue);
-          color: white;
-          border: none;
-          padding: 0 20px;
-          font-weight: bold;
-          cursor: pointer;
-          border-radius: 4px;
-        }
-        .calc-add-btn:hover {
-          opacity: 0.9;
         }
         .calc-table {
           width: 100%;
@@ -261,7 +249,7 @@ export default function ProjectListsCalculator() {
             max-width: 100% !important;
             width: 100%;
           }
-          .calc-row .calc-add-btn {
+          .calc-row .btn-primary {
             width: 100%;
           }
         }
