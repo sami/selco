@@ -1,5 +1,8 @@
 ---
-import { projects, standaloneTools } from '../../data/projects';
+import {
+    PROJECT_CALCULATORS,
+    HANDY_CALCULATORS,
+} from '../../projects/registry';
 
 const RAW_BASE = import.meta.env.BASE_URL;
 const base = RAW_BASE.endsWith('/') ? RAW_BASE : `${RAW_BASE}/`;
@@ -8,11 +11,14 @@ const currentPath = Astro.url.pathname;
 const normalize = (path: string) => path.endsWith('/') ? path.slice(0, -1) : path;
 const current = normalize(currentPath);
 
-// Helper to check active state
+/** Returns true when the given href matches or prefixes the current path. */
 const isActive = (href: string) => {
     const normHref = normalize(href);
     return href === base ? current === normalize(base) : current.startsWith(normHref);
 };
+
+/** Build an absolute href from a registry path (e.g. "/tiling/"). */
+const toHref = (path: string) => `${base}${path.replace(/^\//, '')}`;
 ---
 
 <aside class="sidebar-container">
@@ -25,41 +31,57 @@ const isActive = (href: string) => {
     <div class="sidebar-header desktop-only">
       Navigation
     </div>
-    
+
     <ul class="sidebar-list">
-        <li>
-            <a href={base} class={isActive(base) ? 'active' : ''}>
-                Home
-            </a>
-        </li>
+      <li>
+        <a href={base} class={isActive(base) ? 'active' : ''}>
+          Home
+        </a>
+      </li>
 
-        <li class="sidebar-section">
-            <span class="section-title">Handy Calculators</span>
-        </li>
-        <li>
-          <a href={`${base}unit-converter/`} class={isActive(`${base}unit-converter/`) ? 'active' : ''}>
-                Unit Converter
-            </a>
-        </li>
+      <!-- Handy Calculators -->
+      <li class="sidebar-section">
+        <span class="section-title">Handy Calculators</span>
+      </li>
+      {HANDY_CALCULATORS.map((calc) => {
+        const href = toHref(calc.path);
+        return (
+          <li>
+            {calc.comingSoon ? (
+              <a href="#" aria-disabled="true" class="opacity-60 pointer-events-none">
+                {calc.name}
+                <span class="coming-soon-badge">Soon</span>
+              </a>
+            ) : (
+              <a href={href} class={isActive(href) ? 'active' : ''}>
+                {calc.name}
+              </a>
+            )}
+          </li>
+        );
+      })}
 
-        <li class="sidebar-section">
-            <span class="section-title">Project Calculators</span>
-        </li>
-        <li>
-          <a href={`${base}tiling/`} class={isActive(`${base}tiling/`) ? 'active' : ''}>
-                Tiling
-            </a>
-        </li>
-        <li>
-          <a href="#" aria-disabled="true" class="opacity-60 pointer-events-none">
-                Masonry
-            </a>
-        </li>
-        <li>
-          <a href="#" aria-disabled="true" class="opacity-60 pointer-events-none">
-                Concrete &amp; Groundworks
-            </a>
-        </li>
+      <!-- Project Calculators -->
+      <li class="sidebar-section">
+        <span class="section-title">Project Calculators</span>
+      </li>
+      {PROJECT_CALCULATORS.map((calc) => {
+        const href = toHref(calc.path);
+        return (
+          <li>
+            {calc.comingSoon ? (
+              <a href="#" aria-disabled="true" class="opacity-60 pointer-events-none">
+                {calc.name}
+                <span class="coming-soon-badge">Soon</span>
+              </a>
+            ) : (
+              <a href={href} class={isActive(href) ? 'active' : ''}>
+                {calc.name}
+              </a>
+            )}
+          </li>
+        );
+      })}
     </ul>
   </div>
 </aside>
@@ -76,30 +98,18 @@ const isActive = (href: string) => {
     content?.classList.toggle('open');
     icon?.classList.toggle('rotate-180');
   });
-
-  // Accordion Toggles
-  const accordions = document.querySelectorAll('.accordion-toggle');
-  accordions.forEach(btn => {
-    btn.addEventListener('click', (e) => {
-        e.preventDefault(); // Prevent accidental navigation
-        const item = btn.closest('.accordion-item');
-        item?.classList.toggle('expanded');
-        const icon = btn.querySelector('i');
-        icon?.classList.toggle('rotate-180');
-    });
-  });
 </script>
 
 <style>
   .sidebar-container {
     margin-top: 10px;
   }
-  
+
   /* Mobile Toggle */
   .sidebar-mobile-toggle {
     display: none;
     width: 100%;
-    background-color: #00264d;
+    background-color: var(--color-brand-navy);
     color: white;
     padding: 10px 15px;
     font-weight: 700;
@@ -114,7 +124,7 @@ const isActive = (href: string) => {
 
   /* Header */
   .sidebar-header {
-    background-color: #00264d;
+    background-color: var(--color-brand-navy);
     color: white;
     padding: 12px 15px;
     font-weight: 700;
@@ -131,20 +141,18 @@ const isActive = (href: string) => {
     padding: 0;
     margin: 0;
   }
-  
+
   .sidebar-list li a {
-    display: block;
+    display: flex;
+    align-items: center;
     padding: 10px 15px;
     border-bottom: 1px solid #ddd;
     font-size: 0.9rem;
     color: #555;
-    position: relative;
-    display: flex;
-    align-items: center;
     text-decoration: none;
   }
-  
-  /* Standard Arrow for links */
+
+  /* Arrow prefix for links */
   .sidebar-list > li > a::before {
     content: '\f054';
     font-family: 'Font Awesome 6 Free';
@@ -170,81 +178,35 @@ const isActive = (href: string) => {
     letter-spacing: 0.5px;
   }
 
-  /* Hover States */
+  /* Coming-soon badge */
+  .coming-soon-badge {
+    margin-left: auto;
+    font-size: 0.6rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.4px;
+    color: #999;
+    background: #e0e0e0;
+    border-radius: 4px;
+    padding: 1px 5px;
+  }
+
+  /* Hover / Active */
   .sidebar-list li a:hover {
     background-color: #fff;
-    color: #004B8D;
+    color: var(--color-brand-blue);
   }
+
   .sidebar-list li a.active {
     font-weight: 700;
     color: #333;
     background-color: #fff;
   }
 
-  /* Accordion Styling */
-  .accordion-header {
-      display: flex;
-      align-items: stretch;
-      background-color: #f4f4f4;
-      border-bottom: 1px solid #ddd;
-  }
-  
-  .section-link {
-      flex: 1;
-      font-weight: 800;
-      color: #00264d !important;
-      text-transform: uppercase;
-      letter-spacing: 0.5px;
-      padding: 15px !important;
-      border-bottom: none !important;
-  }
-  /* Remove default arrow for section headers */
-  .section-link::before {
-      display: none; 
-  }
-
-  .accordion-toggle {
-      background: none;
-      border: none;
-      border-left: 1px solid #ddd;
-      padding: 0 15px;
-      color: #00264d;
-      cursor: pointer;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-  }
-
-  .accordion-content {
-      display: none;
-      list-style: none;
-      padding: 0;
-      margin: 0;
-      background-color: #fff;
-  }
-  
-  .accordion-item.expanded .accordion-content {
-      display: block;
-  }
-
-  .accordion-content li a {
-      padding-left: 25px; /* Indent properties */
-      font-size: 0.85rem;
-  }
-
-  /* Highlight Link (Unit Conversions) */
-  .highlight-link {
-      font-weight: 700;
-      color: #004B8D !important;
-      background-color: #e6f0ff !important;
-  }
-
   /* Utilities */
   .desktop-only { display: flex; }
   .rotate-180 { transform: rotate(180deg); }
   .transition-transform { transition: transform 0.3s ease; }
-  .mr-2 { margin-right: 0.5rem; }
-  .text-brand-yellow { color: #FFCD00; }
 
   @media (max-width: 1024px) {
     .sidebar-container { margin-top: 0; }

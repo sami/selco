@@ -56,7 +56,7 @@ const description = 'Visual reference for every UI element used across the site.
               </div>
             </div>
             <div class="rounded-lg border border-border overflow-hidden">
-              <div class="h-20" style="background-color: #004B8D;"></div>
+              <div class="h-20" style="background-color: var(--color-brand-blue);"></div>
               <div class="p-3 text-sm">
                 <p class="font-semibold text-surface-foreground">SELCO Blue</p>
                 <p class="text-muted-foreground">#004B8D</p>
@@ -64,7 +64,7 @@ const description = 'Visual reference for every UI element used across the site.
               </div>
             </div>
             <div class="rounded-lg border border-border overflow-hidden">
-              <div class="h-20" style="background-color: #00264d;"></div>
+              <div class="h-20" style="background-color: var(--color-brand-navy);"></div>
               <div class="p-3 text-sm">
                 <p class="font-semibold text-surface-foreground">SELCO Dark Blue</p>
                 <p class="text-muted-foreground">#00264d</p>
@@ -181,7 +181,7 @@ const description = 'Visual reference for every UI element used across the site.
         <div class="space-y-8 max-w-3xl">
           <div class="border-b border-border pb-6">
             <p class="text-xs text-muted-foreground uppercase tracking-wider mb-2">h1 — Page Title (from SelcoLayout)</p>
-            <h1 style="font-family: 'Arial Black', sans-serif; font-size: 2.2rem; color: #00264d; text-transform: uppercase; letter-spacing: -1px; margin: 0;">Page Title</h1>
+            <h1 style="font-family: 'Arial Black', sans-serif; font-size: 2.2rem; color: var(--color-brand-navy); text-transform: uppercase; letter-spacing: -1px; margin: 0;">Page Title</h1>
             <p class="text-xs text-muted-foreground mt-2">Arial Black · 2.2rem · uppercase · letter-spacing -1px · selco-dark-blue</p>
           </div>
 
@@ -386,7 +386,7 @@ const description = 'Visual reference for every UI element used across the site.
 
           <div>
             <p class="text-xs text-muted-foreground uppercase tracking-wider mb-3">Feedback Button (Content Footer)</p>
-            <a href="#buttons" style="color: white; text-decoration: none; font-weight: 700; display: inline-block; padding: 8px 16px; border-radius: 6px; background-color: #004B8D; transition: all 0.3s ease; font-size: 0.8rem; text-transform: uppercase; letter-spacing: 0.5px;">Share feedback</a>
+            <a href="#buttons" style="color: white; text-decoration: none; font-weight: 700; display: inline-block; padding: 8px 16px; border-radius: 6px; background-color: var(--color-brand-blue); transition: all 0.3s ease; font-size: 0.8rem; text-transform: uppercase; letter-spacing: 0.5px;">Share feedback</a>
             <p class="text-xs text-muted-foreground mt-2">Inline-styled — matches content-footer pattern. Hover: yellow bg + dark text + lift.</p>
           </div>
         </div>
@@ -806,7 +806,7 @@ const description = 'Visual reference for every UI element used across the site.
           Every calculator page ends with a disclaimer and feedback link. Currently inline-styled — should be extracted to a shared component for consistency.
         </p>
 
-        <div class="mt-8 flex flex-col sm:flex-row gap-4 items-center justify-between p-6 rounded-xl border-2 border-[#004B8D] bg-gradient-to-br from-[#004B8D]/5 to-transparent shadow-sm">
+        <div class="mt-8 flex flex-col sm:flex-row gap-4 items-center justify-between p-6 rounded-xl border-2 border-brand-blue bg-gradient-to-br from-brand-blue/5 to-transparent shadow-sm">
           <div class="flex-1 w-full text-left">
             <Disclaimer text="Calculations are estimates only. Always verify product coverage and site conditions before ordering." />
           </div>
@@ -814,7 +814,7 @@ const description = 'Visual reference for every UI element used across the site.
             href="https://madebysami.notion.site/2fe361401cd480fc9fcfdf4871d199b1?pvs=105" 
             target="_blank"
             rel="noopener noreferrer"
-            class="inline-flex items-center justify-center px-6 py-3 rounded-lg bg-[#004B8D] text-white font-bold text-sm uppercase tracking-wide hover:bg-[#FFCD00] hover:text-[#00264d] transition-all duration-300 hover:-translate-y-0.5 shadow-sm hover:shadow-md flex-shrink-0 w-full sm:w-auto text-center"
+            class="inline-flex items-center justify-center px-6 py-3 rounded-lg bg-brand-blue text-white font-bold text-sm uppercase tracking-wide hover:bg-brand-yellow hover:text-brand-navy transition-all duration-300 hover:-translate-y-0.5 shadow-sm hover:shadow-md flex-shrink-0 w-full sm:w-auto text-center"
           >
             Share feedback
           </a>

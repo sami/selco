@@ -6,7 +6,7 @@ const base = RAW_BASE.endsWith('/') ? RAW_BASE : `${RAW_BASE}/`;
 
 <style>
   .selco-header {
-    background-color: #FFCD00;
+    background-color: var(--color-brand-yellow);
     padding: 10px 0;
   }
   
@@ -41,9 +41,9 @@ const base = RAW_BASE.endsWith('/') ? RAW_BASE : `${RAW_BASE}/`;
     background-color: white;
   }
   .search-container button {
-    background-color: #00264d;
+    background-color: var(--color-brand-navy);
     color: white;
-    border: 1px solid #00264d;
+    border: 1px solid var(--color-brand-navy);
     padding: 0 15px;
     border-radius: 0 4px 4px 0;
     font-size: 1rem;
@@ -55,7 +55,7 @@ const base = RAW_BASE.endsWith('/') ? RAW_BASE : `${RAW_BASE}/`;
     display: flex;
     flex-direction: column;
     align-items: center;
-    color: #00264d;
+    color: var(--color-brand-navy);
     font-weight: 700;
     font-size: 0.8rem;
     text-decoration: none;
@@ -178,7 +178,7 @@ const base = RAW_BASE.endsWith('/') ? RAW_BASE : `${RAW_BASE}/`;
   }
   
   .mobile-nav-header {
-    background-color: #00264d;
+    background-color: var(--color-brand-navy);
     color: white;
     padding: 15px;
     display: flex;
@@ -216,14 +216,14 @@ const base = RAW_BASE.endsWith('/') ? RAW_BASE : `${RAW_BASE}/`;
   }
   .mobile-nav-list li a i {
     width: 25px;
-    color: #004B8D;
+    color: var(--color-brand-blue);
     text-align: center;
     margin-right: 10px;
   }
   .mobile-nav-list li a:hover,
   .mobile-nav-list li a.active {
     background-color: #f4f4f4;
-    color: #004B8D;
+    color: var(--color-brand-blue);
   }
   .mobile-nav-list li.divider {
     height: 10px;
