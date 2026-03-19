@@ -86,14 +86,7 @@ export function FormInput({
                     max={max}
                     step={step}
                     required={required}
-                    className={`
-            w-full h-11 px-4 bg-[--color-surface] border border-[--color-border]
-            rounded-[--radius-input] text-sm text-[--color-surface-foreground]
-            placeholder:text-[--color-muted-foreground]
-            focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-navy focus-visible:ring-offset-1
-            transition-all
-            ${unit ? 'pr-16' : ''}
-          `}
+                    className={`form-input${unit ? ' pr-16' : ''}`}
                 />
                 {unit && (
                     <span className="absolute inset-y-0 right-0 flex items-center pr-4 text-xs text-[--color-muted-foreground] pointer-events-none">
@@ -125,12 +118,7 @@ export function FormSelect({ id, label, value, onChange, options }: FormSelectPr
                 name={id}
                 value={value}
                 onChange={(e) => onChange(e.target.value)}
-                className="
-          w-full h-11 px-4 bg-[--color-surface] border border-[--color-border]
-          rounded-[--radius-input] text-sm text-[--color-surface-foreground]
-          focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-navy focus-visible:ring-offset-1
-          transition-all appearance-none cursor-pointer
-        "
+                className="form-select appearance-none cursor-pointer"
             >
                 {options.map((opt) => (
                     <option key={opt.value} value={opt.value}>
@@ -228,7 +216,7 @@ export default function CalculatorLayout({
                         {fieldGroups.map((group, i) => (
                             <fieldset
                                 key={i}
-                                className="p-5 bg-[--color-surface] rounded-[--radius-card] border border-[--color-border] space-y-4"
+                                className="card space-y-4"
                             >
                                 <legend className="text-sm font-semibold text-[--color-surface-foreground] px-1">
                                     {group.legend}
