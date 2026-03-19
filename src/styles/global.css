@@ -34,6 +34,15 @@
      ========================================================================= */
   --font-sans: 'Open Sans', ui-sans-serif, system-ui, Helvetica, Arial, sans-serif;
 
+  /* Type scale — --text-{name} (font-size) + --text-{name}--line-height companion */
+  --text-xs:   0.75rem;   --text-xs--line-height:   1rem;
+  --text-sm:   0.875rem;  --text-sm--line-height:   1.25rem;
+  --text-base: 1rem;      --text-base--line-height: 1.5rem;
+  --text-lg:   1.125rem;  --text-lg--line-height:   1.75rem;
+  --text-xl:   1.25rem;   --text-xl--line-height:   1.75rem;
+  --text-2xl:  1.5rem;    --text-2xl--line-height:  2rem;
+  --text-3xl:  1.875rem;  --text-3xl--line-height:  2.25rem;
+
   /* =========================================================================
      Backwards-compatibility aliases
      Map old token names to canonical values so existing Tailwind utilities
@@ -64,7 +73,7 @@
 
   html,
   body {
-    @apply h-full antialiased bg-bg-page text-text-main leading-relaxed font-sans;
+    @apply h-full antialiased bg-bg-page text-surface-foreground text-base leading-relaxed font-sans;
   }
 
   body {
@@ -112,13 +121,25 @@
     @apply max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 md:py-12;
   }
 
-  /* Cards */
+  /* Cards & Panels */
   .card {
-    @apply border border-border-default rounded-xl bg-bg-section shadow-sm p-6;
+    @apply border border-border-default bg-bg-section shadow-sm p-6;
+    border-radius: var(--radius-card);
   }
 
   .card-hover {
     @apply transition-all duration-300 hover:shadow-md hover:-translate-y-0.5 hover:border-primary/40;
+  }
+
+  /* Card header bar — use inside a .card for a labelled section title */
+  .card-header {
+    @apply px-6 py-4 border-b border-border-default font-semibold text-sm uppercase tracking-wider text-text-muted;
+  }
+
+  /* Lighter panel — no shadow, uses same radius/border as card */
+  .panel {
+    @apply border border-border-default bg-bg-section;
+    border-radius: var(--radius-card);
   }
 
   /* ==========================================================================
@@ -134,24 +155,38 @@
     @apply block text-sm text-text-muted mt-1;
   }
 
-  /* Inputs, Selects, Textareas */
+  /* Inputs & Selects — 44 px touch target (WCAG 2.5.8), radius-input, canonical colours */
   .form-input,
-  .form-select,
-  .form-textarea {
-    @apply block w-full rounded-lg border border-border-default bg-bg-section text-text-main px-4 py-2.5 transition-colors focus-visible:focus-ring disabled:opacity-50 disabled:bg-gray-50 disabled:cursor-not-allowed;
+  .form-select {
+    @apply block w-full h-11
+           border border-border-default bg-bg-section text-text-main
+           placeholder:text-text-muted
+           transition-colors focus-visible:focus-ring
+           disabled:opacity-50 disabled:cursor-not-allowed;
+    padding: 0.625rem 0.75rem;
+    border-radius: var(--radius-input);
+    font-size: var(--text-base);
   }
 
   .form-textarea {
-    @apply min-h-[100px] resize-y;
+    @apply block w-full min-h-[100px] resize-y
+           border border-border-default bg-bg-section text-text-main
+           placeholder:text-text-muted
+           transition-colors focus-visible:focus-ring
+           disabled:opacity-50 disabled:cursor-not-allowed;
+    padding: 0.625rem 0.75rem;
+    border-radius: var(--radius-input);
+    font-size: var(--text-base);
   }
 
   /* Error states */
   .form-error {
-    @apply block text-sm text-red-600 mt-1.5 font-medium;
+    @apply block text-sm mt-1.5 font-medium;
+    color: var(--color-destructive);
   }
 
   .input-error {
-    @apply border-red-500 focus:ring-red-500/50;
+    border-color: var(--color-destructive);
   }
 
   /* Checkboxes & Radios */
