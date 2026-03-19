@@ -37,15 +37,18 @@ const base = RAW_BASE.endsWith("/") ? RAW_BASE : `${RAW_BASE}/`;
     />
     <style>
       :root {
-        --selco-yellow: #ffcd00;
-        --selco-blue: #004b8d;
-        --selco-dark-blue: #00264d;
-        --selco-nav-blue: #1b3a6e;
-        --text-dark: #333333;
-        --text-grey: #666666;
-        --light-bg: #f4f4f4;
-        --border-color: #e5e5e5;
-        --white: #ffffff;
+        /* Aliases to canonical @theme tokens — no hardcoded values here.
+           The SELCO chrome styles in this file use these names; they now
+           delegate to the single source of truth in global.css @theme. */
+        --selco-yellow:    var(--color-brand-yellow);
+        --selco-blue:      var(--color-brand-blue);
+        --selco-dark-blue: var(--color-brand-navy);
+        --selco-nav-blue:  #1b3a6e;  /* intentional nav shade — no canonical equiv. */
+        --text-dark:       var(--color-surface-foreground);
+        --text-grey:       var(--color-muted-foreground);
+        --light-bg:        var(--color-brand-light-grey);
+        --border-color:    var(--color-border);
+        --white:           var(--color-brand-white);
       }
 
       * {
