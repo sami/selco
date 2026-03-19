@@ -48,12 +48,12 @@ export default function ProjectListsCalculator() {
         </div>
         <div>
           <div className="calc-title-text">
-            Project <span style={{ color: '#004B8D' }}>Lists</span>
+            Project <span style={{ color: 'var(--color-brand-blue)' }}>Lists</span>
           </div>
           <div style={{
             fontWeight: 800,
             textTransform: 'uppercase',
-            background: '#004B8D',
+            background: 'var(--color-brand-blue)',
             color: '#fff',
             padding: '2px 10px',
             display: 'inline-block',
@@ -152,32 +152,32 @@ export default function ProjectListsCalculator() {
       <style>{`
         .calculator-embed {
           background-color: white;
-          border: 5px solid #FFCD00;
+          border: 5px solid var(--color-brand-yellow);
           padding: 0;
           margin-bottom: 30px;
           position: relative;
         }
         .calc-hero-banner {
-          background-color: #FFCD00;
+          background-color: var(--color-brand-yellow);
           padding: 20px;
           display: flex;
           align-items: center;
           justify-content: center;
           gap: 20px;
-          color: #00264d;
+          color: var(--color-brand-navy);
         }
         .calc-icon-circle {
           width: 80px;
           height: 80px;
-          background: #004B8D;
+          background: var(--color-brand-blue);
           border-radius: 50%;
           display: flex;
           align-items: center;
           justify-content: center;
           font-size: 2.5rem;
-          color: #FFCD00;
-          border: 4px solid #FFCD00;
-          box-shadow: 0 0 0 4px #004B8D;
+          color: var(--color-brand-yellow);
+          border: 4px solid var(--color-brand-yellow);
+          box-shadow: 0 0 0 4px var(--color-brand-blue);
         }
         .calc-title-text {
           font-family: 'Arial Black', sans-serif;
@@ -207,7 +207,7 @@ export default function ProjectListsCalculator() {
           max-width: 100px;
         }
         .calc-add-btn {
-          background: #004B8D;
+          background: var(--color-brand-blue);
           color: white;
           border: none;
           padding: 0 20px;
@@ -229,14 +229,14 @@ export default function ProjectListsCalculator() {
           background: #eee;
           text-align: left;
           padding: 10px;
-          color: #00264d;
+          color: var(--color-brand-navy);
         }
         .calc-table td {
           border-bottom: 1px solid #eee;
           padding: 10px;
         }
         .calc-total-bar {
-          background: #00264d;
+          background: var(--color-brand-navy);
           color: white;
           padding: 15px;
           text-align: right;
