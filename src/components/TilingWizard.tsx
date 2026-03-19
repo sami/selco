@@ -543,7 +543,7 @@ export default function TilingWizard() {
                         <button
                             type="button"
                             onClick={handleReset}
-                            className="px-6 h-11 text-sm font-medium text-brand-blue hover:text-brand-blue/80 hover:bg-brand-blue/5 rounded-[--radius-button] transition-all focus:focus-ring"
+                            className="btn-ghost"
                         >
                             Start Over
                         </button>
@@ -558,7 +558,7 @@ export default function TilingWizard() {
                         <button
                             type="button"
                             onClick={handleBack}
-                            className="px-6 h-11 text-sm font-medium text-muted-foreground hover:text-surface-foreground border border-border rounded-[--radius-button] hover:bg-muted/30 transition-all focus:focus-ring"
+                            className="btn-ghost"
                         >
                             Back
                         </button>
@@ -566,7 +566,7 @@ export default function TilingWizard() {
                     <button
                         type="button"
                         onClick={handleNext}
-                        className="px-8 h-11 text-sm font-bold bg-brand-yellow text-brand-blue rounded-[--radius-button] shadow-sm hover:brightness-105 active:scale-[0.98] transition-all focus:focus-ring ml-auto"
+                        className="btn-accent ml-auto active:scale-[0.98]"
                     >
                         Next
                     </button>

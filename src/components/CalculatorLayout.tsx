@@ -90,7 +90,7 @@ export function FormInput({
             w-full h-11 px-4 bg-[--color-surface] border border-[--color-border]
             rounded-[--radius-input] text-sm text-[--color-surface-foreground]
             placeholder:text-[--color-muted-foreground]
-            focus:outline-none focus:ring-2 focus:ring-[--color-brand-blue]/30 focus:border-[--color-brand-blue]/40
+            focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-navy focus-visible:ring-offset-1
             transition-all
             ${unit ? 'pr-16' : ''}
           `}
@@ -128,7 +128,7 @@ export function FormSelect({ id, label, value, onChange, options }: FormSelectPr
                 className="
           w-full h-11 px-4 bg-[--color-surface] border border-[--color-border]
           rounded-[--radius-input] text-sm text-[--color-surface-foreground]
-          focus:outline-none focus:ring-2 focus:ring-[--color-brand-blue]/30 focus:border-[--color-brand-blue]/40
+          focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-navy focus-visible:ring-offset-1
           transition-all appearance-none cursor-pointer
         "
             >
@@ -241,15 +241,7 @@ export default function CalculatorLayout({
                         <button
                             type="submit"
                             disabled={isCalculating}
-                            className="
-                w-full lg:w-auto px-8 h-12 font-bold text-sm
-                bg-[--color-brand-yellow] text-[--color-brand-blue]
-                rounded-[--radius-button] shadow-sm
-                hover:brightness-105 active:scale-[0.98]
-                disabled:opacity-60 disabled:cursor-not-allowed
-                transition-all duration-150
-                focus:focus-ring
-              "
+                            className="btn-primary w-full lg:w-auto active:scale-[0.98]"
                         >
                             {isCalculating ? 'Calculating...' : 'Calculate'}
                         </button>

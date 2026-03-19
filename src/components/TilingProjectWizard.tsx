@@ -1,5 +1,14 @@
 import React, { useEffect, useMemo, useState } from 'react';
 import { FormInput, FormSelect } from './CalculatorLayout';
+import { calculateTiles } from '../calculators/tiles';
+import { calculateAdhesiveByBedDepth } from '../calculators/adhesive';
+import { calculateGrout } from '../calculators/grout';
+import { calculateSpacersByCount } from '../calculators/spacers';
+import { calculatePrimer } from '../calculators/primer';
+import { calculateBackerBoard } from '../calculators/backer-board';
+import { calculateTanking } from '../calculators/tanking';
+import { calculateSLC } from '../calculators/slc';
+import { convertLength } from '../calculators/conversions';
 
 type Unit = 'm' | 'ft';
 type Application = 'floor' | 'wall';
@@ -37,14 +46,7 @@ const PATTERNS: { value: Pattern; label: string; wastage: number }[] = [
   { value: 'herringbone', label: 'Herringbone', wastage: 15 },
 ];
 
-const SPACERS_PER_TILE: Record<Pattern, number> = {
-  grid: 4,
-  diagonal: 4,
-  brick_bond: 3,
-  herringbone: 2,
-};
-
-const FT_TO_M = 0.3048;
+/** Base adhesive coverage rate at a 3 mm bed depth (kg/m²). */
 const ADHESIVE_BASE_COVERAGE = 2.0;
 
 const formatNumber = (value: number, decimals = 2) => {
@@ -151,13 +153,10 @@ export default function TilingProjectWizard() {
     const height = toNumber(areaHeight);
 
     if (width > 0) {
-      const converted = areaUnit === 'm' ? width / FT_TO_M : width * FT_TO_M;
-      setAreaWidth(converted.toFixed(2));
+      setAreaWidth(convertLength(width, areaUnit, nextUnit).toFixed(2));
     }
-
     if (height > 0) {
-      const converted = areaUnit === 'm' ? height / FT_TO_M : height * FT_TO_M;
-      setAreaHeight(converted.toFixed(2));
+      setAreaHeight(convertLength(height, areaUnit, nextUnit).toFixed(2));
     }
 
     setAreaUnit(nextUnit);
@@ -176,10 +175,9 @@ export default function TilingProjectWizard() {
     const width = toNumber(areaWidth);
     const height = toNumber(areaHeight);
     if (width <= 0 || height <= 0) return 0;
-    if (areaUnit === 'ft') {
-      return (width * FT_TO_M) * (height * FT_TO_M);
-    }
-    return width * height;
+    const widthM = areaUnit === 'ft' ? convertLength(width, 'ft', 'm') : width;
+    const heightM = areaUnit === 'ft' ? convertLength(height, 'ft', 'm') : height;
+    return widthM * heightM;
   }, [areaWidth, areaHeight, areaUnit]);
 
   const tileMetrics = useMemo(() => {
@@ -188,75 +186,104 @@ export default function TilingProjectWizard() {
     const gapMm = toNumber(gapWidth);
     const wastage = toNumber(tileWastage);
 
-    if (widthMm <= 0 || heightMm <= 0 || gapMm < 0) {
-      return {
-        tileAreaM2: 0,
-        tilesNeeded: 0,
-        tilesWithWastage: 0,
-        coveragePerTile: 0,
-      };
+    if (widthMm <= 0 || heightMm <= 0 || areaM2 <= 0) {
+      return { tileAreaM2: 0, tilesNeeded: 0, tilesWithWastage: 0, coveragePerTile: 0 };
     }
 
-    const effectiveWidthM = (widthMm + gapMm) / 1000;
-    const effectiveHeightM = (heightMm + gapMm) / 1000;
-    const tileAreaM2 = effectiveWidthM * effectiveHeightM;
-    const tilesNeeded = tileAreaM2 > 0 ? Math.ceil(areaM2 / tileAreaM2) : 0;
-    const tilesWithWastage = Math.ceil(tilesNeeded * (1 + wastage / 100));
-
-    return {
-      tileAreaM2,
-      tilesNeeded,
-      tilesWithWastage,
-      coveragePerTile: tileAreaM2,
-    };
+    try {
+      // result.tilesNeeded = final count including wastage
+      // result.wastageAmount = the extra tiles added for wastage
+      const result = calculateTiles({
+        areaWidth: 1,
+        areaHeight: 1,
+        areaM2,               // override: use the pre-computed area directly
+        tileWidth: widthMm,
+        tileHeight: heightMm,
+        gapWidthMm: gapMm > 0 ? gapMm : undefined,
+        wastage,
+      });
+      const tileAreaM2 = gapMm > 0
+        ? ((widthMm + gapMm) / 1000) * ((heightMm + gapMm) / 1000)
+        : (widthMm / 1000) * (heightMm / 1000);
+      // tilesNeeded (no wastage) = total - extra; tilesWithWastage = total
+      const tilesWithWastage = result.tilesNeeded;
+      const tilesNeeded = tilesWithWastage - result.wastageAmount;
+      return { tileAreaM2, tilesNeeded, tilesWithWastage, coveragePerTile: tileAreaM2 };
+    } catch {
+      return { tileAreaM2: 0, tilesNeeded: 0, tilesWithWastage: 0, coveragePerTile: 0 };
+    }
   }, [areaM2, tileWidth, tileHeight, gapWidth, tileWastage]);
 
   const adhesiveMetrics = useMemo(() => {
     const depth = toNumber(bedDepth);
-    const baseCoverage = ADHESIVE_BASE_COVERAGE;
-    const wastage = toNumber(adhesiveWastage);
     const bag = toNumber(adhesiveBagSize);
-    if (depth <= 0 || baseCoverage <= 0 || areaM2 <= 0 || bag <= 0) {
+    const wastage = toNumber(adhesiveWastage);
+    if (depth <= 0 || areaM2 <= 0 || bag <= 0) {
       return { scaledCoverage: 0, kgNeeded: 0, kgWithWastage: 0, bagsNeeded: 0 };
     }
-
-    const scaledCoverage = baseCoverage * (depth / 3);
-    const kgNeeded = areaM2 * scaledCoverage;
-    const kgWithWastage = kgNeeded * (1 + wastage / 100);
-    const bagsNeeded = Math.ceil(kgWithWastage / bag);
-    return { scaledCoverage, kgNeeded, kgWithWastage, bagsNeeded };
+    try {
+      const result = calculateAdhesiveByBedDepth({
+        areaM2,
+        bedDepthMm: depth,
+        baseCoverageKgPerM2: ADHESIVE_BASE_COVERAGE,
+        bagSizeKg: bag,
+        wastage,
+      });
+      return {
+        scaledCoverage: result.scaledCoverageKgPerM2,
+        kgNeeded: result.kgNeeded,
+        kgWithWastage: result.kgWithWastage,
+        bagsNeeded: result.bagsNeeded,
+      };
+    } catch {
+      return { scaledCoverage: 0, kgNeeded: 0, kgWithWastage: 0, bagsNeeded: 0 };
+    }
   }, [bedDepth, adhesiveWastage, adhesiveBagSize, areaM2]);
 
   const groutMetrics = useMemo(() => {
-    const widthM = toNumber(tileWidth) / 1000;
-    const heightM = toNumber(tileHeight) / 1000;
-    const jointM = toNumber(gapWidth) / 1000;
-    const depthM = toNumber(tileDepth) / 1000;
-    const bag = toNumber(groutBagSize);
     const wastage = toNumber(groutWastage);
-
-    if (widthM <= 0 || heightM <= 0 || jointM <= 0 || depthM <= 0 || areaM2 <= 0 || bag <= 0) {
+    const bag = toNumber(groutBagSize);
+    if (
+      areaM2 <= 0 || toNumber(tileWidth) <= 0 || toNumber(tileHeight) <= 0 ||
+      toNumber(gapWidth) <= 0 || toNumber(tileDepth) <= 0 || bag <= 0
+    ) {
       return { kgNeeded: 0, kgWithWastage: 0, bagsNeeded: 0, kgPerSqm: 0 };
     }
-
-    const jointCrossSection = jointM * depthM;
-    const tilePerimeterPerSqm = 2 * (1 / widthM + 1 / heightM);
-    const groutVolumePerSqm = (jointCrossSection * tilePerimeterPerSqm) / 2;
-    const kgPerSqm = groutVolumePerSqm * 1700;
-
-    const kgNeeded = areaM2 * kgPerSqm;
-    const kgWithWastage = kgNeeded * (1 + wastage / 100);
-    const bagsNeeded = Math.ceil(kgWithWastage / bag);
-
-    return { kgNeeded, kgWithWastage, bagsNeeded, kgPerSqm };
+    try {
+      const result = calculateGrout({
+        area: areaM2,
+        tileWidth: toNumber(tileWidth),
+        tileHeight: toNumber(tileHeight),
+        jointWidth: toNumber(gapWidth),
+        tileDepth: toNumber(tileDepth),
+        wastage,
+        densityKgPerM3: 1700,
+      });
+      return {
+        kgPerSqm: result.kgPerM2,
+        kgNeeded: result.kgPerM2 * areaM2,   // pre-wastage
+        kgWithWastage: result.kgNeeded,        // post-wastage (grout.ts includes wastage in kgNeeded)
+        bagsNeeded: Math.ceil(result.kgNeeded / bag),
+      };
+    } catch {
+      return { kgNeeded: 0, kgWithWastage: 0, bagsNeeded: 0, kgPerSqm: 0 };
+    }
   }, [tileWidth, tileHeight, gapWidth, tileDepth, groutBagSize, groutWastage, areaM2]);
 
   const spacerMetrics = useMemo(() => {
     const perPack = toNumber(spacersPerPack);
-    const spacersPerTile = SPACERS_PER_TILE[pattern];
-    const totalSpacers = tileMetrics.tilesWithWastage * spacersPerTile;
-    const packsNeeded = perPack > 0 ? Math.ceil(totalSpacers / perPack) : 0;
-    return { totalSpacers, packsNeeded, spacersPerTile };
+    if (tileMetrics.tilesWithWastage <= 0 || perPack <= 0) {
+      return { totalSpacers: 0, packsNeeded: 0, spacersPerTile: 0 };
+    }
+    try {
+      return calculateSpacersByCount({
+        tileCount: tileMetrics.tilesWithWastage,
+        pattern,
+        packSize: perPack,
+      });
+    } catch {
+      return { totalSpacers: 0, packsNeeded: 0, spacersPerTile: 0 };
+    }
   }, [spacersPerPack, pattern, tileMetrics.tilesWithWastage]);
 
   const primerMetrics = useMemo(() => {
@@ -266,22 +293,35 @@ export default function TilingProjectWizard() {
     if (coverage <= 0 || bottle <= 0 || coats <= 0 || areaM2 <= 0) {
       return { litres: 0, bottles: 0 };
     }
-    const litres = (areaM2 / coverage) * coats;
-    const bottles = Math.ceil(litres / bottle);
-    return { litres, bottles };
+    try {
+      const result = calculatePrimer({
+        areaM2,
+        coverageRateM2PerL: coverage,
+        bottleSizeL: bottle,
+        coats,
+      });
+      return { litres: result.litresNeeded, bottles: result.bottlesNeeded };
+    } catch {
+      return { litres: 0, bottles: 0 };
+    }
   }, [primerCoverage, primerBottleSize, primerCoats, areaM2]);
 
   const backerMetrics = useMemo(() => {
-    const widthM = toNumber(boardWidth) / 1000;
-    const heightM = toNumber(boardHeight) / 1000;
     const wastage = toNumber(boardWastage);
-    if (widthM <= 0 || heightM <= 0 || areaM2 <= 0) {
+    if (toNumber(boardWidth) <= 0 || toNumber(boardHeight) <= 0 || areaM2 <= 0) {
       return { boards: 0, boardArea: 0 };
     }
-    const boardArea = widthM * heightM;
-    const rawBoards = boardArea > 0 ? areaM2 / boardArea : 0;
-    const boards = Math.ceil(rawBoards * (1 + wastage / 100));
-    return { boards, boardArea };
+    try {
+      const result = calculateBackerBoard({
+        areaM2,
+        boardWidthMm: toNumber(boardWidth),
+        boardHeightMm: toNumber(boardHeight),
+        wastage,
+      });
+      return { boards: result.boardsNeeded, boardArea: result.boardAreaM2 };
+    } catch {
+      return { boards: 0, boardArea: 0 };
+    }
   }, [boardWidth, boardHeight, boardWastage, areaM2]);
 
   const tankingMetrics = useMemo(() => {
@@ -291,9 +331,17 @@ export default function TilingProjectWizard() {
     if (coverage <= 0 || coats <= 0 || tub <= 0 || areaM2 <= 0) {
       return { kg: 0, tubs: 0 };
     }
-    const kg = areaM2 * coverage * coats;
-    const tubs = Math.ceil(kg / tub);
-    return { kg, tubs };
+    try {
+      const result = calculateTanking({
+        areaM2,
+        coverageRateKgPerM2PerCoat: coverage,
+        coats,
+        tubSizeKg: tub,
+      });
+      return { kg: result.kgNeeded, tubs: result.tubsNeeded };
+    } catch {
+      return { kg: 0, tubs: 0 };
+    }
   }, [tankingCoverage, tankingCoats, tankingTubSize, areaM2]);
 
   const slcMetrics = useMemo(() => {
@@ -304,10 +352,18 @@ export default function TilingProjectWizard() {
     if (coverage <= 0 || depth <= 0 || bag <= 0 || areaM2 <= 0) {
       return { kg: 0, kgWithWastage: 0, bags: 0 };
     }
-    const kg = areaM2 * depth * coverage;
-    const kgWithWastage = kg * (1 + wastage / 100);
-    const bags = Math.ceil(kgWithWastage / bag);
-    return { kg, kgWithWastage, bags };
+    try {
+      const result = calculateSLC({
+        areaM2,
+        averageDepthMm: depth,
+        coverageRateKgPerM2PerMm: coverage,
+        bagSizeKg: bag,
+        wastage,
+      });
+      return { kg: result.kgNeeded, kgWithWastage: result.kgWithWastage, bags: result.bagsNeeded };
+    } catch {
+      return { kg: 0, kgWithWastage: 0, bags: 0 };
+    }
   }, [slcCoverage, slcDepth, slcBagSize, slcWastage, areaM2]);
 
   const goNext = () => setCurrentIndex((prev) => Math.min(prev + 1, steps.length - 1));
@@ -329,7 +385,7 @@ export default function TilingProjectWizard() {
       <button
         type="button"
         onClick={onInclude}
-        className="mt-4 inline-flex items-center justify-center rounded-lg bg-brand-blue px-4 py-2 text-sm font-semibold text-white"
+        className="mt-4 btn-primary"
       >
         Include this step
       </button>
@@ -696,7 +752,7 @@ export default function TilingProjectWizard() {
                 <button
                   type="button"
                   onClick={() => handleSkip('primer')}
-                  className="text-sm font-semibold text-muted-foreground underline"
+                  className="btn-ghost"
                 >
                   Skip this step
                 </button>
@@ -755,7 +811,7 @@ export default function TilingProjectWizard() {
                 <button
                   type="button"
                   onClick={() => handleSkip('backer')}
-                  className="text-sm font-semibold text-muted-foreground underline"
+                  className="btn-ghost"
                 >
                   Skip this step
                 </button>
@@ -774,7 +830,7 @@ export default function TilingProjectWizard() {
               <button
                 type="button"
                 onClick={goNext}
-                className="mt-4 inline-flex items-center justify-center rounded-lg bg-brand-blue px-4 py-2 text-sm font-semibold text-white"
+                className="mt-4 btn-primary"
               >
                 Continue
               </button>
@@ -826,7 +882,7 @@ export default function TilingProjectWizard() {
                 <button
                   type="button"
                   onClick={() => handleSkip('tanking')}
-                  className="text-sm font-semibold text-muted-foreground underline"
+                  className="btn-ghost"
                 >
                   Skip this step
                 </button>
@@ -900,7 +956,7 @@ export default function TilingProjectWizard() {
                 <button
                   type="button"
                   onClick={() => handleSkip('slc')}
-                  className="text-sm font-semibold text-muted-foreground underline"
+                  className="btn-ghost"
                 >
                   Skip this step
                 </button>
@@ -999,7 +1055,7 @@ export default function TilingProjectWizard() {
           type="button"
           onClick={goBack}
           disabled={currentIndex === 0}
-          className="px-4 py-2 text-sm font-semibold rounded-lg border border-border bg-surface disabled:opacity-50"
+          className="btn-ghost"
         >
           Back
         </button>
@@ -1009,7 +1065,7 @@ export default function TilingProjectWizard() {
             <button
               type="button"
               onClick={goNext}
-              className="px-4 py-2 text-sm font-semibold rounded-lg bg-brand-blue text-white"
+              className="btn-accent"
             >
               Next
             </button>
@@ -1018,7 +1074,7 @@ export default function TilingProjectWizard() {
             <button
               type="button"
               onClick={() => setCurrentIndex(0)}
-              className="px-4 py-2 text-sm font-semibold rounded-lg bg-brand-blue text-white"
+              className="btn-ghost"
             >
               Start over
             </button>

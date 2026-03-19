@@ -54,7 +54,7 @@
 
 @utility focus-ring {
   outline: none;
-  @apply ring-2 ring-primary/50 ring-offset-2 ring-offset-bg-page;
+  @apply ring-2 ring-brand-navy ring-offset-2;
 }
 
 /* ==========================================================================
@@ -90,6 +90,15 @@
 
   a {
     @apply transition-colors duration-200 hover:text-primary;
+  }
+
+  /* Keyboard-only focus ring — visible for keyboard nav, hidden for mouse (V-5) */
+  :focus-visible {
+    outline: 2px solid var(--color-brand-navy);
+    outline-offset: 2px;
+  }
+  :focus:not(:focus-visible) {
+    outline: none;
   }
 }
 
@@ -129,7 +138,7 @@
   .form-input,
   .form-select,
   .form-textarea {
-    @apply block w-full rounded-lg border border-border-default bg-bg-section text-text-main px-4 py-2.5 transition-colors focus:focus-ring disabled:opacity-50 disabled:bg-gray-50 disabled:cursor-not-allowed;
+    @apply block w-full rounded-lg border border-border-default bg-bg-section text-text-main px-4 py-2.5 transition-colors focus-visible:focus-ring disabled:opacity-50 disabled:bg-gray-50 disabled:cursor-not-allowed;
   }
 
   .form-textarea {
@@ -161,14 +170,46 @@
   }
 
   /* ==========================================================================
-     Buttons
+     Buttons — three canonical variants (Decision V-2)
+
+     WCAG AAA contrast ratios (min 7:1 required for normal text):
+       btn-primary  white (#ffffff) on navy (#04204b)  ≈ 15.4:1  ✓ AAA
+       btn-accent   navy (#04204b) on yellow (#ffd407)  ≈ 10.1:1  ✓ AAA
+       btn-ghost    navy (#04204b) on white (#ffffff)  ≈ 15.4:1  ✓ AAA
+
+     Touch targets: min-h-[44px] min-w-[44px] per WCAG SC 2.5.8
      ========================================================================== */
   .btn-primary {
-    @apply inline-flex items-center justify-center px-6 py-3 rounded-lg bg-primary text-white font-bold text-sm tracking-wide transition-all duration-200 hover:bg-primary-dark focus:focus-ring disabled:opacity-60 disabled:pointer-events-none;
+    @apply inline-flex items-center justify-center gap-2 px-6 min-h-[44px] min-w-[44px]
+           font-semibold text-base leading-none
+           bg-brand-navy text-white
+           transition-colors duration-150 cursor-pointer
+           hover:bg-primary-dark
+           disabled:opacity-50 disabled:cursor-not-allowed
+           focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-navy focus-visible:ring-offset-2;
+    border-radius: var(--radius-button);
   }
 
-  .btn-secondary {
-    @apply inline-flex items-center justify-center px-6 py-3 rounded-lg bg-bg-section border-2 border-border-default text-text-main font-bold text-sm tracking-wide transition-all duration-200 hover:border-primary border-primary hover:text-primary focus:focus-ring disabled:opacity-60 disabled:pointer-events-none;
+  .btn-accent {
+    @apply inline-flex items-center justify-center gap-2 px-6 min-h-[44px] min-w-[44px]
+           font-semibold text-base leading-none
+           bg-brand-yellow text-brand-navy
+           transition-colors duration-150 cursor-pointer
+           hover:brightness-95
+           disabled:opacity-50 disabled:cursor-not-allowed
+           focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-navy focus-visible:ring-offset-2;
+    border-radius: var(--radius-button);
+  }
+
+  .btn-ghost {
+    @apply inline-flex items-center justify-center gap-2 px-6 min-h-[44px] min-w-[44px]
+           font-semibold text-base leading-none
+           bg-transparent text-brand-navy border border-brand-navy
+           transition-colors duration-150 cursor-pointer
+           hover:bg-brand-navy/10
+           disabled:opacity-50 disabled:cursor-not-allowed
+           focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-navy focus-visible:ring-offset-2;
+    border-radius: var(--radius-button);
   }
 
   /* ==========================================================================
