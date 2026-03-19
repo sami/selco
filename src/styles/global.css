@@ -1,30 +1,55 @@
+@import url('https://fonts.googleapis.com/css2?family=Open+Sans:wght@400;600;700&display=swap');
 @import "tailwindcss";
 
 @theme {
-  /* Brand Colours */
-  --color-primary: #003087;
-  /* Selco Blue */
-  --color-primary-dark: #00264d;
-  /* Darker Blue */
-  --color-primary-nav: #004B8D;
-  /* Nav/Header Blue */
-  --color-accent: #FFCD00;
-  /* Selco Yellow */
+  /* =========================================================================
+     Canonical SELCO Brand Palette
+     Single source of truth — matches src/types/index.ts BRAND constants.
+     ========================================================================= */
+  --color-brand-navy:       #04204b;   /* primary brand, nav, dark backgrounds */
+  --color-brand-blue:       #253081;   /* secondary brand, links, focus rings */
+  --color-brand-yellow:     #ffd407;   /* CTA, wizard advance, highlights */
+  --color-brand-light-grey: #f2f6fa;   /* page backgrounds, light surfaces */
+  --color-brand-white:      #ffffff;
 
-  /* Neutral Colours */
-  --color-text-main: #1f2937;
-  /* Gray 800 */
-  --color-text-muted: #6b7280;
-  /* Gray 500 */
-  --color-bg-page: #f8fafc;
-  /* Slate 50 */
-  --color-bg-section: #ffffff;
-  /* White */
-  --color-border-default: #e5e7eb;
-  /* Gray 200 */
+  /* =========================================================================
+     Semantic tokens — derived from brand palette
+     ========================================================================= */
+  --color-surface:            #ffffff;   /* card/panel backgrounds */
+  --color-surface-foreground: #04204b;   /* text on white surfaces */
+  --color-muted-foreground:   #64748b;   /* secondary text, placeholders, hints */
+  --color-border:             #e2e8f0;   /* input borders, dividers */
+  --color-destructive:        #dc2626;   /* error states, validation failures */
+  --color-success:            #16a34a;   /* success states, completed wizard steps */
 
-  /* Typography */
-  --font-sans: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  /* =========================================================================
+     Radius tokens — used by CalculatorLayout, TilingProjectWizard
+     ========================================================================= */
+  --radius-card:   0.75rem;
+  --radius-input:  0.5rem;
+  --radius-button: 0.5rem;
+
+  /* =========================================================================
+     Typography
+     ========================================================================= */
+  --font-sans: 'Open Sans', ui-sans-serif, system-ui, Helvetica, Arial, sans-serif;
+
+  /* =========================================================================
+     Backwards-compatibility aliases
+     Map old token names to canonical values so existing Tailwind utilities
+     (bg-primary, text-text-main, border-border-default, etc.) continue
+     working in @layer components without a mass rename.
+     Remove in a future cleanup once @layer components uses canonical names.
+     ========================================================================= */
+  --color-primary:        var(--color-brand-navy);
+  --color-primary-dark:   #03183a;   /* darker navy for hover states on bg-primary */
+  --color-primary-nav:    var(--color-brand-blue);
+  --color-accent:         var(--color-brand-yellow);
+  --color-text-main:      #1f2937;   /* neutral grey — kept for body/heading text */
+  --color-text-muted:     var(--color-muted-foreground);
+  --color-bg-page:        var(--color-brand-light-grey);
+  --color-bg-section:     var(--color-surface);
+  --color-border-default: var(--color-border);
 }
 
 @utility focus-ring {
