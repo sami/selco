@@ -1,0 +1,1277 @@
+<!DOCTYPE html>
+<html lang="en-GB">
+<!--
+  ============================================================
+  WIREFRAME: Unit Converter — Standalone Calculator Page
+  Project:   SELCO Trade Materials Calculator (TM470)
+  Author:    Sami — Open University TMA 02
+  Date:      2026-03-19
+  Layout:    Option B — Input-first, single column, results reveal
+             showSidebar=false (no sidebar on standalone calculators)
+  ============================================================
+  ANNOTATION COLOUR KEY (see legend at bottom of page):
+    - Grey  box  (#d1d5db bg, #6b7280 text) = Site template / chrome zone
+    - Blue  box  (#dbeafe bg, #1e40af text) = Layout / structural annotation
+    - Green box  (#dcfce7 bg, #166534 text) = Interaction / behaviour note
+    - Amber box  (#fef9c3 bg, #854d0e text) = Accessibility / WCAG note
+    - Pink  box  (#fce7f3 bg, #9d174d text) = Design decision / pattern ref
+    - Dashed yellow border                  = Results panel (revealed state)
+  ============================================================
+-->
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Wireframe — Unit Converter (Standalone) — SELCO TM470</title>
+  <style>
+    /* ── Reset ─────────────────────────────────────────────── */
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    /* ── SELCO Brand Tokens ────────────────────────────────── */
+    :root {
+      --navy:       #04204b;
+      --blue:       #253081;
+      --yellow:     #ffd407;
+      --light-grey: #f2f6fa;
+      --white:      #ffffff;
+      --text-dark:  #1f2937;
+      --text-mid:   #4b5563;
+      --text-muted: #9ca3af;
+      --border:     #04204b;   /* 1px navy border on inputs */
+      --radius:     4px;
+      --error:      #dc2626;
+    }
+
+    /* ── Base Typography ───────────────────────────────────── */
+    body {
+      font-family: 'Arial', Helvetica, sans-serif;
+      font-size: 15px;
+      line-height: 1.5;
+      color: var(--text-dark);
+      background: var(--light-grey);
+    }
+
+    /* ── Annotation Chip Styles ────────────────────────────── */
+    .ann {
+      display: inline-block;
+      font-size: 10px;
+      font-weight: 700;
+      letter-spacing: 0.4px;
+      padding: 2px 7px;
+      border-radius: 3px;
+      text-transform: uppercase;
+      margin-bottom: 4px;
+      font-family: 'Courier New', monospace;
+    }
+    .ann-chrome   { background: #d1d5db; color: #374151; }
+    .ann-layout   { background: #dbeafe; color: #1e40af; }
+    .ann-interact { background: #dcfce7; color: #166534; }
+    .ann-access   { background: #fef9c3; color: #854d0e; }
+    .ann-pattern  { background: #fce7f3; color: #9d174d; }
+
+    /* Annotation boxes (labelled regions) */
+    .zone {
+      position: relative;
+      border: 1.5px dashed #9ca3af;
+      border-radius: 4px;
+      margin-bottom: 6px;
+    }
+    .zone-chrome   { border-color: #9ca3af; background: #f3f4f6; }
+    .zone-layout   { border-color: #93c5fd; background: #eff6ff; }
+    .zone-interact { border-color: #86efac; background: #f0fdf4; }
+    .zone-access   { border-color: #fde68a; background: #fffbeb; }
+    .zone-results  { border: 2.5px dashed var(--yellow); background: #fffef5; }
+
+    /* ── Site Chrome: Top Bar ──────────────────────────────── */
+    .top-bar {
+      background: var(--navy);
+      color: #fff;
+      font-size: 11px;
+      font-weight: 700;
+      padding: 6px 0;
+    }
+    .top-bar-inner {
+      max-width: 1280px;
+      margin: 0 auto;
+      padding: 0 16px;
+      display: flex;
+      justify-content: space-between;
+    }
+    .top-bar a { color: rgba(255,255,255,0.75); text-decoration: none; margin: 0 8px; text-transform: uppercase; font-size: 10px; }
+
+    /* ── Site Chrome: Main Header ──────────────────────────── */
+    .site-header {
+      background: var(--yellow);
+      padding: 10px 0;
+    }
+    .header-inner {
+      max-width: 1280px;
+      margin: 0 auto;
+      padding: 0 16px;
+      display: flex;
+      align-items: center;
+      gap: 16px;
+    }
+    .logo-wordmark {
+      font-size: 22px;
+      font-weight: 900;
+      color: var(--navy);
+      text-transform: uppercase;
+      letter-spacing: -1px;
+      white-space: nowrap;
+    }
+    .logo-wordmark span { color: var(--blue); font-size: 13px; font-weight: 700; display: block; letter-spacing: 0; text-transform: none; }
+    .search-bar {
+      flex: 1;
+      display: flex;
+      max-width: 560px;
+    }
+    .search-bar input {
+      width: 100%;
+      padding: 9px 14px;
+      border: 1px solid #ccc;
+      border-right: none;
+      border-radius: var(--radius) 0 0 var(--radius);
+      font-size: 14px;
+      color: var(--text-mid);
+      background: #fff;
+    }
+    .search-bar button {
+      background: var(--navy);
+      color: #fff;
+      border: none;
+      padding: 0 16px;
+      border-radius: 0 var(--radius) var(--radius) 0;
+      font-size: 16px;
+      cursor: default;
+    }
+    .header-icons {
+      display: flex;
+      gap: 20px;
+    }
+    .header-icon {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      color: var(--navy);
+      font-size: 11px;
+      font-weight: 700;
+      text-decoration: none;
+      gap: 2px;
+    }
+    .header-icon .icon { font-size: 18px; }
+
+    /* ── Site Chrome: Category Nav ─────────────────────────── */
+    .cat-nav {
+      background: var(--blue);
+      color: #fff;
+      padding: 0;
+    }
+    .cat-nav-inner {
+      max-width: 1280px;
+      margin: 0 auto;
+      padding: 0 16px;
+      display: flex;
+      gap: 1px;
+      overflow-x: auto;
+    }
+    .cat-nav-item {
+      padding: 11px 10px;
+      font-size: 10px;
+      font-weight: 700;
+      text-transform: uppercase;
+      white-space: nowrap;
+      color: rgba(255,255,255,0.75);
+      border-right: 1px solid rgba(255,255,255,0.1);
+      text-align: center;
+      line-height: 1.3;
+    }
+
+    /* ── SVG Hero Strip ────────────────────────────────────── */
+    .hero-strip {
+      background: var(--navy);
+      height: 140px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      position: relative;
+      overflow: hidden;
+    }
+    .hero-strip::before {
+      /* Ruler motif — repeating tick marks */
+      content: '';
+      position: absolute;
+      inset: 0;
+      background-image: repeating-linear-gradient(
+        90deg,
+        transparent 0px,
+        transparent 38px,
+        rgba(255,255,255,0.08) 38px,
+        rgba(255,255,255,0.08) 40px
+      );
+    }
+    .hero-strip::after {
+      content: '';
+      position: absolute;
+      bottom: 20px;
+      left: 0;
+      right: 0;
+      height: 2px;
+      background: rgba(255,212,7,0.4);
+    }
+    .hero-text {
+      position: relative;
+      z-index: 1;
+      text-align: center;
+      color: #fff;
+    }
+    .hero-text h1-mock {
+      display: block;
+      font-size: 28px;
+      font-weight: 900;
+      letter-spacing: -0.5px;
+      color: #fff;
+    }
+    .hero-text sub-label {
+      display: block;
+      font-size: 12px;
+      color: rgba(255,255,255,0.55);
+      margin-top: 4px;
+    }
+
+    /* ── Page content wrapper ──────────────────────────────── */
+    .page-content {
+      max-width: 1280px;
+      margin: 0 auto;
+      padding: 0 16px 60px;
+    }
+
+    /* ── Breadcrumb ────────────────────────────────────────── */
+    .breadcrumb {
+      padding: 20px 0 6px;
+      font-size: 12px;
+      color: var(--blue);
+      font-weight: 600;
+    }
+    .breadcrumb a { color: var(--blue); text-decoration: none; }
+    .breadcrumb span { color: #ccc; margin: 0 5px; font-weight: normal; }
+    .breadcrumb .current { color: var(--text-muted); font-weight: normal; }
+
+    /* ── Escape hatch ──────────────────────────────────────── */
+    .escape-hatch {
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+      font-size: 13px;
+      font-weight: 700;
+      color: var(--navy);
+      text-decoration: none;
+      margin-bottom: 16px;
+    }
+    .escape-hatch:hover { text-decoration: underline; }
+
+    /* ── Page heading ──────────────────────────────────────── */
+    .page-heading {
+      font-size: 28px;
+      font-weight: 900;
+      color: var(--navy);
+      text-transform: uppercase;
+      letter-spacing: -0.5px;
+      margin-bottom: 20px;
+    }
+
+    /* ── Calculator card ───────────────────────────────────── */
+    .calc-card {
+      background: var(--white);
+      border-radius: var(--radius);
+      box-shadow: 0 2px 12px rgba(4,32,75,0.10);
+      padding: 28px;
+      max-width: 640px;
+      margin: 0 auto 0;
+    }
+    .calc-card fieldset {
+      border: none;
+      padding: 0;
+    }
+    .calc-card legend {
+      font-size: 14px;
+      font-weight: 700;
+      color: var(--text-mid);
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      margin-bottom: 20px;
+      padding: 0;
+    }
+
+    /* ── Form elements ─────────────────────────────────────── */
+    .form-group { margin-bottom: 18px; }
+    .form-label {
+      display: block;
+      font-size: 13px;
+      font-weight: 700;
+      color: var(--text-dark);
+      margin-bottom: 5px;
+    }
+    .form-input,
+    .form-select {
+      display: block;
+      width: 100%;
+      padding: 9px 12px;
+      border: 1px solid var(--navy);   /* 1px navy border */
+      border-radius: var(--radius);    /* 4px radius */
+      font-size: 14px;
+      color: var(--text-dark);
+      background: #fff;
+      appearance: none;
+      -webkit-appearance: none;
+    }
+    .form-select {
+      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%2304204b' d='M6 8L1 3h10z'/%3E%3C/svg%3E");
+      background-repeat: no-repeat;
+      background-position: right 10px center;
+      padding-right: 30px;
+    }
+    .form-select:focus,
+    .form-input:focus {
+      outline: 3px solid var(--yellow);   /* Yellow focus ring — WCAG 2.4.7 */
+      outline-offset: 2px;
+    }
+    .helper-text {
+      font-size: 11px;
+      color: var(--text-mid);
+      margin-top: 4px;
+    }
+    .error-text {
+      font-size: 11px;
+      color: var(--error);
+      margin-top: 3px;
+    }
+
+    /* Inline row: value input + from dropdown */
+    .input-row {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
+    }
+    .arrow-label {
+      display: flex;
+      align-items: flex-end;
+      padding-bottom: 10px;
+      font-size: 18px;
+      color: var(--text-muted);
+      justify-content: center;
+    }
+
+    /* ── Buttons ───────────────────────────────────────────── */
+    /* btn-primary: navy bg, white text — main submit action */
+    .btn-primary {
+      display: inline-block;
+      background: var(--navy);   /* #04204b */
+      color: #fff;
+      font-size: 14px;
+      font-weight: 700;
+      padding: 11px 28px;
+      border: none;
+      border-radius: var(--radius);
+      cursor: default;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+    /* btn-accent: yellow bg, navy text — CTA */
+    .btn-accent {
+      display: inline-block;
+      background: var(--yellow);  /* #ffd407 */
+      color: var(--navy);
+      font-size: 14px;
+      font-weight: 700;
+      padding: 11px 28px;
+      border: none;
+      border-radius: var(--radius);
+      cursor: default;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+    /* btn-ghost: transparent, navy border + text */
+    .btn-ghost {
+      display: inline-block;
+      background: transparent;
+      color: var(--navy);
+      font-size: 13px;
+      font-weight: 700;
+      padding: 9px 20px;
+      border: 1.5px solid var(--navy);
+      border-radius: var(--radius);
+      cursor: default;
+    }
+
+    /* ── Button row ────────────────────────────────────────── */
+    .button-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-top: 24px;
+    }
+
+    /* ── Results panel ─────────────────────────────────────── */
+    .results-panel {
+      border: 2.5px dashed var(--yellow);
+      border-radius: 6px;
+      background: #fffef5;
+      padding: 24px;
+      margin-top: 20px;
+      max-width: 640px;
+      margin-left: auto;
+      margin-right: auto;
+    }
+    .results-badge {
+      display: inline-block;
+      background: var(--yellow);
+      color: var(--navy);
+      font-size: 10px;
+      font-weight: 900;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      padding: 3px 8px;
+      border-radius: 3px;
+      margin-bottom: 10px;
+    }
+    .result-value {
+      font-size: 26px;
+      font-weight: 900;
+      color: var(--navy);
+      margin-bottom: 6px;
+    }
+    .result-value em { font-style: normal; color: var(--blue); }
+    .result-formula {
+      font-size: 12px;
+      color: var(--text-mid);
+      margin-bottom: 4px;
+    }
+    .result-source {
+      font-size: 11px;
+      color: var(--text-muted);
+      font-style: italic;
+      margin-bottom: 16px;
+    }
+
+    /* ── Guidance (collapsible) ────────────────────────────── */
+    .guidance-section {
+      max-width: 640px;
+      margin: 24px auto 0;
+    }
+    .guidance-toggle {
+      width: 100%;
+      background: var(--light-grey);
+      border: 1px solid #d1d5db;
+      border-radius: var(--radius);
+      padding: 12px 16px;
+      text-align: left;
+      font-size: 14px;
+      font-weight: 700;
+      color: var(--navy);
+      cursor: default;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    .guidance-toggle::after { content: '▲'; font-size: 10px; color: var(--text-mid); }
+    .guidance-body {
+      border: 1px solid #d1d5db;
+      border-top: none;
+      background: #fff;
+      border-radius: 0 0 var(--radius) var(--radius);
+      padding: 14px 16px;
+      font-size: 13px;
+      color: var(--text-mid);
+    }
+    .guidance-body ol { padding-left: 20px; }
+    .guidance-body li { margin-bottom: 6px; }
+
+    /* ── Related calculators ───────────────────────────────── */
+    .related-section {
+      max-width: 640px;
+      margin: 24px auto 0;
+    }
+    .related-title {
+      font-size: 12px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      color: var(--text-mid);
+      margin-bottom: 10px;
+    }
+    .related-links { display: flex; flex-direction: column; gap: 6px; }
+    .related-link {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      color: var(--navy);
+      font-size: 13px;
+      font-weight: 600;
+      text-decoration: none;
+    }
+    .related-link::before { content: '→'; color: var(--yellow); font-weight: 900; }
+
+    /* ── Dual-state divider ────────────────────────────────── */
+    .state-divider {
+      max-width: 640px;
+      margin: 36px auto 16px;
+      display: grid;
+      grid-template-columns: 1fr auto 1fr;
+      align-items: center;
+      gap: 12px;
+    }
+    .state-divider hr { border: none; border-top: 2px dashed #cbd5e1; }
+    .state-label-box {
+      font-size: 11px;
+      font-weight: 700;
+      text-align: center;
+      padding: 6px 14px;
+      border-radius: 3px;
+      white-space: nowrap;
+    }
+    .state-label-before { background: #e0e7ff; color: #3730a3; }
+    .state-label-after  { background: #dcfce7; color: #166534; }
+
+    /* ── Two-state columns (side-by-side) ──────────────────── */
+    .two-state-grid {
+      max-width: 1200px;
+      margin: 0 auto;
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 24px;
+    }
+    .state-col {
+      border: 1.5px dashed #9ca3af;
+      border-radius: 6px;
+      padding: 20px;
+      background: #f8fafc;
+    }
+    .state-col-label {
+      font-size: 11px;
+      font-weight: 900;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      padding: 4px 10px;
+      border-radius: 3px;
+      margin-bottom: 16px;
+      display: inline-block;
+    }
+    .state-col-before .state-col-label { background: #e0e7ff; color: #3730a3; }
+    .state-col-after  .state-col-label { background: #dcfce7; color: #166534; }
+
+    /* ── Mobile section ────────────────────────────────────── */
+    .mobile-divider {
+      margin: 60px 0 32px;
+      text-align: center;
+      position: relative;
+    }
+    .mobile-divider::before {
+      content: '';
+      position: absolute;
+      top: 50%;
+      left: 0;
+      right: 0;
+      height: 2px;
+      background: #cbd5e1;
+    }
+    .mobile-divider-label {
+      position: relative;
+      display: inline-block;
+      background: var(--light-grey);
+      padding: 0 20px;
+      font-size: 13px;
+      font-weight: 900;
+      color: var(--text-mid);
+      letter-spacing: 1px;
+    }
+
+    /* Mobile frame */
+    .mobile-frame {
+      width: 375px;
+      margin: 0 auto;
+      border: 3px solid var(--navy);
+      border-radius: 20px;
+      overflow: hidden;
+      background: #fff;
+    }
+    .mobile-status-bar {
+      background: var(--navy);
+      color: #fff;
+      font-size: 10px;
+      padding: 6px 16px;
+      display: flex;
+      justify-content: space-between;
+    }
+    .mobile-header {
+      background: var(--yellow);
+      padding: 8px 12px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+    .mobile-logo { font-size: 14px; font-weight: 900; color: var(--navy); text-transform: uppercase; }
+    .mobile-icons { display: flex; gap: 12px; font-size: 14px; color: var(--navy); }
+    .mobile-hero {
+      background: var(--navy);
+      height: 70px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .mobile-hero span { color: #fff; font-size: 14px; font-weight: 700; }
+    .mobile-body { padding: 12px; }
+    .mobile-breadcrumb { font-size: 10px; color: var(--blue); margin-bottom: 6px; }
+    .mobile-escape { font-size: 11px; font-weight: 700; color: var(--navy); margin-bottom: 8px; }
+    .mobile-h1 { font-size: 18px; font-weight: 900; color: var(--navy); text-transform: uppercase; margin-bottom: 12px; }
+    .mobile-card { background: #fff; border-radius: 4px; box-shadow: 0 1px 6px rgba(0,0,0,0.1); padding: 14px; margin-bottom: 12px; }
+    .mobile-label { font-size: 11px; font-weight: 700; color: var(--text-dark); margin-bottom: 3px; }
+    .mobile-input { width: 100%; border: 1px solid var(--navy); border-radius: 4px; padding: 7px 10px; font-size: 12px; margin-bottom: 10px; color: #555; background: #f9f9f9; }
+    .mobile-select { width: 100%; border: 1px solid var(--navy); border-radius: 4px; padding: 7px 10px; font-size: 12px; margin-bottom: 10px; color: #555; background: #f9f9f9; }
+    .mobile-btn-primary { width: 100%; background: var(--navy); color: #fff; border: none; border-radius: 4px; padding: 10px; font-size: 13px; font-weight: 700; text-transform: uppercase; margin-bottom: 8px; }
+    .mobile-results { border: 2px dashed var(--yellow); border-radius: 4px; padding: 12px; background: #fffef5; margin-top: 8px; }
+    .mobile-result-val { font-size: 16px; font-weight: 900; color: var(--navy); }
+    .mobile-result-formula { font-size: 10px; color: var(--text-mid); }
+
+    /* ── Footer ────────────────────────────────────────────── */
+    .site-footer {
+      background: var(--navy);
+      color: rgba(255,255,255,0.7);
+      padding: 40px 0 20px;
+      margin-top: 60px;
+    }
+    .footer-inner {
+      max-width: 1280px;
+      margin: 0 auto;
+      padding: 0 16px;
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 30px;
+      margin-bottom: 30px;
+    }
+    .footer-col h4 { color: #fff; font-size: 13px; margin-bottom: 12px; }
+    .footer-col ul { list-style: none; }
+    .footer-col li { font-size: 12px; margin-bottom: 6px; color: rgba(255,255,255,0.6); }
+    .footer-copy {
+      max-width: 1280px;
+      margin: 0 auto;
+      padding: 16px 16px 0;
+      border-top: 1px solid rgba(255,255,255,0.1);
+      text-align: center;
+      font-size: 11px;
+      color: rgba(255,255,255,0.5);
+    }
+
+    /* ── Annotation Legend ─────────────────────────────────── */
+    .legend {
+      max-width: 960px;
+      margin: 48px auto 0;
+      padding: 20px 24px;
+      background: #fff;
+      border: 1.5px solid #e2e8f0;
+      border-radius: 6px;
+    }
+    .legend h3 { font-size: 13px; font-weight: 900; text-transform: uppercase; letter-spacing: 0.5px; color: var(--navy); margin-bottom: 14px; }
+    .legend-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; }
+    .legend-item { display: flex; align-items: center; gap: 8px; font-size: 12px; }
+    .legend-swatch { width: 28px; height: 20px; border-radius: 3px; flex-shrink: 0; border: 1px solid rgba(0,0,0,0.08); }
+  </style>
+</head>
+<body>
+
+<!-- ============================================================
+     ZONE: SELCO Site Template — Top Bar
+     Chrome element common to all pages on selcobw.com.
+     Rendered by SelcoHeader.astro. Disabled in the app (opacity 0.7, pointer-events: none).
+     ============================================================ -->
+<div class="zone zone-chrome" style="margin-bottom:0; border-radius:0; border-left:none; border-right:none; border-top:none;">
+  <div style="padding:2px 8px 0;"><span class="ann ann-chrome">Site Chrome — top-bar — SelcoHeader.astro</span></div>
+  <div class="top-bar">
+    <div class="top-bar-inner">
+      <div><a>MATERIALS</a><a>CAREERS</a><a>BLOG</a></div>
+      <div><a>First Time Log In</a><a>Get a Trade Card</a></div>
+    </div>
+  </div>
+</div>
+
+<!-- ============================================================
+     ZONE: SELCO Site Template — Main Header (yellow bar)
+     Logo + Search + Icon links. Matches selcobw.com header chrome.
+     SelcoHeader.astro — background: #FFCD00 (brand yellow).
+     ============================================================ -->
+<div class="zone zone-chrome" style="border-radius:0; border-left:none; border-right:none; margin-bottom:0;">
+  <div style="padding:2px 8px 0;"><span class="ann ann-chrome">Site Chrome — SelcoHeader.astro — yellow #ffd407 background</span></div>
+  <div class="site-header">
+    <div class="header-inner">
+      <div class="logo-wordmark">SELCO<span>Builders Warehouse</span></div>
+      <div class="search-bar">
+        <input type="text" placeholder="Search (e.g. Bricks, Bosch, 5mm)" disabled />
+        <button disabled>&#128269;</button>
+      </div>
+      <div class="header-icons">
+        <a class="header-icon"><span class="icon">&#128205;</span>Branches</a>
+        <a class="header-icon"><span class="icon">&#128337;</span>Calculators</a>
+        <a class="header-icon"><span class="icon">&#128274;</span>Log In</a>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ============================================================
+     ZONE: SELCO Site Template — Category Navigation bar
+     SelcoNav.astro — background: #1b3a6e / #253081.
+     Product category tabs — all inactive on calculator pages.
+     ============================================================ -->
+<div class="zone zone-chrome" style="border-radius:0; border-left:none; border-right:none; margin-bottom:0;">
+  <div style="padding:2px 8px 0;"><span class="ann ann-chrome">Site Chrome — SelcoNav.astro — category nav bar — #253081</span></div>
+  <div class="cat-nav">
+    <div class="cat-nav-inner">
+      <div class="cat-nav-item">&#127968;</div>
+      <div class="cat-nav-item">Building<br>Materials</div>
+      <div class="cat-nav-item">Timber &amp;<br>Joinery</div>
+      <div class="cat-nav-item">Landscaping &amp;<br>Fencing</div>
+      <div class="cat-nav-item">Kitchens &amp;<br>Bathrooms</div>
+      <div class="cat-nav-item">Flooring &amp;<br>Tiling</div>
+      <div class="cat-nav-item">Plumbing &amp;<br>Heating</div>
+      <div class="cat-nav-item">Tools, Equipment<br>&amp; Workwear</div>
+      <div class="cat-nav-item">Painting &amp;<br>Decorating</div>
+      <div class="cat-nav-item">Electrical, Lighting<br>&amp; Ventilation</div>
+      <div class="cat-nav-item">Fixings &amp;<br>Adhesives</div>
+    </div>
+  </div>
+</div>
+
+<!-- ============================================================
+     ZONE: SVG Hero Strip
+     hero-handy.svg — navy background (#04204b), ruler tick-mark motif.
+     Height: 140px. Full width. Rendered by SelcoLayout.astro hero slot.
+     ============================================================ -->
+<div class="zone zone-layout" style="border-radius:0; border-left:none; border-right:none; margin-bottom:0;">
+  <div style="padding:2px 8px 0;"><span class="ann ann-layout">SVG Hero — hero-handy.svg — navy bg #04204b — ruler motif — 140px</span></div>
+  <div class="hero-strip">
+    <div class="hero-text">
+      <h1-mock>HANDY CALCULATORS</h1-mock>
+      <sub-label>hero-handy.svg — navy background, ruler motif</sub-label>
+    </div>
+  </div>
+</div>
+
+<!-- ============================================================
+     PAGE BODY — showSidebar=false — single column layout
+     SelcoLayout.astro — main-container (no .with-sidebar class)
+     ============================================================ -->
+<div class="zone zone-layout" style="border-radius:0; border-left:none; border-right:none; min-height:400px;">
+  <div style="padding:4px 8px 0;">
+    <span class="ann ann-layout">Page Body — SelcoLayout.astro — showSidebar=false — single column — max-width 1280px centred</span>
+    <span class="ann ann-pattern">Wroblewski (2011) Mobile First — single column optimised for phone use</span>
+  </div>
+
+  <div class="page-content">
+
+    <!-- ── Breadcrumb ───────────────────────────────────────── -->
+    <!--
+      ZONE: Breadcrumb navigation
+      Rendered by SelcoLayout.astro breadcrumbs prop.
+      Semantic nav>ol>li structure. Links use nav element for landmark.
+    -->
+    <div class="zone zone-layout" style="margin-bottom:0; display:inline-block; width:100%;">
+      <div style="padding:2px 8px;"><span class="ann ann-layout">Breadcrumb — nav &gt; ol &gt; li — SelcoLayout.astro breadcrumbs prop</span></div>
+      <nav aria-label="Breadcrumb" class="breadcrumb">
+        <a href="#">Home</a>
+        <span>›</span>
+        <a href="#">Handy Calculators</a>
+        <span>›</span>
+        <span class="current">Unit Converter</span>
+      </nav>
+    </div>
+
+    <!-- ── Escape hatch ──────────────────────────────────────── -->
+    <!--
+      ZONE: Escape hatch — "← All Calculators"
+      Provides a clear path back to the hub page.
+      Tidwell (2020) Hub and Spoke pattern — escape back to hub.
+      Immediately below breadcrumb, above h1.
+    -->
+    <div class="zone zone-interact" style="display:inline-block; margin-bottom:4px;">
+      <div style="padding:2px 8px;"><span class="ann ann-interact">Escape hatch — Tidwell (2020) Hub and Spoke — nav back to calculator hub</span></div>
+      <a class="escape-hatch" href="#">&#8592; All Calculators</a>
+    </div>
+
+    <!-- ── Page heading h1 ──────────────────────────────────── -->
+    <h1 class="page-heading">Unit Converter</h1>
+
+    <!-- ══════════════════════════════════════════════════════════
+         TWO-STATE SECTION HEADER
+         The calculator card is shown twice:
+           Left:  Before Calculate — empty state
+           Right: After Calculate — results revealed
+         ══════════════════════════════════════════════════════════ -->
+    <div style="max-width:1200px; margin:0 auto 16px;">
+      <div style="background:#1e3a5f; color:#fff; border-radius:4px; padding:10px 16px; font-size:12px; font-weight:700; letter-spacing:0.5px; text-align:center;">
+        WIREFRAME ANNOTATION — TWO STATES SHOWN SIDE BY SIDE FOR REVIEW:&nbsp;&nbsp;
+        <span style="background:#e0e7ff; color:#3730a3; padding:2px 8px; border-radius:3px; margin-right:8px;">LEFT = Before Calculate (empty state)</span>
+        <span style="background:#dcfce7; color:#166534; padding:2px 8px; border-radius:3px;">RIGHT = After Calculate (results revealed)</span>
+      </div>
+    </div>
+
+    <div class="two-state-grid">
+
+      <!-- ══ STATE LEFT: Before Calculate ═══════════════════════ -->
+      <div class="state-col state-col-before">
+        <span class="state-col-label">State 1 — Before Calculate — Empty</span>
+
+        <!--
+          ZONE: Calculator inputs
+          ANNOTATION: Wroblewski (2011) Mobile First — single column optimised for phone use.
+          Fieldset with legend groups related inputs under an accessible label.
+          All labels are always visible (no placeholder-as-label anti-pattern).
+          1px navy border, 4px radius, helper text in grey below each input.
+        -->
+        <!-- ZONE: Calculator inputs — Wroblewski (2011) Mobile First — single column optimised for phone use -->
+        <div class="zone zone-interact" style="margin-bottom:12px;">
+          <div style="padding:2px 8px;"><span class="ann ann-interact">Calculator inputs — Wroblewski (2011) Mobile First — full-width single column</span></div>
+
+          <div class="calc-card">
+            <fieldset>
+              <legend>Convert a measurement</legend>
+
+              <!-- Category dropdown -->
+              <div class="form-group">
+                <label class="form-label" for="s1-category">What are you converting?</label>
+                <select class="form-select" id="s1-category">
+                  <option>Length</option>
+                  <option>Area</option>
+                  <option>Volume</option>
+                  <option>Weight</option>
+                </select>
+                <p class="helper-text">Select the measurement type first.</p>
+              </div>
+
+              <!-- Value input -->
+              <div class="form-group">
+                <label class="form-label" for="s1-value">Value</label>
+                <input class="form-input" id="s1-value" type="number" placeholder="e.g. 1.5" />
+                <p class="helper-text">Enter the number you want to convert.</p>
+              </div>
+
+              <!-- From / To row -->
+              <div class="form-group">
+                <div class="input-row">
+                  <div>
+                    <label class="form-label" for="s1-from">From unit</label>
+                    <select class="form-select" id="s1-from">
+                      <option>Square metres (m²)</option>
+                      <option>Square feet (ft²)</option>
+                    </select>
+                  </div>
+                  <div>
+                    <label class="form-label" for="s1-to">To unit</label>
+                    <select class="form-select" id="s1-to">
+                      <option>Square feet (ft²)</option>
+                      <option>Square metres (m²)</option>
+                    </select>
+                  </div>
+                </div>
+                <p class="helper-text">Available units depend on selected category.</p>
+              </div>
+
+              <!--
+                BUTTON: btn-primary — Nielsen (1994) H4 Consistency — same role = same visual style.
+                CONTRAST: white on #04204b = 12.1:1 — WCAG 2.1 SC 1.4.3 AAA
+                Focus ring: yellow #ffd407 outline on all interactive elements (WCAG 2.4.7)
+              -->
+              <!-- BUTTON: btn-primary — Nielsen (1994) H4 Consistency — same role = same visual style -->
+              <!-- CONTRAST: white on #04204b = 12.1:1 — WCAG 2.1 SC 1.4.3 AAA -->
+              <div class="button-row">
+                <div>
+                  <div class="zone zone-access" style="padding:4px 8px; margin-bottom:6px; display:inline-block;">
+                    <span class="ann ann-access">WCAG 2.1 SC 1.4.3 AAA — white on #04204b = 12.1:1</span><br>
+                    <span class="ann ann-access">Focus ring: yellow #ffd407 outline — WCAG 2.4.7</span>
+                  </div>
+                  <br>
+                  <button class="btn-primary" type="button">Calculate</button>
+                </div>
+                <!-- btn-ghost: Reset — right-aligned -->
+                <a href="#" class="btn-ghost">Reset</a>
+              </div>
+
+              <!-- Empty state annotation below button -->
+              <div style="margin-top:16px; padding:12px; background:#f2f6fa; border-radius:4px; border:1px dashed #9ca3af; text-align:center;">
+                <span style="font-size:12px; color:#6b7280; font-style:italic;">Results will appear here after pressing Calculate</span>
+              </div>
+
+            </fieldset>
+          </div>
+        </div>
+      </div>
+
+      <!-- ══ STATE RIGHT: After Calculate ═══════════════════════ -->
+      <div class="state-col state-col-after">
+        <span class="state-col-label">State 2 — After Calculate — Results revealed</span>
+
+        <!-- Calculator card — filled state -->
+        <!-- ZONE: Calculator inputs — Wroblewski (2011) Mobile First — single column optimised for phone use -->
+        <div class="zone zone-interact" style="margin-bottom:12px;">
+          <div style="padding:2px 8px;"><span class="ann ann-interact">Calculator inputs (filled) — value entered, units selected</span></div>
+
+          <div class="calc-card">
+            <fieldset>
+              <legend>Convert a measurement</legend>
+
+              <div class="form-group">
+                <label class="form-label" for="s2-category">What are you converting?</label>
+                <select class="form-select" id="s2-category">
+                  <option selected>Area</option>
+                  <option>Length</option>
+                  <option>Volume</option>
+                  <option>Weight</option>
+                </select>
+                <p class="helper-text">Select the measurement type first.</p>
+              </div>
+
+              <div class="form-group">
+                <label class="form-label" for="s2-value">Value</label>
+                <input class="form-input" id="s2-value" type="number" value="1.5" />
+                <p class="helper-text">Enter the number you want to convert.</p>
+              </div>
+
+              <div class="form-group">
+                <div class="input-row">
+                  <div>
+                    <label class="form-label" for="s2-from">From unit</label>
+                    <select class="form-select" id="s2-from">
+                      <option selected>Square metres (m²)</option>
+                      <option>Square feet (ft²)</option>
+                    </select>
+                  </div>
+                  <div>
+                    <label class="form-label" for="s2-to">To unit</label>
+                    <select class="form-select" id="s2-to">
+                      <option selected>Square feet (ft²)</option>
+                      <option>Square metres (m²)</option>
+                    </select>
+                  </div>
+                </div>
+                <p class="helper-text">Available units depend on selected category.</p>
+              </div>
+
+              <!-- BUTTON: btn-primary — Nielsen (1994) H4 Consistency — same role = same visual style -->
+              <!-- CONTRAST: white on #04204b = 12.1:1 — WCAG 2.1 SC 1.4.3 AAA -->
+              <div class="button-row">
+                <button class="btn-primary" type="button">Calculate</button>
+                <a href="#" class="btn-ghost">Reset</a>
+              </div>
+
+            </fieldset>
+          </div>
+        </div>
+
+        <!--
+          ZONE: Results reveal — Tidwell (2020) Input Feedback — in-context, in-document flow.
+          Results panel appears BELOW the inputs after Calculate is pressed.
+          Dashed yellow border signals the "new content revealed" state.
+          No page navigation or scroll — content appended in flow.
+        -->
+        <!-- ZONE: Results reveal — Tidwell (2020) Input Feedback — in-context, in-document flow -->
+        <div class="zone zone-results">
+          <div style="padding:2px 8px;"><span class="ann ann-interact">Results reveal — Tidwell (2020) Input Feedback — in-context, in-document flow</span></div>
+
+          <div class="results-panel">
+            <div class="results-badge">Result</div>
+            <div class="result-value">1.5 m² = <em>16.15 sq ft</em></div>
+            <div class="result-formula">Multiply by 10.764</div>
+            <div class="result-source">Source: ISO 80000-3:2019</div>
+            <button class="btn-ghost" type="button" style="font-size:12px; padding:6px 14px;">Copy Result</button>
+          </div>
+        </div>
+
+      </div>
+    </div>
+    <!-- end two-state-grid -->
+
+    <!-- ── Guidance section (collapsible, shown open) ─────────── -->
+    <!--
+      Shown below results. Collapsible via details/summary pattern.
+      Shown in open state for wireframe clarity.
+    -->
+    <div style="max-width:640px; margin:0 auto;">
+      <div class="zone zone-interact" style="margin-top:24px;">
+        <div style="padding:2px 8px;"><span class="ann ann-interact">Guidance — collapsible via details/summary — shown open — HTML-only no JS required</span></div>
+        <div class="guidance-section" style="margin:0;">
+          <button class="guidance-toggle" type="button">How to use this calculator</button>
+          <div class="guidance-body">
+            <ol>
+              <li>Select the <strong>measurement type</strong> (Length, Area, Volume, or Weight).</li>
+              <li>Enter the <strong>value</strong> you want to convert.</li>
+              <li>Choose your <strong>From</strong> and <strong>To</strong> units from the dropdowns.</li>
+              <li>Press <strong>Calculate</strong> to see the converted result.</li>
+              <li>Use <strong>Copy Result</strong> to copy the result to your clipboard.</li>
+            </ol>
+          </div>
+        </div>
+      </div>
+
+      <!-- ── Related calculators ──────────────────────────────── -->
+      <!--
+        ZONE: Related calculators — Tidwell (2020) Hub and Spoke — escape hatch back to hub.
+        Three small links to peer calculators. Uses arrow → prefix in yellow for brand consistency.
+      -->
+      <!-- ZONE: Related calculators — Tidwell (2020) Hub and Spoke — escape hatch back to hub -->
+      <div class="zone zone-interact" style="margin-top:16px;">
+        <div style="padding:2px 8px;"><span class="ann ann-interact">Related calculators — Tidwell (2020) Hub and Spoke — escape hatch back to hub</span></div>
+        <div class="related-section" style="margin:0;">
+          <div class="related-title">Related Calculators</div>
+          <div class="related-links">
+            <a class="related-link" href="#">Board Coverage Calculator</a>
+            <a class="related-link" href="#">Board Cutting Optimiser</a>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div><!-- end page-content -->
+</div><!-- end page body zone -->
+
+
+<!-- ══════════════════════════════════════════════════════════════
+     MOBILE VIEW SECTION (375px frame)
+     Shows the same page content reflowed for a narrow viewport.
+     Matches the single-column layout already used by the Astro app
+     on screens below 1024px (SelcoLayout.astro media queries).
+     ══════════════════════════════════════════════════════════════ -->
+<div class="mobile-divider">
+  <span class="mobile-divider-label">— MOBILE VIEW (375px) —</span>
+</div>
+
+<div style="padding: 0 16px 48px; background: var(--light-grey);">
+  <div style="text-align:center; margin-bottom:16px;">
+    <span class="ann ann-layout">Viewport 375px — single column reflow — SelcoLayout.astro responsive grid collapses to 1fr</span>
+    <span class="ann ann-access">Touch target min 44×44px — WCAG 2.5.5 Target Size</span>
+    <span class="ann ann-access">Focus ring yellow #ffd407 — visible on all interactive elements</span>
+  </div>
+
+  <div class="mobile-frame">
+
+    <!-- Mobile status bar (chrome decoration only) -->
+    <div class="mobile-status-bar">
+      <span>9:41</span>
+      <span>&#9679;&#9679;&#9679; LTE &#9646;&#9646;</span>
+    </div>
+
+    <!-- Mobile header — yellow, logo centred -->
+    <div class="mobile-header">
+      <span style="font-size:18px; color:var(--navy);">&#9776;</span>
+      <span class="mobile-logo">SELCO</span>
+      <div class="mobile-icons">
+        <span>&#128205;</span>
+        <span>&#128337;</span>
+        <span>&#128274;</span>
+      </div>
+    </div>
+
+    <!-- Mobile search bar -->
+    <div style="background:var(--yellow); padding:0 10px 8px; display:flex;">
+      <input style="flex:1; padding:6px 10px; border:none; border-radius:4px 0 0 4px; font-size:12px; color:#555;" placeholder="Search..." disabled />
+      <button style="background:var(--navy); color:#fff; border:none; padding:0 10px; border-radius:0 4px 4px 0; font-size:12px;" disabled>&#128269;</button>
+    </div>
+
+    <!-- Mobile hero strip — compact 70px -->
+    <div class="mobile-hero">
+      <span>HANDY CALCULATORS — hero-handy.svg</span>
+    </div>
+
+    <div class="mobile-body">
+
+      <!-- Breadcrumb -->
+      <div class="mobile-breadcrumb">Home › Handy Calculators › Unit Converter</div>
+
+      <!-- Escape hatch -->
+      <div class="mobile-escape">&#8592; All Calculators</div>
+
+      <!-- h1 -->
+      <div class="mobile-h1">Unit Converter</div>
+
+      <!-- Calculator card -->
+      <div class="mobile-card">
+        <div style="font-size:11px; font-weight:700; color:#555; text-transform:uppercase; letter-spacing:0.4px; margin-bottom:10px;">Convert a measurement</div>
+
+        <div class="mobile-label">What are you converting?</div>
+        <select class="mobile-select"><option>Area</option></select>
+
+        <div class="mobile-label">Value</div>
+        <input class="mobile-input" type="number" value="1.5" />
+
+        <div class="mobile-label">From unit</div>
+        <select class="mobile-select"><option>Square metres (m²)</option></select>
+
+        <div class="mobile-label">To unit</div>
+        <select class="mobile-select"><option>Square feet (ft²)</option></select>
+
+        <!-- btn-primary full-width on mobile -->
+        <button class="mobile-btn-primary" type="button">Calculate</button>
+
+        <!-- Results revealed on mobile -->
+        <div class="mobile-results">
+          <div style="font-size:10px; font-weight:700; color:var(--navy); text-transform:uppercase; margin-bottom:4px;">Result</div>
+          <div class="mobile-result-val">1.5 m² = 16.15 sq ft</div>
+          <div class="mobile-result-formula">Multiply by 10.764 &bull; ISO 80000-3:2019</div>
+          <div style="margin-top:8px;">
+            <button style="font-size:11px; border:1.5px solid var(--navy); border-radius:4px; background:transparent; color:var(--navy); padding:5px 12px; font-weight:700;">Copy Result</button>
+          </div>
+        </div>
+
+      </div>
+
+      <!-- Mobile guidance -->
+      <div style="background:#fff; border-radius:4px; border:1px solid #e2e8f0; margin-bottom:10px; overflow:hidden;">
+        <div style="padding:10px 12px; font-size:12px; font-weight:700; color:var(--navy); display:flex; justify-content:space-between;">
+          How to use this calculator <span>&#9650;</span>
+        </div>
+        <div style="padding:0 12px 10px; font-size:11px; color:#555;">
+          Select type &rarr; enter value &rarr; choose units &rarr; press Calculate.
+        </div>
+      </div>
+
+      <!-- Mobile related -->
+      <div style="font-size:11px; color:#555; margin-bottom:4px; font-weight:700; text-transform:uppercase; letter-spacing:0.4px;">Related Calculators</div>
+      <a style="display:block; font-size:12px; font-weight:600; color:var(--navy); text-decoration:none; margin-bottom:4px;">&#8594; Board Coverage Calculator</a>
+      <a style="display:block; font-size:12px; font-weight:600; color:var(--navy); text-decoration:none; margin-bottom:16px;">&#8594; Board Cutting Optimiser</a>
+
+    </div><!-- end mobile-body -->
+  </div><!-- end mobile-frame -->
+</div>
+
+<!-- ── Site Footer ─────────────────────────────────────────────── -->
+<!--
+  ZONE: Site Chrome — SelcoFooter.astro
+  Navy background #04204b. Four column grid: Help / Services / About / Social.
+  Demo disclaimer in yellow bar above footer.
+-->
+<div class="zone zone-chrome" style="border-radius:0; border-left:none; border-right:none; border-bottom:none; margin-top:0;">
+  <div style="padding:2px 8px;"><span class="ann ann-chrome">Site Chrome — SelcoFooter.astro — navy #04204b — 4-col grid</span></div>
+  <div class="site-footer">
+    <div class="footer-inner">
+      <div class="footer-col">
+        <h4>Help</h4>
+        <ul>
+          <li>Selcobw.com Help</li>
+          <li>Buying from Selco</li>
+          <li>Branch Finder</li>
+          <li>Returns Policy</li>
+          <li>Contact Us</li>
+        </ul>
+      </div>
+      <div class="footer-col">
+        <h4>Services</h4>
+        <ul>
+          <li>Get a Trade Card</li>
+          <li>Click &amp; Collect</li>
+          <li>Click &amp; Deliver</li>
+          <li>Dial &amp; Deliver</li>
+        </ul>
+      </div>
+      <div class="footer-col">
+        <h4>About</h4>
+        <ul>
+          <li>About Selco</li>
+          <li>The Toolkit Blog</li>
+          <li>Careers</li>
+          <li>ESG Policy</li>
+        </ul>
+      </div>
+      <div class="footer-col">
+        <h4>Connect</h4>
+        <ul>
+          <li>Facebook</li>
+          <li>Instagram</li>
+          <li>Twitter / X</li>
+          <li>LinkedIn</li>
+          <li>YouTube</li>
+        </ul>
+      </div>
+    </div>
+    <div class="footer-copy">
+      &copy; 2026 Demo Application — SELCO Trade Materials Calculator — TM470 Open University Project
+    </div>
+  </div>
+</div>
+
+
+<!-- ══════════════════════════════════════════════════════════════
+     ANNOTATION LEGEND
+     ══════════════════════════════════════════════════════════════ -->
+<div style="background:var(--light-grey); padding:32px 16px;">
+  <div class="legend">
+    <h3>Wireframe Annotation Legend</h3>
+    <div class="legend-grid">
+
+      <div class="legend-item">
+        <div class="legend-swatch" style="background:#d1d5db; border-color:#9ca3af;"></div>
+        <div>
+          <strong>Grey zone / chip</strong><br>
+          <span style="color:#6b7280;">Site template / chrome element (SelcoHeader, SelcoNav, SelcoFooter)</span>
+        </div>
+      </div>
+
+      <div class="legend-item">
+        <div class="legend-swatch" style="background:#dbeafe; border-color:#93c5fd;"></div>
+        <div>
+          <strong>Blue zone / chip</strong><br>
+          <span style="color:#6b7280;">Layout or structural annotation (grid, max-width, breadcrumb)</span>
+        </div>
+      </div>
+
+      <div class="legend-item">
+        <div class="legend-swatch" style="background:#dcfce7; border-color:#86efac;"></div>
+        <div>
+          <strong>Green zone / chip</strong><br>
+          <span style="color:#6b7280;">Interaction / behaviour note (input zones, results reveal, guidance)</span>
+        </div>
+      </div>
+
+      <div class="legend-item">
+        <div class="legend-swatch" style="background:#fef9c3; border-color:#fde68a;"></div>
+        <div>
+          <strong>Amber zone / chip</strong><br>
+          <span style="color:#6b7280;">Accessibility / WCAG note (contrast ratio, focus ring, target size)</span>
+        </div>
+      </div>
+
+      <div class="legend-item">
+        <div class="legend-swatch" style="background:#fce7f3; border-color:#f9a8d4;"></div>
+        <div>
+          <strong>Pink chip</strong><br>
+          <span style="color:#6b7280;">Design decision / pattern reference (Tidwell, Nielsen, Wroblewski)</span>
+        </div>
+      </div>
+
+      <div class="legend-item">
+        <div class="legend-swatch" style="background:#fffef5; border: 2.5px dashed #ffd407;"></div>
+        <div>
+          <strong>Dashed yellow border</strong><br>
+          <span style="color:#6b7280;">Results panel — revealed state after Calculate pressed (in-document flow)</span>
+        </div>
+      </div>
+
+    </div>
+
+    <div style="margin-top:20px; padding-top:16px; border-top:1px solid #e2e8f0; font-size:11px; color:#6b7280;">
+      <strong>Button variants:</strong>&nbsp;
+      <span style="background:#04204b; color:#fff; padding:2px 8px; border-radius:3px; font-size:11px; margin-right:6px;">btn-primary — navy #04204b, white text — Calculate</span>
+      <span style="background:#ffd407; color:#04204b; padding:2px 8px; border-radius:3px; font-size:11px; margin-right:6px;">btn-accent — yellow #ffd407, navy text — View Results, Start Project</span>
+      <span style="border:1.5px solid #04204b; color:#04204b; padding:2px 8px; border-radius:3px; font-size:11px; background:transparent;">btn-ghost — transparent, navy border + text — Back, Reset</span>
+    </div>
+
+    <div style="margin-top:12px; font-size:11px; color:#6b7280;">
+      <strong>Key references:</strong>
+      Nielsen (1994) H4 Consistency — same role = same visual style &bull;
+      Wroblewski (2011) Mobile First — single-column input-first layout &bull;
+      Tidwell (2020) Input Feedback (Ch.6) — results revealed in-document &bull;
+      Tidwell (2020) Hub and Spoke (Ch.3) — escape hatch back to hub &bull;
+      WCAG 2.1 SC 1.4.3 — minimum contrast 4.5:1 (white on #04204b = 12.1:1, AAA) &bull;
+      WCAG 2.4.7 — focus visible (yellow #ffd407 outline ring)
+    </div>
+  </div>
+</div>
+
+</body>
+</html>

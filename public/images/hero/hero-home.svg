@@ -1,0 +1,57 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 200">
+  <!-- Background -->
+  <rect width="1200" height="200" fill="#04204b"/>
+
+  <!-- Top-right corner geometric pattern: dot grid in #253081 -->
+  <g fill="#253081">
+    <circle cx="870" cy="15" r="2"/><circle cx="890" cy="15" r="2"/><circle cx="910" cy="15" r="2"/><circle cx="930" cy="15" r="2"/><circle cx="950" cy="15" r="2"/><circle cx="970" cy="15" r="2"/><circle cx="990" cy="15" r="2"/><circle cx="1010" cy="15" r="2"/><circle cx="1030" cy="15" r="2"/><circle cx="1050" cy="15" r="2"/><circle cx="1070" cy="15" r="2"/><circle cx="1090" cy="15" r="2"/><circle cx="1110" cy="15" r="2"/><circle cx="1130" cy="15" r="2"/><circle cx="1150" cy="15" r="2"/><circle cx="1170" cy="15" r="2"/>
+    <circle cx="870" cy="35" r="2"/><circle cx="890" cy="35" r="2"/><circle cx="910" cy="35" r="2"/><circle cx="930" cy="35" r="2"/><circle cx="950" cy="35" r="2"/><circle cx="970" cy="35" r="2"/><circle cx="990" cy="35" r="2"/><circle cx="1010" cy="35" r="2"/><circle cx="1030" cy="35" r="2"/><circle cx="1050" cy="35" r="2"/><circle cx="1070" cy="35" r="2"/><circle cx="1090" cy="35" r="2"/><circle cx="1110" cy="35" r="2"/><circle cx="1130" cy="35" r="2"/><circle cx="1150" cy="35" r="2"/><circle cx="1170" cy="35" r="2"/>
+    <circle cx="870" cy="55" r="2"/><circle cx="890" cy="55" r="2"/><circle cx="910" cy="55" r="2"/><circle cx="930" cy="55" r="2"/><circle cx="950" cy="55" r="2"/><circle cx="970" cy="55" r="2"/><circle cx="990" cy="55" r="2"/><circle cx="1010" cy="55" r="2"/><circle cx="1030" cy="55" r="2"/><circle cx="1050" cy="55" r="2"/><circle cx="1070" cy="55" r="2"/><circle cx="1090" cy="55" r="2"/><circle cx="1110" cy="55" r="2"/><circle cx="1130" cy="55" r="2"/><circle cx="1150" cy="55" r="2"/><circle cx="1170" cy="55" r="2"/>
+  </g>
+
+  <!-- Diagonal divider from motif zone into text zone -->
+  <polygon points="310,0 370,0 340,200 280,200" fill="#253081"/>
+
+  <!-- MOTIF ZONE: x 0-360 -->
+
+  <!-- Ruler: horizontal bar with tick marks -->
+  <rect x="30" y="60" width="280" height="22" fill="#ffffff" rx="2"/>
+  <!-- Major ticks on ruler -->
+  <rect x="65" y="54" width="2" height="10" fill="#04204b"/>
+  <rect x="100" y="54" width="2" height="10" fill="#04204b"/>
+  <rect x="135" y="54" width="2" height="10" fill="#04204b"/>
+  <rect x="170" y="54" width="2" height="10" fill="#04204b"/>
+  <rect x="205" y="54" width="2" height="10" fill="#04204b"/>
+  <rect x="240" y="54" width="2" height="10" fill="#04204b"/>
+  <rect x="275" y="54" width="2" height="10" fill="#04204b"/>
+  <!-- Minor ticks -->
+  <rect x="47" y="57" width="1" height="6" fill="#04204b"/>
+  <rect x="82" y="57" width="1" height="6" fill="#04204b"/>
+  <rect x="117" y="57" width="1" height="6" fill="#04204b"/>
+  <rect x="152" y="57" width="1" height="6" fill="#04204b"/>
+  <rect x="187" y="57" width="1" height="6" fill="#04204b"/>
+  <rect x="222" y="57" width="1" height="6" fill="#04204b"/>
+  <rect x="257" y="57" width="1" height="6" fill="#04204b"/>
+
+  <!-- Spirit level: rectangular tube with bubble -->
+  <rect x="50" y="98" width="240" height="28" fill="#ffffff" rx="4"/>
+  <rect x="52" y="100" width="236" height="24" fill="#04204b" rx="3"/>
+  <!-- Level tube lines -->
+  <rect x="130" y="103" width="1" height="18" fill="#253081"/>
+  <rect x="160" y="103" width="1" height="18" fill="#253081"/>
+  <!-- Bubble -->
+  <ellipse cx="145" cy="112" rx="12" ry="7" fill="#ffd407"/>
+  <!-- End caps -->
+  <rect x="52" y="100" width="18" height="24" fill="#253081" rx="3"/>
+  <rect x="270" y="100" width="18" height="24" fill="#253081" rx="3"/>
+
+  <!-- Trowel: pointed diamond/trowel shape -->
+  <polygon points="160,140 240,148 160,175 80,148" fill="#ffffff"/>
+  <!-- Trowel handle -->
+  <rect x="155" y="125" width="10" height="20" fill="#ffd407" rx="2"/>
+  <rect x="150" y="120" width="20" height="8" fill="#ffd407" rx="2"/>
+
+  <!-- TEXT ZONE -->
+  <text x="400" y="95" font-family="'Open Sans', Arial, sans-serif" font-size="32" font-weight="700" fill="#ffffff">Trade Materials Calculators</text>
+  <text x="400" y="128" font-family="'Open Sans', Arial, sans-serif" font-size="16" font-weight="400" fill="#ffd407">Calculate materials for your next project</text>
+</svg>

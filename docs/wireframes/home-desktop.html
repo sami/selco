@@ -1,0 +1,1210 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>SELCO Trade Materials Calculator — Homepage Wireframe (Desktop 1440px)</title>
+
+  <!--
+  =============================================================================
+  WIREFRAME: home-desktop.html
+  PROJECT:   SELCO Trade Materials Calculator (TM470 Capstone)
+  VIEWPORT:  1440px desktop
+  STACK:     Astro + React
+  DATE:      2026-03-19
+  =============================================================================
+
+  DESIGN DECISION: Option B — Featured + Utility Hierarchy
+  Source: Tidwell (2020) "Designing Interfaces" — Visual Framework pattern.
+  The homepage is divided into two visually distinct weight zones:
+    1. Project Calculators (dominant upper section — navy-accented, rich cards)
+    2. Handy Calculators  (lighter lower section — grey bg, compact cards)
+  This hierarchy communicates at a glance that Project Calculators are the
+  primary use case, satisfying Krug (2014) Ch.3 "Don't Make Me Think" —
+  the homepage must communicate purpose immediately.
+
+  HUB AND SPOKE: Tidwell (2020) — homepage acts as central navigation hub.
+  All calculator tools are reachable from this single landing page, with the
+  sidebar providing persistent wayfinding once inside a calculator section.
+
+  ACCESSIBILITY: WCAG 2.1 AA — semantic HTML, labelled landmarks, sufficient
+  colour contrast, keyboard-navigable sidebar nav.
+  =============================================================================
+  -->
+
+  <style>
+    /* === RESET & BASE === */
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: Arial, Helvetica, sans-serif;
+      font-size: 16px;
+      line-height: 1.5;
+      color: #1a1a1a;
+      background: #ffffff;
+      min-width: 1440px;
+    }
+
+    /* === SELCO BRAND TOKENS === */
+    /* --navy:      #04204b */
+    /* --blue:      #253081 */
+    /* --yellow:    #ffd407 */
+    /* --light-grey:#f2f6fa */
+    /* --white:     #ffffff */
+
+    /* === LAYOUT === */
+    .page-wrapper {
+      max-width: 1440px;
+      margin: 0 auto;
+    }
+
+    /* === ANNOTATION UTILITIES === */
+    .annotation-zone {
+      border: 2px dashed #9ca3af;
+      background: #f3f4f6;
+      padding: 12px 16px;
+      position: relative;
+    }
+
+    .annotation-zone--primary {
+      border: 2px solid #04204b;
+      background: #ffffff;
+    }
+
+    .annotation-label {
+      display: block;
+      font-size: 10px;
+      font-variant: small-caps;
+      letter-spacing: 0.08em;
+      color: #6b7280;
+      text-transform: uppercase;
+      margin-bottom: 4px;
+    }
+
+    .annotation-label--dark {
+      color: #04204b;
+      font-weight: bold;
+    }
+
+    .annotation-label--center {
+      text-align: center;
+    }
+
+    .annotation-content {
+      font-size: 12px;
+      color: #374151;
+    }
+
+    /* === SELCO SITE HEADER (PRESERVED) === */
+    /* ZONE: Site Header — SELCO template, not modified by this project */
+    .site-header {
+      height: 60px;
+      background: #e5e7eb;
+      border: 2px dashed #9ca3af;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 32px;
+    }
+
+    .site-header__logo-zone {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .site-header__logo-box {
+      width: 120px;
+      height: 36px;
+      background: #d1d5db;
+      border: 1px solid #9ca3af;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 10px;
+      color: #6b7280;
+      font-variant: small-caps;
+      letter-spacing: 0.05em;
+    }
+
+    .site-header__nav {
+      display: flex;
+      align-items: center;
+      gap: 24px;
+    }
+
+    .site-header__nav-item {
+      font-size: 13px;
+      color: #374151;
+      padding: 4px 12px;
+      border-radius: 4px;
+      background: #d1d5db;
+      font-variant: small-caps;
+      letter-spacing: 0.05em;
+    }
+
+    .site-header__nav-item--active {
+      background: #04204b;
+      color: #ffffff;
+    }
+
+    /* === PAGE BODY LAYOUT (sidebar + main) === */
+    .page-body {
+      display: flex;
+      align-items: flex-start;
+      min-height: calc(100vh - 60px - 60px);
+    }
+
+    /* === SIDEBAR === */
+    /* ZONE: Sidebar Nav — persistent wayfinding within the calculator section */
+    /* Pattern: Tidwell (2020) "Closable Panels" + Hub and Spoke */
+    /* WCAG 2.1 2.4.1 — navigation landmark provides skip-to-content mechanism */
+    .sidebar {
+      width: 240px;
+      min-width: 240px;
+      background: #f9fafb;
+      border-right: 1px solid #e5e7eb;
+      min-height: 100%;
+      padding: 24px 0;
+      position: sticky;
+      top: 0;
+      align-self: flex-start;
+    }
+
+    .sidebar__escape {
+      padding: 0 16px 16px;
+    }
+
+    .sidebar__escape-link {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      color: #04204b;
+      font-size: 13px;
+      font-weight: 600;
+      text-decoration: none;
+    }
+
+    .sidebar__divider {
+      height: 1px;
+      background: #e5e7eb;
+      margin: 0 16px 16px;
+    }
+
+    .sidebar__group-label {
+      display: block;
+      font-size: 10px;
+      font-variant: small-caps;
+      letter-spacing: 0.1em;
+      color: #6b7280;
+      padding: 0 16px 8px;
+      text-transform: uppercase;
+    }
+
+    .sidebar__nav-list {
+      list-style: none;
+      margin-bottom: 8px;
+    }
+
+    .sidebar__nav-item {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 8px 16px;
+      font-size: 13px;
+      color: #374151;
+      cursor: pointer;
+    }
+
+    .sidebar__nav-item--active {
+      background: #04204b;
+      color: #ffffff;
+      font-weight: 600;
+    }
+
+    .sidebar__nav-item--active .soon-badge {
+      background: #ffffff;
+      color: #04204b;
+    }
+
+    /* ZONE: Coming Soon badge — Nielsen (1994) Heuristic 1 Visibility of System Status */
+    /* Communicates planned-but-unavailable state clearly before the user clicks */
+    .soon-badge {
+      display: inline-block;
+      background: #04204b;
+      color: #ffd407;
+      font-size: 9px;
+      font-weight: 700;
+      padding: 2px 7px;
+      border-radius: 100px;
+      letter-spacing: 0.05em;
+      text-transform: uppercase;
+      white-space: nowrap;
+    }
+
+    /* === MAIN CONTENT AREA === */
+    .main-content {
+      flex: 1;
+      min-width: 0;
+    }
+
+    /* === HERO STRIP === */
+    /* ZONE: Hero — SVG illustration zone, replaced by hero-home.svg in production */
+    .hero-strip {
+      height: 200px;
+      background: #e5e7eb;
+      border: 2px dashed #9ca3af;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+    }
+
+    .hero-strip__icon {
+      width: 48px;
+      height: 48px;
+      background: #d1d5db;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .hero-strip__icon svg {
+      width: 24px;
+      height: 24px;
+      fill: #9ca3af;
+    }
+
+    /* === BREADCRUMB === */
+    /* WCAG 2.1 2.4.8 — location indicator; semantic nav > ol > li */
+    .breadcrumb {
+      padding: 12px 32px;
+      background: #ffffff;
+      border-bottom: 1px solid #f3f4f6;
+    }
+
+    .breadcrumb__list {
+      list-style: none;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 13px;
+    }
+
+    .breadcrumb__item {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      color: #6b7280;
+    }
+
+    .breadcrumb__link {
+      color: #253081;
+      text-decoration: underline;
+    }
+
+    .breadcrumb__separator {
+      color: #9ca3af;
+    }
+
+    .breadcrumb__current {
+      color: #374151;
+    }
+
+    /* === PAGE CONTENT PADDING === */
+    .content-pad {
+      padding: 24px 32px;
+    }
+
+    /* === PAGE HEADING === */
+    .page-heading {
+      font-size: 28px;
+      font-weight: 700;
+      color: #04204b;
+      margin-bottom: 8px;
+    }
+
+    .page-subheading {
+      font-size: 14px;
+      color: #6b7280;
+      margin-bottom: 32px;
+    }
+
+    /* === SECTION HEADINGS === */
+    /* Pattern: Tidwell (2020) Visual Framework — yellow left accent bar signals section boundary */
+    .section-heading-wrap {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin-bottom: 6px;
+    }
+
+    .section-heading-accent {
+      width: 4px;
+      height: 28px;
+      background: #ffd407;
+      border-radius: 2px;
+      flex-shrink: 0;
+    }
+
+    .section-heading {
+      font-size: 20px;
+      font-weight: 700;
+      color: #04204b;
+    }
+
+    .section-subtext {
+      font-size: 13px;
+      color: #6b7280;
+      margin-bottom: 24px;
+      padding-left: 16px;
+    }
+
+    /* === PROJECT CALCULATORS SECTION === */
+    /* ZONE: Project Calculators — dominant upper section */
+    /* Pattern: Tidwell (2020) Grid of Equals — 3+2 card arrangement */
+    /* Cards are equal weight within each row, respecting cognitive load (Miller 1956 via Krug 2014) */
+    .project-section {
+      padding: 24px 32px 32px;
+      background: #ffffff;
+      border-left: 3px solid #04204b;
+      margin-bottom: 0;
+    }
+
+    .project-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 20px;
+    }
+
+    .project-grid__row-2 {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 20px;
+      margin-top: 20px;
+      max-width: calc(66.66% + 10px);
+    }
+
+    /* === PROJECT CARD === */
+    .project-card {
+      background: #ffffff;
+      border: 1px solid #e5e7eb;
+      border-radius: 4px;
+      box-shadow: 0 1px 4px rgba(0,0,0,0.08);
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+      position: relative;
+    }
+
+    .project-card__illustration {
+      height: 180px;
+      background: #e5e7eb;
+      border-bottom: 1px solid #e5e7eb;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+      position: relative;
+    }
+
+    .project-card__illustration-label {
+      font-size: 10px;
+      color: #9ca3af;
+      font-variant: small-caps;
+      letter-spacing: 0.06em;
+    }
+
+    .project-card__illustration-icon {
+      width: 48px;
+      height: 48px;
+      background: #d1d5db;
+      border-radius: 6px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    /* ZONE: Coming Soon ribbon — Nielsen (1994) Heuristic 1 */
+    .coming-soon-ribbon {
+      position: absolute;
+      top: 12px;
+      right: -28px;
+      background: #ffd407;
+      color: #04204b;
+      font-size: 9px;
+      font-weight: 800;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      padding: 4px 36px;
+      transform: rotate(45deg);
+      transform-origin: center;
+      white-space: nowrap;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.15);
+    }
+
+    .project-card__body {
+      padding: 16px;
+      flex: 1;
+    }
+
+    .project-card__title {
+      font-size: 15px;
+      font-weight: 700;
+      color: #04204b;
+      margin-bottom: 6px;
+    }
+
+    .project-card__desc {
+      font-size: 12px;
+      color: #6b7280;
+      line-height: 1.4;
+    }
+
+    .project-card__footer {
+      padding: 12px 16px;
+      border-top: 1px solid #f3f4f6;
+    }
+
+    /* === BUTTONS === */
+    /* WCAG 2.1 1.4.3 — contrast ratio navy/white > 7:1 */
+    .btn {
+      display: inline-block;
+      padding: 8px 18px;
+      border-radius: 3px;
+      font-size: 13px;
+      font-weight: 600;
+      text-decoration: none;
+      cursor: pointer;
+      border: none;
+    }
+
+    .btn--primary {
+      background: #04204b;
+      color: #ffffff;
+    }
+
+    .btn--disabled {
+      background: #e5e7eb;
+      color: #9ca3af;
+      cursor: not-allowed;
+    }
+
+    /* === HANDY CALCULATORS SECTION === */
+    /* ZONE: Handy Calculators — secondary weight, lighter bg */
+    /* Pattern: Tidwell (2020) Visual Framework — visual weight reduction signals utility role */
+    .handy-section {
+      background: #f2f6fa;
+      padding: 32px;
+      border-top: 2px solid #e5e7eb;
+    }
+
+    .handy-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 16px;
+    }
+
+    /* === HANDY CARD === */
+    /* Compact layout: icon left, content right — media object pattern */
+    .handy-card {
+      background: #ffffff;
+      border: 1px solid #e5e7eb;
+      border-radius: 4px;
+      padding: 16px;
+      display: flex;
+      align-items: flex-start;
+      gap: 14px;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+    }
+
+    .handy-card--disabled {
+      opacity: 0.55;
+    }
+
+    .handy-card__icon {
+      width: 40px;
+      height: 40px;
+      min-width: 40px;
+      background: #04204b;
+      border-radius: 6px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .handy-card__icon-inner {
+      width: 20px;
+      height: 20px;
+      background: #ffd407;
+      border-radius: 2px;
+    }
+
+    .handy-card__content { flex: 1; }
+
+    .handy-card__title {
+      font-size: 13px;
+      font-weight: 700;
+      color: #04204b;
+      margin-bottom: 4px;
+    }
+
+    .handy-card__desc {
+      font-size: 11px;
+      color: #6b7280;
+      margin-bottom: 8px;
+      line-height: 1.4;
+    }
+
+    .handy-card__link {
+      font-size: 12px;
+      color: #253081;
+      font-weight: 600;
+      text-decoration: none;
+    }
+
+    .handy-card__link--disabled {
+      color: #9ca3af;
+      cursor: not-allowed;
+    }
+
+    /* === HOW IT WORKS === */
+    /* ZONE: How It Works — onboarding pattern, Krug (2014) Ch.3 */
+    /* Communicates the tool's workflow to first-time trade users */
+    .how-section {
+      padding: 32px;
+      background: #ffffff;
+      border-top: 2px solid #e5e7eb;
+    }
+
+    .how-steps {
+      display: flex;
+      gap: 0;
+      margin-top: 24px;
+    }
+
+    .how-step {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      text-align: center;
+      padding: 0 24px;
+      position: relative;
+    }
+
+    .how-step:not(:last-child)::after {
+      content: '';
+      position: absolute;
+      top: 20px;
+      right: -1px;
+      width: 2px;
+      height: 40px;
+      background: #e5e7eb;
+    }
+
+    .how-step__number {
+      width: 40px;
+      height: 40px;
+      background: #04204b;
+      color: #ffffff;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 16px;
+      font-weight: 700;
+      margin-bottom: 12px;
+      flex-shrink: 0;
+    }
+
+    .how-step__connector {
+      position: absolute;
+      top: 20px;
+      left: calc(50% + 20px);
+      right: calc(-50% + 20px);
+      height: 2px;
+      background: #e5e7eb;
+    }
+
+    .how-step__title {
+      font-size: 14px;
+      font-weight: 700;
+      color: #04204b;
+      margin-bottom: 6px;
+    }
+
+    .how-step__desc {
+      font-size: 12px;
+      color: #6b7280;
+      line-height: 1.5;
+    }
+
+    /* === DISCLAIMER === */
+    /* ZONE: Disclaimer — legal/accuracy notice */
+    .disclaimer {
+      background: #f2f6fa;
+      border-top: 1px solid #e5e7eb;
+      padding: 16px 32px;
+    }
+
+    .disclaimer__text {
+      font-size: 11px;
+      color: #6b7280;
+      line-height: 1.6;
+    }
+
+    .disclaimer__text strong {
+      color: #374151;
+    }
+
+    /* === SITE FOOTER (PRESERVED) === */
+    /* ZONE: Site Footer — SELCO template, not modified */
+    .site-footer {
+      height: 60px;
+      background: #e5e7eb;
+      border: 2px dashed #9ca3af;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    /* === WIREFRAME META BANNER === */
+    .wireframe-meta {
+      background: #04204b;
+      color: #ffd407;
+      text-align: center;
+      padding: 8px 16px;
+      font-size: 11px;
+      letter-spacing: 0.06em;
+      font-variant: small-caps;
+    }
+  </style>
+</head>
+<body>
+
+<!-- ============================================================
+  WIREFRAME META BANNER — identifies this as a wireframe artifact
+  ============================================================ -->
+<div class="wireframe-meta">
+  TM470 Capstone Wireframe &mdash; SELCO Trade Materials Calculator &mdash; Homepage &mdash; Desktop 1440px &mdash; Option B: Featured + Utility Hierarchy
+</div>
+
+<div class="page-wrapper">
+
+  <!-- ============================================================
+    ZONE: Site Header — SELCO template, preserved
+    Pattern: Consistent branding wrapper — not in scope for this project.
+    Shown as annotation zone per brief.
+    WCAG 2.1 2.4.1 — bypass mechanism (skip link would be added in production)
+    ============================================================ -->
+  <header class="site-header" role="banner" aria-label="SELCO Site Header">
+    <div class="site-header__logo-zone">
+      <!-- Annotation: SELCO logo SVG lives in the site template -->
+      <div class="site-header__logo-box">SELCO Logo SVG</div>
+      <span class="annotation-label">Site Template: Header</span>
+    </div>
+    <nav class="site-header__nav" aria-label="Site navigation">
+      <span class="site-header__nav-item">Products</span>
+      <span class="site-header__nav-item">Trade Deals</span>
+      <span class="site-header__nav-item--active site-header__nav-item">Calculators</span>
+      <span class="site-header__nav-item">Find a Branch</span>
+      <span class="annotation-label" style="font-size:10px;color:#6b7280;margin-left:8px;">preserved — not modified</span>
+    </nav>
+  </header>
+  <!-- HTML comment: header is part of the Astro global layout slot and is not
+       rendered by the calculator pages directly. It wraps all routes. -->
+
+  <!-- ============================================================
+    ZONE: Page Body — sidebar + main two-column layout
+    This layout only applies to the /calculators/* route group.
+    The sidebar provides persistent navigation (Tidwell 2020, p.71 "Navigation Tabs"
+    adapted for side panel) so users can move between calculator tools without
+    returning to the homepage (Hub and Spoke — Tidwell 2020 p.29).
+    ============================================================ -->
+  <div class="page-body">
+
+    <!-- ============================================================
+      ZONE: Sidebar Navigation — 240px fixed width
+      Pattern: Tidwell (2020) "Left Panel Navigation"
+      WCAG 2.1 2.4.1 — nav landmark; 2.4.3 focus order; 2.4.5 multiple nav paths
+      The sidebar is sticky so it remains visible while scrolling long calculator forms.
+      ============================================================ -->
+    <aside class="sidebar" role="complementary" aria-label="Calculator navigation">
+
+      <!-- Escape hatch: lets users return to homepage without back button -->
+      <!-- Pattern: Krug (2014) Ch.3 — always show the user where they can go -->
+      <div class="sidebar__escape">
+        <a class="sidebar__escape-link" href="#" aria-label="Return to all calculators homepage">
+          &larr; All Calculators
+        </a>
+      </div>
+
+      <div class="sidebar__divider"></div>
+
+      <!-- PROJECT CALCULATORS GROUP -->
+      <span class="sidebar__group-label" aria-hidden="true">Project Calculators</span>
+      <ul class="sidebar__nav-list" role="list">
+        <!-- Active: Tiling (this is the homepage so no single item is truly active;
+             in production the active state is applied by the current route) -->
+        <li class="sidebar__nav-item sidebar__nav-item--active" aria-current="page">
+          Tiling
+        </li>
+        <!-- ZONE: Coming Soon nav items — Nielsen (1994) Heuristic 1 Visibility of System Status -->
+        <!-- Badges inform users of planned features, preventing frustration (Nielsen 1994, p.30) -->
+        <li class="sidebar__nav-item" aria-disabled="true">
+          Flooring
+          <span class="soon-badge">Soon</span>
+        </li>
+        <li class="sidebar__nav-item">Brick &amp; Block Wall</li>
+        <li class="sidebar__nav-item" aria-disabled="true">
+          Decking
+          <span class="soon-badge">Soon</span>
+        </li>
+        <li class="sidebar__nav-item" aria-disabled="true">
+          Cladding
+          <span class="soon-badge">Soon</span>
+        </li>
+      </ul>
+
+      <div class="sidebar__divider"></div>
+
+      <!-- HANDY CALCULATORS GROUP -->
+      <span class="sidebar__group-label" aria-hidden="true">Handy Calculators</span>
+      <ul class="sidebar__nav-list" role="list">
+        <li class="sidebar__nav-item">Unit Conversions</li>
+        <li class="sidebar__nav-item">Board Coverage</li>
+        <li class="sidebar__nav-item" aria-disabled="true">
+          Board Cutting
+          <span class="soon-badge">Soon</span>
+        </li>
+      </ul>
+
+      <!-- Annotation label -->
+      <div style="padding: 16px; margin-top: auto;">
+        <span class="annotation-label" style="font-size:10px; color:#9ca3af; display:block; text-align:center; border: 1px dashed #d1d5db; padding: 6px; border-radius: 3px;">
+          Sidebar Nav Component<br>CalcSidebar.tsx
+        </span>
+      </div>
+
+    </aside>
+    <!-- /aside.sidebar -->
+
+    <!-- ============================================================
+      ZONE: Main Content — primary page content
+      flex:1 to consume remaining width after 240px sidebar
+      ============================================================ -->
+    <main id="main-content" role="main">
+
+      <!-- ============================================================
+        ZONE: Hero Strip — SVG illustration placeholder
+        In production: replaced by hero-home.svg (navy bg, trade tools motif)
+        Dimensions: full content-area width × 200px
+        Design note: the hero anchors the page visually and reinforces brand
+        identity at first glance — Krug (2014) Ch.3 "Purpose in seconds"
+        ============================================================ -->
+      <div class="hero-strip" role="img" aria-label="Hero illustration — trade tools motif">
+        <div class="hero-strip__icon">
+          <!-- SVG placeholder icon -->
+          <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+            <rect x="3" y="3" width="18" height="18" rx="2" fill="none" stroke="#9ca3af" stroke-width="2"/>
+            <path d="M8 12 L12 8 L16 12" stroke="#9ca3af" stroke-width="2" fill="none"/>
+          </svg>
+        </div>
+        <span class="annotation-label annotation-label--center" style="font-size:12px;">
+          SVG Hero — hero-home.svg
+        </span>
+        <span class="annotation-content" style="text-align:center; font-size:11px; color:#9ca3af;">
+          Navy background &middot; trade tools motif &middot; 1200 &times; 200px<br>
+          Astro Image component with loading="eager" (above the fold)
+        </span>
+      </div>
+      <!-- HTML comment: hero-home.svg is a static asset in /public/images/.
+           It uses ARIA role="img" with descriptive alt text for screen readers (WCAG 2.1 1.1.1) -->
+
+      <!-- ============================================================
+        ZONE: Breadcrumb — semantic location indicator
+        WCAG 2.1 2.4.8 Location — helps users understand where they are
+        Pattern: nav > ol > li (not div soup) for screen-reader announcement
+        ============================================================ -->
+      <nav aria-label="Breadcrumb" class="breadcrumb">
+        <ol class="breadcrumb__list">
+          <li class="breadcrumb__item">
+            <a href="#" class="breadcrumb__link">Home</a>
+          </li>
+          <li class="breadcrumb__item">
+            <span class="breadcrumb__separator" aria-hidden="true">&rsaquo;</span>
+            <span class="breadcrumb__current" aria-current="page">Trade Materials Calculators</span>
+          </li>
+        </ol>
+        <!-- Note: "Trade Materials Calculators" is plain text (not a link) as it is the current page -->
+      </nav>
+
+      <!-- Page heading zone -->
+      <div class="content-pad" style="padding-bottom: 0;">
+        <!-- ============================================================
+          ZONE: Page Heading — h1, navy
+          Only one h1 per page — WCAG 2.1 2.4.6 Headings and Labels
+          ============================================================ -->
+        <h1 class="page-heading">Trade Materials Calculators</h1>
+        <p class="page-subheading">
+          Professional-grade quantity estimators for trade and self-build projects.
+        </p>
+      </div>
+
+      <!-- ============================================================
+        ZONE: Project Calculators Section — dominant upper section
+        Pattern: Tidwell (2020) Visual Framework — primary weight zone
+        Pattern: Tidwell (2020) Grid of Equals — 3+2 card grid
+        Krug (2014) Ch.3 — dominant section communicates primary purpose
+        ============================================================ -->
+      <section class="project-section" aria-labelledby="project-calc-heading">
+        <!-- HTML comment: yellow left-border accent on .project-section signals primary section
+             boundary, following Tidwell (2020) Visual Framework colour-coding principle -->
+
+        <div class="section-heading-wrap">
+          <!-- Yellow left accent bar — Tidwell (2020) Visual Framework -->
+          <div class="section-heading-accent" aria-hidden="true"></div>
+          <h2 class="section-heading" id="project-calc-heading">Project Calculators</h2>
+        </div>
+        <p class="section-subtext">
+          Multi-step wizards to calculate all materials for your project
+        </p>
+
+        <!-- ============================================================
+          ZONE: Project Card Grid — Row 1 (3 columns)
+          Pattern: Tidwell (2020) Grid of Equals p.194 — equal visual weight
+          cards reduce decision fatigue; user scans L-R by trade type
+          ============================================================ -->
+        <div class="project-grid" role="list" aria-label="Project calculators, row one">
+
+          <!-- CARD: Tiling Calculator -->
+          <!-- ZONE: Project Card — Tiling (available) -->
+          <article class="project-card" role="listitem">
+            <div class="project-card__illustration" aria-label="Tiling calculator illustration placeholder">
+              <div class="project-card__illustration-icon" aria-hidden="true">
+                <!-- Inline SVG tile grid motif -->
+                <svg width="32" height="32" viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+                  <rect x="2" y="2" width="12" height="12" rx="1" fill="#9ca3af"/>
+                  <rect x="18" y="2" width="12" height="12" rx="1" fill="#9ca3af"/>
+                  <rect x="2" y="18" width="12" height="12" rx="1" fill="#9ca3af"/>
+                  <rect x="18" y="18" width="12" height="12" rx="1" fill="#9ca3af"/>
+                </svg>
+              </div>
+              <span class="project-card__illustration-label">hero-tiling.svg — 180px</span>
+            </div>
+            <div class="project-card__body">
+              <h3 class="project-card__title">Tiling</h3>
+              <p class="project-card__desc">Calculate tiles, adhesive, and grout for floors and walls.</p>
+            </div>
+            <div class="project-card__footer">
+              <a href="#" class="btn btn--primary" aria-label="Start Tiling Calculator">Start Project &rarr;</a>
+            </div>
+          </article>
+          <!-- /CARD: Tiling -->
+
+          <!-- CARD: Flooring Calculator — Coming Soon -->
+          <!-- ZONE: Project Card — Flooring (coming soon) -->
+          <!-- Nielsen (1994) Heuristic 1 — ribbon communicates status before user attempts to open -->
+          <article class="project-card" role="listitem" aria-disabled="true">
+            <div class="project-card__illustration" style="background:#f3f4f6;" aria-label="Flooring calculator — coming soon">
+              <!-- Coming Soon ribbon -->
+              <div class="coming-soon-ribbon" aria-hidden="true">Coming Soon</div>
+              <div class="project-card__illustration-icon" aria-hidden="true">
+                <svg width="32" height="32" viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+                  <rect x="2" y="10" width="28" height="4" rx="1" fill="#d1d5db"/>
+                  <rect x="2" y="18" width="28" height="4" rx="1" fill="#d1d5db"/>
+                  <rect x="2" y="26" width="28" height="4" rx="1" fill="#d1d5db"/>
+                </svg>
+              </div>
+              <span class="project-card__illustration-label" style="color:#d1d5db;">hero-flooring.svg — 180px</span>
+            </div>
+            <div class="project-card__body">
+              <h3 class="project-card__title" style="color:#9ca3af;">Flooring</h3>
+              <p class="project-card__desc">Calculate boards, underlay, and fixings for timber and LVT floors.</p>
+            </div>
+            <div class="project-card__footer">
+              <button class="btn btn--disabled" disabled aria-disabled="true">Coming Soon</button>
+            </div>
+          </article>
+          <!-- /CARD: Flooring -->
+
+          <!-- CARD: Brick & Block Wall Calculator -->
+          <!-- ZONE: Project Card — Brick & Block Wall (available) -->
+          <article class="project-card" role="listitem">
+            <div class="project-card__illustration" aria-label="Brick and block wall calculator illustration placeholder">
+              <div class="project-card__illustration-icon" aria-hidden="true">
+                <svg width="32" height="32" viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+                  <rect x="2" y="22" width="13" height="6" rx="1" fill="#9ca3af"/>
+                  <rect x="17" y="22" width="13" height="6" rx="1" fill="#9ca3af"/>
+                  <rect x="8" y="14" width="13" height="6" rx="1" fill="#9ca3af"/>
+                  <rect x="2" y="6" width="13" height="6" rx="1" fill="#9ca3af"/>
+                  <rect x="17" y="6" width="13" height="6" rx="1" fill="#9ca3af"/>
+                </svg>
+              </div>
+              <span class="project-card__illustration-label">hero-brickwall.svg — 180px</span>
+            </div>
+            <div class="project-card__body">
+              <h3 class="project-card__title">Brick &amp; Block Wall</h3>
+              <p class="project-card__desc">Calculate bricks, blocks, mortar, and ties for any wall specification.</p>
+            </div>
+            <div class="project-card__footer">
+              <a href="#" class="btn btn--primary" aria-label="Start Brick and Block Wall Calculator">Start Project &rarr;</a>
+            </div>
+          </article>
+          <!-- /CARD: Brick & Block Wall -->
+
+        </div>
+        <!-- /project-grid row 1 -->
+
+        <!-- ============================================================
+          ZONE: Project Card Grid — Row 2 (2 columns, centred)
+          The 3+2 arrangement (Tidwell 2020 Grid of Equals) avoids an
+          incomplete third row which would create a "missing card" perception.
+          The two remaining cards are centred in a 2-col sub-grid.
+          ============================================================ -->
+        <div class="project-grid__row-2" role="list" aria-label="Project calculators, row two">
+
+          <!-- CARD: Decking Calculator — Coming Soon -->
+          <article class="project-card" role="listitem" aria-disabled="true">
+            <div class="project-card__illustration" style="background:#f3f4f6;" aria-label="Decking calculator — coming soon">
+              <div class="coming-soon-ribbon" aria-hidden="true">Coming Soon</div>
+              <div class="project-card__illustration-icon" aria-hidden="true">
+                <svg width="32" height="32" viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+                  <rect x="2" y="8" width="28" height="4" rx="1" fill="#d1d5db"/>
+                  <rect x="2" y="15" width="28" height="4" rx="1" fill="#d1d5db"/>
+                  <rect x="2" y="22" width="28" height="4" rx="1" fill="#d1d5db"/>
+                  <line x1="8" y1="8" x2="8" y2="26" stroke="#e5e7eb" stroke-width="1"/>
+                  <line x1="24" y1="8" x2="24" y2="26" stroke="#e5e7eb" stroke-width="1"/>
+                </svg>
+              </div>
+              <span class="project-card__illustration-label" style="color:#d1d5db;">hero-decking.svg — 180px</span>
+            </div>
+            <div class="project-card__body">
+              <h3 class="project-card__title" style="color:#9ca3af;">Decking</h3>
+              <p class="project-card__desc">Calculate decking boards, joists, and fixings for outdoor decked areas.</p>
+            </div>
+            <div class="project-card__footer">
+              <button class="btn btn--disabled" disabled aria-disabled="true">Coming Soon</button>
+            </div>
+          </article>
+          <!-- /CARD: Decking -->
+
+          <!-- CARD: Cladding Calculator — Coming Soon -->
+          <article class="project-card" role="listitem" aria-disabled="true">
+            <div class="project-card__illustration" style="background:#f3f4f6;" aria-label="Cladding calculator — coming soon">
+              <div class="coming-soon-ribbon" aria-hidden="true">Coming Soon</div>
+              <div class="project-card__illustration-icon" aria-hidden="true">
+                <svg width="32" height="32" viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+                  <rect x="2" y="4" width="28" height="5" rx="1" fill="#d1d5db"/>
+                  <rect x="2" y="12" width="28" height="5" rx="1" fill="#d1d5db"/>
+                  <rect x="2" y="20" width="28" height="5" rx="1" fill="#d1d5db"/>
+                </svg>
+              </div>
+              <span class="project-card__illustration-label" style="color:#d1d5db;">hero-cladding.svg — 180px</span>
+            </div>
+            <div class="project-card__body">
+              <h3 class="project-card__title" style="color:#9ca3af;">Cladding</h3>
+              <p class="project-card__desc">Calculate cladding boards, battens, and fixings for external walls.</p>
+            </div>
+            <div class="project-card__footer">
+              <button class="btn btn--disabled" disabled aria-disabled="true">Coming Soon</button>
+            </div>
+          </article>
+          <!-- /CARD: Cladding -->
+
+        </div>
+        <!-- /project-grid row 2 -->
+
+        <!-- Zone annotation -->
+        <div style="margin-top: 16px; padding: 6px 10px; border: 1px dashed #d1d5db; border-radius: 3px; display: inline-block;">
+          <span class="annotation-label" style="margin:0; font-size:10px;">
+            Grid of Equals — Tidwell (2020) p.194 &middot; 3+2 arrangement &middot; ProjectCard.tsx
+          </span>
+        </div>
+
+      </section>
+      <!-- /project-section -->
+
+      <!-- ============================================================
+        ZONE: Handy Calculators Section — secondary weight
+        Pattern: Tidwell (2020) Visual Framework — lighter bg (#f2f6fa) reduces
+        visual weight relative to Project Calculators, establishing hierarchy.
+        Compact media-object card layout (icon left, content right).
+        ============================================================ -->
+      <section class="handy-section" aria-labelledby="handy-calc-heading">
+
+        <div class="section-heading-wrap">
+          <div class="section-heading-accent" aria-hidden="true"></div>
+          <h2 class="section-heading" id="handy-calc-heading">Handy Calculators</h2>
+        </div>
+        <p class="section-subtext">
+          Quick tools for everyday trade calculations
+        </p>
+
+        <!-- ============================================================
+          ZONE: Handy Card Grid — 3 columns
+          Compact cards: icon (40px navy sq) + title/desc/link
+          Pattern: Tidwell (2020) Grid of Equals — equal weight within section
+          ============================================================ -->
+        <div class="handy-grid" role="list" aria-label="Handy calculators">
+
+          <!-- CARD: Unit Conversions -->
+          <article class="handy-card" role="listitem">
+            <div class="handy-card__icon" aria-hidden="true">
+              <div class="handy-card__icon-inner" style="border-radius:50%;"></div>
+            </div>
+            <div class="handy-card__content">
+              <h3 class="handy-card__title">Unit Conversions</h3>
+              <p class="handy-card__desc">Convert between metric and imperial measurements instantly.</p>
+              <a href="#" class="handy-card__link" aria-label="Open Unit Conversions calculator">Open &rarr;</a>
+            </div>
+          </article>
+          <!-- /CARD: Unit Conversions -->
+
+          <!-- CARD: Board Coverage -->
+          <article class="handy-card" role="listitem">
+            <div class="handy-card__icon" aria-hidden="true">
+              <div class="handy-card__icon-inner"></div>
+            </div>
+            <div class="handy-card__content">
+              <h3 class="handy-card__title">Board Coverage</h3>
+              <p class="handy-card__desc">How many boards do you need to cover a given area?</p>
+              <a href="#" class="handy-card__link" aria-label="Open Board Coverage calculator">Open &rarr;</a>
+            </div>
+          </article>
+          <!-- /CARD: Board Coverage -->
+
+          <!-- CARD: Board Cutting Optimiser — Coming Soon -->
+          <!-- Nielsen (1994) Heuristic 1 — greyed state communicates unavailability -->
+          <article class="handy-card handy-card--disabled" role="listitem" aria-disabled="true">
+            <div class="handy-card__icon" style="background:#9ca3af;" aria-hidden="true">
+              <div class="handy-card__icon-inner" style="background:#d1d5db;"></div>
+            </div>
+            <div class="handy-card__content">
+              <h3 class="handy-card__title" style="color:#9ca3af;">Board Cutting Optimiser</h3>
+              <p class="handy-card__desc">Minimise offcuts with optimal cut-list planning.</p>
+              <span class="handy-card__link--disabled" aria-hidden="true">Coming Soon</span>
+            </div>
+          </article>
+          <!-- /CARD: Board Cutting Optimiser -->
+
+        </div>
+        <!-- /handy-grid -->
+
+        <!-- Zone annotation -->
+        <div style="margin-top: 16px; padding: 6px 10px; border: 1px dashed #9ca3af; border-radius: 3px; display: inline-block; background: #ffffff;">
+          <span class="annotation-label" style="margin:0; font-size:10px;">
+            Visual Framework — Tidwell (2020) &middot; secondary weight zone &middot; HandyCard.tsx
+          </span>
+        </div>
+
+      </section>
+      <!-- /handy-section -->
+
+      <!-- ============================================================
+        ZONE: How It Works — 3-step onboarding strip
+        Pattern: Krug (2014) Ch.3 — the homepage must answer "What is this?"
+        "What can I do here?" within seconds for a first-time trade user.
+        The 3-step flow sets expectations before the user commits to a wizard.
+        ============================================================ -->
+      <section class="how-section" aria-labelledby="how-heading">
+
+        <div class="section-heading-wrap">
+          <div class="section-heading-accent" aria-hidden="true"></div>
+          <h2 class="section-heading" id="how-heading">How It Works</h2>
+        </div>
+
+        <div class="how-steps" role="list">
+
+          <div class="how-step" role="listitem">
+            <div class="how-step__number" aria-hidden="true">1</div>
+            <h3 class="how-step__title">Choose a Calculator</h3>
+            <p class="how-step__desc">Select the type of project or handy tool that matches your job.</p>
+          </div>
+
+          <div class="how-step" role="listitem">
+            <div class="how-step__number" aria-hidden="true">2</div>
+            <h3 class="how-step__title">Enter Your Measurements</h3>
+            <p class="how-step__desc">Input room dimensions, waste allowances, and product choices.</p>
+          </div>
+
+          <div class="how-step" role="listitem">
+            <div class="how-step__number" aria-hidden="true">3</div>
+            <h3 class="how-step__title">Get Your Materials List</h3>
+            <p class="how-step__desc">Receive a full quantity breakdown ready to share with your merchant.</p>
+          </div>
+
+        </div>
+
+        <!-- Zone annotation -->
+        <div style="margin-top: 24px; padding: 6px 10px; border: 1px dashed #d1d5db; border-radius: 3px; display: inline-block;">
+          <span class="annotation-label" style="margin:0; font-size:10px;">
+            Krug (2014) Ch.3 — purpose clarity &middot; How It Works strip
+          </span>
+        </div>
+
+      </section>
+      <!-- /how-section -->
+
+      <!-- ============================================================
+        ZONE: Disclaimer / Data Sources
+        Legal and accuracy notice. Small text, light bg.
+        Reduces liability while maintaining trust with trade users.
+        ============================================================ -->
+      <aside class="disclaimer" role="note" aria-label="Disclaimer">
+        <p class="disclaimer__text">
+          <strong>Disclaimer:</strong> Material quantities are estimates only. Always verify with your SELCO merchant before ordering.
+          Figures are based on manufacturer specifications and standard industry waste allowances.
+          SELCO Builders Warehouse accepts no liability for under- or over-ordering based on these estimates.
+        </p>
+      </aside>
+      <!-- /disclaimer -->
+
+    </main>
+    <!-- /main#main-content -->
+
+  </div>
+  <!-- /page-body -->
+
+  <!-- ============================================================
+    ZONE: Site Footer — SELCO template, preserved
+    Shown as dashed annotation zone — not in scope for this project.
+    ============================================================ -->
+  <footer class="site-footer annotation-zone" role="contentinfo" aria-label="SELCO Site Footer">
+    <span class="annotation-label annotation-label--center" style="font-size:12px; margin:0;">
+      SELCO Site Template: Footer &mdash; preserved, not modified
+    </span>
+  </footer>
+
+</div>
+<!-- /page-wrapper -->
+
+<!-- ============================================================
+  WIREFRAME ANNOTATION LEGEND
+  ============================================================
+  Grey dashed border (#9ca3af) = Preserved SELCO template zones
+  Solid navy border (#04204b)  = Primary application content zones
+  Yellow left accent bar       = Section boundary (Tidwell 2020 Visual Framework)
+  [Soon] yellow/navy badge     = Nielsen (1994) Heuristic 1 — Visibility of System Status
+  annotation-label class       = Small caps zone identifier labels
+
+  ACADEMIC REFERENCES:
+  - Tidwell, J. (2020) Designing Interfaces, 3rd edn. O'Reilly Media.
+    Grid of Equals (p.194), Visual Framework, Hub and Spoke (p.29)
+  - Krug, S. (2014) Don't Make Me Think, Revisited. New Riders.
+    Ch.3 — homepage communicates purpose at a glance
+  - Nielsen, J. (1994) Usability Engineering. Academic Press.
+    Heuristic 1 — Visibility of System Status (Coming Soon badges)
+  - Wroblewski, L. (2011) Mobile First. A Book Apart.
+    Single-column fallback; see home-mobile.html
+  - W3C (2018) WCAG 2.1 — AA compliance target.
+    1.1.1 Non-text content, 1.4.3 Contrast, 2.4.1 Bypass Blocks,
+    2.4.3 Focus Order, 2.4.6 Headings, 2.4.8 Location
+  ============================================================ -->
+
+</body>
+</html>

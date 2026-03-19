@@ -1,0 +1,1038 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Wireframe — Tiling Calculator: Step 3 of 6 — SELCO Trade Materials Calculator</title>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    /* ── Typography ── */
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Arial, sans-serif;
+      font-size: 15px;
+      line-height: 1.5;
+      color: #1a1a1a;
+      background: #f2f6fa;
+    }
+
+    /* ── Annotation helpers ── */
+    .annotation-box {
+      background: #e8edf5;
+      border: 1.5px dashed #8fa3bf;
+      color: #3a5070;
+      font-size: 11px;
+      font-style: italic;
+      padding: 6px 10px;
+      text-align: center;
+    }
+    .annotation-inline {
+      display: inline-block;
+      background: #fff8d0;
+      border: 1px solid #e6c200;
+      border-radius: 3px;
+      color: #6b4f00;
+      font-size: 10px;
+      font-style: italic;
+      padding: 1px 5px;
+      margin-left: 6px;
+      vertical-align: middle;
+    }
+
+    /* ── SELCO Header placeholder ── */
+    .site-header {
+      background: #e8edf5;
+      border: 1.5px dashed #8fa3bf;
+      color: #3a5070;
+      font-size: 12px;
+      font-style: italic;
+      padding: 0 20px;
+      height: 60px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+    .site-header-logo {
+      font-weight: 700;
+      font-size: 14px;
+      color: #04204b;
+      font-style: normal;
+      letter-spacing: .04em;
+    }
+
+    /* ── Page layout ── */
+    .page-wrapper {
+      display: flex;
+      min-height: calc(100vh - 60px - 60px);
+    }
+
+    /* ────────────────────────────────────────────
+       SIDEBAR — Step Rail
+    ──────────────────────────────────────────── */
+    .step-sidebar {
+      width: 260px;
+      flex-shrink: 0;
+      background: #04204b;
+      display: flex;
+      flex-direction: column;
+      padding: 0;
+    }
+
+    .sidebar-escape {
+      display: block;
+      color: #ffffff;
+      text-decoration: none;
+      font-size: 13px;
+      padding: 14px 20px;
+      opacity: .85;
+      transition: opacity .15s;
+    }
+    .sidebar-escape:hover { opacity: 1; text-decoration: underline; }
+
+    .sidebar-divider {
+      border: none;
+      border-top: 1px solid #253081;
+      margin: 0;
+    }
+
+    .sidebar-calculator-label {
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: .12em;
+      text-transform: uppercase;
+      color: #ffd407;
+      padding: 14px 20px 8px;
+    }
+
+    /* Step list */
+    .step-list {
+      list-style: none;
+      flex: 1;
+    }
+    .step-list li {
+      position: relative;
+    }
+
+    /* Shared step link / span */
+    .step-item {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 11px 20px;
+      color: #b0bfd8;
+      font-size: 14px;
+      text-decoration: none;
+      cursor: default;
+    }
+    .step-item.completed {
+      color: #ffffff;
+      cursor: pointer;
+      text-decoration: underline;
+      text-underline-offset: 2px;
+    }
+    .step-item.completed:hover { color: #ffd407; }
+    .step-item.active {
+      color: #ffffff;
+      font-weight: 700;
+      background: #0a2d5e;
+      cursor: default;
+      text-decoration: none;
+    }
+    /* Yellow left accent bar for active step */
+    .step-item.active::before {
+      content: '';
+      position: absolute;
+      left: 0;
+      top: 0;
+      bottom: 0;
+      width: 4px;
+      background: #ffd407;
+    }
+
+    /* Step circle / icon */
+    .step-circle {
+      width: 26px;
+      height: 26px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 12px;
+      font-weight: 700;
+      flex-shrink: 0;
+    }
+    .step-circle.completed-circle {
+      background: #ffd407;
+      color: #04204b;
+    }
+    .step-circle.active-circle {
+      background: #ffd407;
+      color: #04204b;
+    }
+    .step-circle.upcoming-circle {
+      background: transparent;
+      border: 2px solid #445a7a;
+      color: #445a7a;
+    }
+
+    .sidebar-progress {
+      padding: 14px 20px;
+      font-size: 12px;
+      color: #ffd407;
+      font-weight: 500;
+    }
+
+    .sidebar-annotation {
+      padding: 10px 14px 16px;
+      font-size: 10px;
+      color: #6b85aa;
+      font-style: italic;
+      line-height: 1.45;
+      border-top: 1px solid #253081;
+    }
+
+    /* ────────────────────────────────────────────
+       MAIN CONTENT
+    ──────────────────────────────────────────── */
+    .main-content {
+      flex: 1;
+      background: #ffffff;
+      display: flex;
+      flex-direction: column;
+    }
+
+    /* SVG Hero strip */
+    .hero-strip {
+      height: 120px;
+      background: #e8edf5;
+      border-bottom: 1.5px dashed #8fa3bf;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: #3a5070;
+      font-size: 12px;
+      font-style: italic;
+      position: relative;
+    }
+    .hero-strip-inner {
+      text-align: center;
+    }
+    .hero-strip-label {
+      font-size: 14px;
+      font-weight: 600;
+      color: #253081;
+      margin-bottom: 4px;
+    }
+
+    /* Content padding zone */
+    .content-zone {
+      padding: 24px 36px 36px;
+      flex: 1;
+    }
+
+    /* Breadcrumb */
+    .breadcrumb {
+      list-style: none;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 12px;
+      color: #6b7a8a;
+      margin-bottom: 20px;
+    }
+    .breadcrumb li + li::before {
+      content: '›';
+      margin-right: 6px;
+      color: #aab4bf;
+    }
+    .breadcrumb a {
+      color: #253081;
+      text-decoration: none;
+    }
+    .breadcrumb a:hover { text-decoration: underline; }
+    .breadcrumb li:last-child { color: #04204b; font-weight: 600; }
+
+    /* Step heading */
+    .step-heading {
+      font-size: 24px;
+      font-weight: 700;
+      color: #04204b;
+      margin-bottom: 6px;
+    }
+    .step-subheading {
+      font-size: 14px;
+      color: #5a6a7a;
+      margin-bottom: 28px;
+    }
+
+    /* Form */
+    .form-fieldset {
+      border: 1.5px solid #d0d9e5;
+      border-radius: 6px;
+      padding: 20px 22px 16px;
+      margin-bottom: 22px;
+    }
+    .form-fieldset legend {
+      font-size: 14px;
+      font-weight: 700;
+      color: #04204b;
+      padding: 0 6px;
+    }
+
+    .radio-group {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      margin-top: 14px;
+    }
+    .radio-option {
+      display: flex;
+      align-items: flex-start;
+      gap: 12px;
+      padding: 12px 14px;
+      border: 1.5px solid #d0d9e5;
+      border-radius: 5px;
+      cursor: pointer;
+      transition: border-color .15s;
+    }
+    .radio-option:hover { border-color: #253081; }
+    .radio-option.selected {
+      border-color: #04204b;
+      background: #f4f7fb;
+    }
+    .radio-option input[type="radio"] {
+      margin-top: 2px;
+      accent-color: #04204b;
+      width: 16px;
+      height: 16px;
+      flex-shrink: 0;
+    }
+    .radio-label {
+      display: flex;
+      flex-direction: column;
+      gap: 2px;
+    }
+    .radio-label-main {
+      font-size: 14px;
+      font-weight: 600;
+      color: #04204b;
+    }
+    .radio-option:not(.selected) .radio-label-main {
+      color: #4a5a6a;
+    }
+    .radio-label-desc {
+      font-size: 12px;
+      color: #6b7a8a;
+    }
+
+    /* Collapsible toggle */
+    .collapsible-toggle {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 13px;
+      color: #253081;
+      cursor: pointer;
+      padding: 10px 0;
+      font-weight: 500;
+      border: none;
+      background: none;
+      text-decoration: underline;
+      text-underline-offset: 2px;
+    }
+
+    /* Validation error example */
+    .error-example {
+      border: 2px dashed #dc3545;
+      border-radius: 5px;
+      padding: 14px 16px;
+      margin-top: 6px;
+      background: #fff8f8;
+    }
+    .error-example-label {
+      font-size: 11px;
+      font-weight: 700;
+      color: #dc3545;
+      text-transform: uppercase;
+      letter-spacing: .06em;
+      margin-bottom: 8px;
+    }
+    .error-message {
+      font-size: 13px;
+      color: #dc3545;
+      font-weight: 600;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+    .error-role-annotation {
+      font-size: 10px;
+      color: #8a3040;
+      margin-top: 4px;
+      font-style: italic;
+    }
+
+    /* Nav buttons */
+    .nav-buttons {
+      display: flex;
+      justify-content: flex-end;
+      gap: 12px;
+      margin-top: 28px;
+      padding-top: 22px;
+      border-top: 1px solid #e5eaf0;
+    }
+
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 14px;
+      font-weight: 600;
+      padding: 10px 22px;
+      border-radius: 4px;
+      border: 2px solid transparent;
+      cursor: pointer;
+      text-decoration: none;
+      transition: opacity .15s;
+    }
+    .btn-primary {
+      background: #04204b;
+      color: #ffffff;
+      border-color: #04204b;
+    }
+    .btn-accent {
+      background: #ffd407;
+      color: #04204b;
+      border-color: #ffd407;
+    }
+    .btn-ghost {
+      background: transparent;
+      color: #04204b;
+      border-color: #04204b;
+    }
+    .btn:hover { opacity: .85; }
+
+    .nav-context-note {
+      font-size: 11px;
+      color: #8a96a4;
+      margin-top: 10px;
+      text-align: right;
+    }
+
+    /* ── Site Footer placeholder ── */
+    .site-footer {
+      background: #e8edf5;
+      border: 1.5px dashed #8fa3bf;
+      border-top: none;
+      color: #3a5070;
+      font-size: 12px;
+      font-style: italic;
+      padding: 0 20px;
+      height: 60px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    /* ────────────────────────────────────────────
+       MOBILE VIEW SECTION
+    ──────────────────────────────────────────── */
+    .mobile-section-divider {
+      background: #04204b;
+      color: #ffd407;
+      text-align: center;
+      font-size: 13px;
+      font-weight: 700;
+      letter-spacing: .1em;
+      padding: 14px;
+      margin-top: 40px;
+    }
+
+    .mobile-frame {
+      width: 375px;
+      margin: 24px auto;
+      border: 2px solid #253081;
+      border-radius: 8px;
+      overflow: hidden;
+      box-shadow: 0 4px 20px rgba(4,32,75,.15);
+    }
+    .mobile-frame-label {
+      background: #253081;
+      color: #ffd407;
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: .08em;
+      text-align: center;
+      padding: 5px;
+    }
+
+    /* Mobile dot rail */
+    .mobile-dot-rail {
+      background: #04204b;
+      padding: 14px 16px 12px;
+    }
+    .dots-row {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      margin-bottom: 8px;
+    }
+    .dot {
+      width: 12px;
+      height: 12px;
+      border-radius: 50%;
+      flex-shrink: 0;
+    }
+    .dot.filled { background: #ffd407; }
+    .dot.open { background: transparent; border: 2px solid #445a7a; }
+    .mobile-step-label {
+      font-size: 13px;
+      color: #ffffff;
+      font-weight: 600;
+      margin-bottom: 8px;
+    }
+    .progress-bar-track {
+      background: #253081;
+      border-radius: 4px;
+      height: 6px;
+      overflow: hidden;
+    }
+    .progress-bar-fill {
+      background: #ffd407;
+      height: 100%;
+      border-radius: 4px;
+    }
+    .progress-bar-label {
+      font-size: 10px;
+      color: #8fa3c8;
+      margin-top: 4px;
+      text-align: right;
+    }
+
+    .mobile-hero {
+      height: 70px;
+      background: #e8edf5;
+      border-bottom: 1.5px dashed #8fa3bf;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 11px;
+      color: #3a5070;
+      font-style: italic;
+    }
+
+    .mobile-content {
+      padding: 16px;
+      background: #fff;
+    }
+    .mobile-step-heading {
+      font-size: 18px;
+      font-weight: 700;
+      color: #04204b;
+      margin-bottom: 4px;
+    }
+    .mobile-step-sub {
+      font-size: 12px;
+      color: #5a6a7a;
+      margin-bottom: 16px;
+    }
+
+    .mobile-fieldset {
+      border: 1.5px solid #d0d9e5;
+      border-radius: 5px;
+      padding: 12px 14px;
+      margin-bottom: 14px;
+    }
+    .mobile-legend {
+      font-size: 12px;
+      font-weight: 700;
+      color: #04204b;
+      padding: 0 4px;
+    }
+    .mobile-radio-option {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding: 8px 0;
+      border-bottom: 1px solid #eef0f3;
+      font-size: 13px;
+      color: #3a4a5a;
+    }
+    .mobile-radio-option:last-child { border-bottom: none; }
+    .mobile-radio-option.selected { color: #04204b; font-weight: 600; }
+
+    .mobile-nav-buttons {
+      display: flex;
+      gap: 10px;
+      margin-top: 16px;
+    }
+    .mobile-btn {
+      flex: 1;
+      text-align: center;
+      padding: 11px 8px;
+      font-size: 14px;
+      font-weight: 600;
+      border-radius: 4px;
+      border: 2px solid transparent;
+    }
+    .mobile-btn-ghost {
+      background: transparent;
+      border-color: #04204b;
+      color: #04204b;
+    }
+    .mobile-btn-accent {
+      background: #ffd407;
+      border-color: #ffd407;
+      color: #04204b;
+    }
+
+    /* ────────────────────────────────────────────
+       ANNOTATION LEGEND
+    ──────────────────────────────────────────── */
+    .annotation-legend {
+      max-width: 900px;
+      margin: 36px auto 48px;
+      border: 1.5px solid #d0d9e5;
+      border-radius: 6px;
+      overflow: hidden;
+    }
+    .legend-header {
+      background: #04204b;
+      color: #ffd407;
+      font-size: 12px;
+      font-weight: 700;
+      letter-spacing: .08em;
+      text-transform: uppercase;
+      padding: 10px 18px;
+    }
+    .legend-body {
+      background: #f9fafb;
+      padding: 16px 18px;
+    }
+    .legend-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 8px 24px;
+    }
+    .legend-item {
+      font-size: 11px;
+      color: #3a4a5a;
+      line-height: 1.5;
+      display: flex;
+      gap: 6px;
+    }
+    .legend-item::before {
+      content: '▸';
+      color: #253081;
+      flex-shrink: 0;
+    }
+  </style>
+</head>
+<body>
+
+<!-- ═══════════════════════════════════════════════════════════════
+     DESKTOP VIEW
+════════════════════════════════════════════════════════════════════ -->
+
+<!-- SELCO Site Template: Header — preserved -->
+<header class="site-header" role="banner">
+  <span class="site-header-logo">SELCO BUILDERS WAREHOUSE</span>
+  <span>SELCO Site Template: Header — preserved (navigation, account, basket)</span>
+</header>
+<!-- annotation: SELCO site chrome wraps the calculator — the wizard lives inside the main content slot -->
+
+<div class="page-wrapper">
+
+  <!-- ══════════════════════════════════════════
+       LEFT: STEP RAIL SIDEBAR
+       SEQUENCE MAP: Tidwell (2020) Ch.9 — vertical step rail satisfies all 3 requirements:
+       named steps, clickable completed, 3 visual states
+  ═══════════════════════════════════════════ -->
+  <aside class="step-sidebar" aria-label="Wizard step navigation">
+
+    <!-- Escape hatch -->
+    <a href="#" class="sidebar-escape" aria-label="Return to all calculators">← All Calculators</a>
+    <!-- annotation: escape hatch — always visible — user can abandon wizard at any time -->
+
+    <hr class="sidebar-divider">
+
+    <div class="sidebar-calculator-label" aria-hidden="true">Tiling Calculator</div>
+
+    <ol class="step-list" aria-label="Calculator steps">
+
+      <!-- STEP 1 — Completed -->
+      <!-- STEP STATE: completed — yellow tick, clickable link — allows random access -->
+      <li>
+        <a href="#" class="step-item completed"
+           aria-label="Step 1: Room Setup — completed, click to revisit"
+           aria-current="false">
+          <span class="step-circle completed-circle" aria-hidden="true">✓</span>
+          <span>Room Setup</span>
+        </a>
+        <!-- WCAG 2.1 SC 3.3.4 (Error Prevention) — completed steps clickable for review/edit -->
+      </li>
+
+      <!-- STEP 2 — Completed -->
+      <li>
+        <a href="#" class="step-item completed"
+           aria-label="Step 2: Tile Selection — completed, click to revisit"
+           aria-current="false">
+          <span class="step-circle completed-circle" aria-hidden="true">✓</span>
+          <span>Tile Selection</span>
+        </a>
+      </li>
+
+      <!-- STEP 3 — Active -->
+      <!-- STEP STATE: active — filled yellow circle, accent bar — Nielsen (1994) H1 Visibility of system status -->
+      <li>
+        <span class="step-item active"
+              aria-label="Step 3: Adhesive &amp; Spacers — current step"
+              aria-current="step">
+          <span class="step-circle active-circle" aria-hidden="true">3</span>
+          <span>Adhesive &amp; Spacers</span>
+        </span>
+        <!-- WCAG 2.1 SC 2.4.8 (Location) — user always knows step position -->
+      </li>
+
+      <!-- STEP 4 — Upcoming -->
+      <!-- STEP STATE: upcoming — grey open circle — not interactive until reached -->
+      <li>
+        <span class="step-item" aria-label="Step 4: Grout &amp; Finish — not yet reached" aria-disabled="true">
+          <span class="step-circle upcoming-circle" aria-hidden="true">4</span>
+          <span>Grout &amp; Finish</span>
+        </span>
+      </li>
+
+      <!-- STEP 5 — Upcoming -->
+      <li>
+        <span class="step-item" aria-label="Step 5: Layout &amp; Cuts — not yet reached" aria-disabled="true">
+          <span class="step-circle upcoming-circle" aria-hidden="true">5</span>
+          <span>Layout &amp; Cuts</span>
+        </span>
+      </li>
+
+      <!-- STEP 6 — Upcoming -->
+      <li>
+        <span class="step-item" aria-label="Step 6: Summary — not yet reached" aria-disabled="true">
+          <span class="step-circle upcoming-circle" aria-hidden="true">6</span>
+          <span>Summary</span>
+        </span>
+      </li>
+
+    </ol>
+
+    <div class="sidebar-progress" aria-live="polite">3 of 6 steps complete</div>
+
+    <div class="sidebar-annotation">
+      SEQUENCE MAP — Tidwell (2020) Ch.9<br>
+      Named steps / Clickable completed / 3 visual states:<br>
+      completed (✓ yellow) · active (● yellow) · upcoming (○ grey)
+    </div>
+
+  </aside>
+  <!-- end step-sidebar -->
+
+  <!-- ══════════════════════════════════════════
+       RIGHT: STEP CONTENT AREA
+  ═══════════════════════════════════════════ -->
+  <main class="main-content" id="main-content">
+
+    <!-- SVG Hero Strip -->
+    <div class="hero-strip" role="img" aria-label="Tiling calculator illustration">
+      <div class="hero-strip-inner">
+        <div class="hero-strip-label">SVG Hero — hero-tiling.svg</div>
+        <div>Tile grid / trowel motif — 120px height — full width of content area</div>
+      </div>
+    </div>
+    <!-- annotation: SVG illustration provides visual context for the tool — not decorative, has aria-label -->
+
+    <div class="content-zone">
+
+      <!-- Breadcrumb -->
+      <!-- annotation: semantic nav > ol > li — WCAG 2.4.8 Location -->
+      <nav aria-label="Breadcrumb">
+        <ol class="breadcrumb">
+          <li><a href="#">Home</a></li>
+          <li><a href="#">Tiling Calculator</a></li>
+          <li aria-current="page">Step 3: Adhesive &amp; Spacers</li>
+        </ol>
+      </nav>
+
+      <!-- Step heading -->
+      <h1 class="step-heading">Step 3: Adhesive &amp; Spacers</h1>
+      <p class="step-subheading">Tell us about your adhesive and spacer preferences</p>
+
+      <!-- ── FORM ── -->
+      <form novalidate aria-label="Adhesive and spacer selection">
+
+        <!-- FORM: fieldset/legend for radio group — WCAG 1.3.1 semantic grouping -->
+        <fieldset class="form-fieldset">
+          <legend>Adhesive Type</legend>
+
+          <div class="radio-group" role="radiogroup" aria-required="true">
+
+            <label class="radio-option">
+              <input type="radio" name="adhesive" value="standard">
+              <span class="radio-label">
+                <span class="radio-label-main">Standard adhesive</span>
+                <span class="radio-label-desc">Budget-friendly, suitable for most wall tiles</span>
+              </span>
+            </label>
+
+            <label class="radio-option selected">
+              <input type="radio" name="adhesive" value="flexible" checked aria-describedby="flexible-desc">
+              <span class="radio-label">
+                <span class="radio-label-main">Flexible adhesive</span>
+                <span class="radio-label-desc" id="flexible-desc">Recommended for floors and larger format tiles</span>
+              </span>
+              <span class="annotation-inline">selected</span>
+            </label>
+
+            <label class="radio-option">
+              <input type="radio" name="adhesive" value="rapid-set">
+              <span class="radio-label">
+                <span class="radio-label-main">Rapid-set adhesive</span>
+                <span class="radio-label-desc">Sets in 2 hours, ideal for quick turnaround</span>
+              </span>
+            </label>
+
+          </div>
+
+          <!-- VALIDATION: role="alert" on error message — WCAG 3.3.1 Error Identification -->
+          <div class="error-example" aria-hidden="true">
+            <div class="error-example-label">Error State Example (annotated — not triggered)</div>
+            <div class="error-message" role="alert">
+              <span>⚠</span>
+              <span>Please select an adhesive type</span>
+            </div>
+            <div class="error-role-annotation">
+              role="alert" — screen reader announces immediately — WCAG 3.3.1 Error Identification<br>
+              Triggered when: user clicks Next Step without selecting any option
+            </div>
+          </div>
+
+        </fieldset>
+
+        <!-- Spacer Size fieldset -->
+        <fieldset class="form-fieldset">
+          <legend>Spacer Size</legend>
+
+          <div class="radio-group" role="radiogroup" aria-required="true">
+
+            <label class="radio-option">
+              <input type="radio" name="spacer" value="2mm">
+              <span class="radio-label">
+                <span class="radio-label-main">2mm</span>
+                <span class="radio-label-desc">Tight joint, modern look</span>
+              </span>
+            </label>
+
+            <label class="radio-option selected">
+              <input type="radio" name="spacer" value="3mm" checked>
+              <span class="radio-label">
+                <span class="radio-label-main">3mm</span>
+                <span class="radio-label-desc">Standard joint, most common</span>
+              </span>
+              <span class="annotation-inline">selected</span>
+            </label>
+
+            <label class="radio-option">
+              <input type="radio" name="spacer" value="5mm">
+              <span class="radio-label">
+                <span class="radio-label-main">5mm</span>
+                <span class="radio-label-desc">Wide joint, traditional</span>
+              </span>
+            </label>
+
+            <label class="radio-option">
+              <input type="radio" name="spacer" value="10mm">
+              <span class="radio-label">
+                <span class="radio-label-main">10mm</span>
+                <span class="radio-label-desc">Feature joint, large format</span>
+              </span>
+            </label>
+
+          </div>
+        </fieldset>
+
+        <!-- Optional collapsible section -->
+        <button type="button" class="collapsible-toggle" aria-expanded="false" aria-controls="coverage-panel">
+          <span aria-hidden="true">+</span>
+          <span>Adhesive coverage rate (optional)</span>
+          <span class="annotation-inline">collapsed — Tidwell (2020) Collapsible Panels</span>
+        </button>
+        <div id="coverage-panel" hidden aria-hidden="true">
+          <!-- content would appear here when expanded -->
+        </div>
+
+        <!-- BUTTON ROLES: btn-ghost Back / btn-accent Next Step — Nielsen H4 Consistency -->
+        <div class="nav-buttons">
+          <a href="#" class="btn btn-ghost" aria-label="Go back to step 2: Tile Selection">
+            ← Back
+          </a>
+          <button type="submit" class="btn btn-accent" aria-label="Continue to step 4: Grout and Finish">
+            Next Step →
+          </button>
+        </div>
+        <!-- annotation: btn-ghost = secondary, btn-accent = primary wizard advance — consistent throughout all wizard steps -->
+
+        <p class="nav-context-note">
+          You can return to previous steps at any time using the step list on the left
+        </p>
+
+      </form>
+
+    </div>
+    <!-- end content-zone -->
+
+  </main>
+  <!-- end main-content -->
+
+</div>
+<!-- end page-wrapper -->
+
+<!-- SELCO Site Footer placeholder -->
+<footer class="site-footer" role="contentinfo">
+  SELCO Site Template: Footer — preserved (links, legal, contact)
+</footer>
+
+
+<!-- ═══════════════════════════════════════════════════════════════
+     MOBILE VIEW (375px)
+════════════════════════════════════════════════════════════════════ -->
+<div class="mobile-section-divider">— MOBILE VIEW (375px) — SAME STEP, RESPONSIVE LAYOUT —</div>
+
+<div class="mobile-frame" role="region" aria-label="Mobile view simulation — 375px viewport">
+  <div class="mobile-frame-label">375px viewport — iPhone SE / small Android</div>
+
+  <!-- Mobile header -->
+  <div class="annotation-box" style="height:44px;display:flex;align-items:center;justify-content:center;">
+    SELCO Site Template: Header (mobile)
+  </div>
+
+  <!-- Mobile dot rail — replaces sidebar -->
+  <!-- annotation: sidebar collapses; dot rail + label + progress bar shown instead -->
+  <div class="mobile-dot-rail" role="navigation" aria-label="Step progress">
+    <div class="dots-row" aria-hidden="true">
+      <!-- Filled dots = completed + active; open = upcoming -->
+      <span class="dot filled" title="Step 1 complete"></span>
+      <span class="dot filled" title="Step 2 complete"></span>
+      <span class="dot filled" title="Step 3 active"></span>
+      <span class="dot open"   title="Step 4 upcoming"></span>
+      <span class="dot open"   title="Step 5 upcoming"></span>
+      <span class="dot open"   title="Step 6 upcoming"></span>
+    </div>
+    <div class="mobile-step-label">Step 3 of 6: Adhesive &amp; Spacers</div>
+    <div class="progress-bar-track" role="progressbar" aria-valuenow="50" aria-valuemin="0" aria-valuemax="100" aria-label="50% complete">
+      <div class="progress-bar-fill" style="width:50%"></div>
+    </div>
+    <div class="progress-bar-label">50% complete</div>
+  </div>
+
+  <!-- Mobile hero -->
+  <div class="mobile-hero">
+    SVG Hero — hero-tiling.svg — 375px width
+  </div>
+
+  <!-- Mobile content -->
+  <div class="mobile-content">
+
+    <h1 class="mobile-step-heading">Adhesive &amp; Spacers</h1>
+    <p class="mobile-step-sub">Tell us about your adhesive and spacer preferences</p>
+
+    <!-- Adhesive fieldset mobile -->
+    <fieldset class="mobile-fieldset">
+      <legend class="mobile-legend">Adhesive Type</legend>
+      <div class="mobile-radio-option">
+        <input type="radio" name="m-adhesive" value="standard" id="m-std"> Standard adhesive
+      </div>
+      <div class="mobile-radio-option selected">
+        <input type="radio" name="m-adhesive" value="flexible" id="m-flex" checked> Flexible adhesive
+      </div>
+      <div class="mobile-radio-option">
+        <input type="radio" name="m-adhesive" value="rapid" id="m-rapid"> Rapid-set adhesive
+      </div>
+    </fieldset>
+
+    <!-- Spacer fieldset mobile -->
+    <fieldset class="mobile-fieldset">
+      <legend class="mobile-legend">Spacer Size</legend>
+      <div class="mobile-radio-option"><input type="radio" name="m-spacer" value="2mm"> 2mm</div>
+      <div class="mobile-radio-option selected"><input type="radio" name="m-spacer" value="3mm" checked> 3mm</div>
+      <div class="mobile-radio-option"><input type="radio" name="m-spacer" value="5mm"> 5mm</div>
+      <div class="mobile-radio-option"><input type="radio" name="m-spacer" value="10mm"> 10mm</div>
+    </fieldset>
+
+    <!-- Mobile nav buttons — full width each -->
+    <div class="mobile-nav-buttons">
+      <a href="#" class="mobile-btn mobile-btn-ghost" aria-label="Back to step 2">← Back</a>
+      <button class="mobile-btn mobile-btn-accent" aria-label="Next step">Next Step →</button>
+    </div>
+    <!-- annotation: on mobile, nav buttons are full-width equal splits — touch target min 44px -->
+
+  </div>
+
+  <!-- Mobile footer -->
+  <div class="annotation-box" style="height:44px;display:flex;align-items:center;justify-content:center;">
+    SELCO Site Template: Footer (mobile)
+  </div>
+
+</div>
+<!-- end mobile-frame -->
+
+
+<!-- ═══════════════════════════════════════════════════════════════
+     ANNOTATION LEGEND
+════════════════════════════════════════════════════════════════════ -->
+<div class="annotation-legend" role="region" aria-label="Wireframe annotation legend">
+  <div class="legend-header">Wireframe Annotation Legend — wizard-step.html</div>
+  <div class="legend-body">
+    <div class="legend-grid">
+      <div class="legend-item">
+        Sequence Map — Tidwell (2020) Ch.9: vertical step rail provides named steps, clickable completed steps, and 3 distinct visual states
+      </div>
+      <div class="legend-item">
+        WCAG 2.1 SC 2.4.8 (Location): step rail and breadcrumb together orient the user — step number, name, and position always visible
+      </div>
+      <div class="legend-item">
+        Step state COMPLETED (✓ yellow circle, white underlined text): indicates step can be revisited — random access to past data entry
+      </div>
+      <div class="legend-item">
+        WCAG 2.1 SC 3.3.4 (Error Prevention): completed steps are clickable links — user can review and correct any earlier input
+      </div>
+      <div class="legend-item">
+        Step state ACTIVE (filled yellow circle "3", bold text, yellow left bar, slightly lighter navy bg): Nielsen (1994) H1 — visibility of system status
+      </div>
+      <div class="legend-item">
+        Step state UPCOMING (open grey circle, grey text, not interactive): prevents skipping ahead — progressive disclosure of complexity
+      </div>
+      <div class="legend-item">
+        FORM fieldset + legend: WCAG 1.3.1 Info &amp; Relationships — groups related radio inputs with semantic label; screen readers announce group name before options
+      </div>
+      <div class="legend-item">
+        VALIDATION role="alert": WCAG 3.3.1 Error Identification — error injected into live region; screen reader announces without focus change; shown as annotated example (not triggered by default)
+      </div>
+      <div class="legend-item">
+        btn-ghost (Back) — transparent, navy border: secondary action — subordinate to primary wizard advance; Nielsen H4 Consistency — same pattern on every step
+      </div>
+      <div class="legend-item">
+        btn-accent (Next Step →) — yellow #ffd407, navy text: primary wizard advance; visually prominent; right-aligned following natural reading direction
+      </div>
+      <div class="legend-item">
+        Collapsible toggle (+ Adhesive coverage rate): Tidwell (2020) Collapsible Panels — optional detail hidden by default; reduces cognitive load for most users
+      </div>
+      <div class="legend-item">
+        Mobile dot rail: sidebar collapses at narrow viewports; 6 dots + step label + progress bar provide equivalent orientation without requiring sidebar width
+      </div>
+      <div class="legend-item">
+        Progress bar (50%): aria-progressbar role with valuenow/valuemin/valuemax — accessible to screen readers; reinforces position in sequence
+      </div>
+      <div class="legend-item">
+        SELCO brand colours: Navy #04204b (sidebar bg, headings, borders) · Blue #253081 (dividers, links) · Yellow #ffd407 (active state, CTAs, progress) · Light grey #f2f6fa (page bg, hero) · White #ffffff (content area)
+      </div>
+    </div>
+  </div>
+</div>
+
+</body>
+</html>

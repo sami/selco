@@ -1,0 +1,1063 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>SELCO Trade Materials Calculator — Homepage Wireframe (Mobile 375px)</title>
+
+  <!--
+  =============================================================================
+  WIREFRAME: home-mobile.html
+  PROJECT:   SELCO Trade Materials Calculator (TM470 Capstone)
+  VIEWPORT:  375px mobile (iPhone SE / standard baseline)
+  STACK:     Astro + React
+  DATE:      2026-03-19
+  =============================================================================
+
+  MOBILE FIRST DESIGN RATIONALE
+  Wroblewski (2011) "Mobile First" argues that designing the constrained mobile
+  layout before the desktop forces content prioritisation. The desktop layout
+  (home-desktop.html) then enhances rather than degrades.
+
+  On mobile:
+  - Sidebar hidden; nav accessible via breadcrumb & hamburger menu
+  - All card grids collapse to single column
+  - Hero strip narrows to 375px but retains height
+  - How It Works steps stack vertically
+  - Touch targets >= 44px (WCAG 2.1 2.5.5 Target Size)
+
+  DESIGN DECISION: Option B — Featured + Utility Hierarchy preserved on mobile.
+  Visual weight of Project Calculators vs Handy Calculators is maintained
+  through background colour and card size even in single-column layout.
+  Source: Tidwell (2020) Visual Framework; Wroblewski (2011) Mobile First.
+  =============================================================================
+  -->
+
+  <style>
+    /* === RESET & BASE === */
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: Arial, Helvetica, sans-serif;
+      font-size: 16px;
+      line-height: 1.5;
+      color: #1a1a1a;
+      background: #ffffff;
+      /* Constrain to 375px to simulate mobile viewport for wireframe review */
+      max-width: 375px;
+      margin: 0 auto;
+      /* Show a subtle device-frame shadow for presentation */
+      box-shadow: 0 0 0 1px #e5e7eb, 0 8px 32px rgba(0,0,0,0.12);
+    }
+
+    /* === SELCO BRAND TOKENS === */
+    /* --navy:      #04204b */
+    /* --blue:      #253081 */
+    /* --yellow:    #ffd407 */
+    /* --light-grey:#f2f6fa */
+
+    /* === ANNOTATION UTILITIES === */
+    .annotation-zone {
+      border: 2px dashed #9ca3af;
+      background: #f3f4f6;
+    }
+
+    .annotation-label {
+      display: block;
+      font-size: 10px;
+      font-variant: small-caps;
+      letter-spacing: 0.08em;
+      color: #6b7280;
+      text-transform: uppercase;
+    }
+
+    .annotation-label--center {
+      text-align: center;
+    }
+
+    .annotation-content {
+      font-size: 11px;
+      color: #374151;
+    }
+
+    /* === WIREFRAME META BANNER === */
+    .wireframe-meta {
+      background: #04204b;
+      color: #ffd407;
+      text-align: center;
+      padding: 8px 12px;
+      font-size: 10px;
+      letter-spacing: 0.05em;
+      font-variant: small-caps;
+      line-height: 1.4;
+    }
+
+    /* === MOBILE HEADER === */
+    /* ZONE: Mobile Site Header — SELCO template, preserved */
+    /* On mobile the header collapses to logo + hamburger menu icon */
+    /* Component: MobileMenu.tsx (React island, hydrated on client) */
+    .mobile-header {
+      height: 56px;
+      background: #e5e7eb;
+      border: 2px dashed #9ca3af;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 16px;
+      position: sticky;
+      top: 0;
+      z-index: 100;
+    }
+
+    .mobile-header__logo-box {
+      width: 90px;
+      height: 32px;
+      background: #d1d5db;
+      border: 1px solid #9ca3af;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 9px;
+      color: #6b7280;
+      font-variant: small-caps;
+      letter-spacing: 0.04em;
+    }
+
+    /* Hamburger icon annotation */
+    .mobile-header__hamburger {
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+      padding: 8px;
+      cursor: pointer;
+      border: 1px dashed #9ca3af;
+      border-radius: 3px;
+      background: #ffffff;
+      align-items: center;
+      justify-content: center;
+      width: 44px;
+      height: 44px;
+    }
+
+    .mobile-header__hamburger-bar {
+      width: 20px;
+      height: 2px;
+      background: #04204b;
+      border-radius: 1px;
+    }
+
+    .mobile-header__annotation {
+      position: absolute;
+      right: 64px;
+      top: 50%;
+      transform: translateY(-50%);
+      font-size: 9px;
+      color: #9ca3af;
+      font-variant: small-caps;
+      white-space: nowrap;
+    }
+
+    /* === SIDEBAR HIDDEN ANNOTATION === */
+    /* ZONE: Sidebar Hidden — mobile annotation */
+    /* Wroblewski (2011) — on mobile, sidebar nav is hidden to save vertical space */
+    /* Users navigate via breadcrumb trail or hamburger menu  */
+    .sidebar-hidden-notice {
+      background: #fef3c7;
+      border: 1px dashed #f59e0b;
+      padding: 10px 16px;
+      font-size: 11px;
+      color: #92400e;
+      line-height: 1.5;
+    }
+
+    .sidebar-hidden-notice strong {
+      display: block;
+      font-size: 10px;
+      font-variant: small-caps;
+      letter-spacing: 0.07em;
+      margin-bottom: 2px;
+    }
+
+    /* === HERO STRIP === */
+    /* ZONE: Hero — same SVG, narrowed to 375px width */
+    .hero-strip {
+      height: 160px;
+      background: #e5e7eb;
+      border: 2px dashed #9ca3af;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+    }
+
+    .hero-strip__icon {
+      width: 40px;
+      height: 40px;
+      background: #d1d5db;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    /* === BREADCRUMB === */
+    /* WCAG 2.1 2.4.8 — location; condensed on mobile with truncation */
+    /* On mobile, sidebar is hidden so the breadcrumb is the primary location cue */
+    .breadcrumb {
+      padding: 10px 16px;
+      background: #ffffff;
+      border-bottom: 1px solid #f3f4f6;
+    }
+
+    .breadcrumb__list {
+      list-style: none;
+      display: flex;
+      align-items: center;
+      gap: 4px;
+      font-size: 12px;
+      flex-wrap: wrap;
+    }
+
+    .breadcrumb__item {
+      display: flex;
+      align-items: center;
+      gap: 4px;
+      color: #6b7280;
+    }
+
+    .breadcrumb__link {
+      color: #253081;
+      text-decoration: underline;
+    }
+
+    .breadcrumb__separator {
+      color: #9ca3af;
+    }
+
+    .breadcrumb__current {
+      color: #374151;
+    }
+
+    /* === PAGE CONTENT === */
+    .content-pad {
+      padding: 20px 16px 0;
+    }
+
+    .page-heading {
+      font-size: 22px;
+      font-weight: 700;
+      color: #04204b;
+      margin-bottom: 6px;
+      line-height: 1.2;
+    }
+
+    .page-subheading {
+      font-size: 13px;
+      color: #6b7280;
+      margin-bottom: 24px;
+    }
+
+    /* === SECTION HEADINGS === */
+    /* Yellow left accent — Tidwell (2020) Visual Framework */
+    .section-heading-wrap {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin-bottom: 4px;
+    }
+
+    .section-heading-accent {
+      width: 4px;
+      height: 24px;
+      background: #ffd407;
+      border-radius: 2px;
+      flex-shrink: 0;
+    }
+
+    .section-heading {
+      font-size: 17px;
+      font-weight: 700;
+      color: #04204b;
+    }
+
+    .section-subtext {
+      font-size: 12px;
+      color: #6b7280;
+      margin-bottom: 16px;
+      padding-left: 14px;
+      line-height: 1.4;
+    }
+
+    /* === PROJECT CALCULATORS SECTION === */
+    /* ZONE: Project Calculators — dominant section, single column on mobile */
+    /* Wroblewski (2011) Mobile First — single column is the mobile baseline */
+    .project-section {
+      padding: 20px 16px 24px;
+      background: #ffffff;
+      border-left: 3px solid #04204b;
+    }
+
+    /* Single column on mobile */
+    .project-grid {
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+    }
+
+    /* === PROJECT CARD — MOBILE === */
+    /* Reduced illustration height vs desktop (120px vs 180px) to reduce scroll distance */
+    .project-card {
+      background: #ffffff;
+      border: 1px solid #e5e7eb;
+      border-radius: 4px;
+      box-shadow: 0 1px 4px rgba(0,0,0,0.08);
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+      position: relative;
+    }
+
+    .project-card__illustration {
+      height: 120px;
+      background: #e5e7eb;
+      border-bottom: 1px solid #e5e7eb;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 4px;
+      position: relative;
+    }
+
+    .project-card__illustration-label {
+      font-size: 9px;
+      color: #9ca3af;
+      font-variant: small-caps;
+      letter-spacing: 0.06em;
+    }
+
+    .project-card__illustration-icon {
+      width: 40px;
+      height: 40px;
+      background: #d1d5db;
+      border-radius: 6px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    /* Coming Soon ribbon — Nielsen (1994) Heuristic 1 */
+    .coming-soon-ribbon {
+      position: absolute;
+      top: 8px;
+      right: -24px;
+      background: #ffd407;
+      color: #04204b;
+      font-size: 8px;
+      font-weight: 800;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+      padding: 3px 32px;
+      transform: rotate(45deg);
+      transform-origin: center;
+      white-space: nowrap;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.15);
+    }
+
+    .project-card__body {
+      padding: 12px;
+      flex: 1;
+    }
+
+    .project-card__title {
+      font-size: 14px;
+      font-weight: 700;
+      color: #04204b;
+      margin-bottom: 4px;
+    }
+
+    .project-card__desc {
+      font-size: 12px;
+      color: #6b7280;
+      line-height: 1.4;
+    }
+
+    .project-card__footer {
+      padding: 10px 12px;
+      border-top: 1px solid #f3f4f6;
+    }
+
+    /* === BUTTONS === */
+    /* WCAG 2.1 2.5.5 Target Size — minimum 44px touch target height */
+    .btn {
+      display: inline-block;
+      padding: 10px 18px;
+      border-radius: 3px;
+      font-size: 13px;
+      font-weight: 600;
+      text-decoration: none;
+      cursor: pointer;
+      border: none;
+      min-height: 44px;
+      line-height: 1.2;
+      vertical-align: middle;
+    }
+
+    .btn--primary {
+      background: #04204b;
+      color: #ffffff;
+    }
+
+    .btn--disabled {
+      background: #e5e7eb;
+      color: #9ca3af;
+      cursor: not-allowed;
+    }
+
+    /* === HANDY CALCULATORS SECTION — MOBILE === */
+    /* ZONE: Handy Calculators — single column, compact cards */
+    /* Lighter bg maintained to preserve Visual Framework hierarchy (Tidwell 2020) */
+    .handy-section {
+      background: #f2f6fa;
+      padding: 20px 16px 24px;
+      border-top: 2px solid #e5e7eb;
+    }
+
+    /* Single column on mobile */
+    .handy-grid {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+
+    /* Media object: icon left, content right */
+    .handy-card {
+      background: #ffffff;
+      border: 1px solid #e5e7eb;
+      border-radius: 4px;
+      padding: 14px;
+      display: flex;
+      align-items: flex-start;
+      gap: 12px;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+    }
+
+    .handy-card--disabled {
+      opacity: 0.55;
+    }
+
+    .handy-card__icon {
+      width: 40px;
+      height: 40px;
+      min-width: 40px;
+      background: #04204b;
+      border-radius: 6px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .handy-card__icon-inner {
+      width: 18px;
+      height: 18px;
+      background: #ffd407;
+      border-radius: 2px;
+    }
+
+    .handy-card__content { flex: 1; }
+
+    .handy-card__title {
+      font-size: 13px;
+      font-weight: 700;
+      color: #04204b;
+      margin-bottom: 3px;
+    }
+
+    .handy-card__desc {
+      font-size: 11px;
+      color: #6b7280;
+      margin-bottom: 6px;
+      line-height: 1.4;
+    }
+
+    .handy-card__link {
+      font-size: 12px;
+      color: #253081;
+      font-weight: 600;
+      text-decoration: none;
+      display: inline-block;
+      min-height: 44px;
+      line-height: 44px;
+    }
+
+    .handy-card__link--disabled {
+      color: #9ca3af;
+      cursor: not-allowed;
+      font-size: 12px;
+    }
+
+    /* === HOW IT WORKS — MOBILE === */
+    /* ZONE: How It Works — vertical stacked steps on mobile */
+    /* Wroblewski (2011) — horizontal layout from desktop collapses to vertical stack */
+    .how-section {
+      padding: 20px 16px 24px;
+      background: #ffffff;
+      border-top: 2px solid #e5e7eb;
+    }
+
+    /* Vertical stacked steps */
+    .how-steps {
+      display: flex;
+      flex-direction: column;
+      gap: 0;
+      margin-top: 16px;
+    }
+
+    .how-step {
+      display: flex;
+      align-items: flex-start;
+      gap: 14px;
+      padding: 0 0 20px 0;
+      position: relative;
+    }
+
+    /* Vertical connector line between steps */
+    .how-step:not(:last-child)::after {
+      content: '';
+      position: absolute;
+      left: 19px;
+      top: 40px;
+      width: 2px;
+      height: calc(100% - 40px);
+      background: #e5e7eb;
+    }
+
+    .how-step__number {
+      width: 40px;
+      height: 40px;
+      min-width: 40px;
+      background: #04204b;
+      color: #ffffff;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 15px;
+      font-weight: 700;
+      flex-shrink: 0;
+    }
+
+    .how-step__content { flex: 1; padding-top: 8px; }
+
+    .how-step__title {
+      font-size: 13px;
+      font-weight: 700;
+      color: #04204b;
+      margin-bottom: 4px;
+    }
+
+    .how-step__desc {
+      font-size: 12px;
+      color: #6b7280;
+      line-height: 1.5;
+    }
+
+    /* === DISCLAIMER === */
+    .disclaimer {
+      background: #f2f6fa;
+      border-top: 1px solid #e5e7eb;
+      padding: 14px 16px;
+    }
+
+    .disclaimer__text {
+      font-size: 11px;
+      color: #6b7280;
+      line-height: 1.6;
+    }
+
+    .disclaimer__text strong {
+      color: #374151;
+    }
+
+    /* === MOBILE FOOTER === */
+    /* ZONE: Site Footer — SELCO template, preserved */
+    .site-footer {
+      min-height: 60px;
+      background: #e5e7eb;
+      border: 2px dashed #9ca3af;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 12px 16px;
+    }
+
+    /* === ANNOTATION CALLOUT BOXES === */
+    .zone-callout {
+      padding: 6px 10px;
+      border: 1px dashed #d1d5db;
+      border-radius: 3px;
+      display: inline-block;
+      background: #f9fafb;
+      margin-top: 12px;
+    }
+
+    .zone-callout__text {
+      font-size: 9px;
+      font-variant: small-caps;
+      letter-spacing: 0.07em;
+      color: #6b7280;
+    }
+  </style>
+</head>
+<body>
+
+<!-- ============================================================
+  WIREFRAME META BANNER
+  ============================================================ -->
+<div class="wireframe-meta">
+  TM470 Capstone Wireframe &mdash; SELCO Trade Materials Calculator<br>
+  Homepage &mdash; Mobile 375px &mdash; Wroblewski (2011) Mobile First
+</div>
+
+<!-- ============================================================
+  ZONE: Mobile Site Header — SELCO template, preserved
+  On mobile: collapses to logo + hamburger menu (no full nav bar).
+  Component: MobileMenu.tsx — React island with Astro client:load directive.
+  The hamburger reveals an off-canvas drawer with full site nav.
+  WCAG 2.1 2.4.3 — focus order: hamburger is keyboard accessible.
+  WCAG 2.1 2.5.5 — 44×44px minimum touch target for hamburger.
+  ============================================================ -->
+<header class="mobile-header annotation-zone" role="banner" aria-label="SELCO Site Header — mobile">
+  <div class="mobile-header__logo-box" aria-label="SELCO logo placeholder">
+    SELCO Logo
+  </div>
+  <span class="mobile-header__annotation annotation-label" aria-hidden="true">
+    Site Template: Header
+  </span>
+  <!-- Hamburger button — 44×44px touch target (WCAG 2.1 2.5.5) -->
+  <button
+    class="mobile-header__hamburger"
+    aria-label="Open site navigation menu"
+    aria-expanded="false"
+    aria-controls="mobile-nav-drawer"
+  >
+    <span class="mobile-header__hamburger-bar"></span>
+    <span class="mobile-header__hamburger-bar"></span>
+    <span class="mobile-header__hamburger-bar"></span>
+  </button>
+</header>
+<!-- HTML comment: header sticky on mobile so users always have access to the
+     hamburger menu during long calculator scroll sessions. -->
+
+<!-- ============================================================
+  ZONE: Sidebar Hidden Notice — mobile annotation
+  Wroblewski (2011) — sidebar from desktop layout is not rendered on mobile.
+  Calculator taxonomy nav is accessible via:
+    1. Hamburger menu → full site nav drawer
+    2. Breadcrumb trail on individual calculator pages
+  This notice appears here only in the wireframe to document the decision.
+  ============================================================ -->
+<div class="sidebar-hidden-notice" role="note" aria-label="Wireframe annotation: sidebar hidden on mobile">
+  <strong>Wireframe Annotation — Design Decision</strong>
+  Mobile: sidebar (240px desktop) is hidden. Calculator nav accessible via:
+  (1) hamburger menu drawer &mdash; MobileMenu.tsx component, or
+  (2) breadcrumb on individual calculator pages.
+  Source: Wroblewski (2011) Mobile First &mdash; remove non-essential chrome.
+</div>
+
+<!-- ============================================================
+  ZONE: Hero Strip — SVG illustration, narrowed to 375px
+  Same hero-home.svg as desktop, constrained by viewport width.
+  Reduced height (160px vs 200px) maintains brand visual without
+  pushing primary content below the fold on small screens.
+  Krug (2014) Ch.3 — hero reinforces purpose at first glance.
+  ============================================================ -->
+<div class="hero-strip annotation-zone" role="img" aria-label="Hero illustration — trade tools motif">
+  <div class="hero-strip__icon">
+    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+      <rect x="3" y="3" width="18" height="18" rx="2" stroke="#9ca3af" stroke-width="2" fill="none"/>
+      <path d="M8 12 L12 8 L16 12" stroke="#9ca3af" stroke-width="2" fill="none"/>
+    </svg>
+  </div>
+  <span class="annotation-label annotation-label--center" style="font-size:11px; margin-top:4px;">
+    SVG Hero — hero-home.svg
+  </span>
+  <span class="annotation-content" style="text-align:center; font-size:10px; color:#9ca3af; margin-top:2px;">
+    Navy bg &middot; trade tools motif &middot; 375 &times; 160px
+  </span>
+</div>
+<!-- HTML comment: Astro Image component with width="375" height="160" loading="eager"
+     src="/images/hero-home.svg" alt="Trade tools illustration" -->
+
+<!-- ============================================================
+  ZONE: Breadcrumb — compact mobile version
+  On mobile, the breadcrumb is more important as a location cue
+  because the sidebar is hidden. Semantic nav > ol > li.
+  WCAG 2.1 2.4.8 Location.
+  ============================================================ -->
+<nav aria-label="Breadcrumb" class="breadcrumb">
+  <ol class="breadcrumb__list">
+    <li class="breadcrumb__item">
+      <a href="#" class="breadcrumb__link">Home</a>
+    </li>
+    <li class="breadcrumb__item">
+      <span class="breadcrumb__separator" aria-hidden="true">&rsaquo;</span>
+      <span class="breadcrumb__current" aria-current="page">Calculators</span>
+    </li>
+  </ol>
+  <!-- Note: "Calculators" truncated for mobile width; full name "Trade Materials Calculators" -->
+</nav>
+
+<!-- Page heading -->
+<div class="content-pad">
+  <!-- ============================================================
+    ZONE: Page Heading — h1
+    WCAG 2.1 2.4.6 — single h1 per page, descriptive
+    ============================================================ -->
+  <h1 class="page-heading">Trade Materials Calculators</h1>
+  <p class="page-subheading">
+    Professional-grade quantity estimators for trade and self-build projects.
+  </p>
+</div>
+
+<!-- ============================================================
+  ZONE: Project Calculators Section — dominant, single column on mobile
+  Pattern: Tidwell (2020) Visual Framework — primary weight zone preserved.
+  Wroblewski (2011) — single column on mobile; stacked cards scroll naturally.
+  Krug (2014) Ch.3 — dominant section communicates primary purpose.
+  ============================================================ -->
+<section class="project-section" aria-labelledby="project-calc-heading">
+
+  <div class="section-heading-wrap">
+    <!-- Yellow left accent — Tidwell (2020) Visual Framework -->
+    <div class="section-heading-accent" aria-hidden="true"></div>
+    <h2 class="section-heading" id="project-calc-heading">Project Calculators</h2>
+  </div>
+  <p class="section-subtext">
+    Multi-step wizards to calculate all materials for your project
+  </p>
+
+  <!-- ============================================================
+    ZONE: Project Card Grid — single column (mobile)
+    Wroblewski (2011) — one column removes side-by-side comparison
+    forcing users to scroll; acceptable trade-off for touch usability.
+    Cards maintain same information hierarchy as desktop.
+    ============================================================ -->
+  <div class="project-grid" role="list" aria-label="Project calculators">
+
+    <!-- CARD: Tiling Calculator (available) -->
+    <!-- ZONE: Project Card — Tiling -->
+    <article class="project-card" role="listitem">
+      <div class="project-card__illustration" aria-label="Tiling calculator illustration placeholder">
+        <div class="project-card__illustration-icon" aria-hidden="true">
+          <!-- Inline SVG: tile grid motif -->
+          <svg width="28" height="28" viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+            <rect x="2" y="2" width="12" height="12" rx="1" fill="#9ca3af"/>
+            <rect x="18" y="2" width="12" height="12" rx="1" fill="#9ca3af"/>
+            <rect x="2" y="18" width="12" height="12" rx="1" fill="#9ca3af"/>
+            <rect x="18" y="18" width="12" height="12" rx="1" fill="#9ca3af"/>
+          </svg>
+        </div>
+        <span class="project-card__illustration-label">hero-tiling.svg — 120px</span>
+      </div>
+      <div class="project-card__body">
+        <h3 class="project-card__title">Tiling</h3>
+        <p class="project-card__desc">Calculate tiles, adhesive, and grout for floors and walls.</p>
+      </div>
+      <div class="project-card__footer">
+        <!-- WCAG 2.1 2.5.5 — btn min-height:44px for touch target -->
+        <a href="#" class="btn btn--primary" aria-label="Start Tiling Calculator">Start Project &rarr;</a>
+      </div>
+    </article>
+    <!-- /CARD: Tiling -->
+
+    <!-- CARD: Flooring Calculator — Coming Soon -->
+    <!-- ZONE: Project Card — Flooring (coming soon) -->
+    <!-- Nielsen (1994) Heuristic 1 — ribbon communicates unavailability before tap -->
+    <article class="project-card" role="listitem" aria-disabled="true">
+      <div class="project-card__illustration" style="background:#f3f4f6;" aria-label="Flooring calculator — coming soon">
+        <div class="coming-soon-ribbon" aria-hidden="true">Coming Soon</div>
+        <div class="project-card__illustration-icon" aria-hidden="true">
+          <svg width="28" height="28" viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+            <rect x="2" y="10" width="28" height="4" rx="1" fill="#d1d5db"/>
+            <rect x="2" y="18" width="28" height="4" rx="1" fill="#d1d5db"/>
+            <rect x="2" y="26" width="28" height="4" rx="1" fill="#d1d5db"/>
+          </svg>
+        </div>
+        <span class="project-card__illustration-label" style="color:#d1d5db;">hero-flooring.svg — 120px</span>
+      </div>
+      <div class="project-card__body">
+        <h3 class="project-card__title" style="color:#9ca3af;">Flooring</h3>
+        <p class="project-card__desc">Calculate boards, underlay, and fixings for timber and LVT floors.</p>
+      </div>
+      <div class="project-card__footer">
+        <button class="btn btn--disabled" disabled aria-disabled="true">Coming Soon</button>
+      </div>
+    </article>
+    <!-- /CARD: Flooring -->
+
+    <!-- CARD: Brick & Block Wall Calculator (available) -->
+    <article class="project-card" role="listitem">
+      <div class="project-card__illustration" aria-label="Brick and block wall calculator illustration placeholder">
+        <div class="project-card__illustration-icon" aria-hidden="true">
+          <svg width="28" height="28" viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+            <rect x="2" y="22" width="13" height="6" rx="1" fill="#9ca3af"/>
+            <rect x="17" y="22" width="13" height="6" rx="1" fill="#9ca3af"/>
+            <rect x="8" y="14" width="13" height="6" rx="1" fill="#9ca3af"/>
+            <rect x="2" y="6" width="13" height="6" rx="1" fill="#9ca3af"/>
+            <rect x="17" y="6" width="13" height="6" rx="1" fill="#9ca3af"/>
+          </svg>
+        </div>
+        <span class="project-card__illustration-label">hero-brickwall.svg — 120px</span>
+      </div>
+      <div class="project-card__body">
+        <h3 class="project-card__title">Brick &amp; Block Wall</h3>
+        <p class="project-card__desc">Calculate bricks, blocks, mortar, and ties for any wall specification.</p>
+      </div>
+      <div class="project-card__footer">
+        <a href="#" class="btn btn--primary" aria-label="Start Brick and Block Wall Calculator">Start Project &rarr;</a>
+      </div>
+    </article>
+    <!-- /CARD: Brick & Block Wall -->
+
+    <!-- CARD: Decking Calculator — Coming Soon -->
+    <article class="project-card" role="listitem" aria-disabled="true">
+      <div class="project-card__illustration" style="background:#f3f4f6;" aria-label="Decking calculator — coming soon">
+        <div class="coming-soon-ribbon" aria-hidden="true">Coming Soon</div>
+        <div class="project-card__illustration-icon" aria-hidden="true">
+          <svg width="28" height="28" viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+            <rect x="2" y="8" width="28" height="4" rx="1" fill="#d1d5db"/>
+            <rect x="2" y="15" width="28" height="4" rx="1" fill="#d1d5db"/>
+            <rect x="2" y="22" width="28" height="4" rx="1" fill="#d1d5db"/>
+          </svg>
+        </div>
+        <span class="project-card__illustration-label" style="color:#d1d5db;">hero-decking.svg — 120px</span>
+      </div>
+      <div class="project-card__body">
+        <h3 class="project-card__title" style="color:#9ca3af;">Decking</h3>
+        <p class="project-card__desc">Calculate decking boards, joists, and fixings for outdoor decked areas.</p>
+      </div>
+      <div class="project-card__footer">
+        <button class="btn btn--disabled" disabled aria-disabled="true">Coming Soon</button>
+      </div>
+    </article>
+    <!-- /CARD: Decking -->
+
+    <!-- CARD: Cladding Calculator — Coming Soon -->
+    <article class="project-card" role="listitem" aria-disabled="true">
+      <div class="project-card__illustration" style="background:#f3f4f6;" aria-label="Cladding calculator — coming soon">
+        <div class="coming-soon-ribbon" aria-hidden="true">Coming Soon</div>
+        <div class="project-card__illustration-icon" aria-hidden="true">
+          <svg width="28" height="28" viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+            <rect x="2" y="4" width="28" height="5" rx="1" fill="#d1d5db"/>
+            <rect x="2" y="12" width="28" height="5" rx="1" fill="#d1d5db"/>
+            <rect x="2" y="20" width="28" height="5" rx="1" fill="#d1d5db"/>
+          </svg>
+        </div>
+        <span class="project-card__illustration-label" style="color:#d1d5db;">hero-cladding.svg — 120px</span>
+      </div>
+      <div class="project-card__body">
+        <h3 class="project-card__title" style="color:#9ca3af;">Cladding</h3>
+        <p class="project-card__desc">Calculate cladding boards, battens, and fixings for external walls.</p>
+      </div>
+      <div class="project-card__footer">
+        <button class="btn btn--disabled" disabled aria-disabled="true">Coming Soon</button>
+      </div>
+    </article>
+    <!-- /CARD: Cladding -->
+
+  </div>
+  <!-- /project-grid -->
+
+  <div class="zone-callout">
+    <span class="zone-callout__text">
+      Single column — Wroblewski (2011) Mobile First &middot; ProjectCard.tsx
+    </span>
+  </div>
+
+</section>
+<!-- /project-section -->
+
+<!-- ============================================================
+  ZONE: Handy Calculators Section — secondary weight, single column
+  Pattern: Tidwell (2020) Visual Framework — lighter bg (#f2f6fa)
+  preserves the two-zone weight hierarchy from desktop even in mobile
+  single-column layout.
+  ============================================================ -->
+<section class="handy-section" aria-labelledby="handy-calc-heading">
+
+  <div class="section-heading-wrap">
+    <div class="section-heading-accent" aria-hidden="true"></div>
+    <h2 class="section-heading" id="handy-calc-heading">Handy Calculators</h2>
+  </div>
+  <p class="section-subtext">
+    Quick tools for everyday trade calculations
+  </p>
+
+  <!-- ============================================================
+    ZONE: Handy Card Grid — single column (mobile)
+    Compact media-object cards: icon left, content right.
+    Maintains desktop card design, layout adapts to single column.
+    ============================================================ -->
+  <div class="handy-grid" role="list" aria-label="Handy calculators">
+
+    <!-- CARD: Unit Conversions -->
+    <article class="handy-card" role="listitem">
+      <div class="handy-card__icon" aria-hidden="true">
+        <div class="handy-card__icon-inner" style="border-radius:50%;"></div>
+      </div>
+      <div class="handy-card__content">
+        <h3 class="handy-card__title">Unit Conversions</h3>
+        <p class="handy-card__desc">Convert between metric and imperial measurements instantly.</p>
+        <a href="#" class="handy-card__link" aria-label="Open Unit Conversions calculator">Open &rarr;</a>
+      </div>
+    </article>
+
+    <!-- CARD: Board Coverage -->
+    <article class="handy-card" role="listitem">
+      <div class="handy-card__icon" aria-hidden="true">
+        <div class="handy-card__icon-inner"></div>
+      </div>
+      <div class="handy-card__content">
+        <h3 class="handy-card__title">Board Coverage</h3>
+        <p class="handy-card__desc">How many boards do you need to cover a given area?</p>
+        <a href="#" class="handy-card__link" aria-label="Open Board Coverage calculator">Open &rarr;</a>
+      </div>
+    </article>
+
+    <!-- CARD: Board Cutting Optimiser — Coming Soon -->
+    <!-- Nielsen (1994) Heuristic 1 — greyed state communicates planned unavailability -->
+    <article class="handy-card handy-card--disabled" role="listitem" aria-disabled="true">
+      <div class="handy-card__icon" style="background:#9ca3af;" aria-hidden="true">
+        <div class="handy-card__icon-inner" style="background:#d1d5db;"></div>
+      </div>
+      <div class="handy-card__content">
+        <h3 class="handy-card__title" style="color:#9ca3af;">Board Cutting Optimiser</h3>
+        <p class="handy-card__desc">Minimise offcuts with optimal cut-list planning.</p>
+        <span class="handy-card__link--disabled" aria-hidden="true">Coming Soon</span>
+      </div>
+    </article>
+
+  </div>
+  <!-- /handy-grid -->
+
+  <div class="zone-callout" style="background:#ffffff;">
+    <span class="zone-callout__text">
+      Visual Framework — Tidwell (2020) &middot; secondary weight zone &middot; HandyCard.tsx
+    </span>
+  </div>
+
+</section>
+<!-- /handy-section -->
+
+<!-- ============================================================
+  ZONE: How It Works — vertically stacked steps (mobile)
+  Wroblewski (2011) — horizontal 3-column desktop layout collapses
+  to vertical stack. Connector line runs vertically between numbered
+  circles. Steps maintain same content as desktop.
+  Krug (2014) Ch.3 — sets workflow expectations for first-time users.
+  ============================================================ -->
+<section class="how-section" aria-labelledby="how-heading">
+
+  <div class="section-heading-wrap">
+    <div class="section-heading-accent" aria-hidden="true"></div>
+    <h2 class="section-heading" id="how-heading">How It Works</h2>
+  </div>
+
+  <!-- Vertical stacked steps with connecting line -->
+  <div class="how-steps" role="list">
+
+    <div class="how-step" role="listitem">
+      <div class="how-step__number" aria-hidden="true">1</div>
+      <div class="how-step__content">
+        <h3 class="how-step__title">Choose a Calculator</h3>
+        <p class="how-step__desc">Select the type of project or handy tool that matches your job.</p>
+      </div>
+    </div>
+
+    <div class="how-step" role="listitem">
+      <div class="how-step__number" aria-hidden="true">2</div>
+      <div class="how-step__content">
+        <h3 class="how-step__title">Enter Your Measurements</h3>
+        <p class="how-step__desc">Input room dimensions, waste allowances, and product choices.</p>
+      </div>
+    </div>
+
+    <div class="how-step" role="listitem">
+      <div class="how-step__number" aria-hidden="true">3</div>
+      <div class="how-step__content">
+        <h3 class="how-step__title">Get Your Materials List</h3>
+        <p class="how-step__desc">Receive a full quantity breakdown ready to share with your merchant.</p>
+      </div>
+    </div>
+
+  </div>
+
+  <div class="zone-callout">
+    <span class="zone-callout__text">
+      Krug (2014) Ch.3 — purpose clarity &middot; vertical stack (Wroblewski 2011)
+    </span>
+  </div>
+
+</section>
+<!-- /how-section -->
+
+<!-- ============================================================
+  ZONE: Disclaimer / Data Sources
+  Legal accuracy notice. Same content as desktop, full width on mobile.
+  ============================================================ -->
+<aside class="disclaimer" role="note" aria-label="Disclaimer">
+  <p class="disclaimer__text">
+    <strong>Disclaimer:</strong> Material quantities are estimates only.
+    Always verify with your SELCO merchant before ordering. Figures based on
+    manufacturer specifications and standard industry waste allowances.
+    SELCO Builders Warehouse accepts no liability for under- or over-ordering.
+  </p>
+</aside>
+
+<!-- ============================================================
+  ZONE: Site Footer — SELCO template, preserved
+  Shown as dashed annotation zone. Not in scope for this project.
+  ============================================================ -->
+<footer class="site-footer annotation-zone" role="contentinfo" aria-label="SELCO Site Footer">
+  <span class="annotation-label annotation-label--center" style="font-size:11px; margin:0; line-height:1.5;">
+    SELCO Site Template: Footer &mdash; preserved, not modified
+  </span>
+</footer>
+
+<!-- ============================================================
+  WIREFRAME ANNOTATION LEGEND
+  ============================================================
+  Grey dashed border (#9ca3af dashed) = Preserved SELCO template zones
+  Solid navy left border (#04204b)    = Primary application content zones
+  Yellow left accent bar (4px)        = Section boundary (Tidwell 2020 Visual Framework)
+  Yellow ribbon (#ffd407)             = Coming Soon — Nielsen (1994) Heuristic 1
+  Amber notice box                    = Wireframe design decision annotation
+
+  MOBILE-SPECIFIC CHANGES VS DESKTOP:
+  - Header: 60px → 56px; full nav → hamburger + drawer (MobileMenu.tsx)
+  - Sidebar: 240px fixed → hidden; nav via breadcrumb + hamburger
+  - Hero: 200px → 160px height; full width at 375px
+  - Project card grid: 3+2 columns → single column, 5 stacked cards
+  - Illustration height: 180px → 120px (reduce scroll distance)
+  - Handy card grid: 3 columns → single column, 3 stacked cards
+  - How It Works: horizontal row → vertical stack with connecting line
+  - Touch targets: all interactive elements >= 44px (WCAG 2.1 2.5.5)
+
+  ACADEMIC REFERENCES:
+  - Tidwell, J. (2020) Designing Interfaces, 3rd edn. O'Reilly Media.
+    Visual Framework, Grid of Equals (p.194), Hub and Spoke (p.29)
+  - Wroblewski, L. (2011) Mobile First. A Book Apart.
+    Single-column mobile layout; constrained design forces prioritisation
+  - Krug, S. (2014) Don't Make Me Think, Revisited. New Riders.
+    Ch.3 — homepage communicates purpose at a glance
+  - Nielsen, J. (1994) Usability Engineering. Academic Press.
+    Heuristic 1 — Visibility of System Status (Coming Soon states)
+  - W3C (2018) WCAG 2.1 — AA compliance target.
+    1.1.1 Non-text content, 1.4.3 Contrast, 2.4.1 Bypass, 2.4.3 Focus,
+    2.4.6 Headings, 2.4.8 Location, 2.5.5 Target Size (44px)
+  ============================================================ -->
+
+</body>
+</html>

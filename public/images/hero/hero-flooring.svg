@@ -1,0 +1,57 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 200">
+  <!-- Background -->
+  <rect width="1200" height="200" fill="#04204b"/>
+
+  <!-- Top-right corner geometric pattern: dot grid in #253081 -->
+  <g fill="#253081">
+    <circle cx="870" cy="15" r="2"/><circle cx="890" cy="15" r="2"/><circle cx="910" cy="15" r="2"/><circle cx="930" cy="15" r="2"/><circle cx="950" cy="15" r="2"/><circle cx="970" cy="15" r="2"/><circle cx="990" cy="15" r="2"/><circle cx="1010" cy="15" r="2"/><circle cx="1030" cy="15" r="2"/><circle cx="1050" cy="15" r="2"/><circle cx="1070" cy="15" r="2"/><circle cx="1090" cy="15" r="2"/><circle cx="1110" cy="15" r="2"/><circle cx="1130" cy="15" r="2"/><circle cx="1150" cy="15" r="2"/><circle cx="1170" cy="15" r="2"/>
+    <circle cx="870" cy="35" r="2"/><circle cx="890" cy="35" r="2"/><circle cx="910" cy="35" r="2"/><circle cx="930" cy="35" r="2"/><circle cx="950" cy="35" r="2"/><circle cx="970" cy="35" r="2"/><circle cx="990" cy="35" r="2"/><circle cx="1010" cy="35" r="2"/><circle cx="1030" cy="35" r="2"/><circle cx="1050" cy="35" r="2"/><circle cx="1070" cy="35" r="2"/><circle cx="1090" cy="35" r="2"/><circle cx="1110" cy="35" r="2"/><circle cx="1130" cy="35" r="2"/><circle cx="1150" cy="35" r="2"/><circle cx="1170" cy="35" r="2"/>
+    <circle cx="870" cy="55" r="2"/><circle cx="890" cy="55" r="2"/><circle cx="910" cy="55" r="2"/><circle cx="930" cy="55" r="2"/><circle cx="950" cy="55" r="2"/><circle cx="970" cy="55" r="2"/><circle cx="990" cy="55" r="2"/><circle cx="1010" cy="55" r="2"/><circle cx="1030" cy="55" r="2"/><circle cx="1050" cy="55" r="2"/><circle cx="1070" cy="55" r="2"/><circle cx="1090" cy="55" r="2"/><circle cx="1110" cy="55" r="2"/><circle cx="1130" cy="55" r="2"/><circle cx="1150" cy="55" r="2"/><circle cx="1170" cy="55" r="2"/>
+  </g>
+
+  <!-- Diagonal divider -->
+  <polygon points="310,0 370,0 340,200 280,200" fill="#253081"/>
+
+  <!-- MOTIF ZONE: 5 horizontal planks, staggered offset pattern -->
+  <!-- Each plank: 160px wide x 25px tall, 3px gap between rows -->
+  <!-- Rows start at y=25: 25, 53, 81, 109, 137 -->
+  <!-- Stagger: odd rows shift right by 50px, cut left edge at x=20 -->
+
+  <!-- Plank 1 (row 0): x=20, full width white - grain lines subtle -->
+  <rect x="20" y="25" width="300" height="25" fill="#ffffff" rx="1"/>
+  <line x1="20" y1="32" x2="320" y2="32" stroke="#f2f6fa" stroke-width="0.8"/>
+  <line x1="20" y1="40" x2="320" y2="40" stroke="#f2f6fa" stroke-width="0.8"/>
+  <!-- End join line -->
+  <rect x="180" y="25" width="2" height="25" fill="#04204b" opacity="0.3"/>
+
+  <!-- Plank 2 (row 1): offset right by 50px, starts at x=70 -->
+  <rect x="70" y="53" width="250" height="25" fill="#ffffff" rx="1"/>
+  <line x1="70" y1="60" x2="320" y2="60" stroke="#f2f6fa" stroke-width="0.8"/>
+  <line x1="70" y1="68" x2="320" y2="68" stroke="#f2f6fa" stroke-width="0.8"/>
+  <!-- Also a partial plank on left -->
+  <rect x="20" y="53" width="44" height="25" fill="#ffffff" rx="1"/>
+  <line x1="20" y1="60" x2="64" y2="60" stroke="#f2f6fa" stroke-width="0.8"/>
+
+  <!-- Plank 3 (row 2): back to x=20 -->
+  <rect x="20" y="81" width="300" height="25" fill="#ffffff" rx="1"/>
+  <line x1="20" y1="88" x2="320" y2="88" stroke="#f2f6fa" stroke-width="0.8"/>
+  <line x1="20" y1="96" x2="320" y2="96" stroke="#f2f6fa" stroke-width="0.8"/>
+  <rect x="230" y="81" width="2" height="25" fill="#04204b" opacity="0.3"/>
+
+  <!-- Plank 4 (row 3): offset right by 50px -->
+  <rect x="70" y="109" width="250" height="25" fill="#ffffff" rx="1"/>
+  <line x1="70" y1="116" x2="320" y2="116" stroke="#f2f6fa" stroke-width="0.8"/>
+  <line x1="70" y1="124" x2="320" y2="124" stroke="#f2f6fa" stroke-width="0.8"/>
+  <rect x="20" y="109" width="44" height="25" fill="#ffffff" rx="1"/>
+  <line x1="20" y1="116" x2="64" y2="116" stroke="#f2f6fa" stroke-width="0.8"/>
+
+  <!-- Plank 5 (row 4, bottom): yellow accent, back to x=20 -->
+  <rect x="20" y="137" width="300" height="25" fill="#ffd407" rx="1"/>
+  <line x1="20" y1="144" x2="320" y2="144" stroke="#04204b" stroke-width="0.8" opacity="0.2"/>
+  <line x1="20" y1="152" x2="320" y2="152" stroke="#04204b" stroke-width="0.8" opacity="0.2"/>
+  <rect x="150" y="137" width="2" height="25" fill="#04204b" opacity="0.2"/>
+
+  <!-- TEXT ZONE -->
+  <text x="400" y="95" font-family="'Open Sans', Arial, sans-serif" font-size="32" font-weight="700" fill="#ffffff">Flooring Calculator</text>
+  <text x="400" y="128" font-family="'Open Sans', Arial, sans-serif" font-size="16" font-weight="400" fill="#ffd407">Boards, underlay &amp; trims</text>
+</svg>

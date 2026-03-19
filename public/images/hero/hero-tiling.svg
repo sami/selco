@@ -1,0 +1,49 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 200">
+  <!-- Background -->
+  <rect width="1200" height="200" fill="#04204b"/>
+
+  <!-- Top-right corner geometric pattern: dot grid in #253081 -->
+  <g fill="#253081">
+    <circle cx="870" cy="15" r="2"/><circle cx="890" cy="15" r="2"/><circle cx="910" cy="15" r="2"/><circle cx="930" cy="15" r="2"/><circle cx="950" cy="15" r="2"/><circle cx="970" cy="15" r="2"/><circle cx="990" cy="15" r="2"/><circle cx="1010" cy="15" r="2"/><circle cx="1030" cy="15" r="2"/><circle cx="1050" cy="15" r="2"/><circle cx="1070" cy="15" r="2"/><circle cx="1090" cy="15" r="2"/><circle cx="1110" cy="15" r="2"/><circle cx="1130" cy="15" r="2"/><circle cx="1150" cy="15" r="2"/><circle cx="1170" cy="15" r="2"/>
+    <circle cx="870" cy="35" r="2"/><circle cx="890" cy="35" r="2"/><circle cx="910" cy="35" r="2"/><circle cx="930" cy="35" r="2"/><circle cx="950" cy="35" r="2"/><circle cx="970" cy="35" r="2"/><circle cx="990" cy="35" r="2"/><circle cx="1010" cy="35" r="2"/><circle cx="1030" cy="35" r="2"/><circle cx="1050" cy="35" r="2"/><circle cx="1070" cy="35" r="2"/><circle cx="1090" cy="35" r="2"/><circle cx="1110" cy="35" r="2"/><circle cx="1130" cy="35" r="2"/><circle cx="1150" cy="35" r="2"/><circle cx="1170" cy="35" r="2"/>
+    <circle cx="870" cy="55" r="2"/><circle cx="890" cy="55" r="2"/><circle cx="910" cy="55" r="2"/><circle cx="930" cy="55" r="2"/><circle cx="950" cy="55" r="2"/><circle cx="970" cy="55" r="2"/><circle cx="990" cy="55" r="2"/><circle cx="1010" cy="55" r="2"/><circle cx="1030" cy="55" r="2"/><circle cx="1050" cy="55" r="2"/><circle cx="1070" cy="55" r="2"/><circle cx="1090" cy="55" r="2"/><circle cx="1110" cy="55" r="2"/><circle cx="1130" cy="55" r="2"/><circle cx="1150" cy="55" r="2"/><circle cx="1170" cy="55" r="2"/>
+  </g>
+
+  <!-- Diagonal divider -->
+  <polygon points="310,0 370,0 340,200 280,200" fill="#253081"/>
+
+  <!-- MOTIF ZONE: 4x4 tile grid -->
+  <!-- Tile size: 40px, grout: 4px. Total grid: 4*40 + 3*4 = 172px wide, 172px tall -->
+  <!-- Center it in 0-360: start x=94, start y=14 -->
+
+  <!-- Shadow rects (slight dark offset) -->
+  <rect x="97" y="17" width="172" height="172" fill="#253081" opacity="0.4" rx="1"/>
+
+  <!-- Row 0: y=14 -->
+  <!-- Tile (0,0) white -->  <rect x="94" y="14" width="40" height="40" fill="#ffffff"/>
+  <!-- Tile (1,0) blue -->   <rect x="138" y="14" width="40" height="40" fill="#253081"/>
+  <!-- Tile (2,0) white -->  <rect x="182" y="14" width="40" height="40" fill="#ffffff"/>
+  <!-- Tile (3,0) blue -->   <rect x="226" y="14" width="40" height="40" fill="#253081"/>
+
+  <!-- Row 1: y=58 -->
+  <!-- Tile (0,1) blue -->   <rect x="94" y="58" width="40" height="40" fill="#253081"/>
+  <!-- Tile (1,1) white -->  <rect x="138" y="58" width="40" height="40" fill="#ffffff"/>
+  <!-- Tile (2,1) blue -->   <rect x="182" y="58" width="40" height="40" fill="#253081"/>
+  <!-- Tile (3,1) white -->  <rect x="226" y="58" width="40" height="40" fill="#ffffff"/>
+
+  <!-- Row 2: y=102 -->
+  <!-- Tile (0,2) white -->  <rect x="94" y="102" width="40" height="40" fill="#ffffff"/>
+  <!-- Tile (1,2) blue -->   <rect x="138" y="102" width="40" height="40" fill="#253081"/>
+  <!-- Tile (2,2) white -->  <rect x="182" y="102" width="40" height="40" fill="#ffffff"/>
+  <!-- Tile (3,2) blue -->   <rect x="226" y="102" width="40" height="40" fill="#253081"/>
+
+  <!-- Row 3: y=146 -->
+  <!-- Tile (0,3) blue -->   <rect x="94" y="146" width="40" height="40" fill="#253081"/>
+  <!-- Tile (1,3) white -->  <rect x="138" y="146" width="40" height="40" fill="#ffffff"/>
+  <!-- Tile (2,3) blue -->   <rect x="182" y="146" width="40" height="40" fill="#253081"/>
+  <!-- Tile (3,3) white -->  <rect x="226" y="146" width="40" height="40" fill="#ffffff"/>
+
+  <!-- TEXT ZONE -->
+  <text x="400" y="95" font-family="'Open Sans', Arial, sans-serif" font-size="32" font-weight="700" fill="#ffffff">Tiling Calculator</text>
+  <text x="400" y="128" font-family="'Open Sans', Arial, sans-serif" font-size="16" font-weight="400" fill="#ffd407">Tiles, adhesive, grout &amp; spacers</text>
+</svg>
