@@ -1,7 +1,8 @@
 import React, { useState, useCallback, useMemo } from 'react';
 import { FormInput, FormSelect } from './CalculatorLayout';
 import { calculateTiles, COMMON_TILE_SIZES } from '../calculators/tiles';
-import { calculateAdhesive, ADHESIVE_PRODUCTS } from '../calculators/adhesive';
+import { calculateAdhesive } from '../calculators/adhesive';
+import { ADHESIVE_PRODUCTS } from '../data/tiling-products';
 import { calculateGrout, COMMON_JOINT_WIDTHS } from '../calculators/grout';
 import { calculateSpacers, SPACER_SIZES } from '../calculators/spacers';
 import { TILING_SUGGESTIONS } from '../projects/tiling-suggestions';
@@ -35,7 +36,7 @@ export default function TilingWizard() {
     const [packSize, setPackSize] = useState('');
 
     // Step 3 — Adhesive
-    const [selectedProduct, setSelectedProduct] = useState(ADHESIVE_PRODUCTS[0].value);
+    const [selectedProduct, setSelectedProduct] = useState(ADHESIVE_PRODUCTS[0].id);
     const [applicationType, setApplicationType] = useState<'dry' | 'wet'>('dry');
     const [substrate, setSubstrate] = useState('even');
     const [adhesiveWastage, setAdhesiveWastage] = useState('10');
@@ -65,7 +66,7 @@ export default function TilingWizard() {
     }, [roomLength, roomWidth]);
 
     const product = useMemo(
-        () => ADHESIVE_PRODUCTS.find(p => p.value === selectedProduct) ?? ADHESIVE_PRODUCTS[0],
+        () => ADHESIVE_PRODUCTS.find(p => p.id === selectedProduct) ?? ADHESIVE_PRODUCTS[0],
         [selectedProduct],
     );
 
@@ -90,22 +91,23 @@ export default function TilingWizard() {
             } else if (currentStep === 2) {
                 const ps = parseFloat(packSize);
                 const result = calculateTiles({
-                    areaWidth: parseFloat(roomLength),
-                    areaHeight: parseFloat(roomWidth),
-                    tileWidth: parseFloat(tileWidth),
-                    tileHeight: parseFloat(tileHeight),
-                    wastage: parseFloat(tileWastage),
-                    ...(ps > 0 ? { packSize: ps } : {}),
+                    roomLengthM: parseFloat(roomLength),
+                    roomWidthM: parseFloat(roomWidth),
+                    tileLengthMm: parseFloat(tileWidth),
+                    tileWidthMm: parseFloat(tileHeight),
+                    gapWidthMm: 0,
+                    layingPattern: 'straight',
+                    packSize: ps > 0 ? ps : 1,
                 });
                 setTileResult(result);
             } else if (currentStep === 3) {
-                const coverageRate = applicationType === 'dry' ? product.dryWallRate : product.wetAreaRate;
+                const applicationContext = applicationType === 'dry' ? 'wall-dry' : 'floor-wet';
                 const result = calculateAdhesive({
-                    area,
-                    coverageRate,
-                    bagSize: product.bagSize,
-                    substrate: substrate as 'even' | 'uneven',
-                    wastage: parseFloat(adhesiveWastage),
+                    areaM2: area,
+                    tileLengthMm: parseFloat(tileWidth),
+                    tileWidthMm: parseFloat(tileHeight),
+                    productId: selectedProduct,
+                    applicationContext,
                 });
                 setAdhesiveResult(result);
             } else if (currentStep === 4) {
@@ -134,7 +136,7 @@ export default function TilingWizard() {
         }
     }, [
         currentStep, area, roomLength, roomWidth, tileWidth, tileHeight, tileWastage, packSize,
-        product, applicationType, substrate, adhesiveWastage,
+        selectedProduct, applicationType,
         effectiveJointWidth, tileDepth, groutWastage,
         layout, spacerWastage
     ]);
@@ -292,7 +294,7 @@ export default function TilingWizard() {
                         <div className="bg-muted/30 rounded-lg p-3 px-4 border border-border/50 mb-4 flex justify-between items-center flex-wrap gap-2">
                             <span className="text-sm text-muted-foreground">Area: <strong>{area.toFixed(2)} m²</strong></span>
                             <span className="text-xs font-medium text-brand-blue bg-brand-blue/5 px-2 py-1 rounded">
-                                Rate: {(applicationType === 'dry' ? product.dryWallRate : product.wetAreaRate)} kg/m² ({product.bagSize} kg bag)
+                                Rate: {(applicationType === 'dry' ? product.coverageRates['wall-dry'] : product.coverageRates['floor-wet'])} kg/m² ({product.bagSizeKg} kg bag)
                             </span>
                         </div>
 
@@ -301,7 +303,7 @@ export default function TilingWizard() {
                             label="Product"
                             value={selectedProduct}
                             onChange={setSelectedProduct}
-                            options={ADHESIVE_PRODUCTS.map(p => ({ value: p.value, label: p.label }))}
+                            options={ADHESIVE_PRODUCTS.map(p => ({ value: p.id, label: `${p.brand} ${p.name}` }))}
                         />
 
                         <div className="space-y-1.5">
@@ -470,7 +472,7 @@ export default function TilingWizard() {
                                 <h3 className="font-semibold text-surface-foreground">Tiles</h3>
                                 <p className="text-2xl font-bold text-surface-foreground mt-1">{tileResult?.tilesNeeded} tiles</p>
                                 <p className="text-sm text-muted-foreground">
-                                    {tileWidth}×{tileHeight} mm • Area: {tileResult?.coverageArea.toFixed(2)} m²
+                                    {tileWidth}×{tileHeight} mm • Area: {tileResult?.totalAreaM2.toFixed(2)} m²
                                 </p>
                                 {tileResult?.packsNeeded && (
                                     <div className="mt-2 inline-flex items-center px-2.5 py-1 rounded-md bg-muted/40 text-xs font-medium text-muted-foreground">
@@ -482,12 +484,12 @@ export default function TilingWizard() {
                             {/* Adhesive Card */}
                             <div className="bg-white rounded-2xl border border-border shadow-sm p-5">
                                 <h3 className="font-semibold text-surface-foreground">Adhesive</h3>
-                                <p className="text-2xl font-bold text-surface-foreground mt-1">{adhesiveResult?.kgNeeded.toFixed(1)} kg</p>
+                                <p className="text-2xl font-bold text-surface-foreground mt-1">{adhesiveResult?.adhesiveKg.toFixed(1)} kg</p>
                                 <p className="text-sm text-muted-foreground mb-2">
-                                    {selectedProduct === 'dunlop-rx3000' ? 'Tub' : 'Bag'} size: {product.bagSize} kg
+                                    {selectedProduct === 'dunlop-rx3000' ? 'Tub' : 'Bag'} size: {product.bagSizeKg} kg
                                 </p>
                                 <div className="inline-flex items-center px-2.5 py-1 rounded-md bg-brand-yellow/20 text-brand-blue border border-brand-yellow/30 text-xs font-bold">
-                                    {adhesiveResult?.bagsNeeded} x {product.bagSize} kg {selectedProduct === 'dunlop-rx3000' ? 'tubs' : 'bags'}
+                                    {adhesiveResult?.bagsNeeded} x {product.bagSizeKg} kg {selectedProduct === 'dunlop-rx3000' ? 'tubs' : 'bags'}
                                 </div>
                             </div>
 

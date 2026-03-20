@@ -5,13 +5,14 @@ import CalculatorLayout, {
     type ResultItem,
     type FieldGroup,
 } from './CalculatorLayout';
-import { calculateAdhesive, ADHESIVE_PRODUCTS } from '../calculators/adhesive';
+import { calculateAdhesive } from '../calculators/adhesive';
+import { ADHESIVE_PRODUCTS } from '../data/tiling-products';
 
 type ApplicationType = 'dry' | 'wet';
 
 const productOptions = ADHESIVE_PRODUCTS.map((p) => ({
-    value: p.value,
-    label: p.label,
+    value: p.id,
+    label: `${p.brand} ${p.name}`,
 }));
 
 const substrateOptions = [
@@ -20,7 +21,7 @@ const substrateOptions = [
 ];
 
 export default function AdhesiveCalculator() {
-    const [selectedProduct, setSelectedProduct] = useState(ADHESIVE_PRODUCTS[0].value);
+    const [selectedProduct, setSelectedProduct] = useState(ADHESIVE_PRODUCTS[0].id);
     const [applicationType, setApplicationType] = useState<ApplicationType>('dry');
     const [area, setArea] = useState('');
     const [substrate, setSubstrate] = useState('even');
@@ -30,18 +31,17 @@ export default function AdhesiveCalculator() {
     const [error, setError] = useState<string | null>(null);
 
     const product = useMemo(
-        () => ADHESIVE_PRODUCTS.find((p) => p.value === selectedProduct) ?? ADHESIVE_PRODUCTS[0],
+        () => ADHESIVE_PRODUCTS.find((p) => p.id === selectedProduct) ?? ADHESIVE_PRODUCTS[0],
         [selectedProduct],
     );
 
-    const coverageRate = applicationType === 'dry' ? product.dryWallRate : product.wetAreaRate;
+    const coverageRate = applicationType === 'dry'
+        ? product.coverageRates['wall-dry']
+        : product.coverageRates['floor-wet'];
 
     const validateInputs = () => {
         const a = parseFloat(area);
-        const w = parseFloat(wastage);
-
         if (isNaN(a) || a <= 0) return 'Total area must be a valid number greater than 0.';
-        if (isNaN(w) || w < 0 || w > 100) return 'Wastage must be between 0 and 100%.';
         return null;
     };
 
@@ -55,22 +55,21 @@ export default function AdhesiveCalculator() {
         }
 
         try {
+            const applicationContext = applicationType === 'dry' ? 'wall-dry' : 'floor-wet';
             const result = calculateAdhesive({
-                area: parseFloat(area),
-                coverageRate,
-                bagSize: product.bagSize,
-                substrate: substrate as 'even' | 'uneven',
-                wastage: parseFloat(wastage),
+                areaM2: parseFloat(area),
+                tileLengthMm: 300,
+                tileWidthMm: 300,
+                productId: selectedProduct,
+                applicationContext,
             });
 
-            const isUneven = substrate === 'uneven';
-            const effectiveRate = isUneven ? coverageRate * 1.2 : coverageRate;
-            const bagLabel = product.bagSize >= 20 ? `${product.bagSize} kg bag` : `${product.bagSize} kg tub`;
+            const bagLabel = product.bagSizeKg >= 20 ? `${product.bagSizeKg} kg bag` : `${product.bagSizeKg} kg tub`;
 
             const items: ResultItem[] = [
                 {
                     label: 'Adhesive needed',
-                    value: `${result.kgNeeded.toFixed(1)} kg`,
+                    value: `${result.adhesiveKg.toFixed(1)} kg`,
                     primary: true,
                 },
                 {
@@ -80,8 +79,12 @@ export default function AdhesiveCalculator() {
                 },
                 {
                     label: 'Coverage rate used',
-                    value: `${effectiveRate} kg/m²${isUneven ? ' (incl. +20% uneven)' : ''}`,
+                    value: `${result.coverageRateUsed} kg/m²`,
                 },
+                ...(result.warnings.length > 0 ? result.warnings.map(w => ({
+                    label: '⚠ Note',
+                    value: w,
+                })) : []),
             ];
 
             setResults(items);
@@ -90,10 +93,10 @@ export default function AdhesiveCalculator() {
             setError(e instanceof Error ? e.message : 'An unexpected error occurred.');
             setHasResults(false);
         }
-    }, [area, coverageRate, product, substrate, wastage]);
+    }, [area, applicationType, selectedProduct, product]);
 
     const handleReset = useCallback(() => {
-        setSelectedProduct(ADHESIVE_PRODUCTS[0].value);
+        setSelectedProduct(ADHESIVE_PRODUCTS[0].id);
         setApplicationType('dry');
         setArea('');
         setSubstrate('even');
@@ -144,7 +147,7 @@ export default function AdhesiveCalculator() {
                             </button>
                         </div>
                         <p className="text-xs text-muted-foreground mt-1.5">
-                            Coverage rate: {coverageRate} kg/m² ({product.bagSize} kg per unit)
+                            Coverage rate: {coverageRate} kg/m² ({product.bagSizeKg} kg per unit)
                         </p>
                     </div>
                 </div>
