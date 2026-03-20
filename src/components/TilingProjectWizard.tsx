@@ -10,9 +10,19 @@ import { calculateTanking } from '../calculators/tanking';
 import { calculateSLC } from '../calculators/slc';
 import { convertLength } from '../calculators/conversions';
 
+import type { LayingPattern } from '../calculators/types';
+
 type Unit = 'm' | 'ft';
 type Application = 'floor' | 'wall';
 type Pattern = 'grid' | 'brick_bond' | 'diagonal' | 'herringbone';
+
+/** Map wizard pattern names → WASTAGE constant keys (LayingPattern). */
+const PATTERN_TO_LAYING: Record<Pattern, LayingPattern> = {
+  grid: 'straight',
+  brick_bond: 'brick-bond',
+  diagonal: 'diagonal',
+  herringbone: 'herringbone',
+};
 
 type StepId =
   | 'setup'
@@ -191,28 +201,26 @@ export default function TilingProjectWizard() {
     }
 
     try {
-      // result.tilesNeeded = final count including wastage
-      // result.wastageAmount = the extra tiles added for wastage
       const result = calculateTiles({
-        areaWidth: 1,
-        areaHeight: 1,
+        roomLengthM: 1,
+        roomWidthM: 1,
         areaM2,               // override: use the pre-computed area directly
-        tileWidth: widthMm,
-        tileHeight: heightMm,
-        gapWidthMm: gapMm > 0 ? gapMm : undefined,
-        wastage,
+        tileLengthMm: widthMm,
+        tileWidthMm: heightMm,
+        gapWidthMm: gapMm > 0 ? gapMm : 0,
+        layingPattern: PATTERN_TO_LAYING[pattern],
+        packSize: 1,
       });
-      const tileAreaM2 = gapMm > 0
-        ? ((widthMm + gapMm) / 1000) * ((heightMm + gapMm) / 1000)
-        : (widthMm / 1000) * (heightMm / 1000);
-      // tilesNeeded (no wastage) = total - extra; tilesWithWastage = total
+      const effectiveGap = gapMm > 0 ? gapMm : 0;
+      const tileAreaM2 = ((widthMm + effectiveGap) * (heightMm + effectiveGap)) / 1_000_000;
+      // tilesNeeded (no wastage) = raw count; tilesWithWastage = final count including waste
       const tilesWithWastage = result.tilesNeeded;
-      const tilesNeeded = tilesWithWastage - result.wastageAmount;
+      const tilesNeeded = Math.ceil(areaM2 * result.tilesPerM2);
       return { tileAreaM2, tilesNeeded, tilesWithWastage, coveragePerTile: tileAreaM2 };
     } catch {
       return { tileAreaM2: 0, tilesNeeded: 0, tilesWithWastage: 0, coveragePerTile: 0 };
     }
-  }, [areaM2, tileWidth, tileHeight, gapWidth, tileWastage]);
+  }, [areaM2, tileWidth, tileHeight, gapWidth, tileWastage, pattern]);
 
   const adhesiveMetrics = useMemo(() => {
     const depth = toNumber(bedDepth);

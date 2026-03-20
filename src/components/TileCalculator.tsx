@@ -69,13 +69,17 @@ export default function TileCalculator() {
         try {
             const ps = parseFloat(packSize);
             const result = calculateTiles({
-                areaWidth: parseFloat(roomWidth),
-                areaHeight: parseFloat(roomHeight),
-                tileWidth: parseFloat(tileWidth),
-                tileHeight: parseFloat(tileHeight),
-                wastage: parseFloat(wastage),
-                ...(ps > 0 ? { packSize: ps } : {}),
+                roomLengthM: parseFloat(roomWidth),
+                roomWidthM: parseFloat(roomHeight),
+                tileLengthMm: parseFloat(tileWidth),
+                tileWidthMm: parseFloat(tileHeight),
+                gapWidthMm: 0,
+                layingPattern: 'straight',
+                packSize: ps > 0 ? ps : 1,
             });
+
+            const tilesWithoutWaste = Math.ceil(result.totalAreaM2 * result.tilesPerM2);
+            const wastageExtra = result.tilesNeeded - tilesWithoutWaste;
 
             const items: ResultItem[] = [
                 {
@@ -85,15 +89,15 @@ export default function TileCalculator() {
                 },
                 {
                     label: 'Coverage area',
-                    value: `${result.coverageArea.toFixed(2)} m²`,
+                    value: `${result.totalAreaM2.toFixed(2)} m²`,
                 },
                 {
-                    label: `Extra for wastage (${wastage}%)`,
-                    value: `${result.wastageAmount} tiles`,
+                    label: `Extra for wastage (${result.wastePercent}%)`,
+                    value: `${wastageExtra} tiles`,
                 },
             ];
 
-            if (result.packsNeeded !== undefined) {
+            if (ps > 0) {
                 items.push({
                     label: `Packs needed (${packSize} per pack)`,
                     value: `${result.packsNeeded} packs`,
