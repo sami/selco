@@ -4,7 +4,7 @@ import { calculateTiles } from '../calculators/tiles';
 import { calculateAdhesiveByBedDepth } from '../calculators/adhesive';
 import { calculateGrout } from '../calculators/grout';
 import { calculateSpacers } from '../calculators/spacers';
-import { GROUT_PRODUCTS } from '../data/tiling-products';
+import { GROUT_PRODUCTS, PRIMER_PRODUCTS, BACKER_BOARD_PRODUCTS, TANKING_PRODUCTS } from '../data/tiling-products';
 import { calculatePrimer } from '../calculators/primer';
 import { calculateBackerBoard } from '../calculators/backer-board';
 import { calculateTanking } from '../calculators/tanking';
@@ -101,22 +101,15 @@ export default function TilingProjectWizard() {
 
   const [spacersPerPack, setSpacersPerPack] = useState('250');
 
-  const [primerCoverage, setPrimerCoverage] = useState('5');
-  const [primerBottleSize, setPrimerBottleSize] = useState('5');
+  const [selectedPrimerProduct, setSelectedPrimerProduct] = useState(PRIMER_PRODUCTS[0].id);
   const [primerCoats, setPrimerCoats] = useState('1');
 
-  const [boardWidth, setBoardWidth] = useState('1200');
-  const [boardHeight, setBoardHeight] = useState('800');
-  const [boardWastage, setBoardWastage] = useState('10');
+  const [selectedBackerProduct, setSelectedBackerProduct] = useState(BACKER_BOARD_PRODUCTS[0].id);
 
-  const [tankingCoverage, setTankingCoverage] = useState('0.7');
-  const [tankingCoats, setTankingCoats] = useState('2');
-  const [tankingTubSize, setTankingTubSize] = useState('5');
+  const [selectedTankingProduct, setSelectedTankingProduct] = useState(TANKING_PRODUCTS[0].id);
 
-  const [slcCoverage, setSlcCoverage] = useState('1.7');
   const [slcDepth, setSlcDepth] = useState('3');
-  const [slcBagSize, setSlcBagSize] = useState('20');
-  const [slcWastage, setSlcWastage] = useState('10');
+  const [slcBagSize, setSlcBagSize] = useState('25');
 
   const [skipPrimer, setSkipPrimer] = useState(false);
   const [skipBacker, setSkipBacker] = useState(false);
@@ -157,6 +150,16 @@ export default function TilingProjectWizard() {
       setTileWastage(String(selected.wastage));
     }
   }, [pattern]);
+
+  useEffect(() => {
+    if (application === 'floor') {
+      const current = GROUT_PRODUCTS.find(p => p.id === selectedGroutProduct);
+      if (current?.restrictions?.includes('walls-only')) {
+        const fallback = GROUT_PRODUCTS.find(p => !p.restrictions?.includes('walls-only'));
+        if (fallback) setSelectedGroutProduct(fallback.id);
+      }
+    }
+  }, [application]);
 
   const handleUnitToggle = (nextUnit: Unit) => {
     if (nextUnit === areaUnit) return;
@@ -302,84 +305,69 @@ export default function TilingProjectWizard() {
   }, [spacersPerPack, pattern, tileMetrics.tilesWithWastage]);
 
   const primerMetrics = useMemo(() => {
-    const coverage = toNumber(primerCoverage);
-    const bottle = toNumber(primerBottleSize);
     const coats = toNumber(primerCoats);
-    if (coverage <= 0 || bottle <= 0 || coats <= 0 || areaM2 <= 0) {
-      return { litres: 0, bottles: 0 };
+    if (coats <= 0 || areaM2 <= 0) {
+      return { kg: 0, packs: 0, productName: '' };
     }
     try {
       const result = calculatePrimer({
         areaM2,
-        coverageRateM2PerL: coverage,
-        bottleSizeL: bottle,
+        productId: selectedPrimerProduct,
         coats,
       });
-      return { litres: result.litresNeeded, bottles: result.bottlesNeeded };
+      return { kg: result.kgNeeded, packs: result.packsNeeded, productName: result.productName };
     } catch {
-      return { litres: 0, bottles: 0 };
+      return { kg: 0, packs: 0, productName: '' };
     }
-  }, [primerCoverage, primerBottleSize, primerCoats, areaM2]);
+  }, [selectedPrimerProduct, primerCoats, areaM2]);
 
   const backerMetrics = useMemo(() => {
-    const wastage = toNumber(boardWastage);
-    if (toNumber(boardWidth) <= 0 || toNumber(boardHeight) <= 0 || areaM2 <= 0) {
-      return { boards: 0, boardArea: 0 };
+    if (areaM2 <= 0) {
+      return { boards: 0, boardArea: 0, productName: '' };
     }
     try {
       const result = calculateBackerBoard({
         areaM2,
-        boardWidthMm: toNumber(boardWidth),
-        boardHeightMm: toNumber(boardHeight),
-        wastage,
+        productId: selectedBackerProduct,
       });
-      return { boards: result.boardsNeeded, boardArea: result.boardAreaM2 };
+      return { boards: result.boardsNeeded, boardArea: result.boardAreaM2, productName: result.productName };
     } catch {
-      return { boards: 0, boardArea: 0 };
+      return { boards: 0, boardArea: 0, productName: '' };
     }
-  }, [boardWidth, boardHeight, boardWastage, areaM2]);
+  }, [selectedBackerProduct, areaM2]);
 
   const tankingMetrics = useMemo(() => {
-    const coverage = toNumber(tankingCoverage);
-    const coats = toNumber(tankingCoats);
-    const tub = toNumber(tankingTubSize);
-    if (coverage <= 0 || coats <= 0 || tub <= 0 || areaM2 <= 0) {
-      return { kg: 0, tubs: 0 };
+    if (areaM2 <= 0) {
+      return { kits: 0, productName: '', coveragePerKit: 0 };
     }
     try {
       const result = calculateTanking({
         areaM2,
-        coverageRateKgPerM2PerCoat: coverage,
-        coats,
-        tubSizeKg: tub,
+        productId: selectedTankingProduct,
       });
-      return { kg: result.kgNeeded, tubs: result.tubsNeeded };
+      return { kits: result.kitsNeeded, productName: result.productName, coveragePerKit: result.coveragePerKit };
     } catch {
-      return { kg: 0, tubs: 0 };
+      return { kits: 0, productName: '', coveragePerKit: 0 };
     }
-  }, [tankingCoverage, tankingCoats, tankingTubSize, areaM2]);
+  }, [selectedTankingProduct, areaM2]);
 
   const slcMetrics = useMemo(() => {
-    const coverage = toNumber(slcCoverage);
     const depth = toNumber(slcDepth);
     const bag = toNumber(slcBagSize);
-    const wastage = toNumber(slcWastage);
-    if (coverage <= 0 || depth <= 0 || bag <= 0 || areaM2 <= 0) {
-      return { kg: 0, kgWithWastage: 0, bags: 0 };
+    if (depth <= 0 || bag <= 0 || areaM2 <= 0) {
+      return { kg: 0, bags: 0, volumeLitres: 0 };
     }
     try {
       const result = calculateSLC({
         areaM2,
-        averageDepthMm: depth,
-        coverageRateKgPerM2PerMm: coverage,
+        depthMm: depth,
         bagSizeKg: bag,
-        wastage,
       });
-      return { kg: result.kgNeeded, kgWithWastage: result.kgWithWastage, bags: result.bagsNeeded };
+      return { kg: result.kgNeeded, bags: result.bagsNeeded, volumeLitres: result.volumeLitres };
     } catch {
-      return { kg: 0, kgWithWastage: 0, bags: 0 };
+      return { kg: 0, bags: 0, volumeLitres: 0 };
     }
-  }, [slcCoverage, slcDepth, slcBagSize, slcWastage, areaM2]);
+  }, [slcDepth, slcBagSize, areaM2]);
 
   const goNext = () => setCurrentIndex((prev) => Math.min(prev + 1, steps.length - 1));
   const goBack = () => setCurrentIndex((prev) => Math.max(prev - 1, 0));
@@ -636,6 +624,15 @@ export default function TilingProjectWizard() {
       {currentStep?.id === 'grout' && (
         <div className="space-y-6">
           <div className="bg-white rounded-2xl border border-border shadow-sm p-6 space-y-6">
+            <FormSelect
+              id="grout-product"
+              label="Grout product"
+              value={selectedGroutProduct}
+              onChange={setSelectedGroutProduct}
+              options={GROUT_PRODUCTS
+                .filter(p => application !== 'floor' || !p.restrictions?.includes('walls-only'))
+                .map(p => ({ value: p.id, label: `${p.brand} ${p.name}` }))}
+            />
             <div className="grid gap-4 sm:grid-cols-2">
               <FormInput
                 id="tile-depth"
@@ -724,26 +721,13 @@ export default function TilingProjectWizard() {
             ? renderOptionalNotice('Primer', () => setSkipPrimer(false))
             : (
               <div className="bg-white rounded-2xl border border-border shadow-sm p-6 space-y-6">
-                <div className="grid gap-4 sm:grid-cols-2">
-                  <FormInput
-                    id="primer-coverage"
-                    label="Coverage rate"
-                    unit="m²/L"
-                    value={primerCoverage}
-                    onChange={setPrimerCoverage}
-                    min={1}
-                    step={0.1}
-                  />
-                  <FormInput
-                    id="primer-bottle"
-                    label="Bottle size"
-                    unit="L"
-                    value={primerBottleSize}
-                    onChange={setPrimerBottleSize}
-                    min={1}
-                    step={0.5}
-                  />
-                </div>
+                <FormSelect
+                  id="primer-product"
+                  label="Product"
+                  value={selectedPrimerProduct}
+                  onChange={setSelectedPrimerProduct}
+                  options={PRIMER_PRODUCTS.map(p => ({ value: p.id, label: `${p.brand} ${p.name}` }))}
+                />
                 <FormInput
                   id="primer-coats"
                   label="Number of coats"
@@ -756,11 +740,11 @@ export default function TilingProjectWizard() {
                 <div className="grid gap-4 sm:grid-cols-2">
                   <div className="rounded-lg border border-border p-4">
                     <p className="text-xs text-muted-foreground">Primer needed</p>
-                    <p className="text-lg font-semibold text-surface-foreground">{formatNumber(primerMetrics.litres, 2)} L</p>
+                    <p className="text-lg font-semibold text-surface-foreground">{formatNumber(primerMetrics.kg, 2)} kg</p>
                   </div>
                   <div className="rounded-lg border border-brand-blue/20 bg-brand-blue/5 p-4">
-                    <p className="text-xs text-muted-foreground">Bottles needed</p>
-                    <p className="text-lg font-semibold text-brand-blue">{formatWhole(primerMetrics.bottles)} bottles</p>
+                    <p className="text-xs text-muted-foreground">Packs needed</p>
+                    <p className="text-lg font-semibold text-brand-blue">{formatWhole(primerMetrics.packs)} packs</p>
                   </div>
                 </div>
 
@@ -782,34 +766,12 @@ export default function TilingProjectWizard() {
             ? renderOptionalNotice('Backer board', () => setSkipBacker(false))
             : (
               <div className="bg-white rounded-2xl border border-border shadow-sm p-6 space-y-6">
-                <div className="grid gap-4 sm:grid-cols-2">
-                  <FormInput
-                    id="board-width"
-                    label="Board width"
-                    unit="mm"
-                    value={boardWidth}
-                    onChange={setBoardWidth}
-                    min={300}
-                    step={1}
-                  />
-                  <FormInput
-                    id="board-height"
-                    label="Board height"
-                    unit="mm"
-                    value={boardHeight}
-                    onChange={setBoardHeight}
-                    min={300}
-                    step={1}
-                  />
-                </div>
-                <FormInput
-                  id="board-wastage"
-                  label="Wastage"
-                  unit="%"
-                  value={boardWastage}
-                  onChange={setBoardWastage}
-                  min={0}
-                  step={1}
+                <FormSelect
+                  id="backer-product"
+                  label="Product"
+                  value={selectedBackerProduct}
+                  onChange={setSelectedBackerProduct}
+                  options={BACKER_BOARD_PRODUCTS.map(p => ({ value: p.id, label: `${p.brand} ${p.name}` }))}
                 />
 
                 <div className="grid gap-4 sm:grid-cols-2">
@@ -854,43 +816,22 @@ export default function TilingProjectWizard() {
             ? renderOptionalNotice('Tanking', () => setSkipTanking(false))
             : (
               <div className="bg-white rounded-2xl border border-border shadow-sm p-6 space-y-6">
-                <div className="grid gap-4 sm:grid-cols-2">
-                  <FormInput
-                    id="tanking-coverage"
-                    label="Coverage rate"
-                    unit="kg/m² per coat"
-                    value={tankingCoverage}
-                    onChange={setTankingCoverage}
-                    min={0.2}
-                    step={0.1}
-                  />
-                  <FormInput
-                    id="tanking-coats"
-                    label="Number of coats"
-                    value={tankingCoats}
-                    onChange={setTankingCoats}
-                    min={1}
-                    step={1}
-                  />
-                </div>
-                <FormInput
-                  id="tanking-tub"
-                  label="Tub size"
-                  unit="kg"
-                  value={tankingTubSize}
-                  onChange={setTankingTubSize}
-                  min={1}
-                  step={0.5}
+                <FormSelect
+                  id="tanking-product"
+                  label="Product"
+                  value={selectedTankingProduct}
+                  onChange={setSelectedTankingProduct}
+                  options={TANKING_PRODUCTS.map(p => ({ value: p.id, label: `${p.brand} ${p.name}` }))}
                 />
 
                 <div className="grid gap-4 sm:grid-cols-2">
                   <div className="rounded-lg border border-border p-4">
-                    <p className="text-xs text-muted-foreground">Tanking needed</p>
-                    <p className="text-lg font-semibold text-surface-foreground">{formatNumber(tankingMetrics.kg, 2)} kg</p>
+                    <p className="text-xs text-muted-foreground">Kits needed</p>
+                    <p className="text-lg font-semibold text-surface-foreground">{formatWhole(tankingMetrics.kits)} kits</p>
                   </div>
                   <div className="rounded-lg border border-brand-blue/20 bg-brand-blue/5 p-4">
-                    <p className="text-xs text-muted-foreground">Tubs needed</p>
-                    <p className="text-lg font-semibold text-brand-blue">{formatWhole(tankingMetrics.tubs)} tubs</p>
+                    <p className="text-xs text-muted-foreground">Coverage per kit</p>
+                    <p className="text-lg font-semibold text-brand-blue">{tankingMetrics.coveragePerKit} m²</p>
                   </div>
                 </div>
 
@@ -914,15 +855,6 @@ export default function TilingProjectWizard() {
               <div className="bg-white rounded-2xl border border-border shadow-sm p-6 space-y-6">
                 <div className="grid gap-4 sm:grid-cols-2">
                   <FormInput
-                    id="slc-coverage"
-                    label="Coverage rate"
-                    unit="kg/m²/mm"
-                    value={slcCoverage}
-                    onChange={setSlcCoverage}
-                    min={1}
-                    step={0.1}
-                  />
-                  <FormInput
                     id="slc-depth"
                     label="Average depth"
                     unit="mm"
@@ -931,8 +863,6 @@ export default function TilingProjectWizard() {
                     min={1}
                     step={0.5}
                   />
-                </div>
-                <div className="grid gap-4 sm:grid-cols-2">
                   <FormInput
                     id="slc-bag"
                     label="Bag size"
@@ -940,15 +870,6 @@ export default function TilingProjectWizard() {
                     value={slcBagSize}
                     onChange={setSlcBagSize}
                     min={5}
-                    step={1}
-                  />
-                  <FormInput
-                    id="slc-wastage"
-                    label="Wastage"
-                    unit="%"
-                    value={slcWastage}
-                    onChange={setSlcWastage}
-                    min={0}
                     step={1}
                   />
                 </div>
@@ -959,12 +880,8 @@ export default function TilingProjectWizard() {
                     <p className="text-lg font-semibold text-surface-foreground">{formatNumber(slcMetrics.kg, 1)} kg</p>
                   </div>
                   <div className="rounded-lg border border-brand-blue/20 bg-brand-blue/5 p-4">
-                    <p className="text-xs text-muted-foreground">SLC incl. wastage</p>
-                    <p className="text-lg font-semibold text-brand-blue">{formatNumber(slcMetrics.kgWithWastage, 1)} kg</p>
-                  </div>
-                  <div className="rounded-lg border border-border p-4">
                     <p className="text-xs text-muted-foreground">Bags needed</p>
-                    <p className="text-lg font-semibold text-surface-foreground">{formatWhole(slcMetrics.bags)} bags</p>
+                    <p className="text-lg font-semibold text-brand-blue">{formatWhole(slcMetrics.bags)} bags</p>
                   </div>
                 </div>
 
@@ -1014,8 +931,8 @@ export default function TilingProjectWizard() {
                 </tr>
                 <tr className="border-t border-border">
                   <td className="px-5 py-3 font-medium">Primer</td>
-                  <td className="px-5 py-3">{skipPrimer ? '—' : `${formatNumber(primerMetrics.litres, 2)} L`}</td>
-                  <td className="px-5 py-3">{skipPrimer ? '—' : `${formatWhole(primerMetrics.bottles)} × ${primerBottleSize}L bottles`}</td>
+                  <td className="px-5 py-3">{skipPrimer ? '—' : `${formatNumber(primerMetrics.kg, 2)} kg`}</td>
+                  <td className="px-5 py-3">{skipPrimer ? '—' : `${formatWhole(primerMetrics.packs)} packs`}</td>
                 </tr>
                 <tr className="border-t border-border">
                   <td className="px-5 py-3 font-medium">Backer board</td>
@@ -1024,13 +941,13 @@ export default function TilingProjectWizard() {
                 </tr>
                 <tr className="border-t border-border">
                   <td className="px-5 py-3 font-medium">Tanking</td>
-                  <td className="px-5 py-3">{skipBacker || skipTanking ? '—' : `${formatNumber(tankingMetrics.kg, 2)} kg`}</td>
-                  <td className="px-5 py-3">{skipBacker || skipTanking ? '—' : `${formatWhole(tankingMetrics.tubs)} × ${tankingTubSize}kg tubs`}</td>
+                  <td className="px-5 py-3">{skipBacker || skipTanking ? '—' : `${formatWhole(tankingMetrics.kits)} kits`}</td>
+                  <td className="px-5 py-3">{skipBacker || skipTanking ? '—' : `${formatWhole(tankingMetrics.kits)} kits`}</td>
                 </tr>
                 {application === 'floor' && (
                   <tr className="border-t border-border">
                     <td className="px-5 py-3 font-medium">Self-levelling compound</td>
-                    <td className="px-5 py-3">{skipSlc ? '—' : `${formatNumber(slcMetrics.kgWithWastage, 1)} kg`}</td>
+                    <td className="px-5 py-3">{skipSlc ? '—' : `${formatNumber(slcMetrics.kg, 1)} kg`}</td>
                     <td className="px-5 py-3">{skipSlc ? '—' : `${formatWhole(slcMetrics.bags)} × ${slcBagSize}kg bags`}</td>
                   </tr>
                 )}
