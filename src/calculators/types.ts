@@ -18,6 +18,7 @@ export interface AdhesiveProduct {
     /** e.g. ['walls-only', 'internal-walls-only'] */
     restrictions?: string[];
     tdsUrl: string;
+    lastVerified?: string;
 }
 
 export interface TileInput {
@@ -70,6 +71,7 @@ export interface GroutProduct {
     primaryBagSizeKg: number; // used for bagsNeeded in GroutResult
     restrictions?: string[];  // e.g. ['walls-only']
     tdsUrl: string;
+    lastVerified?: string;
 }
 
 export interface SpacerProduct {
@@ -90,6 +92,8 @@ export interface BackerBoardProduct {
     maxTileWeightKgM2?: number;
     /** e.g. ['Do NOT mechanically fix'] */
     notes?: string[];
+    tdsUrl?: string;
+    lastVerified?: string;
 }
 
 export interface TankingProduct {
@@ -101,6 +105,8 @@ export interface TankingProduct {
     dryTimeHours: number;
     kitContentsDescription?: string;
     notes: string[];
+    tdsUrl?: string;
+    lastVerified?: string;
 }
 
 export interface SLCProduct {
@@ -110,6 +116,8 @@ export interface SLCProduct {
     bagSizeKg: number;
     /** Fixed density: 1.5 kg/litre for all standard SLC products. */
     densityKgPerL: number;
+    tdsUrl?: string;
+    lastVerified?: string;
 }
 
 export interface PrimerProduct {
@@ -124,6 +132,8 @@ export interface PrimerProduct {
     packSizes: number[];        // kg — all available sizes
     primaryPackSizeKg: number;
     notes?: string[];
+    tdsUrl?: string;
+    lastVerified?: string;
 }
 
 export interface GroutInput {
@@ -351,3 +361,126 @@ export interface SLCResult {
     coverageAtDepthM2PerBag: number;
 }
 
+// ============================================================================
+// Masonry product interfaces
+// ============================================================================
+
+export interface BrickProduct {
+    id: string;
+    name: string;
+    brand: string;
+    heightMm: number;
+    lengthMm: number;
+    widthMm: number;
+    bricksPerM2: number;
+    packSize: number;
+    tdsUrl?: string;
+    lastVerified: string;
+}
+
+export interface BlockProduct {
+    id: string;
+    name: string;
+    brand: string;
+    faceLengthMm: number;
+    faceHeightMm: number;
+    thicknessMm: number;
+    strengthNPerMm2: number;
+    blocksPerM2: number;
+    tdsUrl?: string;
+    lastVerified: string;
+}
+
+export interface CementProduct {
+    id: string;
+    name: string;
+    brand: string;
+    bagSizeKg: number;
+    type: 'opc' | 'pre-mixed';
+    tdsUrl?: string;
+    lastVerified: string;
+}
+
+export interface SandProduct {
+    id: string;
+    name: string;
+    packSizeKg: number;
+    type: 'building' | 'sharp' | 'ballast';
+    lastVerified: string;
+}
+
+export interface WallTieProduct {
+    id: string;
+    name: string;
+    tieLengthMm: number;
+    minCavityMm: number;
+    maxCavityMm: number;
+    type: 'type-4-light' | 'type-2-gp';
+    packSizes: number[];
+    primaryPackSize: number;
+    lastVerified: string;
+}
+
+export interface DPCProduct {
+    id: string;
+    name: string;
+    widthMm: number;
+    rollLengthM: number;
+    material: 'polythene' | 'hdpe';
+    lastVerified: string;
+}
+
+export interface ConcreteLintelProduct {
+    id: string;
+    name: string;
+    brand: string;
+    widthMm: number;
+    availableLengthsMm: number[];
+    minBearingMm: number;
+    wallType: 'single-leaf' | 'internal' | 'solid';
+    tdsUrl?: string;
+    lastVerified: string;
+}
+
+export interface SteelLintelProduct {
+    id: string;
+    name: string;
+    brand: string;
+    model: string;
+    lintelType: 'cavity' | 'single-leaf-internal' | 'single-leaf-external' | 'solid-wall-external';
+    cavityWidthMm?: number;
+    minBearingMm: number;
+    tdsUrl?: string;
+    lastVerified: string;
+}
+
+export interface PadstoneProduct {
+    id: string;
+    name: string;
+    brand: string;
+    lengthMm: number;
+    widthMm: number;
+    heightMm: number;
+    tdsUrl?: string;
+    lastVerified: string;
+}
+
+export interface CavityCloserProduct {
+    id: string;
+    name: string;
+    brand: string;
+    minCavityMm: number;
+    maxCavityMm: number;
+    lengthM: number;
+    tdsUrl?: string;
+    lastVerified: string;
+}
+
+export interface CavityTrayProduct {
+    id: string;
+    name: string;
+    brand: string;
+    trayType: 'type-e' | 'ridge' | 'intermediate-left' | 'intermediate-right' | 'catchment-left' | 'catchment-right';
+    tdsUrl?: string;
+    lastVerified: string;
+}
