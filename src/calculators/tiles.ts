@@ -1,71 +1,84 @@
 import type { TileInput, TileResult } from './types';
+import type { MaterialQuantity } from '../types';
+import { packsNeeded } from './primitives';
+import { WASTAGE } from './constants';
 
-/** Common UK tile sizes for dropdown presets. */
+/** Common UK tile sizes for dropdown presets. Values in mm. */
 export const COMMON_TILE_SIZES = [
-    // Small Wall & Metro Tiles
-    { width: 150, height: 75, label: '150 × 75 mm (metro)' },
-    { width: 200, height: 100, label: '200 × 100 mm (metro)' },
-    { width: 300, height: 100, label: '300 × 100 mm (large metro)' },
-    { width: 150, height: 150, label: '150 × 150 mm' },
-    { width: 200, height: 200, label: '200 × 200 mm' },
-
-    // Standard Wall & Floor Tiles
-    { width: 250, height: 400, label: '250 × 400 mm' },
-    { width: 250, height: 500, label: '250 × 500 mm' },
-    { width: 300, height: 300, label: '300 × 300 mm' },
-    { width: 330, height: 330, label: '330 × 330 mm' },
-    { width: 450, height: 450, label: '450 × 450 mm' },
-    { width: 600, height: 300, label: '600 × 300 mm' },
-
-    // Wood-Effect Planks
-    { width: 600, height: 150, label: '600 × 150 mm (plank)' },
-    { width: 900, height: 150, label: '900 × 150 mm (plank)' },
-    { width: 1200, height: 200, label: '1200 × 200 mm (plank)' },
-
-    // Large Format & Outdoor Paving
-    { width: 600, height: 600, label: '600 × 600 mm' },
-    { width: 900, height: 600, label: '900 × 600 mm' },
-    { width: 1200, height: 600, label: '1200 × 600 mm' },
+    { width: 100,  height: 100,  label: '100 × 100 mm (mosaic)' },
+    { width: 150,  height: 150,  label: '150 × 150 mm' },
+    { width: 200,  height: 200,  label: '200 × 200 mm' },
+    { width: 250,  height: 250,  label: '250 × 250 mm' },
+    { width: 300,  height: 300,  label: '300 × 300 mm' },
+    { width: 300,  height: 600,  label: '300 × 600 mm' },
+    { width: 450,  height: 450,  label: '450 × 450 mm' },
+    { width: 600,  height: 600,  label: '600 × 600 mm' },
 ];
 
 /**
- * Calculate the number of tiles needed for a given area.
+ * Calculate tile quantity for a given room and tile size.
  *
- * @param input - Room and tile dimensions with wastage percentage.
- * @returns Tile count, coverage area, wastage amount, and optional packs.
- * @throws If any dimension is zero or negative.
+ * **Formula (BS 5385:2021 / RIBA Good Practice Guide 2019):**
+ * 1. effectiveAreaMm2 = (tileLengthMm + gapWidthMm) × (tileWidthMm + gapWidthMm)
+ * 2. tilesPerM²       = 1,000,000 / effectiveAreaMm2
+ * 3. rawTiles         = roomAreaM² × tilesPerM²
+ * 4. withWaste        = rawTiles × (1 + wastePercent / 100)
+ * 5. tilesNeeded      = Math.ceil(withWaste)   [safe IEEE 754 ceil]
+ * 6. packsNeeded      = Math.ceil(tilesNeeded / packSize)
+ *
+ * Wastage % is looked up from the WASTAGE constant (src/calculators/constants.ts):
+ *   straight=10, brick-bond=12, diagonal=15, herringbone=15
+ * Source: RIBA Good Practice Guide (2019); British Ceramic Tile (2021).
+ *
+ * @example
+ * calculateTiles({ roomLengthM: 3, roomWidthM: 4, tileLengthMm: 300, tileWidthMm: 300,
+ *   gapWidthMm: 3, layingPattern: 'straight', packSize: 9 })
+ * // → { tilesNeeded: 144, packsNeeded: 16, tilesPerM2: 10.89, totalAreaM2: 12 }
+ *
+ * @throws If room area is zero/negative (or areaM2 override is zero/negative).
+ * @throws If tile dimensions are zero or negative.
  */
 export function calculateTiles(input: TileInput): TileResult {
-    const { areaWidth, areaHeight, tileWidth, tileHeight, wastage, packSize } = input;
+    const {
+        roomLengthM, roomWidthM, areaM2: override,
+        tileLengthMm, tileWidthMm, gapWidthMm,
+        layingPattern, packSize,
+    } = input;
 
-    if (areaWidth <= 0 || areaHeight <= 0) {
-        throw new Error('Area dimensions must be greater than zero.');
+    // --- Validation ---
+    if (override !== undefined) {
+        if (override <= 0) throw new Error('areaM2 override must be greater than zero.');
+    } else {
+        if (roomLengthM * roomWidthM <= 0)
+            throw new Error('Room area must be greater than zero.');
     }
-    if (tileWidth <= 0 || tileHeight <= 0) {
+    if (tileLengthMm <= 0 || tileWidthMm <= 0)
         throw new Error('Tile dimensions must be greater than zero.');
-    }
-    if (wastage < 0 || wastage > 100) {
-        throw new Error('Wastage must be between 0 and 100.');
-    }
 
-    const coverageArea = areaWidth * areaHeight;
-    const tileSizeM2 = (tileWidth / 1000) * (tileHeight / 1000);
-    const rawTiles = coverageArea / tileSizeM2;
+    // --- Core calculation ---
+    const totalAreaM2 = override ?? (roomLengthM * roomWidthM);
+    const wastePercent = WASTAGE[layingPattern];
 
-    const wastageMultiplier = 1 + wastage / 100;
+    const effectiveAreaMm2 = (tileLengthMm + gapWidthMm) * (tileWidthMm + gapWidthMm);
+    const tilesPerM2Raw = 1_000_000 / effectiveAreaMm2;
+    const tilesPerM2 = Math.round(tilesPerM2Raw * 100) / 100;    // 2 dp for display
 
-    // Round to 10 decimal places before ceiling to avoid IEEE 754 artefacts
-    // e.g. 6 / 0.18 * 1.05 = 35.00000000000001 → should ceil to 35, not 36
+    const rawTiles = totalAreaM2 * tilesPerM2Raw;
+    const withWaste = rawTiles * (1 + wastePercent / 100);
+
+    // Avoid IEEE 754 ceiling artefacts (e.g. 35.000000000001 → should be 35, not 36)
     const safeCeil = (n: number) => Math.ceil(Math.round(n * 1e10) / 1e10);
 
-    const tilesNeeded = safeCeil(rawTiles * wastageMultiplier);
-    const wastageAmount = safeCeil(rawTiles * (wastage / 100));
+    const tilesNeeded = safeCeil(withWaste);
+    const packs = safeCeil(tilesNeeded / packSize);
 
-    const result: TileResult = { tilesNeeded, coverageArea, wastageAmount };
+    const materials: MaterialQuantity[] = [{
+        material: 'Floor/wall tiles',
+        quantity: tilesNeeded,
+        unit: 'tiles',
+        packSize,
+        packsNeeded: packs,
+    }];
 
-    if (packSize && packSize > 0) {
-        result.packsNeeded = Math.ceil(tilesNeeded / packSize);
-    }
-
-    return result;
+    return { tilesNeeded, tilesPerM2, totalAreaM2, wastePercent, packsNeeded: packs, materials };
 }
