@@ -3,7 +3,8 @@ import { FormInput, FormSelect } from './CalculatorLayout';
 import { calculateTiles } from '../calculators/tiles';
 import { calculateAdhesiveByBedDepth } from '../calculators/adhesive';
 import { calculateGrout } from '../calculators/grout';
-import { calculateSpacersByCount } from '../calculators/spacers';
+import { calculateSpacers } from '../calculators/spacers';
+import { GROUT_PRODUCTS } from '../data/tiling-products';
 import { calculatePrimer } from '../calculators/primer';
 import { calculateBackerBoard } from '../calculators/backer-board';
 import { calculateTanking } from '../calculators/tanking';
@@ -96,6 +97,7 @@ export default function TilingProjectWizard() {
   const [tileDepth, setTileDepth] = useState('8');
   const [groutBagSize, setGroutBagSize] = useState('5');
   const [groutWastage, setGroutWastage] = useState('10');
+  const [selectedGroutProduct, setSelectedGroutProduct] = useState(GROUT_PRODUCTS[0].id);
 
   const [spacersPerPack, setSpacersPerPack] = useState('250');
 
@@ -251,32 +253,31 @@ export default function TilingProjectWizard() {
   const groutMetrics = useMemo(() => {
     const wastage = toNumber(groutWastage);
     const bag = toNumber(groutBagSize);
-    if (
-      areaM2 <= 0 || toNumber(tileWidth) <= 0 || toNumber(tileHeight) <= 0 ||
-      toNumber(gapWidth) <= 0 || toNumber(tileDepth) <= 0 || bag <= 0
-    ) {
+    if (areaM2 <= 0 || toNumber(tileWidth) <= 0 || toNumber(tileHeight) <= 0 ||
+        toNumber(gapWidth) <= 0 || toNumber(tileDepth) <= 0) {
       return { kgNeeded: 0, kgWithWastage: 0, bagsNeeded: 0, kgPerSqm: 0 };
     }
     try {
       const result = calculateGrout({
-        area: areaM2,
-        tileWidth: toNumber(tileWidth),
-        tileHeight: toNumber(tileHeight),
-        jointWidth: toNumber(gapWidth),
-        tileDepth: toNumber(tileDepth),
-        wastage,
-        densityKgPerM3: 1700,
+        areaM2,
+        tileLengthMm: toNumber(tileWidth),
+        tileWidthMm: toNumber(tileHeight),
+        tileDepthMm: toNumber(tileDepth),
+        jointWidthMm: toNumber(gapWidth),
+        productId: selectedGroutProduct,
+        applicationContext: application === 'floor' ? 'floor-dry' : 'wall-dry',
       });
+      const kgWithWastage = wastage > 0 ? result.groutKg * (1 + wastage / 100) : result.groutKg;
       return {
-        kgPerSqm: result.kgPerM2,
-        kgNeeded: result.kgPerM2 * areaM2,   // pre-wastage
-        kgWithWastage: result.kgNeeded,        // post-wastage (grout.ts includes wastage in kgNeeded)
-        bagsNeeded: Math.ceil(result.kgNeeded / bag),
+        kgPerSqm: result.coverageRateKgPerM2,
+        kgNeeded: result.groutKg,
+        kgWithWastage,
+        bagsNeeded: bag > 0 ? Math.ceil(kgWithWastage / bag) : result.bagsNeeded,
       };
     } catch {
       return { kgNeeded: 0, kgWithWastage: 0, bagsNeeded: 0, kgPerSqm: 0 };
     }
-  }, [tileWidth, tileHeight, gapWidth, tileDepth, groutBagSize, groutWastage, areaM2]);
+  }, [tileWidth, tileHeight, gapWidth, tileDepth, groutBagSize, groutWastage, areaM2, selectedGroutProduct, application]);
 
   const spacerMetrics = useMemo(() => {
     const perPack = toNumber(spacersPerPack);
@@ -284,11 +285,17 @@ export default function TilingProjectWizard() {
       return { totalSpacers: 0, packsNeeded: 0, spacersPerTile: 0 };
     }
     try {
-      return calculateSpacersByCount({
-        tileCount: tileMetrics.tilesWithWastage,
-        pattern,
+      const result = calculateSpacers({
+        tilesNeeded: tileMetrics.tilesWithWastage,
+        spacerSizeMm: 3,
+        layingPattern: PATTERN_TO_LAYING[pattern],
         packSize: perPack,
       });
+      return {
+        totalSpacers: result.spacersNeeded,
+        packsNeeded: result.packsNeeded,
+        spacersPerTile: result.spacersPerTile,
+      };
     } catch {
       return { totalSpacers: 0, packsNeeded: 0, spacersPerTile: 0 };
     }

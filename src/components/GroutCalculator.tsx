@@ -1,4 +1,4 @@
-import React, { useState, useCallback } from 'react';
+import React, { useState, useCallback, useMemo } from 'react';
 import CalculatorLayout, {
     FormInput,
     FormSelect,
@@ -6,6 +6,7 @@ import CalculatorLayout, {
     type FieldGroup,
 } from './CalculatorLayout';
 import { calculateGrout, COMMON_JOINT_WIDTHS } from '../calculators/grout';
+import { GROUT_PRODUCTS } from '../data/tiling-products';
 
 const CUSTOM_VALUE = 'custom';
 
@@ -17,14 +18,19 @@ const jointWidthOptions = [
     { value: CUSTOM_VALUE, label: 'Custom width…' },
 ];
 
+const productOptions = GROUT_PRODUCTS.map((p) => ({
+    value: p.id,
+    label: `${p.brand} ${p.name}`,
+}));
+
 export default function GroutCalculator() {
+    const [selectedProduct, setSelectedProduct] = useState(GROUT_PRODUCTS[0].id);
     const [area, setArea] = useState('');
     const [tileWidth, setTileWidth] = useState('300');
     const [tileHeight, setTileHeight] = useState('300');
     const [selectedJointWidth, setSelectedJointWidth] = useState('3');
     const [customJointWidth, setCustomJointWidth] = useState('');
     const [tileDepth, setTileDepth] = useState('8');
-    const [wastage, setWastage] = useState('10');
     const [results, setResults] = useState<ResultItem[]>([]);
     const [hasResults, setHasResults] = useState(false);
     const [error, setError] = useState<string | null>(null);
@@ -32,9 +38,13 @@ export default function GroutCalculator() {
     const isCustomJoint = selectedJointWidth === CUSTOM_VALUE;
     const effectiveJointWidth = isCustomJoint ? customJointWidth : selectedJointWidth;
 
+    const product = useMemo(
+        () => GROUT_PRODUCTS.find(p => p.id === selectedProduct) ?? GROUT_PRODUCTS[0],
+        [selectedProduct],
+    );
+
     const validateInputs = () => {
         const a = parseFloat(area);
-        const w = parseFloat(wastage);
         const tw = parseFloat(tileWidth);
         const th = parseFloat(tileHeight);
         const jw = parseFloat(effectiveJointWidth);
@@ -45,71 +55,63 @@ export default function GroutCalculator() {
         if (isNaN(th) || th <= 0) return 'Tile height must be a valid number greater than 0.';
         if (isNaN(jw) || jw <= 0) return 'Joint width must be a valid number greater than 0.';
         if (isNaN(td) || td <= 0) return 'Tile thickness must be a valid number greater than 0.';
-        if (isNaN(w) || w < 0 || w > 100) return 'Wastage must be between 0 and 100%.';
-
         return null;
     };
 
     const handleCalculate = useCallback(() => {
         setError(null);
         const validationError = validateInputs();
-        if (validationError) {
-            setError(validationError);
-            setHasResults(false);
-            return;
-        }
+        if (validationError) { setError(validationError); setHasResults(false); return; }
 
         try {
             const result = calculateGrout({
-                area: parseFloat(area),
-                tileWidth: parseFloat(tileWidth),
-                tileHeight: parseFloat(tileHeight),
-                jointWidth: parseFloat(effectiveJointWidth),
-                tileDepth: parseFloat(tileDepth),
-                wastage: parseFloat(wastage),
+                areaM2: parseFloat(area),
+                tileLengthMm: parseFloat(tileWidth),
+                tileWidthMm: parseFloat(tileHeight),
+                tileDepthMm: parseFloat(tileDepth),
+                jointWidthMm: parseFloat(effectiveJointWidth),
+                productId: selectedProduct,
             });
-
+            const bagLabel = `${product.primaryBagSizeKg} kg bag`;
             setResults([
-                {
-                    label: 'Grout needed',
-                    value: `${result.kgNeeded.toFixed(1)} kg`,
-                    primary: true,
-                },
-                {
-                    label: 'Bags needed (5 kg)',
-                    value: `${result.bags5kg} bags`,
-                    primary: true,
-                },
-                {
-                    label: 'Bags needed (2.5 kg)',
-                    value: `${result.bags2_5kg} bags`,
-                },
-                {
-                    label: 'Usage rate',
-                    value: `${result.kgPerM2.toFixed(3)} kg/m²`,
-                },
+                { label: 'Grout needed', value: `${result.groutKg.toFixed(1)} kg`, primary: true },
+                { label: `Bags needed (${bagLabel})`, value: `${result.bagsNeeded} bags`, primary: true },
+                { label: 'Usage rate', value: `${result.coverageRateKgPerM2.toFixed(3)} kg/m²` },
+                ...result.warnings.map(w => ({ label: '⚠ Note', value: w })),
             ]);
             setHasResults(true);
         } catch (e) {
             setError(e instanceof Error ? e.message : 'An unexpected error occurred.');
             setHasResults(false);
         }
-    }, [area, tileWidth, tileHeight, effectiveJointWidth, tileDepth, wastage]);
+    }, [area, tileWidth, tileHeight, effectiveJointWidth, tileDepth, selectedProduct, product]);
 
     const handleReset = useCallback(() => {
+        setSelectedProduct(GROUT_PRODUCTS[0].id);
         setArea('');
         setTileWidth('300');
         setTileHeight('300');
         setSelectedJointWidth('3');
         setCustomJointWidth('');
         setTileDepth('8');
-        setWastage('10');
         setResults([]);
         setHasResults(false);
         setError(null);
     }, []);
 
     const fieldGroups: FieldGroup[] = [
+        {
+            legend: 'Product',
+            children: (
+                <FormSelect
+                    id="grout-product"
+                    label="Grout product"
+                    value={selectedProduct}
+                    onChange={setSelectedProduct}
+                    options={productOptions}
+                />
+            ),
+        },
         {
             legend: 'Area to cover',
             children: (
@@ -191,22 +193,6 @@ export default function GroutCalculator() {
                         required
                     />
                 </div>
-            ),
-        },
-        {
-            legend: 'Options',
-            children: (
-                <FormInput
-                    id="wastage"
-                    label="Wastage allowance"
-                    unit="%"
-                    value={wastage}
-                    onChange={(v) => { setWastage(v); setError(null); }}
-                    placeholder="e.g. 10"
-                    min={0}
-                    max={50}
-                    step={1}
-                />
             ),
         },
     ];

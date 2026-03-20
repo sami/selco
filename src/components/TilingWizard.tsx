@@ -2,11 +2,11 @@ import React, { useState, useCallback, useMemo } from 'react';
 import { FormInput, FormSelect } from './CalculatorLayout';
 import { calculateTiles, COMMON_TILE_SIZES } from '../calculators/tiles';
 import { calculateAdhesive } from '../calculators/adhesive';
-import { ADHESIVE_PRODUCTS } from '../data/tiling-products';
+import { ADHESIVE_PRODUCTS, GROUT_PRODUCTS } from '../data/tiling-products';
 import { calculateGrout, COMMON_JOINT_WIDTHS } from '../calculators/grout';
 import { calculateSpacers, SPACER_SIZES } from '../calculators/spacers';
 import { TILING_SUGGESTIONS } from '../projects/tiling-suggestions';
-import type { TileResult, AdhesiveResult, GroutResult, SpacersResult } from '../calculators/types';
+import type { TileResult, AdhesiveResult, GroutResult, SpacersResult, LayingPattern } from '../calculators/types';
 
 const stepLabels = ['Your area', 'Tiles', 'Adhesive', 'Grout', 'Spacers', 'Materials list'];
 
@@ -42,6 +42,7 @@ export default function TilingWizard() {
     const [adhesiveWastage, setAdhesiveWastage] = useState('10');
 
     // Step 4 — Grout
+    const [selectedGroutProduct, setSelectedGroutProduct] = useState(GROUT_PRODUCTS[0].id);
     const [selectedJointWidth, setSelectedJointWidth] = useState('3');
     const [customJointWidth, setCustomJointWidth] = useState('');
     const [tileDepth, setTileDepth] = useState('8');
@@ -112,21 +113,25 @@ export default function TilingWizard() {
                 setAdhesiveResult(result);
             } else if (currentStep === 4) {
                 const result = calculateGrout({
-                    area,
-                    tileWidth: parseFloat(tileWidth),
-                    tileHeight: parseFloat(tileHeight),
-                    jointWidth: parseFloat(effectiveJointWidth),
-                    tileDepth: parseFloat(tileDepth),
-                    wastage: parseFloat(groutWastage),
+                    areaM2: area,
+                    tileLengthMm: parseFloat(tileWidth),
+                    tileWidthMm: parseFloat(tileHeight),
+                    tileDepthMm: parseFloat(tileDepth),
+                    jointWidthMm: parseFloat(effectiveJointWidth),
+                    productId: selectedGroutProduct,
                 });
                 setGroutResult(result);
             } else if (currentStep === 5) {
+                const tw = parseFloat(tileWidth);
+                const th = parseFloat(tileHeight);
+                const tileAreaM2 = (tw / 1000) * (th / 1000);
+                const wa = parseFloat(spacerWastage);
+                const tilesNeeded = tileResult?.tilesNeeded ?? Math.ceil((area / tileAreaM2) * (1 + wa / 100));
                 const result = calculateSpacers({
-                    areaM2: area,
-                    tileWidthMm: parseFloat(tileWidth),
-                    tileHeightMm: parseFloat(tileHeight),
-                    layout: layout as 'cross' | 't-junction',
-                    wastage: parseFloat(spacerWastage),
+                    tilesNeeded,
+                    spacerSizeMm: parseFloat(spacerSize),
+                    layingPattern: layout === 'cross' ? 'straight' : 'brick-bond' as LayingPattern,
+                    packSize: 250,
                 });
                 setSpacersResult(result);
             }
@@ -137,8 +142,8 @@ export default function TilingWizard() {
     }, [
         currentStep, area, roomLength, roomWidth, tileWidth, tileHeight, tileWastage, packSize,
         selectedProduct, applicationType,
-        effectiveJointWidth, tileDepth, groutWastage,
-        layout, spacerWastage
+        selectedGroutProduct, effectiveJointWidth, tileDepth, groutWastage,
+        layout, spacerWastage, spacerSize, tileResult
     ]);
 
     function handleBack() {
@@ -149,6 +154,7 @@ export default function TilingWizard() {
         setCurrentStep(1);
         setRoomLength('');
         setRoomWidth('');
+        setSelectedGroutProduct(GROUT_PRODUCTS[0].id);
         setTileResult(null);
         setAdhesiveResult(null);
         setGroutResult(null);
@@ -379,6 +385,13 @@ export default function TilingWizard() {
 
                         <div className="space-y-4">
                             <FormSelect
+                                id="grout-product"
+                                label="Grout product"
+                                value={selectedGroutProduct}
+                                onChange={setSelectedGroutProduct}
+                                options={GROUT_PRODUCTS.map(p => ({ value: p.id, label: `${p.brand} ${p.name}` }))}
+                            />
+                            <FormSelect
                                 id="joint-width"
                                 label="Joint width"
                                 value={selectedJointWidth}
@@ -496,12 +509,12 @@ export default function TilingWizard() {
                             {/* Grout Card */}
                             <div className="bg-white rounded-2xl border border-border shadow-sm p-5">
                                 <h3 className="font-semibold text-surface-foreground">Grout</h3>
-                                <p className="text-2xl font-bold text-surface-foreground mt-1">{groutResult?.kgNeeded.toFixed(1)} kg</p>
+                                <p className="text-2xl font-bold text-surface-foreground mt-1">{groutResult?.groutKg.toFixed(1)} kg</p>
                                 <p className="text-sm text-muted-foreground mb-2">
                                     Joint: {effectiveJointWidth} mm • Depth: {tileDepth} mm
                                 </p>
                                 <div className="inline-flex items-center px-2.5 py-1 rounded-md bg-brand-yellow/20 text-brand-blue border border-brand-yellow/30 text-xs font-bold">
-                                    {groutResult?.bags5kg} x 5 kg bags
+                                    {groutResult?.bagsNeeded} bags
                                 </div>
                             </div>
 
@@ -513,7 +526,7 @@ export default function TilingWizard() {
                                     Size: {spacerSize} mm • {layout === 'cross' ? 'Cross' : 'T-junction'} layout
                                 </p>
                                 <div className="inline-flex items-center px-2.5 py-1 rounded-md bg-brand-yellow/20 text-brand-blue border border-brand-yellow/30 text-xs font-bold">
-                                    {spacersResult?.packs100} x packs of 100
+                                    {spacersResult?.packsNeeded} packs
                                 </div>
                             </div>
                         </div>
