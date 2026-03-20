@@ -254,6 +254,7 @@ export function convertUnits(family: ConversionFamily, fromUnit: string, toUnit:
             return convertWeight(value, fromUnit as WeightUnit, toUnit as WeightUnit);
         case 'temperature':
             return convertTemperature(value, fromUnit as TemperatureUnit, toUnit as TemperatureUnit);
+        /* c8 ignore next */
         default:
             throw new Error(`Unknown conversion family: ${family}`);
     }
