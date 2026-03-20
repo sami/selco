@@ -37,7 +37,7 @@ export * from './types';
 // ---------------------------------------------------------------------------
 
 export { COMMON_TILE_SIZES, calculateTiles } from './tiles';
-export { ADHESIVE_PRODUCTS } from '../data/tiling-products';
+export { ADHESIVE_PRODUCTS, GROUT_PRODUCTS, SPACER_PRODUCTS } from '../data/tiling-products';
 export {
     calculateAdhesive,
     calculateAdhesiveByBedDepth,
@@ -47,7 +47,6 @@ export {
     SPACER_SIZES,
     SPACERS_PER_TILE_BY_PATTERN,
     calculateSpacers,
-    calculateSpacersByCount,
 } from './spacers';
 export { calculateBackerBoard } from './backer-board';
 export { calculateTanking } from './tanking';

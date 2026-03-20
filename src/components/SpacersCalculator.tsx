@@ -5,16 +5,19 @@ import CalculatorLayout, {
     type ResultItem,
     type FieldGroup,
 } from './CalculatorLayout';
-import { calculateSpacers, SPACER_SIZES } from '../calculators/spacers';
+import { calculateSpacers, SPACER_SIZES, SPACERS_PER_TILE_BY_PATTERN } from '../calculators/spacers';
+import type { LayingPattern } from '../calculators/types';
 
 const spacerSizeOptions = SPACER_SIZES.map((s) => ({
     value: String(s.value),
     label: s.label,
 }));
 
-const layoutOptions = [
-    { value: 'cross', label: 'Cross (straight grid) — 4 per tile' },
-    { value: 't-junction', label: 'T-junction (brick bond / offset) — 3 per tile' },
+const layoutOptions: { value: LayingPattern; label: string }[] = [
+    { value: 'straight',    label: `Straight — ${SPACERS_PER_TILE_BY_PATTERN['straight']} per tile` },
+    { value: 'brick-bond',  label: `Brick bond — ${SPACERS_PER_TILE_BY_PATTERN['brick-bond']} per tile` },
+    { value: 'diagonal',    label: `Diagonal — ${SPACERS_PER_TILE_BY_PATTERN['diagonal']} per tile` },
+    { value: 'herringbone', label: `Herringbone — ${SPACERS_PER_TILE_BY_PATTERN['herringbone']} per tile` },
 ];
 
 export default function SpacersCalculator() {
@@ -22,8 +25,9 @@ export default function SpacersCalculator() {
     const [tileWidth, setTileWidth] = useState('300');
     const [tileHeight, setTileHeight] = useState('300');
     const [spacerSize, setSpacerSize] = useState('3');
-    const [layout, setLayout] = useState('cross');
+    const [layout, setLayout] = useState<LayingPattern>('straight');
     const [wastage, setWastage] = useState('10');
+    const [packSize, setPackSize] = useState('250');
     const [results, setResults] = useState<ResultItem[]>([]);
     const [hasResults, setHasResults] = useState(false);
     const [error, setError] = useState<string | null>(null);
@@ -38,58 +42,49 @@ export default function SpacersCalculator() {
         if (isNaN(tw) || tw <= 0) return 'Tile width must be a valid number greater than 0.';
         if (isNaN(th) || th <= 0) return 'Tile height must be a valid number greater than 0.';
         if (isNaN(w) || w < 0 || w > 100) return 'Wastage must be between 0 and 100%.';
-
         return null;
     };
 
     const handleCalculate = useCallback(() => {
         setError(null);
         const validationError = validateInputs();
-        if (validationError) {
-            setError(validationError);
-            setHasResults(false);
-            return;
-        }
+        if (validationError) { setError(validationError); setHasResults(false); return; }
 
         try {
+            const tw = parseFloat(tileWidth);
+            const th = parseFloat(tileHeight);
+            const tileAreaM2 = (tw / 1000) * (th / 1000);
+            const wa = parseFloat(wastage);
+            const tilesNeeded = Math.ceil((parseFloat(area) / tileAreaM2) * (1 + wa / 100));
+            const ps = parseInt(packSize, 10);
+
             const result = calculateSpacers({
-                areaM2: parseFloat(area),
-                tileWidthMm: parseFloat(tileWidth),
-                tileHeightMm: parseFloat(tileHeight),
-                layout: layout as 'cross' | 't-junction',
-                wastage: parseFloat(wastage),
+                tilesNeeded,
+                spacerSizeMm: parseFloat(spacerSize),
+                layingPattern: layout,
+                packSize: ps > 0 ? ps : 250,
             });
 
             setResults([
-                {
-                    label: 'Spacers needed',
-                    value: `${result.spacersNeeded} × ${spacerSize} mm spacers`,
-                    primary: true,
-                },
-                {
-                    label: 'Packs of 100',
-                    value: `${result.packs100} packs`,
-                    primary: true,
-                },
-                {
-                    label: 'Packs of 250',
-                    value: `${result.packs250} packs`,
-                },
+                { label: 'Spacers needed', value: `${result.spacersNeeded} × ${spacerSize} mm spacers`, primary: true },
+                { label: `Packs needed (${packSize} per pack)`, value: `${result.packsNeeded} packs`, primary: true },
+                { label: 'Per tile', value: `${result.spacersPerTile} spacers per tile` },
             ]);
             setHasResults(true);
         } catch (e) {
             setError(e instanceof Error ? e.message : 'An unexpected error occurred.');
             setHasResults(false);
         }
-    }, [area, tileWidth, tileHeight, layout, wastage, spacerSize]);
+    }, [area, tileWidth, tileHeight, layout, wastage, spacerSize, packSize]);
 
     const handleReset = useCallback(() => {
         setArea('');
         setTileWidth('300');
         setTileHeight('300');
         setSpacerSize('3');
-        setLayout('cross');
+        setLayout('straight');
         setWastage('10');
+        setPackSize('250');
         setResults([]);
         setHasResults(false);
         setError(null);
@@ -156,7 +151,7 @@ export default function SpacersCalculator() {
                         id="layout"
                         label="Layout pattern"
                         value={layout}
-                        onChange={setLayout}
+                        onChange={(v) => setLayout(v as LayingPattern)}
                         options={layoutOptions}
                     />
                 </div>
@@ -165,17 +160,29 @@ export default function SpacersCalculator() {
         {
             legend: 'Options',
             children: (
-                <FormInput
-                    id="wastage"
-                    label="Wastage allowance"
-                    unit="%"
-                    value={wastage}
-                    onChange={(v) => { setWastage(v); setError(null); }}
-                    placeholder="e.g. 10"
-                    min={0}
-                    max={50}
-                    step={1}
-                />
+                <div className="space-y-4">
+                    <FormInput
+                        id="wastage"
+                        label="Wastage allowance"
+                        unit="%"
+                        value={wastage}
+                        onChange={(v) => { setWastage(v); setError(null); }}
+                        placeholder="e.g. 10"
+                        min={0}
+                        max={50}
+                        step={1}
+                    />
+                    <FormInput
+                        id="pack-size"
+                        label="Pack size"
+                        unit="spacers"
+                        value={packSize}
+                        onChange={(v) => { setPackSize(v); setError(null); }}
+                        placeholder="e.g. 250"
+                        min={1}
+                        step={1}
+                    />
+                </div>
             ),
         },
     ];
