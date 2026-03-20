@@ -79,35 +79,37 @@ export interface SpacerProduct {
 }
 
 export interface GroutInput {
-    area: number;           // square metres
-    tileWidth: number;      // mm
-    tileHeight: number;     // mm
-    jointWidth: number;     // mm
-    tileDepth: number;      // mm
-    wastage: number;        // percentage
-    /** Grout density in kg/m³. Defaults to 2000 (BS EN 13888:2009). Use 1700 for lighter grouts. */
-    densityKgPerM3?: number;
+    areaM2: number;
+    tileLengthMm: number;
+    tileWidthMm: number;
+    tileDepthMm: number;
+    jointWidthMm: number;
+    productId: string;
+    /** Provide to trigger walls-only restriction check (defaults to wall context). */
+    applicationContext?: ApplicationContext;
 }
 
 export interface GroutResult {
-    kgNeeded: number;
-    bags5kg: number;
-    bags2_5kg: number;
-    kgPerM2: number;
+    groutKg: number;
+    bagsNeeded: number;
+    coverageRateKgPerM2: number;
+    productName: string;
+    materials: MaterialQuantity[];
+    warnings: string[];
 }
 
 export interface SpacersInput {
-    areaM2: number;           // square metres
-    tileWidthMm: number;      // mm
-    tileHeightMm: number;     // mm
-    layout: 'cross' | 't-junction';
-    wastage: number;          // percentage
+    tilesNeeded: number;      // post-wastage count from tile calculator
+    spacerSizeMm: number;     // 1, 2, 3, or 5
+    layingPattern: LayingPattern;
+    packSize: number;         // spacers per pack
 }
 
 export interface SpacersResult {
     spacersNeeded: number;
-    packs100: number;
-    packs250: number;
+    packsNeeded: number;
+    spacersPerTile: number;
+    materials: MaterialQuantity[];
 }
 
 export type WallType = 'half-brick' | 'one-brick' | 'cavity' | 'blockwork';
@@ -288,24 +290,3 @@ export interface SLCResult {
     bagsNeeded: number;
 }
 
-// ---------------------------------------------------------------------------
-// Spacers — pattern-based model (wizard-style)
-// ---------------------------------------------------------------------------
-
-/** Tile laying pattern — determines spacers per tile. */
-export type TilePattern = 'grid' | 'brick_bond' | 'diagonal' | 'herringbone';
-
-/** Input for pattern-based spacer calculation (used by project wizard). */
-export interface SpacersByCountInput {
-    /** Total tile count, already including wastage allowance. */
-    tileCount: number;
-    pattern: TilePattern;
-    /** Number of spacers per pack. */
-    packSize: number;
-}
-
-export interface SpacersByCountResult {
-    spacersPerTile: number;
-    totalSpacers: number;
-    packsNeeded: number;
-}
