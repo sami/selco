@@ -310,3 +310,36 @@ describe('convertDensityToWeight — density helpers', () => {
         expect(convertDensityToWeight(0, 'concrete')).toBe(0);
     });
 });
+
+// ---------------------------------------------------------------------------
+// Same-unit identity — branch coverage for `if (from === to) return value`
+// guards in convertArea, convertWeight, convertVolume, convertTemperature
+// ---------------------------------------------------------------------------
+
+describe('convert() — same-unit identity (branch guards)', () => {
+
+    it('area: m2 → m2 returns input unchanged', () => {
+        const r = convert({ value: 5, fromUnit: 'm2', toUnit: 'm2' });
+        expect(r.result).toBe(5);
+    });
+
+    it('weight: kg → kg returns input unchanged', () => {
+        const r = convert({ value: 3.5, fromUnit: 'kg', toUnit: 'kg' });
+        expect(r.result).toBe(3.5);
+    });
+
+    it('volume: litres → litres returns input unchanged', () => {
+        const r = convert({ value: 10, fromUnit: 'litres', toUnit: 'litres' });
+        expect(r.result).toBe(10);
+    });
+
+    it('temperature: C → C returns input unchanged', () => {
+        const r = convert({ value: 100, fromUnit: 'C', toUnit: 'C' });
+        expect(r.result).toBe(100);
+    });
+
+    it('temperature: F → C converts 212°F to 100°C', () => {
+        const r = convert({ value: 212, fromUnit: 'F', toUnit: 'C' });
+        expect(r.result).toBeCloseTo(100, 3);
+    });
+});
