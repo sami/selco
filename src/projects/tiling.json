@@ -1,0 +1,23 @@
+{
+  "$comment": "Reference config for the Tiling project calculator (Layer 2 descriptor).",
+  "id": "tiling",
+  "name": "Tiling",
+  "slug": "tiling",
+  "category": "project",
+  "description": "Calculate everything you need for a tiling project",
+  "icon": "/images/hero/hero-tiling.svg",
+  "steps": [
+    { "id": "room",           "label": "Room dimensions" },
+    { "id": "tile-selection", "label": "Tile selection" },
+    { "id": "tiles",          "calculator": "tiles",        "label": "Tile quantity" },
+    { "id": "adhesive",       "calculator": "adhesive",     "label": "Adhesive" },
+    { "id": "grout",          "calculator": "grout",        "label": "Grout" },
+    { "id": "spacers",        "calculator": "spacers",      "label": "Spacers" },
+    { "id": "primer",         "calculator": "primer",       "label": "Primer",                  "optional": true },
+    { "id": "backer-board",   "calculator": "backer-board", "label": "Backer board",           "optional": true },
+    { "id": "tanking",        "calculator": "tanking",      "label": "Tanking",                 "optional": true },
+    { "id": "slc",            "calculator": "slc",          "label": "Self-levelling compound", "optional": true },
+    { "id": "summary",        "label": "Summary" }
+  ],
+  "sharedInputs": ["areaM2", "tileLengthMm", "tileWidthMm", "gapWidthMm", "tileDepthMm", "layingPattern"]
+}
