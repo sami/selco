@@ -78,6 +78,54 @@ export interface SpacerProduct {
     packSizes: { quantity: number; packType: string }[];
 }
 
+export interface BackerBoardProduct {
+    id: string;
+    name: string;
+    brand: string;
+    boardLengthMm: number;
+    boardWidthMm: number;
+    thicknessMm: number;
+    /** If undefined, product is sold individually. */
+    boardsPerPack?: number;
+    maxTileWeightKgM2?: number;
+    /** e.g. ['Do NOT mechanically fix'] */
+    notes?: string[];
+}
+
+export interface TankingProduct {
+    id: string;
+    name: string;
+    brand: string;
+    coverageM2PerKit: number;
+    coats: number;
+    dryTimeHours: number;
+    kitContentsDescription?: string;
+    notes: string[];
+}
+
+export interface SLCProduct {
+    id: string;
+    name: string;
+    brand: string;
+    bagSizeKg: number;
+    /** Fixed density: 1.5 kg/litre for all standard SLC products. */
+    densityKgPerL: number;
+}
+
+export interface PrimerProduct {
+    id: string;
+    name: string;
+    brand: string;
+    /** Coverage at standard (undiluted/neat) application in m²/kg. */
+    coverageM2PerKg: number;
+    /** Coverage at diluted application (e.g. 1:1 with water) in m²/kg. */
+    dilutedCoverageM2PerKg?: number;
+    dilutionRatio?: string;     // e.g. '1:1'
+    packSizes: number[];        // kg — all available sizes
+    primaryPackSizeKg: number;
+    notes?: string[];
+}
+
 export interface GroutInput {
     areaM2: number;
     tileLengthMm: number;
@@ -226,15 +274,19 @@ export interface BoardCoverageResult {
 
 export interface PrimerInput {
     areaM2: number;
-    /** Coverage rate in m² per litre. */
-    coverageRateM2PerL: number;
-    bottleSizeL: number;
-    coats: number;
+    productId: string;
+    /** Number of coats — defaults to 1 if omitted. */
+    coats?: number;
+    /** Apply diluted coverage rate (e.g. 1:1 with water) — defaults to false. */
+    diluted?: boolean;
 }
 
 export interface PrimerResult {
-    litresNeeded: number;
-    bottlesNeeded: number;
+    kgNeeded: number;
+    packsNeeded: number;
+    coverageRateUsed: number;   // m²/kg actually applied
+    productName: string;
+    materials: MaterialQuantity[];
 }
 
 // ---------------------------------------------------------------------------
@@ -243,14 +295,19 @@ export interface PrimerResult {
 
 export interface BackerBoardInput {
     areaM2: number;
-    boardWidthMm: number;
-    boardHeightMm: number;
-    wastage: number;        // percentage (e.g. 10)
+    productId: string;
+    /** Wastage percentage — defaults to 10 if omitted. */
+    wastePercent?: number;
 }
 
 export interface BackerBoardResult {
-    boardAreaM2: number;
     boardsNeeded: number;
+    /** Only present for products sold in packs (e.g. Flexel ECOMAX). */
+    packsNeeded?: number;
+    boardAreaM2: number;
+    productName: string;
+    materials: MaterialQuantity[];
+    warnings: string[];
 }
 
 // ---------------------------------------------------------------------------
@@ -259,34 +316,38 @@ export interface BackerBoardResult {
 
 export interface TankingInput {
     areaM2: number;
-    /** Coverage rate in kg per m² per coat. */
-    coverageRateKgPerM2PerCoat: number;
-    coats: number;
-    tubSizeKg: number;
+    productId: string;
 }
 
 export interface TankingResult {
-    kgNeeded: number;
-    tubsNeeded: number;
+    kitsNeeded: number;
+    coveragePerKit: number;
+    productName: string;
+    materials: MaterialQuantity[];
+    notes: string[];
 }
 
 // ---------------------------------------------------------------------------
 // Self-levelling compound (SLC)
 // ---------------------------------------------------------------------------
 
+/** Fixed density constant used for all SLC products: 1.5 kg per litre. */
+export const SLC_DENSITY_KG_PER_L = 1.5;
+
 export interface SLCInput {
     areaM2: number;
-    /** Average pour depth in mm. */
-    averageDepthMm: number;
-    /** Coverage rate in kg per m² per mm of depth. */
-    coverageRateKgPerM2PerMm: number;
-    bagSizeKg: number;
-    wastage: number;        // percentage (e.g. 10)
+    depthMm: number;
+    /** Bag size in kg — defaults to 25 if omitted. */
+    bagSizeKg?: number;
 }
 
 export interface SLCResult {
+    /** Total kg of SLC required (no wastage — depth handles variation). */
     kgNeeded: number;
-    kgWithWastage: number;
     bagsNeeded: number;
+    /** Volume of compound in litres (areaM2 × depthMm). */
+    volumeLitres: number;
+    /** Coverage per bag in m² at the specified depth. */
+    coverageAtDepthM2PerBag: number;
 }
 
