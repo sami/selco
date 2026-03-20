@@ -4,7 +4,7 @@ import { calculateTiles } from '../calculators/tiles';
 import { calculateAdhesiveByBedDepth } from '../calculators/adhesive';
 import { calculateGrout } from '../calculators/grout';
 import { calculateSpacers } from '../calculators/spacers';
-import { GROUT_PRODUCTS, PRIMER_PRODUCTS, BACKER_BOARD_PRODUCTS, TANKING_PRODUCTS } from '../data/tiling-products';
+import { GROUT_PRODUCTS, PRIMER_PRODUCTS, BACKER_BOARD_PRODUCTS, TANKING_PRODUCTS, SLC_PRODUCTS } from '../data/tiling-products';
 import { calculatePrimer } from '../calculators/primer';
 import { calculateBackerBoard } from '../calculators/backer-board';
 import { calculateTanking } from '../calculators/tanking';
@@ -107,6 +107,7 @@ export default function TilingProjectWizard() {
   const [selectedBackerProduct, setSelectedBackerProduct] = useState(BACKER_BOARD_PRODUCTS[0].id);
 
   const [selectedTankingProduct, setSelectedTankingProduct] = useState(TANKING_PRODUCTS[0].id);
+  const [selectedSLCProduct, setSelectedSLCProduct] = useState(SLC_PRODUCTS[0].id);
 
   const [slcDepth, setSlcDepth] = useState('3');
   const [slcBagSize, setSlcBagSize] = useState('25');
@@ -160,6 +161,11 @@ export default function TilingProjectWizard() {
       }
     }
   }, [application]);
+
+  useEffect(() => {
+    const product = SLC_PRODUCTS.find(p => p.id === selectedSLCProduct);
+    if (product) setSlcBagSize(String(product.bagSizeKg));
+  }, [selectedSLCProduct]);
 
   const handleUnitToggle = (nextUnit: Unit) => {
     if (nextUnit === areaUnit) return;
@@ -355,19 +361,20 @@ export default function TilingProjectWizard() {
     const depth = toNumber(slcDepth);
     const bag = toNumber(slcBagSize);
     if (depth <= 0 || bag <= 0 || areaM2 <= 0) {
-      return { kg: 0, bags: 0, volumeLitres: 0 };
+      return { kg: 0, bags: 0, volumeLitres: 0, productName: '' };
     }
     try {
+      const product = SLC_PRODUCTS.find(p => p.id === selectedSLCProduct);
       const result = calculateSLC({
         areaM2,
         depthMm: depth,
         bagSizeKg: bag,
       });
-      return { kg: result.kgNeeded, bags: result.bagsNeeded, volumeLitres: result.volumeLitres };
+      return { kg: result.kgNeeded, bags: result.bagsNeeded, volumeLitres: result.volumeLitres, productName: product?.name ?? '' };
     } catch {
-      return { kg: 0, bags: 0, volumeLitres: 0 };
+      return { kg: 0, bags: 0, volumeLitres: 0, productName: '' };
     }
-  }, [slcDepth, slcBagSize, areaM2]);
+  }, [slcDepth, slcBagSize, areaM2, selectedSLCProduct]);
 
   const goNext = () => setCurrentIndex((prev) => Math.min(prev + 1, steps.length - 1));
   const goBack = () => setCurrentIndex((prev) => Math.max(prev - 1, 0));
@@ -853,6 +860,13 @@ export default function TilingProjectWizard() {
             ? renderOptionalNotice('Self-levelling compound', () => setSkipSlc(false))
             : (
               <div className="bg-white rounded-2xl border border-border shadow-sm p-6 space-y-6">
+                <FormSelect
+                  id="slc-product"
+                  label="Product"
+                  value={selectedSLCProduct}
+                  onChange={setSelectedSLCProduct}
+                  options={SLC_PRODUCTS.map(p => ({ value: p.id, label: `${p.brand} ${p.name}` }))}
+                />
                 <div className="grid gap-4 sm:grid-cols-2">
                   <FormInput
                     id="slc-depth"
