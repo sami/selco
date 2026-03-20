@@ -1,52 +1,94 @@
 import type { GroutInput, GroutResult } from './types';
+import type { MaterialQuantity } from '../types';
+import { packsNeeded } from './primitives';
+import { GROUT_PRODUCTS } from '../data/tiling-products';
 
 /** Common joint widths for dropdown presets. */
 export const COMMON_JOINT_WIDTHS = [
-    { value: 2, label: '2 mm — Rectified tiles' },
-    { value: 3, label: '3 mm — Standard wall tiles' },
-    { value: 5, label: '5 mm — Standard floor tiles' },
+    { value: 2,  label: '2 mm — Rectified tiles' },
+    { value: 3,  label: '3 mm — Standard wall tiles' },
+    { value: 5,  label: '5 mm — Standard floor tiles' },
     { value: 10, label: '10 mm — Rustic/handmade tiles' },
 ];
 
 /**
- * Calculate the amount of grout needed for a tiling project.
+ * Calculate grout quantity using product-ID lookup and the BS 5385 / Mapei TDS formula.
  *
- * Uses the industry-standard formula:
- *   kgPerM2 = ((tileWidth + tileHeight) / (tileWidth * tileHeight)) * jointWidth * tileDepth * 2.0
+ * **Formula:**
+ *   kg/m² = (tileLengthMm + tileWidthMm) / (tileLengthMm × tileWidthMm)
+ *           × jointWidthMm × tileDepthMm × product.densityFactor
  *
- * Where 2.0 is the grout density constant (kg/L), covering denser/flexible grouts.
+ * `densityFactor` is in g/cm³ (= kg/dm³), consistent with the formula's mm-based inputs.
+ * Source: Mapei Ultracolor Plus TDS (factor 1.6); Dunlop GX-500 TDS (factor 1.7).
  *
- * @param input - Tile dimensions, joint size, area, and wastage.
- * @returns Kg needed, bag counts (5 kg and 2.5 kg), and kg per m² rate.
- * @throws If any dimension is zero or negative.
+ * **Warnings (calculation still proceeds):**
+ * - Joint width exceeds product `maxJointMm`
+ * - Joint width below product `minJointMm`
+ * - `walls-only` restriction + floor/exterior context
+ *
+ * @throws If `productId` not found, area ≤ 0, tile dimensions ≤ 0, or joint width ≤ 0.
+ *
+ * @example
+ * calculateGrout({ areaM2: 12, tileLengthMm: 300, tileWidthMm: 300,
+ *   tileDepthMm: 10, jointWidthMm: 3, productId: 'mapei-ultracolor-plus' })
+ * // → { groutKg: 3.84, bagsNeeded: 1, coverageRateKgPerM2: 0.32, warnings: [] }
  */
 export function calculateGrout(input: GroutInput): GroutResult {
-    const { area, tileWidth, tileHeight, jointWidth, tileDepth, wastage } = input;
+    const { areaM2, tileLengthMm, tileWidthMm, tileDepthMm, jointWidthMm, productId, applicationContext } = input;
 
-    if (area <= 0) {
-        throw new Error('Area must be greater than zero.');
+    const product = GROUT_PRODUCTS.find(p => p.id === productId);
+    if (!product) {
+        throw new Error(`Unknown grout product ID: "${productId}". Check GROUT_PRODUCTS catalogue.`);
     }
-    if (tileWidth <= 0 || tileHeight <= 0) {
-        throw new Error('Tile dimensions must be greater than zero.');
+    if (areaM2 <= 0) throw new Error('Area must be greater than zero.');
+    if (tileLengthMm <= 0 || tileWidthMm <= 0) throw new Error('Tile dimensions must be greater than zero.');
+    if (tileDepthMm <= 0) throw new Error('Tile depth must be greater than zero.');
+    if (jointWidthMm <= 0) throw new Error('Joint width must be greater than zero.');
+
+    const warnings: string[] = [];
+    const isFloor = applicationContext === 'floor-dry'
+        || applicationContext === 'floor-wet'
+        || applicationContext === 'exterior';
+
+    // Joint width checks
+    if (jointWidthMm > product.maxJointMm) {
+        warnings.push(
+            `Joint width ${jointWidthMm}mm exceeds the maximum ${product.maxJointMm}mm ` +
+            `for ${product.name}. Consider ${product.id === 'mapei-flexible-wall-floor-grout'
+                ? 'Mapei Ultracolor Plus (up to 20mm)' : 'a wider-joint grout'}.`
+        );
     }
-    if (jointWidth <= 0 || tileDepth <= 0) {
-        throw new Error('Joint width and tile depth must be greater than zero.');
+    if (jointWidthMm < product.minJointMm) {
+        warnings.push(
+            `Joint width ${jointWidthMm}mm is below the minimum ${product.minJointMm}mm for ${product.name}.`
+        );
     }
-    if (wastage < 0 || wastage > 100) {
-        throw new Error('Wastage must be between 0 and 100.');
+
+    // Restriction checks
+    if (isFloor && product.restrictions?.includes('walls-only')) {
+        warnings.push(
+            `${product.name} (${product.brand}) is for wall applications only. ` +
+            `Use a floor-rated grout for this application.`
+        );
     }
 
-    const groutDensity = 2.0; // kg/L, BS EN 13888:2009
+    // BS 5385 / Mapei TDS formula
+    const coverageRateKgPerM2 =
+        ((tileLengthMm + tileWidthMm) / (tileLengthMm * tileWidthMm))
+        * jointWidthMm
+        * tileDepthMm
+        * product.densityFactor;
 
-    const kgPerM2 =
-        ((tileWidth + tileHeight) / (tileWidth * tileHeight)) *
-        jointWidth *
-        tileDepth *
-        groutDensity;
+    const groutKg = areaM2 * coverageRateKgPerM2;
+    const bags = packsNeeded(groutKg, product.primaryBagSizeKg);
 
-    const kgNeeded = area * kgPerM2 * (1 + wastage / 100);
-    const bags5kg = Math.ceil(kgNeeded / 5);
-    const bags2_5kg = Math.ceil(kgNeeded / 2.5);
+    const materials: MaterialQuantity[] = [{
+        material: `${product.brand} ${product.name}`,
+        quantity: groutKg,
+        unit: 'kg',
+        packSize: product.primaryBagSizeKg,
+        packsNeeded: bags,
+    }];
 
-    return { kgNeeded, bags5kg, bags2_5kg, kgPerM2 };
+    return { groutKg, bagsNeeded: bags, coverageRateKgPerM2, productName: product.name, materials, warnings };
 }
