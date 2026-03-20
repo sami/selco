@@ -1,4 +1,7 @@
-import type { AdhesiveProduct, GroutProduct, SpacerProduct } from '../calculators/types';
+import type {
+    AdhesiveProduct, GroutProduct, SpacerProduct,
+    BackerBoardProduct, TankingProduct, SLCProduct, PrimerProduct,
+} from '../calculators/types';
 
 /**
  * Selco-stocked adhesive products with manufacturer TDS coverage rates.
@@ -211,4 +214,135 @@ export const SPACER_PRODUCTS: SpacerProduct[] = [
     { id: 'spacer-2mm', sizeMm: 2, packSizes: [{ quantity: 250,  packType: 'bag' }, { quantity: 1000, packType: 'hollow' }, { quantity: 1500, packType: 'bag' }] },
     { id: 'spacer-3mm', sizeMm: 3, packSizes: [{ quantity: 100,  packType: 'floor' }, { quantity: 250, packType: 'bag' }, { quantity: 1500, packType: 'bag' }] },
     { id: 'spacer-5mm', sizeMm: 5, packSizes: [{ quantity: 250,  packType: 'bag' }] },
+];
+
+export const BACKER_BOARD_PRODUCTS: BackerBoardProduct[] = [
+    {
+        id: 'hardiebacker-6mm',
+        name: 'HardieBacker 6mm',
+        brand: 'James Hardie',
+        boardLengthMm: 1200,
+        boardWidthMm: 800,
+        thicknessMm: 6,
+        maxTileWeightKgM2: 200,
+    },
+    {
+        id: 'hardiebacker-12mm',
+        name: 'HardieBacker 12mm',
+        brand: 'James Hardie',
+        boardLengthMm: 1200,
+        boardWidthMm: 800,
+        thicknessMm: 12,
+        maxTileWeightKgM2: 200,
+    },
+    {
+        id: 'jackoboard-plano-6mm',
+        name: 'Jackoboard Plano 6mm',
+        brand: 'Jackon',
+        boardLengthMm: 1200,
+        boardWidthMm: 600,
+        thicknessMm: 6,
+        maxTileWeightKgM2: 100,
+    },
+    {
+        id: 'jackoboard-plano-12mm',
+        name: 'Jackoboard Plano 12mm',
+        brand: 'Jackon',
+        boardLengthMm: 1200,
+        boardWidthMm: 600,
+        thicknessMm: 12,
+        maxTileWeightKgM2: 100,
+    },
+    {
+        id: 'flexel-ecomax-6mm',
+        name: 'Flexel ECOMAX 6mm',
+        brand: 'Flexel',
+        boardLengthMm: 1200,
+        boardWidthMm: 600,
+        thicknessMm: 6,
+        boardsPerPack: 6,
+        notes: ['Do NOT mechanically fix — bond only'],
+    },
+    {
+        id: 'flexel-ecomax-10mm',
+        name: 'Flexel ECOMAX 10mm',
+        brand: 'Flexel',
+        boardLengthMm: 1200,
+        boardWidthMm: 600,
+        thicknessMm: 10,
+        boardsPerPack: 6,
+        notes: ['Do NOT mechanically fix — bond only'],
+    },
+];
+
+export const TANKING_PRODUCTS: TankingProduct[] = [
+    {
+        id: 'mapei-mapegum-wps',
+        name: 'Mapegum WPS Kit',
+        brand: 'Mapei',
+        coverageM2PerKit: 4,
+        coats: 2,
+        dryTimeHours: 2,
+        kitContentsDescription: 'Primer 0.5kg + membrane 5kg + tape 10m',
+        notes: ['2 coats required', 'Allow 2h between coats', 'Tile after 12–24h'],
+    },
+    {
+        id: 'dunlop-shower-waterproofing-kit',
+        name: 'Shower Waterproofing Kit',
+        brand: 'Dunlop',
+        coverageM2PerKit: 3.5,
+        coats: 2,
+        dryTimeHours: 3,
+        notes: ['2 coats required', 'Allow 3h between coats', 'Tile after 24h'],
+    },
+];
+
+export const SLC_PRODUCTS: SLCProduct[] = [
+    {
+        id: 'mapei-ultraplan',
+        name: 'Ultraplan',
+        brand: 'Mapei',
+        bagSizeKg: 25,
+        densityKgPerL: 1.5,
+    },
+    {
+        id: 'dunlop-level-it',
+        name: 'Level IT',
+        brand: 'Dunlop',
+        bagSizeKg: 25,
+        densityKgPerL: 1.5,
+    },
+];
+
+export const PRIMER_PRODUCTS: PrimerProduct[] = [
+    {
+        id: 'mapei-primer-g',
+        name: 'Primer G',
+        brand: 'Mapei',
+        coverageM2PerKg: 5,
+        packSizes: [1, 5],
+        primaryPackSizeKg: 5,
+    },
+    {
+        id: 'dunlop-multi-purpose-primer',
+        name: 'Multi-Purpose Primer',
+        brand: 'Dunlop',
+        coverageM2PerKg: 10,
+        dilutedCoverageM2PerKg: 20,
+        dilutionRatio: '1:1',
+        packSizes: [1],
+        primaryPackSizeKg: 1,
+        notes: ['Can be diluted 1:1 with water for non-porous substrates'],
+    },
+    {
+        id: 'dunlop-universal-bonding-agent',
+        name: 'Universal Bonding Agent',
+        brand: 'Dunlop',
+        coverageM2PerKg: 12,
+        dilutedCoverageM2PerKg: 3,
+        dilutionRatio: 'neat:slurry',
+        packSizes: [5],
+        primaryPackSizeKg: 5,
+        notes: ['Slurry application: mix 1:1 with water + cement for 3 m²/kg'],
+    },
 ];
