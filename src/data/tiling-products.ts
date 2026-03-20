@@ -1,4 +1,4 @@
-import type { AdhesiveProduct } from '../calculators/types';
+import type { AdhesiveProduct, GroutProduct, SpacerProduct } from '../calculators/types';
 
 /**
  * Selco-stocked adhesive products with manufacturer TDS coverage rates.
@@ -152,4 +152,63 @@ export const ADHESIVE_PRODUCTS: AdhesiveProduct[] = [
         restrictions: ['walls-only'],
         tdsUrl: 'https://www.dunloptrade.com/products/rx-1000-non-slip',
     },
+];
+
+export const GROUT_PRODUCTS: GroutProduct[] = [
+    {
+        id: 'mapei-ultracolor-plus',
+        name: 'Ultracolor Plus',
+        brand: 'Mapei',
+        enClass: 'CG2FWA',
+        densityFactor: 1.6,
+        minJointMm: 1,
+        maxJointMm: 20,
+        bagSizes: [2, 5, 23],
+        primaryBagSizeKg: 5,
+        tdsUrl: 'https://www.mapei.com/gb/en/products-and-solutions/products/grouting/cementitious-grouts/ultracolor-plus',
+    },
+    {
+        id: 'mapei-flexible-wall-floor-grout',
+        name: 'Flexible Wall and Floor Grout',
+        brand: 'Mapei',
+        enClass: 'CG2WA',
+        densityFactor: 1.6,
+        minJointMm: 1,
+        maxJointMm: 6,
+        bagSizes: [2.5],
+        primaryBagSizeKg: 2.5,
+        tdsUrl: 'https://www.mapei.com/gb/en/products-and-solutions/products/grouting/cementitious-grouts/flexible-wall-and-floor-grout',
+    },
+    {
+        id: 'dunlop-gx500',
+        name: 'GX-500 Flexible Grout',
+        brand: 'Dunlop',
+        enClass: 'CG2',
+        densityFactor: 1.7,
+        minJointMm: 2,
+        maxJointMm: 12,
+        bagSizes: [3.5],
+        primaryBagSizeKg: 3.5,
+        tdsUrl: 'https://www.dunloptrade.com/products/gx-500-flexible-grout',
+    },
+    {
+        id: 'dunlop-wall-tile-grout',
+        name: 'Wall Tile Grout',
+        brand: 'Dunlop',
+        enClass: 'CG1',
+        densityFactor: 1.7,
+        minJointMm: 1,
+        maxJointMm: 3,
+        bagSizes: [3.5, 10],
+        primaryBagSizeKg: 3.5,
+        restrictions: ['walls-only'],
+        tdsUrl: 'https://www.dunloptrade.com/products/wall-tile-grout',
+    },
+];
+
+export const SPACER_PRODUCTS: SpacerProduct[] = [
+    { id: 'spacer-1mm', sizeMm: 1, packSizes: [{ quantity: 500,  packType: 'bag' }] },
+    { id: 'spacer-2mm', sizeMm: 2, packSizes: [{ quantity: 250,  packType: 'bag' }, { quantity: 1000, packType: 'hollow' }, { quantity: 1500, packType: 'bag' }] },
+    { id: 'spacer-3mm', sizeMm: 3, packSizes: [{ quantity: 100,  packType: 'floor' }, { quantity: 250, packType: 'bag' }, { quantity: 1500, packType: 'bag' }] },
+    { id: 'spacer-5mm', sizeMm: 5, packSizes: [{ quantity: 250,  packType: 'bag' }] },
 ];

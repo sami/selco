@@ -58,6 +58,26 @@ export interface AdhesiveResult {
     warnings: string[];
 }
 
+export interface GroutProduct {
+    id: string;
+    name: string;
+    brand: string;
+    enClass: string;          // e.g. 'CG2FWA'
+    densityFactor: number;    // g/cm³ — 1.6 Mapei, 1.7 Dunlop standard
+    minJointMm: number;       // minimum joint width (warn if below)
+    maxJointMm: number;       // maximum joint width (warn if exceeded)
+    bagSizes: number[];       // kg — all available sizes
+    primaryBagSizeKg: number; // used for bagsNeeded in GroutResult
+    restrictions?: string[];  // e.g. ['walls-only']
+    tdsUrl: string;
+}
+
+export interface SpacerProduct {
+    id: string;
+    sizeMm: number;
+    packSizes: { quantity: number; packType: string }[];
+}
+
 export interface GroutInput {
     area: number;           // square metres
     tileWidth: number;      // mm
