@@ -639,3 +639,91 @@ export interface AirBricksResult {
     airBricksNeeded: number;
     materials: MaterialQuantity[];
 }
+
+// ---------------------------------------------------------------------------
+// Lintel calculator I/O
+// ---------------------------------------------------------------------------
+export interface LintelInput {
+    openingWidthMm: number;
+    productId: string;
+}
+export interface LintelCalcResult {
+    lintelLengthMm: number;
+    productName: string;
+    materials: MaterialQuantity[];
+}
+
+// ---------------------------------------------------------------------------
+// Padstone calculator I/O
+// ---------------------------------------------------------------------------
+export interface PadstoneInput {
+    productId: string;
+    quantity: number;
+}
+export interface PadstoneResult {
+    padstonesNeeded: number;
+    productName: string;
+    materials: MaterialQuantity[];
+}
+
+// ---------------------------------------------------------------------------
+// Cavity closer calculator I/O
+// ---------------------------------------------------------------------------
+export interface CavityCloserInput {
+    openingWidthMm: number;
+    openingHeightMm: number;
+    productId: string;
+}
+export interface CavityCloserResult {
+    closersNeeded: number;
+    perimeterM: number;
+    productName: string;
+    materials: MaterialQuantity[];
+}
+
+// ---------------------------------------------------------------------------
+// Cavity tray calculator I/O
+// ---------------------------------------------------------------------------
+export interface CavityTrayInput {
+    productId: string;
+    quantity: number;
+}
+export interface CavityTrayResult {
+    traysNeeded: number;
+    productName: string;
+    materials: MaterialQuantity[];
+}
+
+// ---------------------------------------------------------------------------
+// Masonry project orchestrator I/O
+// ---------------------------------------------------------------------------
+export interface MasonryProjectInput {
+    wallAreaM2: number;
+    wallLengthM: number;
+    wallType: 'brick' | 'block' | 'cavity';
+    brickProductId?: string;
+    blockProductId?: string;
+    cementProductId?: string;
+    sandProductId?: string;
+    dpcProductId?: string;
+    lintelProductId?: string;
+    steelLintelProductId?: string;
+    padstoneProductId?: string;
+    cavityCloserProductId?: string;
+    cavityTrayProductId?: string;
+    mixRatio: '1:3' | '1:4';
+    /** Default: 5 */
+    wastagePercent?: number;
+    cavityWidthMm?: number;
+    includeDPC: boolean;
+    includeAirBricks: boolean;
+    openings: Array<{ widthMm: number; heightMm: number }>;
+}
+export interface MasonryProjectResult {
+    materials: MaterialQuantity[];
+    grossAreaM2: number;
+    netAreaM2: number;
+    openingAreaM2: number;
+    totalOpenings: number;
+    warnings: string[];
+}
