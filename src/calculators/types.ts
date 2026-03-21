@@ -188,7 +188,7 @@ export interface MasonryInput {
     wallType: WallType;
     walls: WallSection[];
     openings: Opening[];
-    blockWidth: 100 | 140;          // mm — for cavity inner leaf & blockwork
+    blockWidth: 100 | 140 | 215;    // mm — for cavity inner leaf & blockwork
     mixRatio: MortarMixRatio;
     unitWaste: number;              // percentage (e.g. 5)
     mortarWaste: number;            // percentage (e.g. 10)
@@ -235,6 +235,25 @@ export interface MasonryResult {
     wallTies: WallTiesResult;
     lintels: LintelResult[];
     dpc: DPCResult;
+    /** One starter kit per wall section defined by the user. */
+    starterKits: number;
+    /** Gross wall area in m² — only for cavity walls. */
+    insulationAreaM2?: number;
+    /** Cavity width in mm — only for cavity walls where cavityWidth > 0. */
+    insulationThicknessMm?: number;
+}
+
+// ---------------------------------------------------------------------------
+// B7 — Wall Starters
+// ---------------------------------------------------------------------------
+
+export interface WallStarterProduct {
+    id: string;
+    name: string;
+    brand: string;
+    /** Length of the channel in metres (2.4m covers one storey). */
+    lengthM: number;
+    lastVerified: string;
 }
 
 // ---------------------------------------------------------------------------
