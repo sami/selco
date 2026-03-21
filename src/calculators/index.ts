@@ -78,6 +78,11 @@ export {
 export { calculateWallTies } from './wall-ties';
 export { calculateDPC, recommendDPCProductId } from './dpc';
 export { calculateAirBricks } from './air-bricks';
+export { calculateLintel } from './lintels';
+export { calculatePadstone } from './padstones';
+export { calculateCavityCloser } from './cavity-closers';
+export { calculateCavityTray } from './cavity-trays';
+export { calculateMasonryProject } from './masonry-project';
 
 export { calculateMortar } from './mortar';
 export { calculateSand } from './sand';
