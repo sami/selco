@@ -44,8 +44,9 @@ describe('Scenario A — brick wall, no openings', () => {
         expect(sumMaterialQty(result.materials, 'ibstock')).toBe(636);
     });
 
-    it('A3: DPC = 1 roll (ceil(6/30))', () => {
-        expect(sumMaterialQty(result.materials, 'dpc')).toBe(1);
+    it('A3: DPC = 1 entry for outer leaf (6m of DPC required)', () => {
+        expect(countMaterialEntries(result.materials, 'dpc')).toBe(1);
+        expect(sumMaterialQty(result.materials, 'dpc')).toBe(6);
     });
 });
 
@@ -87,8 +88,9 @@ describe('Scenario B — cavity wall, no openings', () => {
         expect(sumMaterialQty(result.materials, 'wall tie')).toBe(60);
     });
 
-    it('B4: DPC = 2 rolls total (one per leaf)', () => {
-        expect(sumMaterialQty(result.materials, 'dpc')).toBe(2);
+    it('B4: DPC = 2 entries total (one per leaf, 10m each)', () => {
+        expect(countMaterialEntries(result.materials, 'dpc')).toBe(2);
+        expect(sumMaterialQty(result.materials, 'dpc')).toBe(20);
     });
 
     it('B5: air bricks = ceil(10000/450) = 23', () => {
