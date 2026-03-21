@@ -1,0 +1,199 @@
+---
+import SelcoLayout from '../../layouts/SelcoLayout.astro';
+import Disclaimer from '../../components/Disclaimer.astro';
+import SelcoSidebar from '../../components/selco/SelcoSidebar.astro';
+import MasonryCalculator from '../../components/MasonryCalculator.tsx';
+
+const BASE_URL = import.meta.env.BASE_URL;
+const base = BASE_URL.endsWith('/') ? BASE_URL : `${BASE_URL}/`;
+
+const breadcrumbs = [
+  { label: 'Home', href: `${base}` },
+  { label: 'Brick & Block Wall' }
+];
+
+const title = 'Brick & Block Wall Calculator — Estimate Bricks, Blocks, Mortar & Wall Ties';
+const description = 'Calculate the number of bricks or blocks, sand, cement, wall ties, and DPC for single-skin or cavity walls. Enter your wall dimensions and get a full materials list.';
+
+const faqs = [
+  {
+    question: 'How many bricks do I need per square metre?',
+    answer: 'For standard 65mm bricks with 10mm mortar joints: approximately 60 bricks per m². For metric 73mm bricks: approximately 56 per m². The calculator uses the product-specific rate from the selected brick.'
+  },
+  {
+    question: 'How many blocks do I need per square metre?',
+    answer: 'Standard 440×215mm blocks with 10mm joints: approximately 10 blocks per m². The calculator adjusts for the selected block product.'
+  },
+  {
+    question: 'What mortar mix ratio should I use?',
+    answer: 'For general brickwork: 1:3 (cement:sand) for strong conditions or exposed walls, 1:4 for standard brickwork. For lightweight blockwork: 1:5 or 1:6. The calculator supports 1:3 and 1:4 ratios.'
+  },
+  {
+    question: 'What is a cavity wall?',
+    answer: 'A cavity wall has two separate leaves (an outer brick leaf and an inner block leaf) with an air gap (cavity) between them, typically 50–150mm wide. Wall ties hold the two leaves together. Cavity walls provide better thermal and moisture performance than solid walls.'
+  },
+  {
+    question: 'How many wall ties do I need?',
+    answer: 'BS EN 1243 specifies a minimum density of 2.5 ties per m² of wall face. Wall tie length is selected by cavity width — a 75mm cavity needs a 225mm tie, a 100mm cavity needs a 250mm tie.'
+  },
+  {
+    question: 'What wastage percentage should I allow?',
+    answer: 'Allow 5% for straightforward walls with few cuts, 10% for walls with openings or complex angles, 15% for highly irregular shapes. The calculator defaults to 5%.'
+  },
+  {
+    question: 'Do I need DPC?',
+    answer: 'Yes — damp-proof course (DPC) is required at the base of all external walls at ground level. For cavity walls, you need DPC on both the inner and outer leaf. The calculator includes DPC rolls based on wall length.'
+  },
+  {
+    question: 'What are the opening deductions?',
+    answer: 'Windows and doors reduce the area of bricks and blocks needed. Enter your openings as width × height in metres. The calculator deducts opening areas from the net area for brick/block quantities, but uses the gross wall area for wall ties (ties are also placed at jambs).'
+  }
+];
+---
+
+<SelcoLayout
+  title={title}
+  description={description}
+  pageTitle="Trade Materials Calculators"
+  breadcrumbs={breadcrumbs}
+  showSidebar
+>
+  <SelcoSidebar />
+
+  <main class="w-full">
+    <div class="space-y-6">
+      <section class="space-y-6">
+        <div>
+          <h2 class="text-2xl md:text-3xl font-bold text-surface-foreground">Brick &amp; Block Wall Calculator</h2>
+          <p class="text-muted-foreground mt-3 max-w-3xl">
+            Calculate bricks or blocks, sand, cement, wall ties, and DPC for single-skin or cavity walls.
+            Enter your wall dimensions, add any openings, and get a full materials list.
+          </p>
+        </div>
+
+        <div class="rounded-2xl border border-border bg-surface p-6 shadow-sm">
+          <MasonryCalculator client:load />
+        </div>
+      </section>
+
+      <section class="space-y-6 max-w-4xl mt-12">
+        <h2 class="text-2xl md:text-3xl font-bold text-surface-foreground">What This Calculator Covers</h2>
+        <div class="grid gap-6 md:grid-cols-2">
+          <div class="rounded-xl border border-border bg-surface p-5">
+            <h3 class="font-semibold text-surface-foreground">Calculated for every wall</h3>
+            <ol class="mt-3 space-y-2 text-muted-foreground text-sm list-decimal list-inside">
+              <li>Bricks or blocks — quantities including wastage.</li>
+              <li>Building sand — tonnes and bag count.</li>
+              <li>Cement — 25 kg bags.</li>
+              <li>DPC — rolls based on wall length.</li>
+              <li>Wall starters — one kit per wall section.</li>
+              <li>Gross and net area breakdown.</li>
+            </ol>
+          </div>
+          <div class="rounded-xl border border-border bg-surface p-5">
+            <h3 class="font-semibold text-surface-foreground">Cavity walls additionally include</h3>
+            <ol class="mt-3 space-y-2 text-muted-foreground text-sm list-decimal list-inside">
+              <li>Inner block leaf quantities.</li>
+              <li>Wall ties — count by cavity width (BS EN 1243).</li>
+              <li>DPC for both inner and outer leaf.</li>
+              <li>Air bricks — 1 per 450mm of wall (BS 5250).</li>
+              <li>Cavity insulation area and recommended thickness.</li>
+            </ol>
+          </div>
+        </div>
+      </section>
+
+      <section class="space-y-6 max-w-4xl mt-12">
+        <h2 class="text-2xl md:text-3xl font-bold text-surface-foreground">Recommended Accessories</h2>
+        <p class="text-muted-foreground text-sm max-w-2xl">
+          These products are commonly purchased alongside a masonry project. Quantities depend on your mix design and site conditions.
+        </p>
+        <div class="grid gap-4 md:grid-cols-3">
+          <div class="rounded-xl border border-border bg-surface p-5">
+            <h3 class="font-semibold text-surface-foreground">Mortar Plasticiser</h3>
+            <p class="text-sm text-muted-foreground mt-2">
+              Improves workability and reduces water demand — useful on cold days or for long mixing runs.
+            </p>
+            <a
+              href="https://www.selcobw.com/products/building-materials/cement/cement-additives-dyes"
+              target="_blank"
+              rel="noopener noreferrer"
+              class="mt-3 inline-block text-sm font-medium text-brand-blue hover:underline"
+            >
+              View plasticisers →
+            </a>
+          </div>
+          <div class="rounded-xl border border-border bg-surface p-5">
+            <h3 class="font-semibold text-surface-foreground">Mortar Waterproofer</h3>
+            <p class="text-sm text-muted-foreground mt-2">
+              Integral waterproofer for external walls, retaining walls, or any masonry exposed to damp.
+            </p>
+            <a
+              href="https://www.selcobw.com/products/building-materials/cement/cement-additives-dyes"
+              target="_blank"
+              rel="noopener noreferrer"
+              class="mt-3 inline-block text-sm font-medium text-brand-blue hover:underline"
+            >
+              View waterproofers →
+            </a>
+          </div>
+          <div class="rounded-xl border border-border bg-surface p-5">
+            <h3 class="font-semibold text-surface-foreground">Mortar Dye</h3>
+            <p class="text-sm text-muted-foreground mt-2">
+              Match new mortar to existing joints. Available in a range of colours for brick and block work.
+            </p>
+            <a
+              href="https://www.selcobw.com/products/building-materials/cement/cement-additives-dyes"
+              target="_blank"
+              rel="noopener noreferrer"
+              class="mt-3 inline-block text-sm font-medium text-brand-blue hover:underline"
+            >
+              View mortar dyes →
+            </a>
+          </div>
+        </div>
+      </section>
+
+      <section class="space-y-6 max-w-4xl mt-12">
+        <h2 class="text-2xl md:text-3xl font-bold text-surface-foreground">Frequently Asked Questions</h2>
+        <div class="space-y-4">
+          {faqs.map((faq) => (
+            <div class="rounded-xl border border-border bg-surface p-5">
+              <h3 class="font-semibold text-surface-foreground">{faq.question}</h3>
+              <p class="text-sm text-muted-foreground mt-2">{faq.answer}</p>
+            </div>
+          ))}
+        </div>
+      </section>
+
+      <section class="space-y-6 max-w-4xl mt-12">
+        <h2 class="text-2xl md:text-3xl font-bold text-surface-foreground">Related Calculators</h2>
+        <div class="flex flex-wrap gap-3">
+          <a href={base} class="inline-flex items-center px-4 py-2 rounded-lg bg-surface border border-border hover:border-brand-blue transition-colors text-sm font-medium">
+            ← Back to Homepage
+          </a>
+          <a href={`${base}unit-converter/`} class="inline-flex items-center px-4 py-2 rounded-lg bg-surface border border-border hover:border-brand-blue transition-colors text-sm font-medium">
+            Unit Converter
+          </a>
+          <a href={`${base}tiling/`} class="inline-flex items-center px-4 py-2 rounded-lg bg-surface border border-border hover:border-brand-blue transition-colors text-sm font-medium">
+            Tiling Project Calculator
+          </a>
+        </div>
+      </section>
+
+      <div class="mt-16 flex flex-col sm:flex-row gap-4 items-center justify-between p-6 rounded-xl border-2 border-brand-blue bg-gradient-to-br from-brand-blue/5 to-transparent shadow-sm">
+        <div class="flex-1 w-full text-left">
+          <Disclaimer text="Calculations are estimates only. Always verify product coverage and site conditions before ordering." />
+        </div>
+        <a
+          href="https://madebysami.notion.site/2fe361401cd480fc9fcfdf4871d199b1?pvs=105"
+          target="_blank"
+          rel="noopener noreferrer"
+          class="inline-flex items-center justify-center px-6 py-3 rounded-lg bg-brand-blue text-white font-bold text-sm uppercase tracking-wide hover:bg-brand-yellow hover:text-brand-navy transition-all duration-300 hover:-translate-y-0.5 shadow-sm hover:shadow-md flex-shrink-0 w-full sm:w-auto text-center"
+        >
+          Share feedback
+        </a>
+      </div>
+    </div>
+  </main>
+</SelcoLayout>
