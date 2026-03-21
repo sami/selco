@@ -2,6 +2,7 @@ import type {
     BrickProduct, BlockProduct, CementProduct, SandProduct,
     WallTieProduct, DPCProduct, ConcreteLintelProduct, SteelLintelProduct,
     PadstoneProduct, CavityCloserProduct, CavityTrayProduct,
+    WallStarterProduct,
 } from '../calculators/types';
 
 /**
@@ -56,7 +57,7 @@ export const BRICK_PRODUCTS: BrickProduct[] = [
 ];
 
 // ---------------------------------------------------------------------------
-// B2 — Blocks (3 products — 100mm aerated, 100mm dense, 140mm dense)
+// B2 — Blocks (4 products — 100/215mm aerated, 100/140mm dense)
 // ---------------------------------------------------------------------------
 
 export const BLOCK_PRODUCTS: BlockProduct[] = [
@@ -71,6 +72,18 @@ export const BLOCK_PRODUCTS: BlockProduct[] = [
         blocksPerM2: 10,
         tdsUrl: 'https://www.thermalite.co.uk/products/shield',
         lastVerified: '2026-03-18',
+    },
+    {
+        id: 'thermalite-shield-215',
+        name: 'Shield Aerated Block 215mm',
+        brand: 'Thermalite',
+        faceLengthMm: 440,
+        faceHeightMm: 215,
+        thicknessMm: 215,
+        strengthNPerMm2: 3.6,
+        blocksPerM2: 10,
+        tdsUrl: 'https://www.thermalite.co.uk/products/shield',
+        lastVerified: '2026-03-21',
     },
     {
         id: 'dense-concrete-block-100',
@@ -456,5 +469,19 @@ export const CAVITY_TRAY_PRODUCTS: CavityTrayProduct[] = [
         trayType: 'catchment-left',
         tdsUrl: 'https://www.selcobw.com/products/building-materials/lintels/cavity-trays-closers',
         lastVerified: '2026-03-20',
+    },
+];
+
+// ---------------------------------------------------------------------------
+// B7 — Wall Starters (1 product — Universal sliding-tie channel kit)
+// ---------------------------------------------------------------------------
+
+export const WALL_STARTER_PRODUCTS: WallStarterProduct[] = [
+    {
+        id: 'universal-wall-starter-kit-2-4m',
+        name: 'Universal Wall Starter Kit 2.4m',
+        brand: 'Universal',
+        lengthM: 2.4,
+        lastVerified: '2026-03-21',
     },
 ];
