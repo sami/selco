@@ -281,6 +281,55 @@ describe('calculateMasonry', () => {
         expect(result.wallTies.total).toBeGreaterThan(0);
     });
 
+    it('starterKits = number of wall sections', () => {
+        const input: MasonryInput = {
+            wallType: 'half-brick',
+            walls: [{ length: 5, height: 2.4 }, { length: 3, height: 2.4 }],
+            openings: [],
+            blockWidth: 100,
+            mixRatio: '1:4',
+            unitWaste: 5,
+            mortarWaste: 10,
+            cavityWidth: 0,
+            sandBagSize: 'jumbo',
+        };
+        expect(calculateMasonry(input).starterKits).toBe(2);
+    });
+
+    it('cavity wall returns insulationAreaM2 = gross area', () => {
+        const input: MasonryInput = {
+            wallType: 'cavity',
+            walls: [{ length: 6, height: 2.4 }],
+            openings: [],
+            blockWidth: 100,
+            mixRatio: '1:4',
+            unitWaste: 0,
+            mortarWaste: 0,
+            cavityWidth: 100,
+            sandBagSize: 'jumbo',
+        };
+        const result = calculateMasonry(input);
+        expect(result.insulationAreaM2).toBeCloseTo(14.4);
+        expect(result.insulationThicknessMm).toBe(100);
+    });
+
+    it('non-cavity wall has no insulation fields', () => {
+        const input: MasonryInput = {
+            wallType: 'half-brick',
+            walls: [{ length: 4, height: 2.4 }],
+            openings: [],
+            blockWidth: 100,
+            mixRatio: '1:4',
+            unitWaste: 0,
+            mortarWaste: 0,
+            cavityWidth: 0,
+            sandBagSize: 'jumbo',
+        };
+        const result = calculateMasonry(input);
+        expect(result.insulationAreaM2).toBeUndefined();
+        expect(result.insulationThicknessMm).toBeUndefined();
+    });
+
     it('throws for invalid waste', () => {
         const input: MasonryInput = {
             wallType: 'half-brick',
