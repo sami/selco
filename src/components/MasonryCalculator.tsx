@@ -10,10 +10,26 @@ import type { WallType, MortarMixRatio, SandBagSize } from '../calculators/types
 
 const wallTypeOptions = WALL_TYPES.map((t) => ({ value: t.value, label: t.label }));
 
-const blockWidthOptions = [
+// Block width options vary by block type — aerated: 100/215mm; dense: 100/140mm
+const aeratedWidthOptions = [
+    { value: '100', label: '100 mm' },
+    { value: '215', label: '215 mm' },
+];
+
+const denseWidthOptions = [
     { value: '100', label: '100 mm' },
     { value: '140', label: '140 mm' },
 ];
+
+const blockTypeOptions = [
+    { value: 'aerated', label: 'Aerated (Thermalite Shield)' },
+    { value: 'dense', label: 'Dense Concrete' },
+];
+
+function getBlockLabel(type: 'aerated' | 'dense', widthMm: number): string {
+    if (type === 'aerated') return `Thermalite Shield ${widthMm}mm`;
+    return `Dense Concrete ${widthMm}mm`;
+}
 
 const mixRatioOptions = [
     { value: '1:3', label: '1:3 (strong)' },
@@ -38,6 +54,7 @@ export default function MasonryCalculator({
     hideFields = [],
 }: MasonryCalculatorProps) {
     const [wallType, setWallType] = useState<WallType>(defaultWallType);
+    const [blockType, setBlockType] = useState<'aerated' | 'dense'>('aerated');
     const [blockWidth, setBlockWidth] = useState('100');
     const [walls, setWalls] = useState<Array<{ length: string; height: string }>>([{ length: '', height: '' }]);
     const [openings, setOpenings] = useState<Array<{ width: string; height: string }>>([]);
@@ -53,6 +70,9 @@ export default function MasonryCalculator({
     // Visibility logic
     const showBlocks = (wallType === 'cavity' || wallType === 'blockwork') && !hideFields.includes('block-width');
     const showCavityWidth = wallType === 'cavity' && !hideFields.includes('cavity-width');
+
+    // Dynamic width options — aerated: 100/215mm; dense: 100/140mm
+    const blockWidthOptions = blockType === 'aerated' ? aeratedWidthOptions : denseWidthOptions;
 
     // Wall repeater logic
     const addWall = () => {
@@ -145,7 +165,7 @@ export default function MasonryCalculator({
                 wallType,
                 walls: parsedWalls,
                 openings: parsedOpenings,
-                blockWidth: parseInt(blockWidth) as 100 | 140,
+                blockWidth: parseInt(blockWidth) as 100 | 140 | 215,
                 mixRatio,
                 unitWaste: parseFloat(unitWaste),
                 mortarWaste: parseFloat(mortarWaste),
@@ -165,7 +185,7 @@ export default function MasonryCalculator({
 
             if (result.blocks > 0) {
                 items.push({
-                    label: 'Blocks',
+                    label: `Blocks — ${getBlockLabel(blockType, parseInt(blockWidth))}`,
                     value: `${result.blocks} blocks`,
                     primary: true,
                 });
@@ -196,16 +216,31 @@ export default function MasonryCalculator({
                 { label: 'Net area', value: `${result.area.netArea.toFixed(2)} m²` },
             );
 
+            // Wall starters — one kit per wall section
+            items.push({
+                label: 'Wall starters',
+                value: `${result.starterKits} kit${result.starterKits !== 1 ? 's' : ''}`,
+            });
+
+            // Cavity insulation — area and recommended thickness
+            if (result.insulationAreaM2 !== undefined && result.insulationThicknessMm !== undefined) {
+                items.push({
+                    label: 'Cavity insulation (area)',
+                    value: `${result.insulationAreaM2.toFixed(1)} m² at ${result.insulationThicknessMm} mm`,
+                });
+            }
+
             setResults(items);
             setHasResults(true);
         } catch (e) {
             setError(e instanceof Error ? e.message : 'An unexpected error occurred.');
             setHasResults(false);
         }
-    }, [wallType, walls, openings, blockWidth, mixRatio, unitWaste, mortarWaste, cavityWidth, sandBagSize]);
+    }, [wallType, walls, openings, blockType, blockWidth, mixRatio, unitWaste, mortarWaste, cavityWidth, sandBagSize]);
 
     const handleReset = useCallback(() => {
         setWallType(defaultWallType);
+        setBlockType('aerated');
         setBlockWidth('100');
         setWalls([{ length: '', height: '' }]);
         setOpenings([]);
@@ -232,13 +267,26 @@ export default function MasonryCalculator({
                         options={wallTypeOptions}
                     />
                     {showBlocks && (
-                        <FormSelect
-                            id="block-width"
-                            label="Block thickness"
-                            value={blockWidth}
-                            onChange={(v) => { setBlockWidth(v); setError(null); }}
-                            options={blockWidthOptions}
-                        />
+                        <>
+                            <FormSelect
+                                id="block-type"
+                                label="Block type"
+                                value={blockType}
+                                onChange={(v) => {
+                                    setBlockType(v as 'aerated' | 'dense');
+                                    setBlockWidth('100'); // reset — options differ by type
+                                    setError(null);
+                                }}
+                                options={blockTypeOptions}
+                            />
+                            <FormSelect
+                                id="block-width"
+                                label="Block thickness"
+                                value={blockWidth}
+                                onChange={(v) => { setBlockWidth(v); setError(null); }}
+                                options={blockWidthOptions}
+                            />
+                        </>
                     )}
                 </div>
             ),
