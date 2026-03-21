@@ -521,3 +521,59 @@ export interface BlocksResult {
     materials: MaterialQuantity[];
     warnings: string[];
 }
+
+// ---------------------------------------------------------------------------
+// Mortar, sand, and cement calculator I/O
+// ---------------------------------------------------------------------------
+
+/** Input for the standalone mortar volume calculator. */
+export interface MortarInput {
+    areaM2: number;
+    unitType: 'brick' | 'block';
+    mixRatio: '1:3' | '1:4';
+    /** Default: 10 */
+    wastagePercent?: number;
+}
+
+/**
+ * Result from calculateMortar() in mortar.ts.
+ * Named MortarCalcResult to avoid collision with the legacy MortarResult
+ * used by masonry.ts (which has fields: wetVolume, cementBags, sandTonnes, …).
+ */
+export interface MortarCalcResult {
+    mortarVolumeM3: number;
+    /** Total mortar mass approximation at sand density (1,600 kg/m³). */
+    mortarWeightKg: number;
+    sandKg: number;
+    cementKg: number;
+    materials: MaterialQuantity[];
+    warnings: string[];
+}
+
+/** Input for the standalone sand packing calculator. */
+export interface SandInput {
+    sandKg: number;
+    productId: string;
+}
+
+export interface SandResult {
+    sandKg: number;
+    bagsNeeded: number;
+    packSizeKg: number;
+    productName: string;
+    materials: MaterialQuantity[];
+}
+
+/** Input for the standalone cement packing calculator. */
+export interface CementInput {
+    cementKg: number;
+    productId: string;
+}
+
+export interface CementResult {
+    cementKg: number;
+    bagsNeeded: number;
+    bagSizeKg: number;
+    productName: string;
+    materials: MaterialQuantity[];
+}
