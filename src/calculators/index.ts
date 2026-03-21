@@ -71,12 +71,15 @@ export {
     WALL_TYPES,
     SAND_BAG_SIZES,
     calculateWallArea,
-    calculateMortar,
     calculateWallTies,
     calculateLintels,
     calculateDPC,
     calculateMasonry,
 } from './masonry';
+
+export { calculateMortar } from './mortar';
+export { calculateSand } from './sand';
+export { calculateCement } from './cement';
 
 export { calculateBricks } from './bricks';
 export { calculateBlocks } from './blocks';
