@@ -484,3 +484,40 @@ export interface CavityTrayProduct {
     tdsUrl?: string;
     lastVerified: string;
 }
+
+// ---------------------------------------------------------------------------
+// Masonry calculator I/O
+// ---------------------------------------------------------------------------
+
+export interface BricksInput {
+    areaM2: number;
+    productId: string;
+    /** Default: 10 */
+    wastagePercent?: number;
+    /** Default: 'stretcher'. Affects warnings only — count is the same for all single-leaf bonds. */
+    bondPattern?: 'stretcher' | 'flemish' | 'english' | 'stack';
+}
+
+export interface BricksResult {
+    bricksNeeded: number;
+    packsNeeded: number;
+    bricksPerM2: number;
+    productName: string;
+    materials: MaterialQuantity[];
+    warnings: string[];
+}
+
+export interface BlocksInput {
+    areaM2: number;
+    productId: string;
+    /** Default: 5 */
+    wastagePercent?: number;
+}
+
+export interface BlocksResult {
+    blocksNeeded: number;
+    blocksPerM2: number;
+    productName: string;
+    materials: MaterialQuantity[];
+    warnings: string[];
+}
