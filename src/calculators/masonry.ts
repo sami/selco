@@ -191,6 +191,16 @@ export function calculateMasonry(input: MasonryInput): MasonryResult {
     const lintels = calculateLintels(input.openings);
     const dpc = calculateDPC(input.walls, input.wallType);
 
+    const starterKits = input.walls.length;
+
+    const insulationAreaM2 = input.wallType === 'cavity'
+        ? area.grossArea
+        : undefined;
+
+    const insulationThicknessMm = (input.wallType === 'cavity' && input.cavityWidth > 0)
+        ? input.cavityWidth
+        : undefined;
+
     return {
         area,
         bricks,
@@ -199,5 +209,8 @@ export function calculateMasonry(input: MasonryInput): MasonryResult {
         wallTies,
         lintels,
         dpc,
+        starterKits,
+        insulationAreaM2,
+        insulationThicknessMm,
     };
 }
