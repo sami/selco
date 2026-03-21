@@ -416,8 +416,8 @@ export interface WallTieProduct {
     minCavityMm: number;
     maxCavityMm: number;
     type: 'type-4-light' | 'type-2-gp';
-    packSizes: number[];
-    primaryPackSize: number;
+    packSizes: (50 | 250)[];
+    primaryPackSize: 50 | 250;
     lastVerified: string;
 }
 
@@ -603,7 +603,7 @@ export interface WallTiesCalcResult {
     tiesNeeded: number;
     packsNeeded: number;
     /** The pack size used in the calculation. */
-    packSize: number;
+    packSize: 50 | 250;
     tieLengthMm: number;
     productId: string;
     productName: string;

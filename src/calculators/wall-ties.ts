@@ -6,16 +6,20 @@ import { packsNeeded } from './primitives';
 /** BS EN 1243: standard tie density for cavity walls. */
 const TIES_PER_M2 = 2.5;
 
+// Sorted by descending minCavityMm so boundary values (e.g. 75mm) resolve
+// to the upper range (75–100mm tie) rather than the lower (50–75mm tie).
+const PRODUCTS_BY_MIN_DESC = [...WALL_TIE_PRODUCTS].sort(
+    (a, b) => b.minCavityMm - a.minCavityMm,
+);
+
 export function calculateWallTies(input: WallTiesInput): WallTiesCalcResult {
     const { areaM2, cavityWidthMm, packSize } = input;
 
     // Search from highest minCavityMm first so shared boundaries (e.g. 75mm)
     // resolve to the higher-range product, matching BS EN 1243 guidance.
-    const product = [...WALL_TIE_PRODUCTS]
-        .sort((a, b) => b.minCavityMm - a.minCavityMm)
-        .find(
-            p => cavityWidthMm >= p.minCavityMm && cavityWidthMm <= p.maxCavityMm
-        );
+    const product = PRODUCTS_BY_MIN_DESC.find(
+        p => cavityWidthMm >= p.minCavityMm && cavityWidthMm <= p.maxCavityMm
+    );
 
     if (!product) {
         throw new Error(
