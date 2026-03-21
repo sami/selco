@@ -37,7 +37,15 @@ export * from './types';
 // ---------------------------------------------------------------------------
 
 export { COMMON_TILE_SIZES, calculateTiles } from './tiles';
-export { ADHESIVE_PRODUCTS, GROUT_PRODUCTS, SPACER_PRODUCTS } from '../data/tiling-products';
+export {
+    ADHESIVE_PRODUCTS,
+    GROUT_PRODUCTS,
+    SPACER_PRODUCTS,
+    BACKER_BOARD_PRODUCTS,
+    TANKING_PRODUCTS,
+    SLC_PRODUCTS,
+    PRIMER_PRODUCTS,
+} from '../data/tiling-products';
 export {
     calculateAdhesive,
     calculateAdhesiveByBedDepth,
@@ -63,14 +71,15 @@ export {
     WALL_TYPES,
     SAND_BAG_SIZES,
     calculateWallArea,
-    calculateBricks,
-    calculateBlocks,
     calculateMortar,
     calculateWallTies,
     calculateLintels,
     calculateDPC,
     calculateMasonry,
 } from './masonry';
+
+export { calculateBricks } from './bricks';
+export { calculateBlocks } from './blocks';
 
 // ---------------------------------------------------------------------------
 // Handy calculators — board coverage
@@ -103,10 +112,14 @@ export type {
     TemperatureUnit,
     DensityMaterial,
     ConversionFamily,
+    ConversionInput,
+    ConversionResult,
 } from './conversions';
 export {
     DENSITY,
+    DENSITIES,
     UNITS,
+    CONVERSION_FACTORS,
     convertLength,
     convertArea,
     convertWeight,
@@ -114,6 +127,8 @@ export {
     convertTemperature,
     convertDensityToWeight,
     convertUnits,
+    getUnitsForFamily,
+    convert,
 } from './conversions';
 
 // ---------------------------------------------------------------------------
