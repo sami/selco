@@ -577,3 +577,65 @@ export interface CementResult {
     productName: string;
     materials: MaterialQuantity[];
 }
+
+// ---------------------------------------------------------------------------
+// Wall ties, DPC, and air brick calculator I/O
+// ---------------------------------------------------------------------------
+
+/** Input for the standalone wall ties calculator. */
+export interface WallTiesInput {
+    areaM2: number;
+    /** Cavity width in mm — used to auto-select the correct tie length. */
+    cavityWidthMm: number;
+    /**
+     * Pack size to use for rounding. Defaults to product's primaryPackSize (250).
+     * All wall tie products stock both 50 and 250 packs.
+     */
+    packSize?: 50 | 250;
+}
+
+/**
+ * Result from calculateWallTies() in wall-ties.ts.
+ * Named WallTiesCalcResult to avoid collision with the legacy WallTiesResult
+ * used by masonry.ts (which has fields: general, atOpenings, total).
+ */
+export interface WallTiesCalcResult {
+    tiesNeeded: number;
+    packsNeeded: number;
+    /** The pack size used in the calculation. */
+    packSize: number;
+    tieLengthMm: number;
+    productId: string;
+    productName: string;
+    materials: MaterialQuantity[];
+    warnings: string[];
+}
+
+/** Input for the standalone DPC calculator. */
+export interface DPCInput {
+    wallLengthM: number;
+    productId: string;
+}
+
+/**
+ * Result from calculateDPC() in dpc.ts.
+ * Named DPCCalcResult to avoid collision with the legacy DPCResult
+ * used by masonry.ts (which has fields: length, widthMm).
+ */
+export interface DPCCalcResult {
+    rollsNeeded: number;
+    rollLengthM: number;
+    widthMm: number;
+    productName: string;
+    materials: MaterialQuantity[];
+}
+
+/** Input for the standalone air bricks calculator. */
+export interface AirBricksInput {
+    wallLengthM: number;
+}
+
+export interface AirBricksResult {
+    airBricksNeeded: number;
+    materials: MaterialQuantity[];
+}
