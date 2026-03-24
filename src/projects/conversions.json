@@ -1,0 +1,13 @@
+{
+  "$comment": "Reference config for the Unit Conversions handy calculator (Layer 2 descriptor).",
+  "id": "conversions",
+  "name": "Unit Conversions",
+  "slug": "conversions",
+  "category": "handy",
+  "description": "Convert between metric and imperial units",
+  "icon": "/images/hero/hero-handy.svg",
+  "steps": [
+    { "id": "conversions", "calculator": "conversions", "label": "Convert" }
+  ],
+  "sharedInputs": []
+}

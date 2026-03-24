@@ -96,6 +96,7 @@ export { calculateBlocks } from './blocks';
 // ---------------------------------------------------------------------------
 
 export { BOARD_PRESETS, calculateBoardCoverage } from './board-coverage';
+export { getPresetById, getBoardDimensions } from './board-presets';
 
 // ---------------------------------------------------------------------------
 // Handy calculators — board cutting optimiser (stub — not yet implemented)
@@ -142,11 +143,34 @@ export {
 } from './conversions';
 
 // ---------------------------------------------------------------------------
-// Coming-soon calculator stubs (not yet implemented)
+// Flooring calculator — live
 // ---------------------------------------------------------------------------
 
-export type { FlooringInput, FlooringResult } from './flooring';
 export { calculateFlooring } from './flooring';
+export { FLOORING_WASTAGE, DEFAULT_LAYING_PATTERN, VALID_PATTERNS } from './flooring-config';
+export {
+    estimateUnderlay,
+    estimateFlooringAdhesive,
+    estimateScotia,
+    estimateThresholdStrips,
+    estimateDPM,
+} from './flooring-ancillary';
+export {
+    UNDERLAY_ROLL_SIZES,
+    UNDERLAY_OVERLAP_PERCENT,
+    FLOORING_ADHESIVE_M2_PER_LITRE,
+    ADHESIVE_BUCKET_SIZES,
+    SCOTIA_LENGTH_M,
+    SCOTIA_WASTE_PERCENT,
+    THRESHOLD_STRIP_LENGTH_MM,
+    DPM_ROLL_SIZES,
+    DPM_OVERLAP_PERCENT,
+} from './flooring-constants';
+export { calculateFlooringRoom } from './flooring-room';
+
+// ---------------------------------------------------------------------------
+// Coming-soon calculator stubs (not yet implemented)
+// ---------------------------------------------------------------------------
 
 export type { DeckingInput, DeckingResult } from './decking';
 export { calculateDecking } from './decking';

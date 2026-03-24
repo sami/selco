@@ -1,21 +1,16 @@
 import React, { useState } from 'react';
+import { BOARD_PRESETS, calculateBoardCoverage } from '../../calculators/board-coverage';
 
 const WASTAGE_OPTIONS = [0, 5, 10, 15];
 
-const BOARD_PRESETS = [
-    { label: '2440 x 1220mm', length: 2.44, width: 1.22, description: 'Standard Plywood / MDF' },
-    { label: '2400 x 1200mm', length: 2.4, width: 1.2, description: 'Standard Plasterboard' },
-    { label: '2400 x 600mm', length: 2.4, width: 0.6, description: 'Flooring Boards' },
-    { label: '1800 x 900mm', length: 1.8, width: 0.9, description: 'Small Plasterboard' },
-    { label: '1200 x 800mm', length: 1.2, width: 0.8, description: 'Tile Backer Board' },
-    { label: '1200 x 600mm', length: 1.2, width: 0.6, description: 'Tile Backer / Insulation' },
-];
+// Default to most common plasterboard size
+const DEFAULT_PRESET_ID = '2400-1200';
 
 export default function CoverageCalculator() {
     const [areaStr, setAreaStr] = useState<string>('');
-    const [selectedPresetIndex, setSelectedPresetIndex] = useState<number>(1); // Default to 2400x1200
+    const [selectedPresetId, setSelectedPresetId] = useState<string | null>(DEFAULT_PRESET_ID);
 
-    // Custom dimensions state
+    // Custom dimensions state (entered in metres for familiarity)
     const [customLengthStr, setCustomLengthStr] = useState<string>('');
     const [customWidthStr, setCustomWidthStr] = useState<string>('');
 
@@ -26,10 +21,12 @@ export default function CoverageCalculator() {
     let boardAreaSqm = 0;
     let isBoardAreaValid = false;
 
-    if (selectedPresetIndex !== -1) {
-        const preset = BOARD_PRESETS[selectedPresetIndex];
-        boardAreaSqm = preset.length * preset.width;
-        isBoardAreaValid = true;
+    if (selectedPresetId !== null) {
+        const preset = BOARD_PRESETS.find((p) => p.id === selectedPresetId);
+        if (preset) {
+            boardAreaSqm = preset.coverageM2;
+            isBoardAreaValid = true;
+        }
     } else {
         const l = parseFloat(customLengthStr);
         const w = parseFloat(customWidthStr);
@@ -46,9 +43,18 @@ export default function CoverageCalculator() {
     let hasWastage = false;
 
     if (isValid) {
-        const areaWithWastageSqm = parsedArea * (1 + wastage / 100);
-        boards = Math.ceil(areaWithWastageSqm / boardAreaSqm);
-        maxAreaSqm = boards * boardAreaSqm;
+        const input =
+            selectedPresetId !== null
+                ? { areaM2: parsedArea, presetId: selectedPresetId, wastagePercent: wastage }
+                : {
+                      areaM2: parsedArea,
+                      customLengthMm: parseFloat(customLengthStr) * 1000,
+                      customWidthMm: parseFloat(customWidthStr) * 1000,
+                      wastagePercent: wastage,
+                  };
+        const result = calculateBoardCoverage(input);
+        boards = result.boardsNeeded;
+        maxAreaSqm = result.boardsNeeded * result.coveragePerBoardM2;
         hasWastage = wastage > 0;
     }
 
@@ -78,17 +84,17 @@ export default function CoverageCalculator() {
                         <p className="field-description mb-3 mt-0">Select a standard UK board size or enter custom dimensions.</p>
 
                         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-1 gap-2">
-                            {BOARD_PRESETS.map((preset, index) => (
+                            {BOARD_PRESETS.map((preset) => (
                                 <button
-                                    key={preset.label}
+                                    key={preset.id}
                                     type="button"
-                                    onClick={() => setSelectedPresetIndex(index)}
-                                    className={`text-left px-4 py-3 rounded-lg border transition-colors focus:focus-ring flex flex-col ${selectedPresetIndex === index
+                                    onClick={() => setSelectedPresetId(preset.id)}
+                                    className={`text-left px-4 py-3 rounded-lg border transition-colors focus:focus-ring flex flex-col ${selectedPresetId === preset.id
                                         ? 'bg-primary/5 border-primary shadow-sm'
                                         : 'bg-bg-section border-border-default hover:border-primary/50'
                                         }`}
                                 >
-                                    <span className={`font-bold text-sm ${selectedPresetIndex === index ? 'text-primary-dark' : 'text-text-main'}`}>
+                                    <span className={`font-bold text-sm ${selectedPresetId === preset.id ? 'text-primary-dark' : 'text-text-main'}`}>
                                         {preset.label}
                                     </span>
                                     <span className="text-xs text-text-muted mt-0.5">{preset.description}</span>
@@ -97,20 +103,20 @@ export default function CoverageCalculator() {
 
                             <button
                                 type="button"
-                                onClick={() => setSelectedPresetIndex(-1)}
-                                className={`text-left px-4 py-3 rounded-lg border transition-colors focus:focus-ring flex flex-col ${selectedPresetIndex === -1
+                                onClick={() => setSelectedPresetId(null)}
+                                className={`text-left px-4 py-3 rounded-lg border transition-colors focus:focus-ring flex flex-col ${selectedPresetId === null
                                     ? 'bg-primary/5 border-primary shadow-sm'
                                     : 'bg-bg-section border-border-default hover:border-primary/50'
                                     }`}
                             >
-                                <span className={`font-bold text-sm ${selectedPresetIndex === -1 ? 'text-primary-dark' : 'text-text-main'}`}>
+                                <span className={`font-bold text-sm ${selectedPresetId === null ? 'text-primary-dark' : 'text-text-main'}`}>
                                     Custom size
                                 </span>
                                 <span className="text-xs text-text-muted mt-0.5">Enter your own length and width</span>
                             </button>
                         </div>
 
-                        {selectedPresetIndex === -1 && (
+                        {selectedPresetId === null && (
                             <div className="pt-3 border-t border-border-default/50">
                                 <div className="grid grid-cols-2 gap-4">
                                     <div>
