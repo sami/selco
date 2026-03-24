@@ -280,21 +280,47 @@ export interface AdhesiveBedDepthResult {
 }
 
 // ---------------------------------------------------------------------------
-// Board coverage
+// Board coverage — presets-based
 // ---------------------------------------------------------------------------
+
+export interface BoardPreset {
+    id: string;
+    /** e.g. "2400 × 1200 mm" */
+    label: string;
+    /** Brief hint of common use, e.g. "Standard plasterboard" */
+    description: string;
+    lengthMm: number;
+    widthMm: number;
+    /** lengthMm × widthMm / 1_000_000 */
+    coverageM2: number;
+}
 
 export interface BoardCoverageInput {
     areaM2: number;
-    boardLengthM: number;
-    boardWidthM: number;
-    wastage: number;        // percentage (e.g. 10)
+    /** Default: 10 */
+    wastagePercent?: number;
+    /** Pick a known board size by ID. */
+    presetId?: string;
+    /** Custom mode: length in mm. */
+    customLengthMm?: number;
+    /** Custom mode: width in mm. */
+    customWidthMm?: number;
+    /** Custom mode: optional display label. */
+    customLabel?: string;
 }
 
 export interface BoardCoverageResult {
-    boardAreaM2: number;
     boardsNeeded: number;
-    /** Total area covered by the boards ordered (boardsNeeded × boardAreaM2). */
-    totalCoverageM2: number;
+    boardLabel: string;
+    boardLengthMm: number;
+    boardWidthMm: number;
+    coveragePerBoardM2: number;
+    /** Area after wastage applied. */
+    grossAreaM2: number;
+    /** Original area input. */
+    netAreaM2: number;
+    wastagePercent: number;
+    materials: MaterialQuantity[];
 }
 
 // ---------------------------------------------------------------------------
@@ -502,6 +528,108 @@ export interface CavityTrayProduct {
     trayType: 'type-e' | 'ridge' | 'intermediate-left' | 'intermediate-right' | 'catchment-left' | 'catchment-right';
     tdsUrl?: string;
     lastVerified: string;
+}
+
+// ---------------------------------------------------------------------------
+// Flooring calculator I/O
+// ---------------------------------------------------------------------------
+
+/** Flooring product types sold by SELCO Builders Warehouse. */
+export type FlooringType = 'engineered' | 'laminate' | 'solid-wood' | 'lvt';
+
+/** Input for the flooring coverage calculator. */
+export interface FlooringInput {
+    /** Room floor area in m². */
+    areaM2: number;
+    /** User selects from dropdown: engineered, laminate, solid-wood, or lvt. */
+    flooringType: FlooringType;
+    /** Coverage per pack in m², read from the product box. */
+    coveragePerPackM2: number;
+    /** Laying pattern (defaults to brick-bond if omitted). */
+    layingPattern?: LayingPattern;
+}
+
+/** Result from the flooring coverage calculator. */
+export interface FlooringResult {
+    /** Packs needed, ceiling-rounded. */
+    packsNeeded: number;
+    /** Flooring type selected. */
+    flooringType: FlooringType;
+    /** Coverage per pack as entered. */
+    coveragePerPackM2: number;
+    /** Area after wastage applied. */
+    grossAreaM2: number;
+    /** Original area input. */
+    netAreaM2: number;
+    /** Wastage percentage applied. */
+    wastagePercent: number;
+    /** Laying pattern used. */
+    layingPattern: LayingPattern;
+    /** Bill of materials. */
+    materials: MaterialQuantity[];
+}
+
+/** Ancillary material estimate for flooring installations. */
+export interface FlooringAncillaryEstimate {
+    /** e.g. 'Underlay', 'Flooring Adhesive', 'Scotia Beading', 'Threshold Strip', 'DPM'. */
+    material: string;
+    /** Raw area/metres/count needed. */
+    quantityNeeded: number;
+    /** Chosen roll/bucket/length size. */
+    packSize: number;
+    /** Packs to buy, ceiling-rounded. */
+    packsNeeded: number;
+    /** e.g. 'rolls', 'buckets', 'lengths', 'strips'. */
+    unit: string;
+}
+
+/** Input for the room-level flooring orchestrator. */
+export interface FlooringRoomInput {
+    /** Room dimensions. */
+    room: {
+        lengthM: number;
+        widthM: number;
+        /** Optional L-shape extension length. */
+        secondLengthM?: number;
+        /** Optional L-shape extension width. */
+        secondWidthM?: number;
+    };
+    /** Flooring type: engineered, laminate, solid-wood, or lvt. */
+    flooringType: FlooringType;
+    /** Coverage per pack in m², from the product box. */
+    coveragePerPackM2: number;
+    /** Laying pattern (defaults to brick-bond). */
+    layingPattern?: LayingPattern;
+    /** Number of doorways (default 1). */
+    doorwayCount?: number;
+    /** Only relevant for solid-wood (default: floating). */
+    installMethod?: 'floating' | 'glue-down';
+    /** Default by type (true for engineered/laminate/solid-wood floating, false for lvt). */
+    includeUnderlay?: boolean;
+    /** Default false (true only for solid-wood glue-down). */
+    includeAdhesive?: boolean;
+    /** Default false. */
+    includeDPM?: boolean;
+    /** Default true for all types. */
+    includeScotia?: boolean;
+    /** Default true. */
+    includeThresholds?: boolean;
+}
+
+/** Result from the room-level flooring orchestrator. */
+export interface FlooringRoomResult {
+    /** Calculated floor area in m². */
+    floorAreaM2: number;
+    /** Room perimeter in metres. */
+    perimeterM: number;
+    /** Core flooring result (packs, wastage, etc.). */
+    flooringResult: FlooringResult;
+    /** Ancillary material estimates. */
+    ancillaries: FlooringAncillaryEstimate[];
+    /** Merged bill of materials. */
+    totalMaterials: MaterialQuantity[];
+    /** Non-fatal warnings. */
+    warnings: string[];
 }
 
 // ---------------------------------------------------------------------------
