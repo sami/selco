@@ -24,10 +24,12 @@ export interface CalculatorLayoutProps {
     description: string;
     /** Grouped form field sections */
     fieldGroups: FieldGroup[];
-    /** Results to display (empty array = show empty state) */
-    results: ResultItem[];
-    /** Whether the calculator has been calculated at least once */
-    hasResults: boolean;
+    /** @deprecated Pass a resultsSlot instead. Will be removed after all calculators migrate. */
+    results?: ResultItem[];
+    /** @deprecated Pass a resultsSlot instead. Will be removed after all calculators migrate. */
+    hasResults?: boolean;
+    /** Pre-rendered results node (e.g. <ResultCard />) — replaces results/hasResults when provided */
+    resultsSlot?: React.ReactNode;
     /** Calculate button handler */
     onCalculate: () => void;
     /** Reset button handler */
@@ -41,7 +43,7 @@ export interface CalculatorLayoutProps {
 /* ─── Sub-components ─── */
 /* ─── Sub-components ─── */
 
-/** Reusable form input with label and optional unit suffix */
+/** @deprecated Use NumberInput from ui/ instead */
 export interface FormInputProps {
     id: string;
     label: string;
@@ -98,7 +100,7 @@ export function FormInput({
     );
 }
 
-/** Reusable select dropdown with label */
+/** @deprecated Use FormField from ui/ instead */
 export interface FormSelectProps {
     id: string;
     label: string;
@@ -185,6 +187,7 @@ export default function CalculatorLayout({
     fieldGroups,
     results,
     hasResults,
+    resultsSlot,
     onCalculate,
     onReset,
     isCalculating = false,
@@ -235,7 +238,7 @@ export default function CalculatorLayout({
                         </button>
 
                         {/* Reset link */}
-                        {(hasResults || error) && (
+                        {(resultsSlot || hasResults || error) && (
                             <button
                                 type="button"
                                 onClick={onReset}
@@ -252,7 +255,7 @@ export default function CalculatorLayout({
                     <div
                         className={`
               rounded-[--radius-card] border transition-colors duration-300
-              ${hasResults
+              ${resultsSlot || hasResults
                                 ? 'bg-[--color-surface] border-[--color-success]/30 shadow-sm'
                                 : 'bg-[--color-surface] border-[--color-border]'
                             }
@@ -262,7 +265,12 @@ export default function CalculatorLayout({
                             <h2 className="text-sm font-semibold text-[--color-muted-foreground] uppercase tracking-wider mb-4">
                                 Results
                             </h2>
-                            {hasResults ? <ResultsPanel results={results} /> : <ResultsEmptyState />}
+                            {resultsSlot
+                                ? resultsSlot
+                                : hasResults
+                                    ? <ResultsPanel results={results!} />
+                                    : <ResultsEmptyState />
+                            }
                         </div>
 
 
