@@ -7,14 +7,12 @@ import { ResultCard } from './ui/ResultCard';
 import { calculateMasonryProject } from '../calculators/masonry-project';
 import { BRICK_PRODUCTS, BLOCK_PRODUCTS } from '../data/masonry-products';
 import type { MasonryProjectResult } from '../calculators/types';
+import { MASONRY_STEPS } from '../projects/masonry';
 
-const STEPS = [
-    { label: 'Wall dimensions' },
-    { label: 'Wall type & products' },
-    { label: 'Openings', optional: true },
-    { label: 'Mortar & options' },
-    { label: 'Results' },
-];
+const STEPS = MASONRY_STEPS.map(s => ({
+    label: s.label,
+    optional: s.optional,
+}));
 
 const WALL_TYPE_OPTIONS = [
     { value: 'brick', label: 'Brick wall (single leaf)' },
