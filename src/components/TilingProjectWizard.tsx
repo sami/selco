@@ -1,6 +1,7 @@
 import React, { useEffect, useMemo, useState } from 'react';
 import { NumberInput } from './ui/NumberInput';
 import { FormField } from './ui/FormField';
+import { ProductSelector } from './ui/ProductSelector';
 import { calculateTiles } from '../calculators/tiles';
 import { calculateAdhesiveByBedDepth } from '../calculators/adhesive';
 import { calculateGrout } from '../calculators/grout';
@@ -635,15 +636,12 @@ export default function TilingProjectWizard() {
       {currentStep?.id === 'grout' && (
         <div className="space-y-6">
           <div className="bg-white rounded-2xl border border-border shadow-sm p-6 space-y-6">
-            <FormField
-              type="select"
+            <ProductSelector
               id="grout-product"
               label="Grout product"
+              products={GROUT_PRODUCTS.filter(p => application !== 'floor' || !p.restrictions?.includes('walls-only'))}
               value={selectedGroutProduct}
               onChange={(e) => setSelectedGroutProduct(e.target.value)}
-              options={GROUT_PRODUCTS
-                .filter(p => application !== 'floor' || !p.restrictions?.includes('walls-only'))
-                .map(p => ({ value: p.id, label: `${p.brand} ${p.name}` }))}
             />
             <div className="grid gap-4 sm:grid-cols-2">
               <NumberInput
@@ -733,13 +731,12 @@ export default function TilingProjectWizard() {
             ? renderOptionalNotice('Primer', () => setSkipPrimer(false))
             : (
               <div className="bg-white rounded-2xl border border-border shadow-sm p-6 space-y-6">
-                <FormField
-                  type="select"
+                <ProductSelector
                   id="primer-product"
                   label="Product"
+                  products={PRIMER_PRODUCTS}
                   value={selectedPrimerProduct}
                   onChange={(e) => setSelectedPrimerProduct(e.target.value)}
-                  options={PRIMER_PRODUCTS.map(p => ({ value: p.id, label: `${p.brand} ${p.name}` }))}
                 />
                 <NumberInput
                   id="primer-coats"
@@ -779,13 +776,12 @@ export default function TilingProjectWizard() {
             ? renderOptionalNotice('Backer board', () => setSkipBacker(false))
             : (
               <div className="bg-white rounded-2xl border border-border shadow-sm p-6 space-y-6">
-                <FormField
-                  type="select"
+                <ProductSelector
                   id="backer-product"
                   label="Product"
+                  products={BACKER_BOARD_PRODUCTS}
                   value={selectedBackerProduct}
                   onChange={(e) => setSelectedBackerProduct(e.target.value)}
-                  options={BACKER_BOARD_PRODUCTS.map(p => ({ value: p.id, label: `${p.brand} ${p.name}` }))}
                 />
 
                 <div className="grid gap-4 sm:grid-cols-2">
@@ -830,13 +826,12 @@ export default function TilingProjectWizard() {
             ? renderOptionalNotice('Tanking', () => setSkipTanking(false))
             : (
               <div className="bg-white rounded-2xl border border-border shadow-sm p-6 space-y-6">
-                <FormField
-                  type="select"
+                <ProductSelector
                   id="tanking-product"
                   label="Product"
+                  products={TANKING_PRODUCTS}
                   value={selectedTankingProduct}
                   onChange={(e) => setSelectedTankingProduct(e.target.value)}
-                  options={TANKING_PRODUCTS.map(p => ({ value: p.id, label: `${p.brand} ${p.name}` }))}
                 />
 
                 <div className="grid gap-4 sm:grid-cols-2">
@@ -868,13 +863,12 @@ export default function TilingProjectWizard() {
             ? renderOptionalNotice('Self-levelling compound', () => setSkipSlc(false))
             : (
               <div className="bg-white rounded-2xl border border-border shadow-sm p-6 space-y-6">
-                <FormField
-                  type="select"
+                <ProductSelector
                   id="slc-product"
                   label="Product"
+                  products={SLC_PRODUCTS}
                   value={selectedSLCProduct}
                   onChange={(e) => setSelectedSLCProduct(e.target.value)}
-                  options={SLC_PRODUCTS.map(p => ({ value: p.id, label: `${p.brand} ${p.name}` }))}
                 />
                 <div className="grid gap-4 sm:grid-cols-2">
                   <NumberInput
