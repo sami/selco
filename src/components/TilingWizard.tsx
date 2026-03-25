@@ -1,5 +1,6 @@
 import React, { useState, useCallback, useMemo } from 'react';
-import { FormInput, FormSelect } from './CalculatorLayout';
+import { NumberInput } from './ui/NumberInput';
+import { FormField } from './ui/FormField';
 import { calculateTiles, COMMON_TILE_SIZES } from '../calculators/tiles';
 import { calculateAdhesive } from '../calculators/adhesive';
 import { ADHESIVE_PRODUCTS, GROUT_PRODUCTS } from '../data/tiling-products';
@@ -191,7 +192,7 @@ export default function TilingWizard() {
 
                     <div className="bg-white rounded-2xl border border-border shadow-sm p-6 space-y-6">
                         <div className="grid grid-cols-2 gap-4">
-                            <FormInput
+                            <NumberInput
                                 id="room-length"
                                 label="Room length"
                                 unit="m"
@@ -202,7 +203,7 @@ export default function TilingWizard() {
                                 step={0.01}
                                 required
                             />
-                            <FormInput
+                            <NumberInput
                                 id="room-width"
                                 label="Room width"
                                 unit="m"
@@ -244,11 +245,12 @@ export default function TilingWizard() {
                         </div>
 
                         <div className="space-y-4">
-                            <FormSelect
+                            <FormField
+                                type="select"
                                 id="tile-size"
                                 label="Tile size"
                                 value={selectedTileSize}
-                                onChange={handleTileSizeChange}
+                                onChange={(e) => handleTileSizeChange(e.target.value)}
                                 options={[
                                     ...COMMON_TILE_SIZES.map(s => ({ value: `${s.width}x${s.height}`, label: s.label })),
                                     { value: 'custom', label: 'Custom size...' }
@@ -256,14 +258,14 @@ export default function TilingWizard() {
                             />
                             {isCustomTileSize && (
                                 <div className="grid grid-cols-2 gap-4">
-                                    <FormInput id="tile-width" label="Width" unit="mm" value={tileWidth} onChange={setTileWidth} required />
-                                    <FormInput id="tile-height" label="Height" unit="mm" value={tileHeight} onChange={setTileHeight} required />
+                                    <NumberInput id="tile-width" label="Width" unit="mm" value={tileWidth} onChange={setTileWidth} required />
+                                    <NumberInput id="tile-height" label="Height" unit="mm" value={tileHeight} onChange={setTileHeight} required />
                                 </div>
                             )}
                         </div>
 
                         <div className="grid grid-cols-2 gap-4">
-                            <FormInput
+                            <NumberInput
                                 id="tile-wastage"
                                 label="Wastage"
                                 unit="%"
@@ -271,7 +273,7 @@ export default function TilingWizard() {
                                 onChange={setTileWastage}
                                 placeholder="10"
                             />
-                            <FormInput
+                            <NumberInput
                                 id="pack-size"
                                 label="Pack size (optional)"
                                 unit="tiles"
@@ -304,11 +306,12 @@ export default function TilingWizard() {
                             </span>
                         </div>
 
-                        <FormSelect
+                        <FormField
+                            type="select"
                             id="adhesive-product"
                             label="Product"
                             value={selectedProduct}
-                            onChange={setSelectedProduct}
+                            onChange={(e) => setSelectedProduct(e.target.value)}
                             options={ADHESIVE_PRODUCTS.map(p => ({ value: p.id, label: `${p.brand} ${p.name}` }))}
                         />
 
@@ -343,17 +346,18 @@ export default function TilingWizard() {
                         </div>
 
                         <div className="grid grid-cols-2 gap-4">
-                            <FormSelect
+                            <FormField
+                                type="select"
                                 id="substrate"
                                 label="Substrate condition"
                                 value={substrate}
-                                onChange={setSubstrate}
+                                onChange={(e) => setSubstrate(e.target.value)}
                                 options={[
                                     { value: 'even', label: 'Even (Standard)' },
                                     { value: 'uneven', label: 'Uneven (+20%)' },
                                 ]}
                             />
-                            <FormInput
+                            <NumberInput
                                 id="adhesive-wastage"
                                 label="Wastage"
                                 unit="%"
@@ -384,30 +388,32 @@ export default function TilingWizard() {
                         </div>
 
                         <div className="space-y-4">
-                            <FormSelect
+                            <FormField
+                                type="select"
                                 id="grout-product"
                                 label="Grout product"
                                 value={selectedGroutProduct}
-                                onChange={setSelectedGroutProduct}
+                                onChange={(e) => setSelectedGroutProduct(e.target.value)}
                                 options={GROUT_PRODUCTS.map(p => ({ value: p.id, label: `${p.brand} ${p.name}` }))}
                             />
-                            <FormSelect
+                            <FormField
+                                type="select"
                                 id="joint-width"
                                 label="Joint width"
                                 value={selectedJointWidth}
-                                onChange={setSelectedJointWidth}
+                                onChange={(e) => setSelectedJointWidth(e.target.value)}
                                 options={[
                                     ...COMMON_JOINT_WIDTHS.map(j => ({ value: String(j.value), label: j.label })),
                                     { value: 'custom', label: 'Custom width...' }
                                 ]}
                             />
                             {isCustomJointWidth && (
-                                <FormInput id="custom-joint" label="Custom joint width" unit="mm" value={customJointWidth} onChange={setCustomJointWidth} required />
+                                <NumberInput id="custom-joint" label="Custom joint width" unit="mm" value={customJointWidth} onChange={setCustomJointWidth} required />
                             )}
                         </div>
 
                         <div className="grid grid-cols-2 gap-4">
-                            <FormInput
+                            <NumberInput
                                 id="tile-depth"
                                 label="Tile thickness"
                                 unit="mm"
@@ -416,7 +422,7 @@ export default function TilingWizard() {
                                 placeholder="e.g. 8"
                                 required
                             />
-                            <FormInput
+                            <NumberInput
                                 id="grout-wastage"
                                 label="Wastage"
                                 unit="%"
@@ -447,21 +453,23 @@ export default function TilingWizard() {
                         </div>
 
                         <div className="space-y-4">
-                            <FormSelect
+                            <FormField
+                                type="select"
                                 id="spacer-size"
                                 label="Spacer size"
                                 value={spacerSize}
-                                onChange={setSpacerSize}
+                                onChange={(e) => setSpacerSize(e.target.value)}
                                 options={spacerSizeOptions}
                             />
-                            <FormSelect
+                            <FormField
+                                type="select"
                                 id="layout"
                                 label="Layout pattern"
                                 value={layout}
-                                onChange={setLayout}
+                                onChange={(e) => setLayout(e.target.value)}
                                 options={layoutOptions}
                             />
-                            <FormInput
+                            <NumberInput
                                 id="spacer-wastage"
                                 label="Wastage"
                                 unit="%"
