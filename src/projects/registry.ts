@@ -51,8 +51,7 @@ export const CALCULATOR_REGISTRY: CalculatorMeta[] = [
         description:
             'Work out quantities for laminate, engineered wood, or vinyl click flooring including underlay.',
         category: 'project',
-        status: 'coming-soon',
-        comingSoon: true,
+        status: 'live',
         path: '/hard-flooring/',
         icon: '/images/hero/hero-flooring.svg',
     },
