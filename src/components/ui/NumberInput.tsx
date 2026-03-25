@@ -1,10 +1,9 @@
-import type { ChangeEvent } from 'react';
-
 interface NumberInputProps {
     id: string;
     label: string;
-    value: number | '';
-    onChange: (e: ChangeEvent<HTMLInputElement>) => void;
+    value: string | number;
+    onChange: (value: string) => void;
+    placeholder?: string;
     unit?: string;
     min?: number;
     max?: number;
@@ -20,6 +19,7 @@ export function NumberInput({
     label,
     value,
     onChange,
+    placeholder,
     unit,
     min,
     max,
@@ -42,7 +42,8 @@ export function NumberInput({
                     type="number"
                     className={`form-input${error ? ' input-error' : ''}`}
                     value={value}
-                    onChange={onChange}
+                    onChange={(e) => onChange(e.target.value)}
+                    placeholder={placeholder}
                     min={min}
                     max={max}
                     step={step}
