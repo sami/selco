@@ -1,12 +1,11 @@
 import React, { useState, useCallback } from 'react';
-import CalculatorLayout, {
-    FormInput,
-    FormSelect,
-    type ResultItem,
-    type FieldGroup,
-} from './CalculatorLayout';
+import CalculatorLayout, { type FieldGroup } from './CalculatorLayout';
+import { NumberInput } from './ui/NumberInput';
+import { FormField } from './ui/FormField';
+import { ResultCard } from './ui/ResultCard';
 import { calculateSpacers, SPACER_SIZES, SPACERS_PER_TILE_BY_PATTERN } from '../calculators/spacers';
 import type { LayingPattern } from '../calculators/types';
+import type { SpacersResult } from '../calculators/types';
 
 const spacerSizeOptions = SPACER_SIZES.map((s) => ({
     value: String(s.value),
@@ -28,8 +27,7 @@ export default function SpacersCalculator() {
     const [layout, setLayout] = useState<LayingPattern>('straight');
     const [wastage, setWastage] = useState('10');
     const [packSize, setPackSize] = useState('250');
-    const [results, setResults] = useState<ResultItem[]>([]);
-    const [hasResults, setHasResults] = useState(false);
+    const [result, setResult] = useState<SpacersResult | null>(null);
     const [error, setError] = useState<string | null>(null);
 
     const validateInputs = () => {
@@ -48,7 +46,7 @@ export default function SpacersCalculator() {
     const handleCalculate = useCallback(() => {
         setError(null);
         const validationError = validateInputs();
-        if (validationError) { setError(validationError); setHasResults(false); return; }
+        if (validationError) { setError(validationError); setResult(null); return; }
 
         try {
             const tw = parseFloat(tileWidth);
@@ -58,22 +56,17 @@ export default function SpacersCalculator() {
             const tilesNeeded = Math.ceil((parseFloat(area) / tileAreaM2) * (1 + wa / 100));
             const ps = parseInt(packSize, 10);
 
-            const result = calculateSpacers({
+            const r = calculateSpacers({
                 tilesNeeded,
                 spacerSizeMm: parseFloat(spacerSize),
                 layingPattern: layout,
                 packSize: ps > 0 ? ps : 250,
             });
 
-            setResults([
-                { label: 'Spacers needed', value: `${result.spacersNeeded} × ${spacerSize} mm spacers`, primary: true },
-                { label: `Packs needed (${packSize} per pack)`, value: `${result.packsNeeded} packs`, primary: true },
-                { label: 'Per tile', value: `${result.spacersPerTile} spacers per tile` },
-            ]);
-            setHasResults(true);
+            setResult(r);
         } catch (e) {
             setError(e instanceof Error ? e.message : 'An unexpected error occurred.');
-            setHasResults(false);
+            setResult(null);
         }
     }, [area, tileWidth, tileHeight, layout, wastage, spacerSize, packSize]);
 
@@ -85,8 +78,7 @@ export default function SpacersCalculator() {
         setLayout('straight');
         setWastage('10');
         setPackSize('250');
-        setResults([]);
-        setHasResults(false);
+        setResult(null);
         setError(null);
     }, []);
 
@@ -94,7 +86,7 @@ export default function SpacersCalculator() {
         {
             legend: 'Area to cover',
             children: (
-                <FormInput
+                <NumberInput
                     id="area"
                     label="Total area"
                     unit="m²"
@@ -102,7 +94,7 @@ export default function SpacersCalculator() {
                     onChange={(v) => { setArea(v); setError(null); }}
                     placeholder="e.g. 12.5"
                     min={0.01}
-                    step="0.01"
+                    step={0.01}
                     required
                 />
             ),
@@ -111,7 +103,7 @@ export default function SpacersCalculator() {
             legend: 'Tile dimensions',
             children: (
                 <div className="grid grid-cols-2 gap-4">
-                    <FormInput
+                    <NumberInput
                         id="tile-width"
                         label="Tile width"
                         unit="mm"
@@ -122,7 +114,7 @@ export default function SpacersCalculator() {
                         step={1}
                         required
                     />
-                    <FormInput
+                    <NumberInput
                         id="tile-height"
                         label="Tile height"
                         unit="mm"
@@ -140,18 +132,20 @@ export default function SpacersCalculator() {
             legend: 'Spacer & layout',
             children: (
                 <div className="space-y-4">
-                    <FormSelect
+                    <FormField
                         id="spacer-size"
                         label="Spacer size"
+                        type="select"
                         value={spacerSize}
-                        onChange={setSpacerSize}
+                        onChange={(e) => setSpacerSize(e.target.value)}
                         options={spacerSizeOptions}
                     />
-                    <FormSelect
+                    <FormField
                         id="layout"
                         label="Layout pattern"
+                        type="select"
                         value={layout}
-                        onChange={(v) => setLayout(v as LayingPattern)}
+                        onChange={(e) => setLayout(e.target.value as LayingPattern)}
                         options={layoutOptions}
                     />
                 </div>
@@ -161,7 +155,7 @@ export default function SpacersCalculator() {
             legend: 'Options',
             children: (
                 <div className="space-y-4">
-                    <FormInput
+                    <NumberInput
                         id="wastage"
                         label="Wastage allowance"
                         unit="%"
@@ -172,7 +166,7 @@ export default function SpacersCalculator() {
                         max={50}
                         step={1}
                     />
-                    <FormInput
+                    <NumberInput
                         id="pack-size"
                         label="Pack size"
                         unit="spacers"
@@ -192,8 +186,7 @@ export default function SpacersCalculator() {
             title="Spacers Calculator"
             description="Calculate how many tile spacers you need for your project."
             fieldGroups={fieldGroups}
-            results={results}
-            hasResults={hasResults}
+            resultsSlot={result && <ResultCard title="Spacers" materials={result.materials} />}
             onCalculate={handleCalculate}
             onReset={handleReset}
             error={error}
