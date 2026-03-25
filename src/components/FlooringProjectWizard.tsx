@@ -5,13 +5,12 @@ import { FormField } from './ui/FormField';
 import { ResultCard } from './ui/ResultCard';
 import { calculateFlooringRoom } from '../calculators/flooring-room';
 import type { FlooringRoomResult, FlooringType, LayingPattern } from '../calculators/types';
+import { FLOORING_STEPS } from '../projects/flooring';
 
-const STEPS = [
-    { label: 'Room dimensions' },
-    { label: 'Flooring type' },
-    { label: 'Ancillaries' },
-    { label: 'Results' },
-];
+const STEPS = FLOORING_STEPS.map(s => ({
+    label: s.label,
+    optional: s.optional,
+}));
 
 const FLOORING_TYPE_OPTIONS = [
     { value: 'engineered', label: 'Engineered wood' },
