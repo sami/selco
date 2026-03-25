@@ -12,6 +12,7 @@ import { calculateBackerBoard } from '../calculators/backer-board';
 import { calculateTanking } from '../calculators/tanking';
 import { calculateSLC } from '../calculators/slc';
 import { convertLength } from '../calculators/conversions';
+import { WizardShell } from './ui/WizardShell';
 
 import type { LayingPattern } from '../calculators/types';
 
@@ -405,21 +406,14 @@ export default function TilingProjectWizard() {
   );
 
   return (
-    <div className="space-y-8">
-      <div className="space-y-2">
-        <div className="flex items-center gap-2">
-          {steps.map((step, index) => (
-            <div
-              key={step.id}
-              className={`flex-1 h-2 rounded-full transition-colors ${index <= currentIndex ? 'bg-brand-blue' : 'bg-muted/40'}`}
-            />
-          ))}
-        </div>
-        <p className="text-sm text-muted-foreground font-medium">
-          Step {currentIndex + 1} of {steps.length} — {currentStep?.label}
-        </p>
-      </div>
-
+    <WizardShell
+      steps={steps}
+      currentStep={currentIndex}
+      onNext={goNext}
+      onBack={goBack}
+      onSkip={() => currentStep && handleSkip(currentStep.id)}
+      onStartOver={() => setCurrentIndex(0)}
+    >
       {currentStep?.id === 'setup' && (
         <div className="space-y-6">
           <div className="bg-white rounded-2xl border border-border shadow-sm p-6 space-y-6">
@@ -757,14 +751,6 @@ export default function TilingProjectWizard() {
                     <p className="text-lg font-semibold text-brand-blue">{formatWhole(primerMetrics.packs)} packs</p>
                   </div>
                 </div>
-
-                <button
-                  type="button"
-                  onClick={() => handleSkip('primer')}
-                  className="btn-ghost"
-                >
-                  Skip this step
-                </button>
               </div>
             )}
         </div>
@@ -794,14 +780,6 @@ export default function TilingProjectWizard() {
                     <p className="text-lg font-semibold text-brand-blue">{formatWhole(backerMetrics.boards)} boards</p>
                   </div>
                 </div>
-
-                <button
-                  type="button"
-                  onClick={() => handleSkip('backer')}
-                  className="btn-ghost"
-                >
-                  Skip this step
-                </button>
               </div>
             )}
         </div>
@@ -844,14 +822,6 @@ export default function TilingProjectWizard() {
                     <p className="text-lg font-semibold text-brand-blue">{tankingMetrics.coveragePerKit} m²</p>
                   </div>
                 </div>
-
-                <button
-                  type="button"
-                  onClick={() => handleSkip('tanking')}
-                  className="btn-ghost"
-                >
-                  Skip this step
-                </button>
               </div>
             )}
         </div>
@@ -901,14 +871,6 @@ export default function TilingProjectWizard() {
                     <p className="text-lg font-semibold text-brand-blue">{formatWhole(slcMetrics.bags)} bags</p>
                   </div>
                 </div>
-
-                <button
-                  type="button"
-                  onClick={() => handleSkip('slc')}
-                  className="btn-ghost"
-                >
-                  Skip this step
-                </button>
               </div>
             )}
         </div>
@@ -999,37 +961,6 @@ export default function TilingProjectWizard() {
         </div>
       )}
 
-      <div className="flex flex-wrap items-center justify-between gap-4">
-        <button
-          type="button"
-          onClick={goBack}
-          disabled={currentIndex === 0}
-          className="btn-ghost"
-        >
-          Back
-        </button>
-
-        <div className="flex flex-wrap gap-3">
-          {currentStep?.id !== 'summary' && (
-            <button
-              type="button"
-              onClick={goNext}
-              className="btn-accent"
-            >
-              Next
-            </button>
-          )}
-          {currentStep?.id === 'summary' && (
-            <button
-              type="button"
-              onClick={() => setCurrentIndex(0)}
-              className="btn-ghost"
-            >
-              Start over
-            </button>
-          )}
-        </div>
-      </div>
-    </div>
+    </WizardShell>
   );
 }
