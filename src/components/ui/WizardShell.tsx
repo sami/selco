@@ -2,6 +2,7 @@ import type { ReactNode } from 'react';
 
 interface Step {
     label: string;
+    optional?: boolean;
 }
 
 interface WizardShellProps {
@@ -10,6 +11,8 @@ interface WizardShellProps {
     onNext: () => void;
     onBack: () => void;
     onCalculate?: () => void;
+    onSkip?: () => void;
+    onStartOver?: () => void;
     children: ReactNode;
 }
 
@@ -19,6 +22,8 @@ export function WizardShell({
     onNext,
     onBack,
     onCalculate,
+    onSkip,
+    onStartOver,
     children,
 }: WizardShellProps) {
     const isFirstStep = currentStep === 0;
@@ -26,26 +31,28 @@ export function WizardShell({
 
     return (
         <div>
-            {/* Step indicator */}
-            <nav aria-label="Wizard steps">
-                <ol className="flex gap-4">
-                    {steps.map((step, index) => (
-                        <li
+            {/* Progress bar */}
+            <div className="space-y-2">
+                <div className="flex items-center gap-2">
+                    {steps.map((_, index) => (
+                        <div
                             key={index}
-                            className={`text-sm font-medium ${index === currentStep ? 'text-brand-navy' : 'text-text-muted'}`}
-                            aria-current={index === currentStep ? 'step' : undefined}
-                        >
-                            {step.label}
-                        </li>
+                            className={`flex-1 h-2 rounded-full transition-colors ${
+                                index <= currentStep ? 'bg-brand-blue' : 'bg-muted/40'
+                            }`}
+                        />
                     ))}
-                </ol>
-            </nav>
+                </div>
+                <p className="text-sm text-text-muted font-medium">
+                    Step {currentStep + 1} of {steps.length} — {steps[currentStep]?.label}
+                </p>
+            </div>
 
             {/* Step content */}
             <div className="mt-6">{children}</div>
 
             {/* Navigation */}
-            <div className="mt-6 flex items-center gap-3">
+            <div className="mt-6 flex flex-wrap items-center justify-between gap-4">
                 <button
                     type="button"
                     className="btn-ghost"
@@ -55,23 +62,33 @@ export function WizardShell({
                     Back
                 </button>
 
-                {isLastStep ? (
-                    <button
-                        type="button"
-                        className="btn-primary"
-                        onClick={onCalculate}
-                    >
-                        Calculate
-                    </button>
-                ) : (
-                    <button
-                        type="button"
-                        className="btn-accent"
-                        onClick={onNext}
-                    >
-                        Next
-                    </button>
-                )}
+                <div className="flex flex-wrap gap-3">
+                    {isLastStep ? (
+                        <>
+                            {onCalculate && (
+                                <button type="button" className="btn-primary" onClick={onCalculate}>
+                                    Calculate
+                                </button>
+                            )}
+                            {onStartOver && (
+                                <button type="button" className="btn-ghost" onClick={onStartOver}>
+                                    Start over
+                                </button>
+                            )}
+                        </>
+                    ) : (
+                        <>
+                            {steps[currentStep]?.optional && onSkip && (
+                                <button type="button" className="btn-ghost" onClick={onSkip}>
+                                    Skip this step
+                                </button>
+                            )}
+                            <button type="button" className="btn-accent" onClick={onNext}>
+                                Next
+                            </button>
+                        </>
+                    )}
+                </div>
             </div>
         </div>
     );

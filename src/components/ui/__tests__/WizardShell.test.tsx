@@ -4,11 +4,18 @@ import { WizardShell } from '../WizardShell';
 
 const steps = [{ label: 'Room Details' }, { label: 'Tile Spec' }, { label: 'Summary' }];
 
-test('renders all step labels', () => {
+test('renders progress bar with step label text', () => {
+    render(
+        <WizardShell steps={[{ label: 'A' }, { label: 'B' }, { label: 'C' }]} currentStep={1} onNext={() => {}} onBack={() => {}}>
+            <div />
+        </WizardShell>
+    );
+    expect(screen.getByText('Step 2 of 3 — B')).toBeInTheDocument();
+});
+
+test('renders current step label in progress subtitle', () => {
     render(<WizardShell steps={steps} currentStep={0} onNext={() => {}} onBack={() => {}}><div /></WizardShell>);
-    expect(screen.getByText('Room Details')).toBeInTheDocument();
-    expect(screen.getByText('Tile Spec')).toBeInTheDocument();
-    expect(screen.getByText('Summary')).toBeInTheDocument();
+    expect(screen.getByText('Step 1 of 3 — Room Details')).toBeInTheDocument();
 });
 
 test('renders children content', () => {
@@ -75,4 +82,55 @@ test('calls onCalculate when Calculate button is clicked on last step', () => {
     );
     fireEvent.click(screen.getByRole('button', { name: /calculate/i }));
     expect(onCalculate).toHaveBeenCalledOnce();
+});
+
+test('shows Skip button on optional steps when onSkip provided', () => {
+    const onSkip = vi.fn();
+    render(
+        <WizardShell
+            steps={[{ label: 'Step 1' }, { label: 'Optional', optional: true }, { label: 'Summary' }]}
+            currentStep={1}
+            onNext={() => {}}
+            onBack={() => {}}
+            onSkip={onSkip}
+        >
+            Content
+        </WizardShell>
+    );
+    const skipBtn = screen.getByText('Skip this step');
+    fireEvent.click(skipBtn);
+    expect(onSkip).toHaveBeenCalled();
+});
+
+test('does not show Skip button on non-optional steps', () => {
+    render(
+        <WizardShell
+            steps={[{ label: 'Required' }, { label: 'Also required' }]}
+            currentStep={0}
+            onNext={() => {}}
+            onBack={() => {}}
+            onSkip={() => {}}
+        >
+            Content
+        </WizardShell>
+    );
+    expect(screen.queryByText('Skip this step')).not.toBeInTheDocument();
+});
+
+test('shows Start over button on last step when onStartOver provided', () => {
+    const onStartOver = vi.fn();
+    render(
+        <WizardShell
+            steps={[{ label: 'Step 1' }, { label: 'Summary' }]}
+            currentStep={1}
+            onNext={() => {}}
+            onBack={() => {}}
+            onStartOver={onStartOver}
+        >
+            Content
+        </WizardShell>
+    );
+    const btn = screen.getByText('Start over');
+    fireEvent.click(btn);
+    expect(onStartOver).toHaveBeenCalled();
 });
