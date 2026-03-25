@@ -1,11 +1,10 @@
 import React, { useState, useCallback } from 'react';
-import CalculatorLayout, {
-    FormInput,
-    FormSelect,
-    type ResultItem,
-    type FieldGroup,
-} from './CalculatorLayout';
+import CalculatorLayout, { type FieldGroup } from './CalculatorLayout';
+import { NumberInput } from './ui/NumberInput';
+import { FormField } from './ui/FormField';
+import { ResultCard } from './ui/ResultCard';
 import { calculateTiles, COMMON_TILE_SIZES } from '../calculators/tiles';
+import type { TileResult } from '../calculators/types';
 
 const CUSTOM_VALUE = 'custom';
 
@@ -25,8 +24,7 @@ export default function TileCalculator() {
     const [tileHeight, setTileHeight] = useState('300');
     const [wastage, setWastage] = useState('10');
     const [packSize, setPackSize] = useState('');
-    const [results, setResults] = useState<ResultItem[]>([]);
-    const [hasResults, setHasResults] = useState(false);
+    const [result, setResult] = useState<TileResult | null>(null);
     const [error, setError] = useState<string | null>(null);
 
     const isCustom = selectedSize === CUSTOM_VALUE;
@@ -62,13 +60,13 @@ export default function TileCalculator() {
         const validationError = validateInputs();
         if (validationError) {
             setError(validationError);
-            setHasResults(false);
+            setResult(null);
             return;
         }
 
         try {
             const ps = parseFloat(packSize);
-            const result = calculateTiles({
+            const calcResult = calculateTiles({
                 roomLengthM: parseFloat(roomWidth),
                 roomWidthM: parseFloat(roomHeight),
                 tileLengthMm: parseFloat(tileWidth),
@@ -78,38 +76,10 @@ export default function TileCalculator() {
                 packSize: ps > 0 ? ps : 1,
             });
 
-            const tilesWithoutWaste = Math.ceil(result.totalAreaM2 * result.tilesPerM2);
-            const wastageExtra = result.tilesNeeded - tilesWithoutWaste;
-
-            const items: ResultItem[] = [
-                {
-                    label: 'Tiles needed',
-                    value: `${result.tilesNeeded} tiles`,
-                    primary: true,
-                },
-                {
-                    label: 'Coverage area',
-                    value: `${result.totalAreaM2.toFixed(2)} m²`,
-                },
-                {
-                    label: `Extra for wastage (${result.wastePercent}%)`,
-                    value: `${wastageExtra} tiles`,
-                },
-            ];
-
-            if (ps > 0) {
-                items.push({
-                    label: `Packs needed (${packSize} per pack)`,
-                    value: `${result.packsNeeded} packs`,
-                    primary: true,
-                });
-            }
-
-            setResults(items);
-            setHasResults(true);
+            setResult(calcResult);
         } catch (e) {
             setError(e instanceof Error ? e.message : 'An unexpected error occurred.');
-            setHasResults(false);
+            setResult(null);
         }
     }, [roomWidth, roomHeight, tileWidth, tileHeight, wastage, packSize]);
 
@@ -121,8 +91,7 @@ export default function TileCalculator() {
         setTileHeight('300');
         setWastage('10');
         setPackSize('');
-        setResults([]);
-        setHasResults(false);
+        setResult(null);
         setError(null);
     }, []);
 
@@ -131,7 +100,7 @@ export default function TileCalculator() {
             legend: 'Room dimensions',
             children: (
                 <div className="grid grid-cols-2 gap-4">
-                    <FormInput
+                    <NumberInput
                         id="room-width"
                         label="Width"
                         unit="metres"
@@ -139,10 +108,10 @@ export default function TileCalculator() {
                         onChange={(v) => { setRoomWidth(v); setError(null); }}
                         placeholder="e.g. 3.5"
                         min={0.01}
-                        step="0.01"
+                        step={0.01}
                         required
                     />
-                    <FormInput
+                    <NumberInput
                         id="room-height"
                         label="Height / Length"
                         unit="metres"
@@ -150,7 +119,7 @@ export default function TileCalculator() {
                         onChange={(v) => { setRoomHeight(v); setError(null); }}
                         placeholder="e.g. 2.4"
                         min={0.01}
-                        step="0.01"
+                        step={0.01}
                         required
                     />
                 </div>
@@ -160,16 +129,17 @@ export default function TileCalculator() {
             legend: 'Tile size',
             children: (
                 <div className="space-y-4">
-                    <FormSelect
+                    <FormField
                         id="tile-size-preset"
+                        type="select"
                         label="Common tile sizes"
                         value={selectedSize}
-                        onChange={handleSizeChange}
+                        onChange={(e) => handleSizeChange(e.target.value)}
                         options={tileSizeOptions}
                     />
                     {isCustom && (
                         <div className="grid grid-cols-2 gap-4">
-                            <FormInput
+                            <NumberInput
                                 id="tile-width"
                                 label="Tile width"
                                 unit="mm"
@@ -180,7 +150,7 @@ export default function TileCalculator() {
                                 step={1}
                                 required
                             />
-                            <FormInput
+                            <NumberInput
                                 id="tile-height"
                                 label="Tile height"
                                 unit="mm"
@@ -200,7 +170,7 @@ export default function TileCalculator() {
             legend: 'Options',
             children: (
                 <div className="space-y-4">
-                    <FormInput
+                    <NumberInput
                         id="wastage"
                         label="Wastage allowance"
                         unit="%"
@@ -211,7 +181,7 @@ export default function TileCalculator() {
                         max={50}
                         step={1}
                     />
-                    <FormInput
+                    <NumberInput
                         id="pack-size"
                         label="Pack size (optional)"
                         unit="tiles/pack"
@@ -231,8 +201,7 @@ export default function TileCalculator() {
             title="Tile Calculator"
             description="Work out how many tiles you need for your wall or floor."
             fieldGroups={fieldGroups}
-            results={results}
-            hasResults={hasResults}
+            resultsSlot={result && <ResultCard title="Tiles" materials={result.materials} warnings={result.warnings} />}
             onCalculate={handleCalculate}
             onReset={handleReset}
             error={error}
