@@ -13,6 +13,7 @@ import { calculateTanking } from '../calculators/tanking';
 import { calculateSLC } from '../calculators/slc';
 import { convertLength } from '../calculators/conversions';
 import { WizardShell } from './ui/WizardShell';
+import { TILING_STEPS } from '../projects/tiling';
 
 import type { LayingPattern } from '../calculators/types';
 
@@ -120,24 +121,17 @@ export default function TilingProjectWizard() {
   const [skipTanking, setSkipTanking] = useState(false);
   const [skipSlc, setSkipSlc] = useState(false);
 
+  /** Map config step IDs to wizard StepIds where they differ. */
+  const CONFIG_ID_TO_STEP_ID: Record<string, StepId> = { 'backer-board': 'backer' };
+
   const steps = useMemo(() => {
-    const base: { id: StepId; label: string; optional?: boolean }[] = [
-      { id: 'setup', label: 'Area & tile setup' },
-      { id: 'tiles', label: 'Tiles' },
-      { id: 'adhesive', label: 'Adhesive' },
-      { id: 'grout', label: 'Grout' },
-      { id: 'spacers', label: 'Spacers' },
-      { id: 'primer', label: 'Primer (optional)', optional: true },
-      { id: 'backer', label: 'Backer board (optional)', optional: true },
-      { id: 'tanking', label: 'Tanking (optional)', optional: true },
-    ];
-
-    if (application === 'floor') {
-      base.push({ id: 'slc', label: 'Self-levelling compound (optional)', optional: true });
-    }
-
-    base.push({ id: 'summary', label: 'Summary' });
-    return base;
+    return TILING_STEPS
+      .filter(s => !s.applicationOnly || s.applicationOnly === application)
+      .map(s => ({
+        id: (CONFIG_ID_TO_STEP_ID[s.id] ?? s.id) as StepId,
+        label: s.optional ? `${s.label} (optional)` : s.label,
+        optional: s.optional,
+      }));
   }, [application]);
 
   const currentStep = steps[currentIndex];
