@@ -1,5 +1,6 @@
 import React, { useEffect, useMemo, useState } from 'react';
-import { FormInput, FormSelect } from './CalculatorLayout';
+import { NumberInput } from './ui/NumberInput';
+import { FormField } from './ui/FormField';
 import { calculateTiles } from '../calculators/tiles';
 import { calculateAdhesiveByBedDepth } from '../calculators/adhesive';
 import { calculateGrout } from '../calculators/grout';
@@ -439,7 +440,7 @@ export default function TilingProjectWizard() {
             </div>
 
             <div className="grid gap-4 sm:grid-cols-2">
-              <FormInput
+              <NumberInput
                 id="area-width"
                 label="Area width"
                 unit={areaUnit}
@@ -450,7 +451,7 @@ export default function TilingProjectWizard() {
                 step={0.01}
                 required
               />
-              <FormInput
+              <NumberInput
                 id="area-height"
                 label="Area height / length"
                 unit={areaUnit}
@@ -464,34 +465,37 @@ export default function TilingProjectWizard() {
             </div>
 
             <div className="grid gap-4 sm:grid-cols-2">
-              <FormSelect
+              <FormField
+                type="select"
                 id="application"
                 label="Application"
                 value={application}
-                onChange={(value) => setApplication(value as Application)}
+                onChange={(e) => setApplication(e.target.value as Application)}
                 options={[
                   { value: 'floor', label: 'Floor' },
                   { value: 'wall', label: 'Wall' },
                 ]}
               />
-              <FormSelect
+              <FormField
+                type="select"
                 id="pattern"
                 label="Laying pattern"
                 value={pattern}
-                onChange={(value) => setPattern(value as Pattern)}
+                onChange={(e) => setPattern(e.target.value as Pattern)}
                 options={PATTERNS.map((p) => ({ value: p.value, label: `${p.label} (suggested wastage ${p.wastage}%)` }))}
               />
             </div>
 
             <div className="grid gap-4 sm:grid-cols-2">
-              <FormSelect
+              <FormField
+                type="select"
                 id="tile-preset"
                 label="Tile size preset"
                 value={tilePreset}
-                onChange={handleTilePresetChange}
+                onChange={(e) => handleTilePresetChange(e.target.value)}
                 options={TILE_PRESETS.map((preset) => ({ value: preset.value, label: preset.label }))}
               />
-              <FormInput
+              <NumberInput
                 id="gap-width"
                 label="Grout joint width"
                 unit="mm"
@@ -505,7 +509,7 @@ export default function TilingProjectWizard() {
 
             {tilePreset === 'custom' && (
               <div className="grid gap-4 sm:grid-cols-2">
-                <FormInput
+                <NumberInput
                   id="tile-width"
                   label="Tile width"
                   unit="mm"
@@ -515,7 +519,7 @@ export default function TilingProjectWizard() {
                   min={10}
                   step={1}
                 />
-                <FormInput
+                <NumberInput
                   id="tile-height"
                   label="Tile height"
                   unit="mm"
@@ -534,7 +538,7 @@ export default function TilingProjectWizard() {
       {currentStep?.id === 'tiles' && (
         <div className="space-y-6">
           <div className="bg-white rounded-2xl border border-border shadow-sm p-6 space-y-6">
-            <FormInput
+            <NumberInput
               id="tile-wastage"
               label="Wastage percentage"
               unit="%"
@@ -570,7 +574,7 @@ export default function TilingProjectWizard() {
         <div className="space-y-6">
           <div className="bg-white rounded-2xl border border-border shadow-sm p-6 space-y-6">
             <div className="grid gap-4 sm:grid-cols-2">
-              <FormInput
+              <NumberInput
                 id="bed-depth"
                 label="Bed depth"
                 unit="mm"
@@ -586,7 +590,7 @@ export default function TilingProjectWizard() {
               </div>
             </div>
             <div className="grid gap-4 sm:grid-cols-2">
-              <FormInput
+              <NumberInput
                 id="adhesive-bag"
                 label="Bag size"
                 unit="kg"
@@ -595,7 +599,7 @@ export default function TilingProjectWizard() {
                 min={5}
                 step={1}
               />
-              <FormInput
+              <NumberInput
                 id="adhesive-wastage"
                 label="Wastage"
                 unit="%"
@@ -631,17 +635,18 @@ export default function TilingProjectWizard() {
       {currentStep?.id === 'grout' && (
         <div className="space-y-6">
           <div className="bg-white rounded-2xl border border-border shadow-sm p-6 space-y-6">
-            <FormSelect
+            <FormField
+              type="select"
               id="grout-product"
               label="Grout product"
               value={selectedGroutProduct}
-              onChange={setSelectedGroutProduct}
+              onChange={(e) => setSelectedGroutProduct(e.target.value)}
               options={GROUT_PRODUCTS
                 .filter(p => application !== 'floor' || !p.restrictions?.includes('walls-only'))
                 .map(p => ({ value: p.id, label: `${p.brand} ${p.name}` }))}
             />
             <div className="grid gap-4 sm:grid-cols-2">
-              <FormInput
+              <NumberInput
                 id="tile-depth"
                 label="Tile depth"
                 unit="mm"
@@ -650,7 +655,7 @@ export default function TilingProjectWizard() {
                 min={3}
                 step={0.5}
               />
-              <FormInput
+              <NumberInput
                 id="grout-bag"
                 label="Bag size"
                 unit="kg"
@@ -660,7 +665,7 @@ export default function TilingProjectWizard() {
                 step={1}
               />
             </div>
-            <FormInput
+            <NumberInput
               id="grout-wastage"
               label="Wastage"
               unit="%"
@@ -695,7 +700,7 @@ export default function TilingProjectWizard() {
       {currentStep?.id === 'spacers' && (
         <div className="space-y-6">
           <div className="bg-white rounded-2xl border border-border shadow-sm p-6 space-y-6">
-            <FormInput
+            <NumberInput
               id="spacers-pack"
               label="Spacers per pack"
               value={spacersPerPack}
@@ -728,14 +733,15 @@ export default function TilingProjectWizard() {
             ? renderOptionalNotice('Primer', () => setSkipPrimer(false))
             : (
               <div className="bg-white rounded-2xl border border-border shadow-sm p-6 space-y-6">
-                <FormSelect
+                <FormField
+                  type="select"
                   id="primer-product"
                   label="Product"
                   value={selectedPrimerProduct}
-                  onChange={setSelectedPrimerProduct}
+                  onChange={(e) => setSelectedPrimerProduct(e.target.value)}
                   options={PRIMER_PRODUCTS.map(p => ({ value: p.id, label: `${p.brand} ${p.name}` }))}
                 />
-                <FormInput
+                <NumberInput
                   id="primer-coats"
                   label="Number of coats"
                   value={primerCoats}
@@ -773,11 +779,12 @@ export default function TilingProjectWizard() {
             ? renderOptionalNotice('Backer board', () => setSkipBacker(false))
             : (
               <div className="bg-white rounded-2xl border border-border shadow-sm p-6 space-y-6">
-                <FormSelect
+                <FormField
+                  type="select"
                   id="backer-product"
                   label="Product"
                   value={selectedBackerProduct}
-                  onChange={setSelectedBackerProduct}
+                  onChange={(e) => setSelectedBackerProduct(e.target.value)}
                   options={BACKER_BOARD_PRODUCTS.map(p => ({ value: p.id, label: `${p.brand} ${p.name}` }))}
                 />
 
@@ -823,11 +830,12 @@ export default function TilingProjectWizard() {
             ? renderOptionalNotice('Tanking', () => setSkipTanking(false))
             : (
               <div className="bg-white rounded-2xl border border-border shadow-sm p-6 space-y-6">
-                <FormSelect
+                <FormField
+                  type="select"
                   id="tanking-product"
                   label="Product"
                   value={selectedTankingProduct}
-                  onChange={setSelectedTankingProduct}
+                  onChange={(e) => setSelectedTankingProduct(e.target.value)}
                   options={TANKING_PRODUCTS.map(p => ({ value: p.id, label: `${p.brand} ${p.name}` }))}
                 />
 
@@ -860,15 +868,16 @@ export default function TilingProjectWizard() {
             ? renderOptionalNotice('Self-levelling compound', () => setSkipSlc(false))
             : (
               <div className="bg-white rounded-2xl border border-border shadow-sm p-6 space-y-6">
-                <FormSelect
+                <FormField
+                  type="select"
                   id="slc-product"
                   label="Product"
                   value={selectedSLCProduct}
-                  onChange={setSelectedSLCProduct}
+                  onChange={(e) => setSelectedSLCProduct(e.target.value)}
                   options={SLC_PRODUCTS.map(p => ({ value: p.id, label: `${p.brand} ${p.name}` }))}
                 />
                 <div className="grid gap-4 sm:grid-cols-2">
-                  <FormInput
+                  <NumberInput
                     id="slc-depth"
                     label="Average depth"
                     unit="mm"
@@ -877,7 +886,7 @@ export default function TilingProjectWizard() {
                     min={1}
                     step={0.5}
                   />
-                  <FormInput
+                  <NumberInput
                     id="slc-bag"
                     label="Bag size"
                     unit="kg"
