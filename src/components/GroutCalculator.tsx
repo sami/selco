@@ -1,12 +1,11 @@
 import React, { useState, useCallback, useMemo } from 'react';
-import CalculatorLayout, {
-    FormInput,
-    FormSelect,
-    type ResultItem,
-    type FieldGroup,
-} from './CalculatorLayout';
+import CalculatorLayout, { type FieldGroup } from './CalculatorLayout';
+import { NumberInput } from './ui/NumberInput';
+import { FormField } from './ui/FormField';
+import { ResultCard } from './ui/ResultCard';
 import { calculateGrout, COMMON_JOINT_WIDTHS } from '../calculators/grout';
 import { GROUT_PRODUCTS } from '../data/tiling-products';
+import type { GroutResult } from '../calculators/types';
 
 const CUSTOM_VALUE = 'custom';
 
@@ -31,8 +30,7 @@ export default function GroutCalculator() {
     const [selectedJointWidth, setSelectedJointWidth] = useState('3');
     const [customJointWidth, setCustomJointWidth] = useState('');
     const [tileDepth, setTileDepth] = useState('8');
-    const [results, setResults] = useState<ResultItem[]>([]);
-    const [hasResults, setHasResults] = useState(false);
+    const [result, setResult] = useState<GroutResult | null>(null);
     const [error, setError] = useState<string | null>(null);
 
     const isCustomJoint = selectedJointWidth === CUSTOM_VALUE;
@@ -61,10 +59,10 @@ export default function GroutCalculator() {
     const handleCalculate = useCallback(() => {
         setError(null);
         const validationError = validateInputs();
-        if (validationError) { setError(validationError); setHasResults(false); return; }
+        if (validationError) { setError(validationError); setResult(null); return; }
 
         try {
-            const result = calculateGrout({
+            const r = calculateGrout({
                 areaM2: parseFloat(area),
                 tileLengthMm: parseFloat(tileWidth),
                 tileWidthMm: parseFloat(tileHeight),
@@ -72,17 +70,10 @@ export default function GroutCalculator() {
                 jointWidthMm: parseFloat(effectiveJointWidth),
                 productId: selectedProduct,
             });
-            const bagLabel = `${product.primaryBagSizeKg} kg bag`;
-            setResults([
-                { label: 'Grout needed', value: `${result.groutKg.toFixed(1)} kg`, primary: true },
-                { label: `Bags needed (${bagLabel})`, value: `${result.bagsNeeded} bags`, primary: true },
-                { label: 'Usage rate', value: `${result.coverageRateKgPerM2.toFixed(3)} kg/m²` },
-                ...result.warnings.map(w => ({ label: '⚠ Note', value: w })),
-            ]);
-            setHasResults(true);
+            setResult(r);
         } catch (e) {
             setError(e instanceof Error ? e.message : 'An unexpected error occurred.');
-            setHasResults(false);
+            setResult(null);
         }
     }, [area, tileWidth, tileHeight, effectiveJointWidth, tileDepth, selectedProduct, product]);
 
@@ -94,8 +85,7 @@ export default function GroutCalculator() {
         setSelectedJointWidth('3');
         setCustomJointWidth('');
         setTileDepth('8');
-        setResults([]);
-        setHasResults(false);
+        setResult(null);
         setError(null);
     }, []);
 
@@ -103,11 +93,12 @@ export default function GroutCalculator() {
         {
             legend: 'Product',
             children: (
-                <FormSelect
+                <FormField
                     id="grout-product"
                     label="Grout product"
+                    type="select"
                     value={selectedProduct}
-                    onChange={setSelectedProduct}
+                    onChange={(e) => setSelectedProduct(e.target.value)}
                     options={productOptions}
                 />
             ),
@@ -115,7 +106,7 @@ export default function GroutCalculator() {
         {
             legend: 'Area to cover',
             children: (
-                <FormInput
+                <NumberInput
                     id="area"
                     label="Total area"
                     unit="m²"
@@ -123,7 +114,7 @@ export default function GroutCalculator() {
                     onChange={(v) => { setArea(v); setError(null); }}
                     placeholder="e.g. 12.5"
                     min={0.01}
-                    step="0.01"
+                    step={0.01}
                     required
                 />
             ),
@@ -132,7 +123,7 @@ export default function GroutCalculator() {
             legend: 'Tile dimensions',
             children: (
                 <div className="grid grid-cols-2 gap-4">
-                    <FormInput
+                    <NumberInput
                         id="tile-width"
                         label="Tile width"
                         unit="mm"
@@ -143,7 +134,7 @@ export default function GroutCalculator() {
                         step={1}
                         required
                     />
-                    <FormInput
+                    <NumberInput
                         id="tile-height"
                         label="Tile height"
                         unit="mm"
@@ -161,15 +152,16 @@ export default function GroutCalculator() {
             legend: 'Joint & tile details',
             children: (
                 <div className="space-y-4">
-                    <FormSelect
+                    <FormField
                         id="joint-width-preset"
                         label="Joint width"
+                        type="select"
                         value={selectedJointWidth}
-                        onChange={setSelectedJointWidth}
+                        onChange={(e) => setSelectedJointWidth(e.target.value)}
                         options={jointWidthOptions}
                     />
                     {isCustomJoint && (
-                        <FormInput
+                        <NumberInput
                             id="joint-width-custom"
                             label="Custom joint width"
                             unit="mm"
@@ -181,7 +173,7 @@ export default function GroutCalculator() {
                             required
                         />
                     )}
-                    <FormInput
+                    <NumberInput
                         id="tile-depth"
                         label="Tile thickness"
                         unit="mm"
@@ -202,8 +194,7 @@ export default function GroutCalculator() {
             title="Grout Calculator"
             description="Work out how much grout you need for your tiling project."
             fieldGroups={fieldGroups}
-            results={results}
-            hasResults={hasResults}
+            resultsSlot={result && <ResultCard title="Grout" materials={result.materials} warnings={result.warnings} />}
             onCalculate={handleCalculate}
             onReset={handleReset}
             error={error}

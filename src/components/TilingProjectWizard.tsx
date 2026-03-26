@@ -1,5 +1,7 @@
 import React, { useEffect, useMemo, useState } from 'react';
-import { FormInput, FormSelect } from './CalculatorLayout';
+import { NumberInput } from './ui/NumberInput';
+import { FormField } from './ui/FormField';
+import { ProductSelector } from './ui/ProductSelector';
 import { calculateTiles } from '../calculators/tiles';
 import { calculateAdhesiveByBedDepth } from '../calculators/adhesive';
 import { calculateGrout } from '../calculators/grout';
@@ -10,6 +12,8 @@ import { calculateBackerBoard } from '../calculators/backer-board';
 import { calculateTanking } from '../calculators/tanking';
 import { calculateSLC } from '../calculators/slc';
 import { convertLength } from '../calculators/conversions';
+import { WizardShell } from './ui/WizardShell';
+import { TILING_STEPS } from '../projects/tiling';
 
 import type { LayingPattern } from '../calculators/types';
 
@@ -117,24 +121,17 @@ export default function TilingProjectWizard() {
   const [skipTanking, setSkipTanking] = useState(false);
   const [skipSlc, setSkipSlc] = useState(false);
 
+  /** Map config step IDs to wizard StepIds where they differ. */
+  const CONFIG_ID_TO_STEP_ID: Record<string, StepId> = { 'backer-board': 'backer' };
+
   const steps = useMemo(() => {
-    const base: { id: StepId; label: string; optional?: boolean }[] = [
-      { id: 'setup', label: 'Area & tile setup' },
-      { id: 'tiles', label: 'Tiles' },
-      { id: 'adhesive', label: 'Adhesive' },
-      { id: 'grout', label: 'Grout' },
-      { id: 'spacers', label: 'Spacers' },
-      { id: 'primer', label: 'Primer (optional)', optional: true },
-      { id: 'backer', label: 'Backer board (optional)', optional: true },
-      { id: 'tanking', label: 'Tanking (optional)', optional: true },
-    ];
-
-    if (application === 'floor') {
-      base.push({ id: 'slc', label: 'Self-levelling compound (optional)', optional: true });
-    }
-
-    base.push({ id: 'summary', label: 'Summary' });
-    return base;
+    return TILING_STEPS
+      .filter(s => !s.applicationOnly || s.applicationOnly === application)
+      .map(s => ({
+        id: (CONFIG_ID_TO_STEP_ID[s.id] ?? s.id) as StepId,
+        label: s.optional ? `${s.label} (optional)` : s.label,
+        optional: s.optional,
+      }));
   }, [application]);
 
   const currentStep = steps[currentIndex];
@@ -403,21 +400,14 @@ export default function TilingProjectWizard() {
   );
 
   return (
-    <div className="space-y-8">
-      <div className="space-y-2">
-        <div className="flex items-center gap-2">
-          {steps.map((step, index) => (
-            <div
-              key={step.id}
-              className={`flex-1 h-2 rounded-full transition-colors ${index <= currentIndex ? 'bg-brand-blue' : 'bg-muted/40'}`}
-            />
-          ))}
-        </div>
-        <p className="text-sm text-muted-foreground font-medium">
-          Step {currentIndex + 1} of {steps.length} — {currentStep?.label}
-        </p>
-      </div>
-
+    <WizardShell
+      steps={steps}
+      currentStep={currentIndex}
+      onNext={goNext}
+      onBack={goBack}
+      onSkip={() => currentStep && handleSkip(currentStep.id)}
+      onStartOver={() => setCurrentIndex(0)}
+    >
       {currentStep?.id === 'setup' && (
         <div className="space-y-6">
           <div className="bg-white rounded-2xl border border-border shadow-sm p-6 space-y-6">
@@ -439,7 +429,7 @@ export default function TilingProjectWizard() {
             </div>
 
             <div className="grid gap-4 sm:grid-cols-2">
-              <FormInput
+              <NumberInput
                 id="area-width"
                 label="Area width"
                 unit={areaUnit}
@@ -450,7 +440,7 @@ export default function TilingProjectWizard() {
                 step={0.01}
                 required
               />
-              <FormInput
+              <NumberInput
                 id="area-height"
                 label="Area height / length"
                 unit={areaUnit}
@@ -464,34 +454,37 @@ export default function TilingProjectWizard() {
             </div>
 
             <div className="grid gap-4 sm:grid-cols-2">
-              <FormSelect
+              <FormField
+                type="select"
                 id="application"
                 label="Application"
                 value={application}
-                onChange={(value) => setApplication(value as Application)}
+                onChange={(e) => setApplication(e.target.value as Application)}
                 options={[
                   { value: 'floor', label: 'Floor' },
                   { value: 'wall', label: 'Wall' },
                 ]}
               />
-              <FormSelect
+              <FormField
+                type="select"
                 id="pattern"
                 label="Laying pattern"
                 value={pattern}
-                onChange={(value) => setPattern(value as Pattern)}
+                onChange={(e) => setPattern(e.target.value as Pattern)}
                 options={PATTERNS.map((p) => ({ value: p.value, label: `${p.label} (suggested wastage ${p.wastage}%)` }))}
               />
             </div>
 
             <div className="grid gap-4 sm:grid-cols-2">
-              <FormSelect
+              <FormField
+                type="select"
                 id="tile-preset"
                 label="Tile size preset"
                 value={tilePreset}
-                onChange={handleTilePresetChange}
+                onChange={(e) => handleTilePresetChange(e.target.value)}
                 options={TILE_PRESETS.map((preset) => ({ value: preset.value, label: preset.label }))}
               />
-              <FormInput
+              <NumberInput
                 id="gap-width"
                 label="Grout joint width"
                 unit="mm"
@@ -505,7 +498,7 @@ export default function TilingProjectWizard() {
 
             {tilePreset === 'custom' && (
               <div className="grid gap-4 sm:grid-cols-2">
-                <FormInput
+                <NumberInput
                   id="tile-width"
                   label="Tile width"
                   unit="mm"
@@ -515,7 +508,7 @@ export default function TilingProjectWizard() {
                   min={10}
                   step={1}
                 />
-                <FormInput
+                <NumberInput
                   id="tile-height"
                   label="Tile height"
                   unit="mm"
@@ -534,7 +527,7 @@ export default function TilingProjectWizard() {
       {currentStep?.id === 'tiles' && (
         <div className="space-y-6">
           <div className="bg-white rounded-2xl border border-border shadow-sm p-6 space-y-6">
-            <FormInput
+            <NumberInput
               id="tile-wastage"
               label="Wastage percentage"
               unit="%"
@@ -570,7 +563,7 @@ export default function TilingProjectWizard() {
         <div className="space-y-6">
           <div className="bg-white rounded-2xl border border-border shadow-sm p-6 space-y-6">
             <div className="grid gap-4 sm:grid-cols-2">
-              <FormInput
+              <NumberInput
                 id="bed-depth"
                 label="Bed depth"
                 unit="mm"
@@ -586,7 +579,7 @@ export default function TilingProjectWizard() {
               </div>
             </div>
             <div className="grid gap-4 sm:grid-cols-2">
-              <FormInput
+              <NumberInput
                 id="adhesive-bag"
                 label="Bag size"
                 unit="kg"
@@ -595,7 +588,7 @@ export default function TilingProjectWizard() {
                 min={5}
                 step={1}
               />
-              <FormInput
+              <NumberInput
                 id="adhesive-wastage"
                 label="Wastage"
                 unit="%"
@@ -631,17 +624,15 @@ export default function TilingProjectWizard() {
       {currentStep?.id === 'grout' && (
         <div className="space-y-6">
           <div className="bg-white rounded-2xl border border-border shadow-sm p-6 space-y-6">
-            <FormSelect
+            <ProductSelector
               id="grout-product"
               label="Grout product"
+              products={GROUT_PRODUCTS.filter(p => application !== 'floor' || !p.restrictions?.includes('walls-only'))}
               value={selectedGroutProduct}
-              onChange={setSelectedGroutProduct}
-              options={GROUT_PRODUCTS
-                .filter(p => application !== 'floor' || !p.restrictions?.includes('walls-only'))
-                .map(p => ({ value: p.id, label: `${p.brand} ${p.name}` }))}
+              onChange={(e) => setSelectedGroutProduct(e.target.value)}
             />
             <div className="grid gap-4 sm:grid-cols-2">
-              <FormInput
+              <NumberInput
                 id="tile-depth"
                 label="Tile depth"
                 unit="mm"
@@ -650,7 +641,7 @@ export default function TilingProjectWizard() {
                 min={3}
                 step={0.5}
               />
-              <FormInput
+              <NumberInput
                 id="grout-bag"
                 label="Bag size"
                 unit="kg"
@@ -660,7 +651,7 @@ export default function TilingProjectWizard() {
                 step={1}
               />
             </div>
-            <FormInput
+            <NumberInput
               id="grout-wastage"
               label="Wastage"
               unit="%"
@@ -695,7 +686,7 @@ export default function TilingProjectWizard() {
       {currentStep?.id === 'spacers' && (
         <div className="space-y-6">
           <div className="bg-white rounded-2xl border border-border shadow-sm p-6 space-y-6">
-            <FormInput
+            <NumberInput
               id="spacers-pack"
               label="Spacers per pack"
               value={spacersPerPack}
@@ -728,14 +719,14 @@ export default function TilingProjectWizard() {
             ? renderOptionalNotice('Primer', () => setSkipPrimer(false))
             : (
               <div className="bg-white rounded-2xl border border-border shadow-sm p-6 space-y-6">
-                <FormSelect
+                <ProductSelector
                   id="primer-product"
                   label="Product"
+                  products={PRIMER_PRODUCTS}
                   value={selectedPrimerProduct}
-                  onChange={setSelectedPrimerProduct}
-                  options={PRIMER_PRODUCTS.map(p => ({ value: p.id, label: `${p.brand} ${p.name}` }))}
+                  onChange={(e) => setSelectedPrimerProduct(e.target.value)}
                 />
-                <FormInput
+                <NumberInput
                   id="primer-coats"
                   label="Number of coats"
                   value={primerCoats}
@@ -754,14 +745,6 @@ export default function TilingProjectWizard() {
                     <p className="text-lg font-semibold text-brand-blue">{formatWhole(primerMetrics.packs)} packs</p>
                   </div>
                 </div>
-
-                <button
-                  type="button"
-                  onClick={() => handleSkip('primer')}
-                  className="btn-ghost"
-                >
-                  Skip this step
-                </button>
               </div>
             )}
         </div>
@@ -773,12 +756,12 @@ export default function TilingProjectWizard() {
             ? renderOptionalNotice('Backer board', () => setSkipBacker(false))
             : (
               <div className="bg-white rounded-2xl border border-border shadow-sm p-6 space-y-6">
-                <FormSelect
+                <ProductSelector
                   id="backer-product"
                   label="Product"
+                  products={BACKER_BOARD_PRODUCTS}
                   value={selectedBackerProduct}
-                  onChange={setSelectedBackerProduct}
-                  options={BACKER_BOARD_PRODUCTS.map(p => ({ value: p.id, label: `${p.brand} ${p.name}` }))}
+                  onChange={(e) => setSelectedBackerProduct(e.target.value)}
                 />
 
                 <div className="grid gap-4 sm:grid-cols-2">
@@ -791,14 +774,6 @@ export default function TilingProjectWizard() {
                     <p className="text-lg font-semibold text-brand-blue">{formatWhole(backerMetrics.boards)} boards</p>
                   </div>
                 </div>
-
-                <button
-                  type="button"
-                  onClick={() => handleSkip('backer')}
-                  className="btn-ghost"
-                >
-                  Skip this step
-                </button>
               </div>
             )}
         </div>
@@ -823,12 +798,12 @@ export default function TilingProjectWizard() {
             ? renderOptionalNotice('Tanking', () => setSkipTanking(false))
             : (
               <div className="bg-white rounded-2xl border border-border shadow-sm p-6 space-y-6">
-                <FormSelect
+                <ProductSelector
                   id="tanking-product"
                   label="Product"
+                  products={TANKING_PRODUCTS}
                   value={selectedTankingProduct}
-                  onChange={setSelectedTankingProduct}
-                  options={TANKING_PRODUCTS.map(p => ({ value: p.id, label: `${p.brand} ${p.name}` }))}
+                  onChange={(e) => setSelectedTankingProduct(e.target.value)}
                 />
 
                 <div className="grid gap-4 sm:grid-cols-2">
@@ -841,14 +816,6 @@ export default function TilingProjectWizard() {
                     <p className="text-lg font-semibold text-brand-blue">{tankingMetrics.coveragePerKit} m²</p>
                   </div>
                 </div>
-
-                <button
-                  type="button"
-                  onClick={() => handleSkip('tanking')}
-                  className="btn-ghost"
-                >
-                  Skip this step
-                </button>
               </div>
             )}
         </div>
@@ -860,15 +827,15 @@ export default function TilingProjectWizard() {
             ? renderOptionalNotice('Self-levelling compound', () => setSkipSlc(false))
             : (
               <div className="bg-white rounded-2xl border border-border shadow-sm p-6 space-y-6">
-                <FormSelect
+                <ProductSelector
                   id="slc-product"
                   label="Product"
+                  products={SLC_PRODUCTS}
                   value={selectedSLCProduct}
-                  onChange={setSelectedSLCProduct}
-                  options={SLC_PRODUCTS.map(p => ({ value: p.id, label: `${p.brand} ${p.name}` }))}
+                  onChange={(e) => setSelectedSLCProduct(e.target.value)}
                 />
                 <div className="grid gap-4 sm:grid-cols-2">
-                  <FormInput
+                  <NumberInput
                     id="slc-depth"
                     label="Average depth"
                     unit="mm"
@@ -877,7 +844,7 @@ export default function TilingProjectWizard() {
                     min={1}
                     step={0.5}
                   />
-                  <FormInput
+                  <NumberInput
                     id="slc-bag"
                     label="Bag size"
                     unit="kg"
@@ -898,14 +865,6 @@ export default function TilingProjectWizard() {
                     <p className="text-lg font-semibold text-brand-blue">{formatWhole(slcMetrics.bags)} bags</p>
                   </div>
                 </div>
-
-                <button
-                  type="button"
-                  onClick={() => handleSkip('slc')}
-                  className="btn-ghost"
-                >
-                  Skip this step
-                </button>
               </div>
             )}
         </div>
@@ -996,37 +955,6 @@ export default function TilingProjectWizard() {
         </div>
       )}
 
-      <div className="flex flex-wrap items-center justify-between gap-4">
-        <button
-          type="button"
-          onClick={goBack}
-          disabled={currentIndex === 0}
-          className="btn-ghost"
-        >
-          Back
-        </button>
-
-        <div className="flex flex-wrap gap-3">
-          {currentStep?.id !== 'summary' && (
-            <button
-              type="button"
-              onClick={goNext}
-              className="btn-accent"
-            >
-              Next
-            </button>
-          )}
-          {currentStep?.id === 'summary' && (
-            <button
-              type="button"
-              onClick={() => setCurrentIndex(0)}
-              className="btn-ghost"
-            >
-              Start over
-            </button>
-          )}
-        </div>
-      </div>
-    </div>
+    </WizardShell>
   );
 }
