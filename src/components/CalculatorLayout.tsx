@@ -2,14 +2,6 @@ import React from 'react';
 
 /* ─── Shared types for calculator pages ─── */
 
-/** A single result line displayed in the results panel */
-export interface ResultItem {
-    label: string;
-    value: string;
-    /** Whether this is the primary/hero result */
-    primary?: boolean;
-}
-
 /** A group of related form fields */
 export interface FieldGroup {
     legend: string;
@@ -24,10 +16,8 @@ export interface CalculatorLayoutProps {
     description: string;
     /** Grouped form field sections */
     fieldGroups: FieldGroup[];
-    /** Results to display (empty array = show empty state) */
-    results: ResultItem[];
-    /** Whether the calculator has been calculated at least once */
-    hasResults: boolean;
+    /** Pre-rendered results node (e.g. <ResultCard />) */
+    resultsSlot?: React.ReactNode;
     /** Calculate button handler */
     onCalculate: () => void;
     /** Reset button handler */
@@ -36,98 +26,6 @@ export interface CalculatorLayoutProps {
     isCalculating?: boolean;
     /** Optional error message to display */
     error?: string | null;
-}
-
-/* ─── Sub-components ─── */
-/* ─── Sub-components ─── */
-
-/** Reusable form input with label and optional unit suffix */
-export interface FormInputProps {
-    id: string;
-    label: string;
-    unit?: string;
-    type?: 'number' | 'text';
-    value: string | number;
-    onChange: (value: string) => void;
-    placeholder?: string;
-    min?: number;
-    max?: number;
-    step?: number | string;
-    required?: boolean;
-}
-
-export function FormInput({
-    id,
-    label,
-    unit,
-    type = 'number',
-    value,
-    onChange,
-    placeholder,
-    min,
-    max,
-    step,
-    required = false,
-}: FormInputProps) {
-    return (
-        <div className="space-y-1.5">
-            <label htmlFor={id} className="block text-sm font-medium text-[--color-surface-foreground]">
-                {label}
-            </label>
-            <div className="relative">
-                <input
-                    id={id}
-                    name={id}
-                    type={type}
-                    value={value}
-                    onChange={(e) => onChange(e.target.value)}
-                    placeholder={placeholder}
-                    min={min}
-                    max={max}
-                    step={step}
-                    required={required}
-                    className={`form-input${unit ? ' pr-16' : ''}`}
-                />
-                {unit && (
-                    <span className="absolute inset-y-0 right-0 flex items-center pr-4 text-xs text-[--color-muted-foreground] pointer-events-none">
-                        {unit}
-                    </span>
-                )}
-            </div>
-        </div>
-    );
-}
-
-/** Reusable select dropdown with label */
-export interface FormSelectProps {
-    id: string;
-    label: string;
-    value: string;
-    onChange: (value: string) => void;
-    options: { value: string; label: string }[];
-}
-
-export function FormSelect({ id, label, value, onChange, options }: FormSelectProps) {
-    return (
-        <div className="space-y-1.5">
-            <label htmlFor={id} className="block text-sm font-medium text-[--color-surface-foreground]">
-                {label}
-            </label>
-            <select
-                id={id}
-                name={id}
-                value={value}
-                onChange={(e) => onChange(e.target.value)}
-                className="form-select appearance-none cursor-pointer"
-            >
-                {options.map((opt) => (
-                    <option key={opt.value} value={opt.value}>
-                        {opt.label}
-                    </option>
-                ))}
-            </select>
-        </div>
-    );
 }
 
 /* ─── Error Alert ─── */
@@ -151,40 +49,12 @@ function ResultsEmptyState() {
     );
 }
 
-/* ─── Results panel with items ─── */
-function ResultsPanel({ results }: { results: ResultItem[] }) {
-    return (
-        <div className="space-y-4">
-            {results.map((item, index) => (
-                <div
-                    key={index}
-                    className={`
-            p-4 rounded-lg flex items-center justify-between
-            ${item.primary
-                            ? 'bg-[--color-brand-blue]/5 border border-[--color-brand-blue]/10'
-                            : 'bg-transparent border-b border-[--color-border] last:border-0'
-                        }
-          `}
-                >
-                    <span className={`text-sm ${item.primary ? 'font-medium text-[--color-brand-blue]' : 'text-[--color-muted-foreground]'}`}>
-                        {item.label}
-                    </span>
-                    <span className={`font-bold ${item.primary ? 'text-lg text-[--color-brand-blue]' : 'text-[--color-surface-foreground]'}`}>
-                        {item.value}
-                    </span>
-                </div>
-            ))}
-        </div>
-    );
-}
-
 /* ─── Main Calculator Layout ─── */
 export default function CalculatorLayout({
     title,
     description,
     fieldGroups,
-    results,
-    hasResults,
+    resultsSlot,
     onCalculate,
     onReset,
     isCalculating = false,
@@ -235,7 +105,7 @@ export default function CalculatorLayout({
                         </button>
 
                         {/* Reset link */}
-                        {(hasResults || error) && (
+                        {(resultsSlot || error) && (
                             <button
                                 type="button"
                                 onClick={onReset}
@@ -252,7 +122,7 @@ export default function CalculatorLayout({
                     <div
                         className={`
               rounded-[--radius-card] border transition-colors duration-300
-              ${hasResults
+              ${resultsSlot
                                 ? 'bg-[--color-surface] border-[--color-success]/30 shadow-sm'
                                 : 'bg-[--color-surface] border-[--color-border]'
                             }
@@ -262,10 +132,8 @@ export default function CalculatorLayout({
                             <h2 className="text-sm font-semibold text-[--color-muted-foreground] uppercase tracking-wider mb-4">
                                 Results
                             </h2>
-                            {hasResults ? <ResultsPanel results={results} /> : <ResultsEmptyState />}
+                            {resultsSlot ?? <ResultsEmptyState />}
                         </div>
-
-
                     </div>
                 </div>
             </div>

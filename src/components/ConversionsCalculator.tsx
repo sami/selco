@@ -1,4 +1,6 @@
 import React, { useState, useMemo } from 'react';
+import { NumberInput } from './ui/NumberInput';
+import { FormField } from './ui/FormField';
 import {
     convertLength,
     convertArea,
@@ -156,71 +158,46 @@ export default function ConversionsCalculator() {
                 {isDensity ? (
                     /* Density-specific UI */
                     <>
-                        <div>
-                            <label htmlFor="density-volume" className="block text-sm font-medium text-surface-foreground mb-1.5">
-                                Volume (m³)
-                            </label>
-                            <input
-                                id="density-volume"
-                                type="number"
-                                value={inputValue}
-                                onChange={(e) => setInputValue(e.target.value)}
-                                placeholder="Enter volume in cubic metres"
-                                className="w-full rounded-lg border border-border bg-surface px-4 py-2.5 text-sm text-surface-foreground placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-navy focus-visible:ring-offset-1 transition-all"
-                                min={0}
-                                step="any"
-                            />
-                        </div>
-                        <div>
-                            <label htmlFor="density-material" className="block text-sm font-medium text-surface-foreground mb-1.5">
-                                Material
-                            </label>
-                            <select
-                                id="density-material"
-                                value={densityMaterial}
-                                onChange={(e) => setDensityMaterial(e.target.value as DensityMaterial)}
-                                className="w-full rounded-lg border border-border bg-surface px-4 py-2.5 text-sm text-surface-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-navy focus-visible:ring-offset-1 transition-all"
-                            >
-                                {materialOptions.map((opt) => (
-                                    <option key={opt.value} value={opt.value}>{opt.label}</option>
-                                ))}
-                            </select>
-                        </div>
+                        <NumberInput
+                            id="density-volume"
+                            label="Volume"
+                            value={inputValue}
+                            onChange={setInputValue}
+                            unit="m³"
+                            placeholder="Enter volume in cubic metres"
+                            min={0}
+                        />
+                        <FormField
+                            id="density-material"
+                            label="Material"
+                            type="select"
+                            value={densityMaterial}
+                            onChange={(e) => setDensityMaterial(e.target.value as DensityMaterial)}
+                            options={materialOptions}
+                        />
                     </>
                 ) : (
                     /* Standard conversion UI */
                     <>
-                        <div>
-                            <label htmlFor="convert-value" className="block text-sm font-medium text-surface-foreground mb-1.5">
-                                Value
-                            </label>
-                            <input
-                                id="convert-value"
-                                type="number"
-                                value={inputValue}
-                                onChange={(e) => setInputValue(e.target.value)}
-                                placeholder="Enter a value"
-                                className="w-full rounded-lg border border-border bg-surface px-4 py-2.5 text-sm text-surface-foreground placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-navy focus-visible:ring-offset-1 transition-all"
-                                min={0}
-                                step="any"
-                            />
-                        </div>
+                        <NumberInput
+                            id="convert-value"
+                            label="Value"
+                            value={inputValue}
+                            onChange={setInputValue}
+                            placeholder="Enter a value"
+                            min={0}
+                        />
 
                         <div className="flex items-end gap-3">
                             <div className="flex-1">
-                                <label htmlFor="from-unit" className="block text-sm font-medium text-surface-foreground mb-1.5">
-                                    From
-                                </label>
-                                <select
+                                <FormField
                                     id="from-unit"
+                                    label="From"
+                                    type="select"
                                     value={fromUnit}
                                     onChange={(e) => setFromUnit(e.target.value)}
-                                    className="w-full rounded-lg border border-border bg-surface px-4 py-2.5 text-sm text-surface-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-navy focus-visible:ring-offset-1 transition-all"
-                                >
-                                    {options.map((opt) => (
-                                        <option key={opt.value} value={opt.value}>{opt.label}</option>
-                                    ))}
-                                </select>
+                                    options={options.map(o => ({ value: o.value, label: o.label }))}
+                                />
                             </div>
 
                             <button
@@ -233,19 +210,14 @@ export default function ConversionsCalculator() {
                             </button>
 
                             <div className="flex-1">
-                                <label htmlFor="to-unit" className="block text-sm font-medium text-surface-foreground mb-1.5">
-                                    To
-                                </label>
-                                <select
+                                <FormField
                                     id="to-unit"
+                                    label="To"
+                                    type="select"
                                     value={toUnit}
                                     onChange={(e) => setToUnit(e.target.value)}
-                                    className="w-full rounded-lg border border-border bg-surface px-4 py-2.5 text-sm text-surface-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-navy focus-visible:ring-offset-1 transition-all"
-                                >
-                                    {options.map((opt) => (
-                                        <option key={opt.value} value={opt.value}>{opt.label}</option>
-                                    ))}
-                                </select>
+                                    options={options.map(o => ({ value: o.value, label: o.label }))}
+                                />
                             </div>
                         </div>
                     </>

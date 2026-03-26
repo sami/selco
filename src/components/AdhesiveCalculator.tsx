@@ -1,12 +1,11 @@
 import React, { useState, useCallback, useMemo } from 'react';
-import CalculatorLayout, {
-    FormInput,
-    FormSelect,
-    type ResultItem,
-    type FieldGroup,
-} from './CalculatorLayout';
+import CalculatorLayout, { type FieldGroup } from './CalculatorLayout';
+import { NumberInput } from './ui/NumberInput';
+import { FormField } from './ui/FormField';
+import { ResultCard } from './ui/ResultCard';
 import { calculateAdhesive } from '../calculators/adhesive';
 import { ADHESIVE_PRODUCTS } from '../data/tiling-products';
+import type { AdhesiveResult } from '../calculators/types';
 
 type ApplicationType = 'dry' | 'wet';
 
@@ -26,8 +25,7 @@ export default function AdhesiveCalculator() {
     const [area, setArea] = useState('');
     const [substrate, setSubstrate] = useState('even');
     const [wastage, setWastage] = useState('10');
-    const [results, setResults] = useState<ResultItem[]>([]);
-    const [hasResults, setHasResults] = useState(false);
+    const [result, setResult] = useState<AdhesiveResult | null>(null);
     const [error, setError] = useState<string | null>(null);
 
     const product = useMemo(
@@ -50,48 +48,22 @@ export default function AdhesiveCalculator() {
         const validationError = validateInputs();
         if (validationError) {
             setError(validationError);
-            setHasResults(false);
+            setResult(null);
             return;
         }
 
         try {
             const applicationContext = applicationType === 'dry' ? 'wall-dry' : 'floor-wet';
-            const result = calculateAdhesive({
+            setResult(calculateAdhesive({
                 areaM2: parseFloat(area),
                 tileLengthMm: 300,
                 tileWidthMm: 300,
                 productId: selectedProduct,
                 applicationContext,
-            });
-
-            const bagLabel = product.bagSizeKg >= 20 ? `${product.bagSizeKg} kg bag` : `${product.bagSizeKg} kg tub`;
-
-            const items: ResultItem[] = [
-                {
-                    label: 'Adhesive needed',
-                    value: `${result.adhesiveKg.toFixed(1)} kg`,
-                    primary: true,
-                },
-                {
-                    label: `Bags needed (${bagLabel})`,
-                    value: `${result.bagsNeeded} bags`,
-                    primary: true,
-                },
-                {
-                    label: 'Coverage rate used',
-                    value: `${result.coverageRateUsed} kg/m²`,
-                },
-                ...(result.warnings.length > 0 ? result.warnings.map(w => ({
-                    label: '⚠ Note',
-                    value: w,
-                })) : []),
-            ];
-
-            setResults(items);
-            setHasResults(true);
+            }));
         } catch (e) {
             setError(e instanceof Error ? e.message : 'An unexpected error occurred.');
-            setHasResults(false);
+            setResult(null);
         }
     }, [area, applicationType, selectedProduct, product]);
 
@@ -101,8 +73,7 @@ export default function AdhesiveCalculator() {
         setArea('');
         setSubstrate('even');
         setWastage('10');
-        setResults([]);
-        setHasResults(false);
+        setResult(null);
         setError(null);
     }, []);
 
@@ -111,11 +82,12 @@ export default function AdhesiveCalculator() {
             legend: 'Product',
             children: (
                 <div className="space-y-4">
-                    <FormSelect
+                    <FormField
                         id="adhesive-product"
                         label="Adhesive product"
+                        type="select"
                         value={selectedProduct}
-                        onChange={setSelectedProduct}
+                        onChange={(e) => setSelectedProduct(e.target.value)}
                         options={productOptions}
                     />
                     <div>
@@ -156,7 +128,7 @@ export default function AdhesiveCalculator() {
         {
             legend: 'Area to cover',
             children: (
-                <FormInput
+                <NumberInput
                     id="area"
                     label="Total area"
                     unit="m²"
@@ -164,7 +136,7 @@ export default function AdhesiveCalculator() {
                     onChange={(v) => { setArea(v); setError(null); }}
                     placeholder="e.g. 12.5"
                     min={0.01}
-                    step="0.01"
+                    step={0.01}
                     required
                 />
             ),
@@ -173,14 +145,15 @@ export default function AdhesiveCalculator() {
             legend: 'Options',
             children: (
                 <div className="space-y-4">
-                    <FormSelect
+                    <FormField
                         id="substrate"
                         label="Substrate condition"
+                        type="select"
                         value={substrate}
-                        onChange={setSubstrate}
+                        onChange={(e) => setSubstrate(e.target.value)}
                         options={substrateOptions}
                     />
-                    <FormInput
+                    <NumberInput
                         id="wastage"
                         label="Wastage allowance"
                         unit="%"
@@ -201,8 +174,7 @@ export default function AdhesiveCalculator() {
             title="Adhesive Calculator"
             description="Estimate how much tile adhesive you need for your project."
             fieldGroups={fieldGroups}
-            results={results}
-            hasResults={hasResults}
+            resultsSlot={result && <ResultCard title="Adhesive" materials={result.materials} warnings={result.warnings} />}
             onCalculate={handleCalculate}
             onReset={handleReset}
             error={error}

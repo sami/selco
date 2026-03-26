@@ -1,12 +1,11 @@
 import React, { useState, useCallback } from 'react';
-import CalculatorLayout, {
-    FormInput,
-    FormSelect,
-    type ResultItem,
-    type FieldGroup,
-} from './CalculatorLayout';
+import CalculatorLayout, { type FieldGroup } from './CalculatorLayout';
+import { NumberInput } from './ui/NumberInput';
+import { FormField } from './ui/FormField';
+import { ResultCard } from './ui/ResultCard';
 import { calculateMasonry, WALL_TYPES, SAND_BAG_SIZES } from '../calculators/masonry';
-import type { WallType, MortarMixRatio, SandBagSize } from '../calculators/types';
+import type { WallType, MortarMixRatio, SandBagSize, MasonryResult } from '../calculators/types';
+import type { MaterialQuantity } from '../types';
 
 const wallTypeOptions = WALL_TYPES.map((t) => ({ value: t.value, label: t.label }));
 
@@ -40,6 +39,41 @@ const mixRatioOptions = [
 
 const sandBagOptions = SAND_BAG_SIZES.map((s) => ({ value: s.value, label: s.label }));
 
+/** Convert raw MasonryResult sub-results into a flat MaterialQuantity[] for ResultCard. */
+function toMaterials(result: MasonryResult, blockLabel: string, sandBagSize: SandBagSize): MaterialQuantity[] {
+    const materials: MaterialQuantity[] = [];
+
+    if (result.bricks > 0) {
+        materials.push({ material: 'Bricks', quantity: result.bricks, unit: 'bricks' });
+    }
+    if (result.blocks > 0) {
+        materials.push({ material: `Blocks — ${blockLabel}`, quantity: result.blocks, unit: 'blocks' });
+    }
+    materials.push(
+        { material: 'Cement (25 kg bags)', quantity: result.mortar.cementBags, unit: 'bags' },
+        { material: `Sand (${sandBagSize === 'jumbo' ? 'Jumbo' : 'Large'} bags)`, quantity: result.mortar.sandBags, unit: 'bags' },
+    );
+    if (result.wallTies.total > 0) {
+        materials.push({ material: 'Wall ties', quantity: result.wallTies.total, unit: 'ties' });
+    }
+    if (result.lintels.length > 0) {
+        result.lintels.forEach(l => {
+            materials.push({ material: `Lintel (${l.lintelLength} mm)`, quantity: 1, unit: 'lintel' });
+        });
+    }
+    materials.push({ material: 'DPC', quantity: result.dpc.length, unit: 'm' });
+    materials.push({ material: 'Wall starter kits', quantity: result.starterKits, unit: 'kits' });
+    if (result.insulationAreaM2 !== undefined) {
+        materials.push({
+            material: `Cavity insulation (${result.insulationThicknessMm} mm)`,
+            quantity: Math.round(result.insulationAreaM2 * 10) / 10,
+            unit: 'm²',
+        });
+    }
+
+    return materials;
+}
+
 export interface MasonryCalculatorProps {
     title?: string;
     description?: string;
@@ -63,8 +97,7 @@ export default function MasonryCalculator({
     const [mortarWaste, setMortarWaste] = useState('10');
     const [cavityWidth, setCavityWidth] = useState('100');
     const [sandBagSize, setSandBagSize] = useState<SandBagSize>('jumbo');
-    const [results, setResults] = useState<ResultItem[]>([]);
-    const [hasResults, setHasResults] = useState(false);
+    const [result, setResult] = useState<MasonryResult | null>(null);
     const [error, setError] = useState<string | null>(null);
 
     // Visibility logic
@@ -145,7 +178,7 @@ export default function MasonryCalculator({
         const validationError = validateInputs();
         if (validationError) {
             setError(validationError);
-            setHasResults(false);
+            setResult(null);
             return;
         }
 
@@ -161,7 +194,7 @@ export default function MasonryCalculator({
                 height: parseFloat(o.height),
             }));
 
-            const result = calculateMasonry({
+            const r = calculateMasonry({
                 wallType,
                 walls: parsedWalls,
                 openings: parsedOpenings,
@@ -173,68 +206,10 @@ export default function MasonryCalculator({
                 sandBagSize,
             });
 
-            const items: ResultItem[] = [];
-
-            if (result.bricks > 0) {
-                items.push({
-                    label: 'Bricks',
-                    value: `${result.bricks} bricks`,
-                    primary: true,
-                });
-            }
-
-            if (result.blocks > 0) {
-                items.push({
-                    label: `Blocks — ${getBlockLabel(blockType, parseInt(blockWidth))}`,
-                    value: `${result.blocks} blocks`,
-                    primary: true,
-                });
-            }
-
-            const sandBagLabel = sandBagSize === 'jumbo' ? 'Sand (Jumbo bags)' : 'Sand (Large bags)';
-
-            items.push(
-                { label: 'Cement', value: `${result.mortar.cementBags} × 25 kg bags` },
-                { label: sandBagLabel, value: `${result.mortar.sandBags} × ${result.mortar.sandBagSizeKg} kg bags` },
-                { label: 'Sand mass', value: `${result.mortar.sandTonnes.toFixed(2)} tonnes` },
-            );
-
-            if (result.wallTies.total > 0) {
-                items.push({ label: 'Wall ties', value: `${result.wallTies.total} ties` });
-            }
-
-            if (result.lintels.length > 0) {
-                items.push({
-                    label: 'Lintels',
-                    value: result.lintels.map(l => `${l.lintelLength} mm`).join(', '),
-                });
-            }
-
-            items.push(
-                { label: 'DPC', value: `${result.dpc.length} m × ${result.dpc.widthMm} mm` },
-                { label: 'Gross area', value: `${result.area.grossArea.toFixed(2)} m²` },
-                { label: 'Net area', value: `${result.area.netArea.toFixed(2)} m²` },
-            );
-
-            // Wall starters — one kit per wall section
-            items.push({
-                label: 'Wall starters',
-                value: `${result.starterKits} kit${result.starterKits !== 1 ? 's' : ''}`,
-            });
-
-            // Cavity insulation — area and recommended thickness
-            if (result.insulationAreaM2 !== undefined && result.insulationThicknessMm !== undefined) {
-                items.push({
-                    label: 'Cavity insulation (area)',
-                    value: `${result.insulationAreaM2.toFixed(1)} m² at ${result.insulationThicknessMm} mm`,
-                });
-            }
-
-            setResults(items);
-            setHasResults(true);
+            setResult(r);
         } catch (e) {
             setError(e instanceof Error ? e.message : 'An unexpected error occurred.');
-            setHasResults(false);
+            setResult(null);
         }
     }, [wallType, walls, openings, blockType, blockWidth, mixRatio, unitWaste, mortarWaste, cavityWidth, sandBagSize]);
 
@@ -249,8 +224,7 @@ export default function MasonryCalculator({
         setMortarWaste('10');
         setCavityWidth('100');
         setSandBagSize('jumbo');
-        setResults([]);
-        setHasResults(false);
+        setResult(null);
         setError(null);
     }, [defaultWallType]);
 
@@ -259,31 +233,34 @@ export default function MasonryCalculator({
             legend: 'Wall type',
             children: (
                 <div className="space-y-4">
-                    <FormSelect
+                    <FormField
                         id="wall-type"
                         label="Type of wall"
+                        type="select"
                         value={wallType}
-                        onChange={(v) => { setWallType(v as WallType); setError(null); }}
+                        onChange={(e) => { setWallType(e.target.value as WallType); setError(null); }}
                         options={wallTypeOptions}
                     />
                     {showBlocks && (
                         <>
-                            <FormSelect
+                            <FormField
                                 id="block-type"
                                 label="Block type"
+                                type="select"
                                 value={blockType}
-                                onChange={(v) => {
-                                    setBlockType(v as 'aerated' | 'dense');
+                                onChange={(e) => {
+                                    setBlockType(e.target.value as 'aerated' | 'dense');
                                     setBlockWidth('100'); // reset — options differ by type
                                     setError(null);
                                 }}
                                 options={blockTypeOptions}
                             />
-                            <FormSelect
+                            <FormField
                                 id="block-width"
                                 label="Block thickness"
+                                type="select"
                                 value={blockWidth}
-                                onChange={(v) => { setBlockWidth(v); setError(null); }}
+                                onChange={(e) => { setBlockWidth(e.target.value); setError(null); }}
                                 options={blockWidthOptions}
                             />
                         </>
@@ -298,7 +275,7 @@ export default function MasonryCalculator({
                     {walls.map((wall, index) => (
                         <div key={index} className="space-y-2">
                             <div className="grid grid-cols-2 gap-4">
-                                <FormInput
+                                <NumberInput
                                     id={`wall-length-${index}`}
                                     label={`Length (Wall ${index + 1})`}
                                     unit="m"
@@ -306,10 +283,10 @@ export default function MasonryCalculator({
                                     onChange={(v) => updateWall(index, 'length', v)}
                                     placeholder="e.g. 5.0"
                                     min={0.1}
-                                    step="0.01"
+                                    step={0.01}
                                     required
                                 />
-                                <FormInput
+                                <NumberInput
                                     id={`wall-height-${index}`}
                                     label={`Height (Wall ${index + 1})`}
                                     unit="m"
@@ -317,7 +294,7 @@ export default function MasonryCalculator({
                                     onChange={(v) => updateWall(index, 'height', v)}
                                     placeholder="e.g. 2.4"
                                     min={0.1}
-                                    step="0.01"
+                                    step={0.01}
                                     required
                                 />
                             </div>
@@ -351,7 +328,7 @@ export default function MasonryCalculator({
                     {openings.map((opening, index) => (
                         <div key={index} className="space-y-2">
                             <div className="grid grid-cols-2 gap-4">
-                                <FormInput
+                                <NumberInput
                                     id={`opening-width-${index}`}
                                     label={`Width (Item ${index + 1})`}
                                     unit="m"
@@ -359,9 +336,9 @@ export default function MasonryCalculator({
                                     onChange={(v) => updateOpening(index, 'width', v)}
                                     placeholder="e.g. 1.2"
                                     min={0.1}
-                                    step="0.01"
+                                    step={0.01}
                                 />
-                                <FormInput
+                                <NumberInput
                                     id={`opening-height-${index}`}
                                     label={`Height (Item ${index + 1})`}
                                     unit="m"
@@ -369,7 +346,7 @@ export default function MasonryCalculator({
                                     onChange={(v) => updateOpening(index, 'height', v)}
                                     placeholder="e.g. 2.1"
                                     min={0.1}
-                                    step="0.01"
+                                    step={0.01}
                                 />
                             </div>
                             <div className="text-right">
@@ -397,22 +374,24 @@ export default function MasonryCalculator({
             legend: 'Materials & Waste',
             children: (
                 <div className="space-y-4">
-                    <FormSelect
+                    <FormField
                         id="sand-bag-size"
                         label="Sand bag size"
+                        type="select"
                         value={sandBagSize}
-                        onChange={(v) => { setSandBagSize(v as SandBagSize); setError(null); }}
+                        onChange={(e) => { setSandBagSize(e.target.value as SandBagSize); setError(null); }}
                         options={sandBagOptions}
                     />
-                    <FormSelect
+                    <FormField
                         id="mix-ratio"
                         label="Mortar mix ratio"
+                        type="select"
                         value={mixRatio}
-                        onChange={(v) => { setMixRatio(v as MortarMixRatio); setError(null); }}
+                        onChange={(e) => { setMixRatio(e.target.value as MortarMixRatio); setError(null); }}
                         options={mixRatioOptions}
                     />
                     <div className="grid grid-cols-2 gap-4">
-                        <FormInput
+                        <NumberInput
                             id="unit-waste"
                             label="Unit waste"
                             unit="%"
@@ -423,7 +402,7 @@ export default function MasonryCalculator({
                             max={50}
                             step={1}
                         />
-                        <FormInput
+                        <NumberInput
                             id="mortar-waste"
                             label="Mortar waste"
                             unit="%"
@@ -436,7 +415,7 @@ export default function MasonryCalculator({
                         />
                     </div>
                     {showCavityWidth && (
-                        <FormInput
+                        <NumberInput
                             id="cavity-width"
                             label="Cavity width"
                             unit="mm"
@@ -457,11 +436,15 @@ export default function MasonryCalculator({
             title={title}
             description={description}
             fieldGroups={fieldGroups}
-            results={results}
-            hasResults={hasResults}
             onCalculate={handleCalculate}
             onReset={handleReset}
             error={error}
+            resultsSlot={result && (
+                <ResultCard
+                    title="Materials"
+                    materials={toMaterials(result, getBlockLabel(blockType, parseInt(blockWidth)), sandBagSize)}
+                />
+            )}
         />
     );
 }
