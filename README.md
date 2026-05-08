@@ -1,52 +1,103 @@
 # Trade Materials Calculator
 
-A comprehensive suite of online calculators for trade professionals, built with **Astro 5**, **React 19**, and **Tailwind CSS 4**.
+A web app that estimates trade materials for common building projects —
+tiling, flooring, masonry, decking, and more — using product data sourced
+from SELCO Builders Warehouse and manufacturer technical data sheets.
 
-Deploys to GitHub Pages at [sami.github.io/selco](https://sami.github.io/selco/).
+**Live:** [https://sami.github.io/selco/](https://sami.github.io/selco/)
 
-## 🚀 Features
+## What it does
 
-### 🧱 Tiling Project Wizard
-A step-by-step wizard that guides users through an entire tiling project:
-- **Area Calculation**: Supports L-shapes and mixed units.
-- **Material Estimates**: Calculates tiles, adhesive, grout, and spacers in one go.
-- **Smart Logic**: Adjusts estimates based on tile size, substrate type, and application area (wet/dry).
-- **Shopping List**: Generates a complete list of required materials and recommended tools.
+The app combines two complementary tools:
 
-### 🧮 Specialized Calculators
-- **Tiles**: Calculate tile quantities with wastage allowance.
-- **Adhesive**: Estimate bags required based on substrate and tile type (Standard/Flexible).
-- **Grout**: Calculate kg needed based on joint width and tile depth.
-- **Spacers**: Estimate packs required for Cross or T-junction layouts.
-- **Conversions**: Convert between metric and imperial units (Length, Area, Volume, Weight, Temperature).
+- **Project calculators** — multi-step wizards that walk through a complete
+  project (room or wall measurements, substrate choices, product
+  selection) and return a single bill of materials covering every required
+  item.
+- **Handy calculators** — single-purpose utilities for unit conversion and
+  board-coverage estimation.
 
-## 🛠️ Tech Stack
+Six calculators are live and two more are planned. The full catalogue is
+maintained in [`src/projects/registry.ts`](src/projects/registry.ts) — the
+homepage grid, sidebar navigation, and breadcrumbs all derive from it, so
+the registry stays the single source of truth for what is shipped.
 
-- **Framework**: [Astro 5](https://astro.build) (Static Site Generation)
-- **UI Library**: [React 19](https://react.dev) (Interactive Islands)
-- **Styling**: [Tailwind CSS 4](https://tailwindcss.com)
-- **Icons**: [Lucide React](https://lucide.dev)
-- **Testing**: Vitest & React Testing Library
+## Tech stack
 
-## 🧞 Commands
+- **[Astro 5](https://astro.build)** — static-site generation; pages are
+  rendered ahead of time and served from GitHub Pages.
+- **[React 19](https://react.dev)** — interactive islands hydrated as
+  needed (`client:load`, `client:visible`).
+- **[Tailwind CSS 4](https://tailwindcss.com)** — `@theme`-driven token
+  system with a CI lint guard against undefined custom properties.
+- **[Vitest 4](https://vitest.dev)** + React Testing Library + jsdom —
+  unit and component tests, currently 51 files / 500 cases on `src/`.
+- **TypeScript 5** in strict mode across all source.
 
-All commands are run from the root of the project:
+## Project layout
 
-| Command                   | Action                                           |
-| :------------------------ | :----------------------------------------------- |
-| `npm install`             | Installs dependencies                            |
-5| `npm run dev`             | Starts local dev server at `localhost:4321`      |
-| `npm run build`           | Build production site to `./dist/`               |
-| `npm run preview`         | Preview build locally                            |
-| `npm test`                | Run unit and component tests                     |
+The codebase is a single npm package with a deliberate three-layer split.
+[`ARCHITECTURE.md`](ARCHITECTURE.md) covers the rationale and conventions
+in detail.
 
-## 📂 Project Structure
+```
+src/
+  calculators/   Layer 1 — pure-TS calculation engines (no React)
+  projects/      Layer 2 — wizard step descriptors composing Layer 1
+  components/    Layer 3 — React islands and shared `ui/` primitives
+  layouts/       Layer 3 — Astro layouts and SELCO chrome
+  pages/         Layer 3 — Astro routes
+  data/          product catalogues consumed by Layer 1
+  styles/        Tailwind entry and `@theme` tokens
+docs/
+  audit/         TMA 02 audit and redesign decisions
+  plans/         dated implementation plans
+  evidence/      decision-trace evidence (design tokens, masonry engine)
+  tds/           manufacturer technical data sheets
+PROJECT_HISTORY.md   factual narrative of the codebase by era
+```
 
-- **`src/calculators/`**: Pure TypeScript logic for all calculations (tested in isolation).
-- **`src/components/`**: React components (interactive UI) and Astro components (static UI).
-- **`src/pages/`**: Astro pages handling routing and layout.
-- **`src/layouts/`**: Shared layouts (Header, Footer, Meta tags).
+## Running locally
 
-## 📝 License
+```sh
+npm install
+npm run dev
+```
 
-This project is open source and available under the [MIT License](LICENSE).
+The dev server starts at `http://localhost:4321/selco/`.
+
+## Testing
+
+```sh
+npm test                # watch mode
+npm test -- --run       # single pass
+npm run test:coverage   # single pass with v8 coverage report in coverage/
+```
+
+Coverage output is written to `coverage/` and is git-ignored.
+
+## Build and preview
+
+```sh
+npm run build           # static output to dist/
+npm run preview         # serve dist/ locally for verification
+```
+
+## Deploy
+
+The app deploys to GitHub Pages on push to `main` via the workflow in
+`.github/workflows/`. The base path is `/selco`, configured in
+[`astro.config.mjs`](astro.config.mjs). All internal links must use
+`import.meta.env.BASE_URL` so they resolve correctly under the subpath.
+
+## Background
+
+Trade Materials Calculator is the project deliverable for **TM470 — The
+Computing and IT Project**, an Open University capstone module. The
+project history, including era-by-era development phases and the
+decisions log, is documented in
+[`PROJECT_HISTORY.md`](PROJECT_HISTORY.md).
+
+## License
+
+[MIT](LICENSE) — see the licence file for the full text.
