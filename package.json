@@ -1,5 +1,5 @@
 {
-  "name": "major-mercury",
+  "name": "trade-materials-calculator",
   "type": "module",
   "version": "0.0.1",
   "scripts": {
@@ -8,6 +8,7 @@
     "preview": "astro preview",
     "astro": "astro",
     "test": "vitest",
+    "test:coverage": "vitest run --coverage",
     "lint:tokens": "node scripts/lint-css-tokens.mjs"
   },
   "dependencies": {
