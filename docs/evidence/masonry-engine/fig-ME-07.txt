@@ -1,0 +1,25 @@
+ddbb51f feat(masonry-ui): block type selector, wall starters and cavity insulation result rows
+49a203c test(masonry): add assertions for starterKits and cavity insulation fields
+470b95e feat(masonry): calculateMasonry returns starterKits and cavity insulation dimensions
+2da6579 feat(masonry): add thermalite-shield-215 block; add WALL_STARTER_PRODUCTS catalogue (B7)
+41152eb feat(masonry): add WallStarterProduct; extend MasonryResult with starters + insulation fields; widen blockWidth to 100|140|215
+508b2c7 chore: ignore .worktrees/ directory
+985ee46 feat(homepage): remove comingSoon flag from brick-wall card in index.astro
+8d35f72 feat(registry): mark brick-wall calculator as live; export lintels, padstones, cavity-closers, cavity-trays, masonry-project from barrel
+baa312b feat(masonry-project): implement calculateMasonryProject orchestrator — opening deduction, cavity DPC doubled, gross-area wall ties (TDD GREEN)
+44ac543 test(masonry-project): add cross-reference validation — Scenarios A–D (RED)
+1e43dc9 feat(cavity-trays): implement calculateCavityTray with product-ID lookup (TDD GREEN)
+e4106c9 test(cavity-trays): add TDD test suite — TC1–TC4 (RED)
+c54ac33 feat(cavity-closers): implement calculateCavityCloser — perimeter packing (TDD GREEN)
+f3624c5 test(cavity-closers): add TDD test suite — TC1–TC3 (RED)
+9285553 feat(padstones): implement calculatePadstone with product-ID lookup (TDD GREEN)
+1813add test(padstones): add TDD test suite — TC1–TC3 (RED)
+7617892 feat(lintels): implement calculateLintel — concrete + steel product lookup (TDD GREEN)
+bcaa11d test(lintels): add TDD test suite — TC1–TC4 (RED)
+28aa276 feat(masonry): add LintelInput/CalcResult, PadstoneInput/Result, CavityCloserInput/Result, CavityTrayInput/Result, MasonryProjectInput/Result to types.ts
+a3988ce refactor(masonry): route calculateWallTies, calculateDPC barrel to standalone modules; add calculateAirBricks
+20d7d42 feat(air-bricks): implement calculateAirBricks — 1 per 450mm wall (TDD GREEN)
+cf153c4 test(air-bricks): add TDD test suite — TC1–TC4 (RED)
+93ebb14 feat(dpc): implement calculateDPC with product-ID lookup and recommendDPCProductId (TDD GREEN)
+0814f62 test(dpc): add TDD test suite — TC1–TC4 (RED)
+23d3352 refactor(wall-ties): hoist sorted products to module constant; narrow packSize type
