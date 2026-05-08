@@ -1,0 +1,381 @@
+
+[1m[46m RUN [49m[22m [36mv4.1.0 [39m[90m/Users/sami/Projects/selco[39m
+
+ [2m[90m↓[39m[22m src/calculators/masonry.test.ts[2m > [22mcalculateWallArea[2m > [22mcalculates area for a single wall
+ [2m[90m↓[39m[22m src/calculators/masonry.test.ts[2m > [22mcalculateWallArea[2m > [22msubtracts openings from gross area
+ [2m[90m↓[39m[22m src/calculators/masonry.test.ts[2m > [22mcalculateWallArea[2m > [22mhandles multiple walls
+ [2m[90m↓[39m[22m src/calculators/masonry.test.ts[2m > [22mcalculateWallArea[2m > [22mhandles zero openings
+ [2m[90m↓[39m[22m src/calculators/masonry.test.ts[2m > [22mcalculateWallArea[2m > [22mthrows for empty walls array
+ [2m[90m↓[39m[22m src/calculators/masonry.test.ts[2m > [22mcalculateWallArea[2m > [22mthrows for zero wall dimension
+ [2m[90m↓[39m[22m src/calculators/masonry.test.ts[2m > [22mcalculateWallArea[2m > [22mthrows for negative opening
+ [2m[90m↓[39m[22m src/calculators/masonry.test.ts[2m > [22mcalculateWallArea[2m > [22mclamps net area to zero
+ [2m[90m↓[39m[22m src/calculators/masonry.test.ts[2m > [22mcalculateBricks[2m > [22mhalf-brick = 60/m²
+ [2m[90m↓[39m[22m src/calculators/masonry.test.ts[2m > [22mcalculateBricks[2m > [22mone-brick = 120/m²
+ [2m[90m↓[39m[22m src/calculators/masonry.test.ts[2m > [22mcalculateBricks[2m > [22mcavity outer leaf = 60/m²
+ [2m[90m↓[39m[22m src/calculators/masonry.test.ts[2m > [22mcalculateBricks[2m > [22mapplies waste
+ [2m[90m↓[39m[22m src/calculators/masonry.test.ts[2m > [22mcalculateBricks[2m > [22mreturns 0 for blockwork
+ [2m[90m↓[39m[22m src/calculators/masonry.test.ts[2m > [22mcalculateBlocks[2m > [22m10/m² for 100mm
+ [2m[90m↓[39m[22m src/calculators/masonry.test.ts[2m > [22mcalculateBlocks[2m > [22m10/m² for 140mm
+ [2m[90m↓[39m[22m src/calculators/masonry.test.ts[2m > [22mcalculateBlocks[2m > [22m10/m² for cavity inner leaf
+ [2m[90m↓[39m[22m src/calculators/masonry.test.ts[2m > [22mcalculateBlocks[2m > [22mapplies waste
+ [2m[90m↓[39m[22m src/calculators/masonry.test.ts[2m > [22mcalculateBlocks[2m > [22mreturns 0 for half-brick
+ [2m[90m↓[39m[22m src/calculators/masonry.test.ts[2m > [22mcalculateMortar[2m > [22mhalf-brick mortar volume
+ [2m[90m↓[39m[22m src/calculators/masonry.test.ts[2m > [22mcalculateMortar[2m > [22mone-brick mortar volume
+ [2m[90m↓[39m[22m src/calculators/masonry.test.ts[2m > [22mcalculateMortar[2m > [22mcavity = brick leaf + block leaf
+ [2m[90m↓[39m[22m src/calculators/masonry.test.ts[2m > [22mcalculateMortar[2m > [22mblockwork mortar volume
+ [2m[90m↓[39m[22m src/calculators/masonry.test.ts[2m > [22mcalculateMortar[2m > [22m1:4 mix produces correct cement bags
+ [2m[90m↓[39m[22m src/calculators/masonry.test.ts[2m > [22mcalculateMortar[2m > [22m1:4 mix produces correct sand tonnes
+ [2m[90m↓[39m[22m src/calculators/masonry.test.ts[2m > [22mcalculateMortar[2m > [22mapplies mortar waste
+ [2m[90m↓[39m[22m src/calculators/masonry.test.ts[2m > [22mcalculateMortar[2m > [22m1:3 mix uses more cement than 1:6
+ [2m[90m↓[39m[22m src/calculators/masonry.test.ts[2m > [22mcalculateWallTies[2m > [22mgeneral = 2.5/m²
+ [2m[90m↓[39m[22m src/calculators/masonry.test.ts[2m > [22mcalculateWallTies[2m > [22mextra ties at openings
+ [2m[90m↓[39m[22m src/calculators/masonry.test.ts[2m > [22mcalculateLintels[2m > [22mlength = width + 300mm
+ [2m[90m↓[39m[22m src/calculators/masonry.test.ts[2m > [22mcalculateLintels[2m > [22mhandles multiple openings
+ [2m[90m↓[39m[22m src/calculators/masonry.test.ts[2m > [22mcalculateDPC[2m > [22mcalculates total length
+ [2m[90m↓[39m[22m src/calculators/masonry.test.ts[2m > [22mcalculateDPC[2m > [22mhalf-brick width = 112.5mm
+ [2m[90m↓[39m[22m src/calculators/masonry.test.ts[2m > [22mcalculateDPC[2m > [22mcavity width = 225mm
+ [2m[90m↓[39m[22m src/calculators/masonry.test.ts[2m > [22mcalculateMasonry[2m > [22mfull calculation for half-brick wall
+ [2m[90m↓[39m[22m src/calculators/masonry.test.ts[2m > [22mcalculateMasonry[2m > [22mfull calculation for cavity wall
+ [2m[90m↓[39m[22m src/calculators/masonry.test.ts[2m > [22mcalculateMasonry[2m > [22mstarterKits = number of wall sections
+ [2m[90m↓[39m[22m src/calculators/masonry.test.ts[2m > [22mcalculateMasonry[2m > [22mcavity wall returns insulationAreaM2 = gross area
+ [2m[90m↓[39m[22m src/calculators/masonry.test.ts[2m > [22mcalculateMasonry[2m > [22mnon-cavity wall has no insulation fields
+ [2m[90m↓[39m[22m src/calculators/masonry.test.ts[2m > [22mcalculateMasonry[2m > [22mthrows for invalid waste
+ [2m[90m↓[39m[22m src/calculators/masonry.test.ts[2m > [22mcalculateMasonry[2m > [22mthrows for waste over 100
+ [2m[90m↓[39m[22m src/calculators/masonry.test.ts[2m > [22msand bag calculations[2m > [22mcalculates jumbo bags correctly
+ [2m[90m↓[39m[22m src/calculators/masonry.test.ts[2m > [22msand bag calculations[2m > [22mcalculates large bags correctly
+ [2m[90m↓[39m[22m src/calculators/masonry.test.ts[2m > [22msand bag calculations[2m > [22mhandles zero sand (small area)
+ [2m[90m↓[39m[22m src/calculators/masonry.test.ts[2m > [22msand bag calculations[2m > [22mhandles zero wall area -> zero bags
+ [2m[90m↓[39m[22m src/calculators/masonry.test.ts[2m > [22mSAND_BAG_SIZES constant[2m > [22mexports correct bag definitions
+ [2m[90m↓[39m[22m src/calculators/__tests__/mortar.test.ts[2m > [22mcalculateMortar()[2m > [22mTC1: 10 m² brickwork, 1:3 → 0.12 m³
+ [2m[90m↓[39m[22m src/calculators/__tests__/mortar.test.ts[2m > [22mcalculateMortar()[2m > [22mTC2: 10 m² blockwork, 1:3 → 0.07 m³
+ [2m[90m↓[39m[22m src/calculators/__tests__/mortar.test.ts[2m > [22mcalculateMortar()[2m > [22mTC3: 0.12 m³ × 1,600 kg/m³ = 192 kg mortar weight
+ [2m[90m↓[39m[22m src/calculators/__tests__/mortar.test.ts[2m > [22mcalculateMortar()[2m > [22mTC4: sand component 1:3 mix → 144 kg (75% of 0.12 m³ × 1,600)
+ [2m[90m↓[39m[22m src/calculators/__tests__/mortar.test.ts[2m > [22mcalculateMortar()[2m > [22mTC5: cement component 1:3 mix → 45 kg (25% of 0.12 m³ × 1,500)
+ [2m[90m↓[39m[22m src/calculators/__tests__/mortar.test.ts[2m > [22mcalculateMortar()[2m > [22mTC6: 1:4 mix → sand 153.6 kg, cement 36 kg
+ [2m[90m↓[39m[22m src/calculators/__tests__/mortar.test.ts[2m > [22mcalculateMortar()[2m > [22mTC7: materials has 2 entries — sand and cement
+ [2m[90m↓[39m[22m src/calculators/__tests__/mortar.test.ts[2m > [22mcalculateMortar()[2m > [22mTC8: zero area → zero mortar
+ [2m[90m↓[39m[22m src/calculators/__tests__/conversions.test.ts[2m > [22mconvert() — LENGTH family[2m > [22mTC-L1: 1 m → mm = 1000
+ [2m[90m↓[39m[22m src/calculators/__tests__/conversions.test.ts[2m > [22mconvert() — LENGTH family[2m > [22mTC-L2: 1 ft → mm = 304.8
+ [2m[90m↓[39m[22m src/calculators/__tests__/conversions.test.ts[2m > [22mconvert() — LENGTH family[2m > [22mTC-L3: 1 yd → m = 0.9144
+ [2m[90m↓[39m[22m src/calculators/__tests__/conversions.test.ts[2m > [22mconvert() — LENGTH family[2m > [22mTC-L4: 1 km → m = 1000
+ [2m[90m↓[39m[22m src/calculators/__tests__/conversions.test.ts[2m > [22mconvert() — LENGTH family[2m > [22mTC-L5: same unit — 5 ft → ft = 5
+ [2m[90m↓[39m[22m src/calculators/__tests__/conversions.test.ts[2m > [22mconvert() — LENGTH family[2m > [22mTC-L6: 1 m → ft ≈ 3.28084
+ [2m[90m↓[39m[22m src/calculators/__tests__/conversions.test.ts[2m > [22mconvert() — AREA family[2m > [22mTC-A1: 1 m² → mm² = 1,000,000
+ [2m[90m↓[39m[22m src/calculators/__tests__/conversions.test.ts[2m > [22mconvert() — AREA family[2m > [22mTC-A2: 1 m² → ft² ≈ 10.7639
+ [2m[90m↓[39m[22m src/calculators/__tests__/conversions.test.ts[2m > [22mconvert() — AREA family[2m > [22mTC-A3: 1 hectare → m² = 10,000
+ [2m[90m↓[39m[22m src/calculators/__tests__/conversions.test.ts[2m > [22mconvert() — AREA family[2m > [22mTC-A4: 1 ft² → m² ≈ 0.09290
+ [2m[90m↓[39m[22m src/calculators/__tests__/conversions.test.ts[2m > [22mconvert() — AREA family[2m > [22mTC-A5: 1 yd² → m² ≈ 0.8361
+ [2m[90m↓[39m[22m src/calculators/__tests__/conversions.test.ts[2m > [22mconvert() — VOLUME family[2m > [22mTC-V1: 1 m³ → litres = 1000
+ [2m[90m↓[39m[22m src/calculators/__tests__/conversions.test.ts[2m > [22mconvert() — VOLUME family[2m > [22mTC-V2: 1 m³ → ft³ ≈ 35.3147
+ [2m[90m↓[39m[22m src/calculators/__tests__/conversions.test.ts[2m > [22mconvert() — VOLUME family[2m > [22mTC-V3: 1 litre → cm³ = 1000
+ [2m[90m↓[39m[22m src/calculators/__tests__/conversions.test.ts[2m > [22mconvert() — VOLUME family[2m > [22mTC-V4: 1 ft³ → m³ ≈ 0.028317
+ [2m[90m↓[39m[22m src/calculators/__tests__/conversions.test.ts[2m > [22mconvert() — WEIGHT family[2m > [22mTC-W1: 1 kg → lb ≈ 2.20462
+ [2m[90m↓[39m[22m src/calculators/__tests__/conversions.test.ts[2m > [22mconvert() — WEIGHT family[2m > [22mTC-W2: 1 tonne → kg = 1000 (tonnes identifier)
+ [2m[90m↓[39m[22m src/calculators/__tests__/conversions.test.ts[2m > [22mconvert() — WEIGHT family[2m > [22mTC-W3: 1 cwt → kg ≈ 50.802 (new unit — UK hundredweight)
+ [2m[90m↓[39m[22m src/calculators/__tests__/conversions.test.ts[2m > [22mconvert() — WEIGHT family[2m > [22mTC-W4: 1 stone → kg ≈ 6.350 (stones identifier)
+ [2m[90m↓[39m[22m src/calculators/__tests__/conversions.test.ts[2m > [22mconvert() — WEIGHT family[2m > [22mTC-W5: 1 lb → g ≈ 453.59
+ [2m[90m↓[39m[22m src/calculators/__tests__/conversions.test.ts[2m > [22mconvert() — TEMPERATURE family[2m > [22mTC-T1: 0°C → °F = 32
+ [2m[90m↓[39m[22m src/calculators/__tests__/conversions.test.ts[2m > [22mconvert() — TEMPERATURE family[2m > [22mTC-T2: 100°C → °F = 212
+ [2m[90m↓[39m[22m src/calculators/__tests__/conversions.test.ts[2m > [22mconvert() — TEMPERATURE family[2m > [22mTC-T3: 32°F → °C = 0
+ [2m[90m↓[39m[22m src/calculators/__tests__/conversions.test.ts[2m > [22mconvert() — TEMPERATURE family[2m > [22mTC-T4: −40°C → °F = −40 (cross-check)
+ [2m[90m↓[39m[22m src/calculators/__tests__/conversions.test.ts[2m > [22mconvert() — result shape[2m > [22mreturns fromUnit, toUnit, formula and result
+ [2m[90m↓[39m[22m src/calculators/__tests__/conversions.test.ts[2m > [22mconvert() — result shape[2m > [22mformula contains the converted result value
+ [2m[90m↓[39m[22m src/calculators/__tests__/conversions.test.ts[2m > [22mconvert() — result shape[2m > [22mthrows for unknown fromUnit
+ [2m[90m↓[39m[22m src/calculators/__tests__/conversions.test.ts[2m > [22mconvert() — result shape[2m > [22mhandles zero value
+ [2m[90m↓[39m[22m src/calculators/__tests__/conversions.test.ts[2m > [22mconvertArea() — hectare (new unit)[2m > [22m1 hectare → m² = 10,000
+ [2m[90m↓[39m[22m src/calculators/__tests__/conversions.test.ts[2m > [22mconvertArea() — hectare (new unit)[2m > [22m10,000 m² → 1 hectare
+ [2m[90m↓[39m[22m src/calculators/__tests__/conversions.test.ts[2m > [22mconvertWeight() — cwt (new unit)[2m > [22m1 cwt → kg ≈ 50.802
+ [2m[90m↓[39m[22m src/calculators/__tests__/conversions.test.ts[2m > [22mconvertWeight() — cwt (new unit)[2m > [22m50.80234544 kg → 1 cwt
+ [2m[90m↓[39m[22m src/calculators/__tests__/conversions.test.ts[2m > [22mCONVERSION_FACTORS[2m > [22mexports factor table for length family
+ [2m[90m↓[39m[22m src/calculators/__tests__/conversions.test.ts[2m > [22mCONVERSION_FACTORS[2m > [22mexports factor table for area family
+ [2m[90m↓[39m[22m src/calculators/__tests__/conversions.test.ts[2m > [22mCONVERSION_FACTORS[2m > [22mexports factor table for weight family with cwt
+ [2m[90m↓[39m[22m src/calculators/__tests__/conversions.test.ts[2m > [22mgetUnitsForFamily()[2m > [22mreturns unit list for length
+ [2m[90m↓[39m[22m src/calculators/__tests__/conversions.test.ts[2m > [22mgetUnitsForFamily()[2m > [22mreturns unit list for area including hectare
+ [2m[90m↓[39m[22m src/calculators/__tests__/conversions.test.ts[2m > [22mgetUnitsForFamily()[2m > [22mreturns unit list for weight including cwt
+ [2m[90m↓[39m[22m src/calculators/__tests__/conversions.test.ts[2m > [22mgetUnitsForFamily()[2m > [22mreturns unit list for temperature
+ [2m[90m↓[39m[22m src/calculators/__tests__/conversions.test.ts[2m > [22mgetUnitsForFamily()[2m > [22mthrows for unknown family
+ [2m[90m↓[39m[22m src/calculators/__tests__/conversions.test.ts[2m > [22mDENSITIES[2m > [22mexports same values as DENSITY
+ [2m[90m↓[39m[22m src/calculators/__tests__/conversions.test.ts[2m > [22mDENSITIES[2m > [22mconcrete density is 2.4 t/m³
+ [2m[90m↓[39m[22m src/calculators/__tests__/conversions.test.ts[2m > [22mDENSITIES[2m > [22msand density is 1.6 t/m³
+ [2m[90m↓[39m[22m src/calculators/__tests__/conversions.test.ts[2m > [22mconvertDensityToWeight — density helpers[2m > [22m2 m³ concrete → 4.8 tonnes
+ [2m[90m↓[39m[22m src/calculators/__tests__/conversions.test.ts[2m > [22mconvertDensityToWeight — density helpers[2m > [22m5 m³ sand → 8.0 tonnes
+ [2m[90m↓[39m[22m src/calculators/__tests__/conversions.test.ts[2m > [22mconvertDensityToWeight — density helpers[2m > [22m1 m³ hardcore → 2.1 tonnes
+ [2m[90m↓[39m[22m src/calculators/__tests__/conversions.test.ts[2m > [22mconvertDensityToWeight — density helpers[2m > [22mhandles zero volume
+ [2m[90m↓[39m[22m src/calculators/__tests__/conversions.test.ts[2m > [22mconvert() — same-unit identity (branch guards)[2m > [22marea: m2 → m2 returns input unchanged
+ [2m[90m↓[39m[22m src/calculators/__tests__/conversions.test.ts[2m > [22mconvert() — same-unit identity (branch guards)[2m > [22mweight: kg → kg returns input unchanged
+ [2m[90m↓[39m[22m src/calculators/__tests__/conversions.test.ts[2m > [22mconvert() — same-unit identity (branch guards)[2m > [22mvolume: litres → litres returns input unchanged
+ [2m[90m↓[39m[22m src/calculators/__tests__/conversions.test.ts[2m > [22mconvert() — same-unit identity (branch guards)[2m > [22mtemperature: C → C returns input unchanged
+ [2m[90m↓[39m[22m src/calculators/__tests__/conversions.test.ts[2m > [22mconvert() — same-unit identity (branch guards)[2m > [22mtemperature: F → C converts 212°F to 100°C
+ [2m[90m↓[39m[22m src/calculators/__tests__/primitives.test.ts[2m > [22mroundUp[2m > [22mrounds up to 2 decimal places by default
+ [2m[90m↓[39m[22m src/calculators/__tests__/primitives.test.ts[2m > [22mroundUp[2m > [22mreturns the same value when already exact at that precision
+ [2m[90m↓[39m[22m src/calculators/__tests__/primitives.test.ts[2m > [22mroundUp[2m > [22mrounds up to 1 decimal place
+ [2m[90m↓[39m[22m src/calculators/__tests__/primitives.test.ts[2m > [22mroundUp[2m > [22mrounds up to 0 decimal places (whole number ceiling)
+ [2m[90m↓[39m[22m src/calculators/__tests__/primitives.test.ts[2m > [22mroundUp[2m > [22mhandles zero
+ [2m[90m↓[39m[22m src/calculators/__tests__/primitives.test.ts[2m > [22mroundUp[2m > [22mleaves whole numbers unchanged
+ [2m[90m↓[39m[22m src/calculators/__tests__/primitives.test.ts[2m > [22mroundUp[2m > [22mhandles values that are already at max precision
+ [2m[90m↓[39m[22m src/calculators/__tests__/primitives.test.ts[2m > [22mceilToWhole[2m > [22mrounds fractional values up to next whole number
+ [2m[90m↓[39m[22m src/calculators/__tests__/primitives.test.ts[2m > [22mceilToWhole[2m > [22mleaves whole numbers unchanged
+ [2m[90m↓[39m[22m src/calculators/__tests__/primitives.test.ts[2m > [22mceilToWhole[2m > [22mhandles zero
+ [2m[90m↓[39m[22m src/calculators/__tests__/primitives.test.ts[2m > [22mceilToWhole[2m > [22mhandles values just under a whole number
+ [2m[90m↓[39m[22m src/calculators/__tests__/primitives.test.ts[2m > [22mapplyWaste[2m > [22madds 10% waste to a quantity
+ [2m[90m↓[39m[22m src/calculators/__tests__/primitives.test.ts[2m > [22mapplyWaste[2m > [22madds 15% waste
+ [2m[90m↓[39m[22m src/calculators/__tests__/primitives.test.ts[2m > [22mapplyWaste[2m > [22mapplies zero waste (returns quantity unchanged)
+ [2m[90m↓[39m[22m src/calculators/__tests__/primitives.test.ts[2m > [22mapplyWaste[2m > [22mhandles fractional results
+ [2m[90m↓[39m[22m src/calculators/__tests__/primitives.test.ts[2m > [22mapplyWaste[2m > [22mhandles 100% waste (doubles the quantity)
+ [2m[90m↓[39m[22m src/calculators/__tests__/primitives.test.ts[2m > [22mpacksNeeded[2m > [22mreturns exact count when evenly divisible
+ [2m[90m↓[39m[22m src/calculators/__tests__/primitives.test.ts[2m > [22mpacksNeeded[2m > [22mrounds up when not evenly divisible
+ [2m[90m↓[39m[22m src/calculators/__tests__/primitives.test.ts[2m > [22mpacksNeeded[2m > [22mreturns 0 when quantity is 0
+ [2m[90m↓[39m[22m src/calculators/__tests__/primitives.test.ts[2m > [22mpacksNeeded[2m > [22mworks with pack size of 1
+ [2m[90m↓[39m[22m src/calculators/__tests__/primitives.test.ts[2m > [22mpacksNeeded[2m > [22mworks with large numbers
+ [2m[90m↓[39m[22m src/calculators/__tests__/primitives.test.ts[2m > [22mareaMSquared[2m > [22mmultiplies length by width
+ [2m[90m↓[39m[22m src/calculators/__tests__/primitives.test.ts[2m > [22mareaMSquared[2m > [22mhandles fractional dimensions
+ [2m[90m↓[39m[22m src/calculators/__tests__/primitives.test.ts[2m > [22mareaMSquared[2m > [22mreturns 0 when either dimension is 0
+ [2m[90m↓[39m[22m src/calculators/__tests__/primitives.test.ts[2m > [22mareaMSquared[2m > [22mhandles non-integer square areas
+ [2m[90m↓[39m[22m src/calculators/__tests__/primitives.test.ts[2m > [22mvolumeMCubed[2m > [22mcomputes volume converting depth from mm to m
+ [2m[90m↓[39m[22m src/calculators/__tests__/primitives.test.ts[2m > [22mvolumeMCubed[2m > [22mhandles shallow depths
+ [2m[90m↓[39m[22m src/calculators/__tests__/primitives.test.ts[2m > [22mvolumeMCubed[2m > [22mreturns 0 when depth is 0
+ [2m[90m↓[39m[22m src/calculators/__tests__/primitives.test.ts[2m > [22mvolumeMCubed[2m > [22mhandles a typical floor screed scenario
+ [2m[90m↓[39m[22m src/calculators/__tests__/primitives.test.ts[2m > [22mmmToM[2m > [22mconverts 1000 mm to 1 m
+ [2m[90m↓[39m[22m src/calculators/__tests__/primitives.test.ts[2m > [22mmmToM[2m > [22mconverts 100 mm to 0.1 m
+ [2m[90m↓[39m[22m src/calculators/__tests__/primitives.test.ts[2m > [22mmmToM[2m > [22mconverts 1 mm to 0.001 m
+ [2m[90m↓[39m[22m src/calculators/__tests__/primitives.test.ts[2m > [22mmmToM[2m > [22mconverts 0 mm to 0 m
+ [2m[90m↓[39m[22m src/calculators/__tests__/primitives.test.ts[2m > [22mmmToM[2m > [22mconverts common tile dimensions
+ [2m[90m↓[39m[22m src/calculators/__tests__/primitives.test.ts[2m > [22mmToMm[2m > [22mconverts 1 m to 1000 mm
+ [2m[90m↓[39m[22m src/calculators/__tests__/primitives.test.ts[2m > [22mmToMm[2m > [22mconverts 0.1 m to 100 mm
+ [2m[90m↓[39m[22m src/calculators/__tests__/primitives.test.ts[2m > [22mmToMm[2m > [22mconverts 2.5 m to 2500 mm
+ [2m[90m↓[39m[22m src/calculators/__tests__/primitives.test.ts[2m > [22mmToMm[2m > [22mconverts 0 m to 0 mm
+ [2m[90m↓[39m[22m src/calculators/__tests__/primitives.test.ts[2m > [22mmToMm[2m > [22mis the inverse of mmToM
+ [2m[90m↓[39m[22m src/calculators/__tests__/backer-board.test.ts[2m > [22mcalculateBackerBoard — spec test cases[2m > [22mTC1: HardieBacker 6mm, 12m², 10% waste → 14 boards (sold individually)
+ [2m[90m↓[39m[22m src/calculators/__tests__/backer-board.test.ts[2m > [22mcalculateBackerBoard — spec test cases[2m > [22mTC2: Jackoboard Plano 6mm, 12m², 10% waste → 19 boards
+ [2m[90m↓[39m[22m src/calculators/__tests__/backer-board.test.ts[2m > [22mcalculateBackerBoard — spec test cases[2m > [22mTC3: Flexel ECOMAX 6mm, 12m², 10% waste → 19 boards → 4 packs
+ [2m[90m↓[39m[22m src/calculators/__tests__/backer-board.test.ts[2m > [22mcalculateBackerBoard — spec test cases[2m > [22mTC4: HardieBacker 12mm, 4m², 5% waste → 5 boards
+ [2m[90m↓[39m[22m src/calculators/__tests__/backer-board.test.ts[2m > [22mcalculateBackerBoard — spec test cases[2m > [22mdefault wastePercent = 10 when omitted
+ [2m[90m↓[39m[22m src/calculators/__tests__/backer-board.test.ts[2m > [22mcalculateBackerBoard — spec test cases[2m > [22mFlexel warnings include "Do NOT mechanically fix"
+ [2m[90m↓[39m[22m src/calculators/__tests__/backer-board.test.ts[2m > [22mcalculateBackerBoard — validation[2m > [22mthrows for unknown productId
+ [2m[90m↓[39m[22m src/calculators/__tests__/backer-board.test.ts[2m > [22mcalculateBackerBoard — validation[2m > [22mthrows for zero area
+ [2m[90m↓[39m[22m src/calculators/__tests__/backer-board.test.ts[2m > [22mcalculateBackerBoard — validation[2m > [22mthrows for negative area
+ [2m[90m↓[39m[22m src/calculators/registry.test.ts[2m > [22mCALCULATOR_REGISTRY[2m > [22mexports a non-empty array
+ [2m[90m↓[39m[22m src/calculators/registry.test.ts[2m > [22mCALCULATOR_REGISTRY[2m > [22mevery entry has the required CalculatorMeta fields
+ [2m[90m↓[39m[22m src/calculators/registry.test.ts[2m > [22mCALCULATOR_REGISTRY[2m > [22mevery category value is "project" or "handy"
+ [2m[90m↓[39m[22m src/calculators/registry.test.ts[2m > [22mCALCULATOR_REGISTRY[2m > [22mevery status value is "live" or "coming-soon"
+ [2m[90m↓[39m[22m src/calculators/registry.test.ts[2m > [22mCALCULATOR_REGISTRY[2m > [22mcomingSoon flag is consistent with status
+ [2m[90m↓[39m[22m src/calculators/registry.test.ts[2m > [22mCALCULATOR_REGISTRY[2m > [22mall id and slug values are unique
+ [2m[90m↓[39m[22m src/calculators/registry.test.ts[2m > [22mCALCULATOR_REGISTRY[2m > [22micon paths (when present) reference SVG files that exist in public/images/hero/
+ [2m[90m↓[39m[22m src/calculators/registry.test.ts[2m > [22mCALCULATOR_REGISTRY — known entries[2m > [22mincludes the tiling project calculator
+ [2m[90m↓[39m[22m src/calculators/registry.test.ts[2m > [22mCALCULATOR_REGISTRY — known entries[2m > [22mincludes at least 5 project calculators (1 live + 4 coming-soon)
+ [2m[90m↓[39m[22m src/calculators/registry.test.ts[2m > [22mCALCULATOR_REGISTRY — known entries[2m > [22mincludes the unit-converter handy calculator
+ [2m[90m↓[39m[22m src/calculators/registry.test.ts[2m > [22mCALCULATOR_REGISTRY — known entries[2m > [22mincludes the board-coverage handy calculator
+ [2m[90m↓[39m[22m src/calculators/registry.test.ts[2m > [22mCALCULATOR_REGISTRY — known entries[2m > [22mincludes at least 3 handy calculators
+ [2m[90m↓[39m[22m src/calculators/registry.test.ts[2m > [22mPROJECT_CALCULATORS[2m > [22mcontains only project-category entries
+ [2m[90m↓[39m[22m src/calculators/registry.test.ts[2m > [22mPROJECT_CALCULATORS[2m > [22mis a subset of CALCULATOR_REGISTRY
+ [2m[90m↓[39m[22m src/calculators/registry.test.ts[2m > [22mHANDY_CALCULATORS[2m > [22mcontains only handy-category entries
+ [2m[90m↓[39m[22m src/calculators/registry.test.ts[2m > [22mHANDY_CALCULATORS[2m > [22mPROJECT_CALCULATORS and HANDY_CALCULATORS together equal CALCULATOR_REGISTRY
+ [2m[90m↓[39m[22m src/calculators/registry.test.ts[2m > [22mLIVE_CALCULATORS[2m > [22mcontains only live-status entries
+ [2m[90m↓[39m[22m src/calculators/registry.test.ts[2m > [22mLIVE_CALCULATORS[2m > [22mcontains no coming-soon entries
+ [2m[90m↓[39m[22m src/calculators/registry.test.ts[2m > [22mgetCalculatorById[2m > [22mreturns the correct entry for a known id
+ [2m[90m↓[39m[22m src/calculators/registry.test.ts[2m > [22mgetCalculatorById[2m > [22mreturns undefined for an unknown id
+ [2m[90m↓[39m[22m src/calculators/registry.test.ts[2m > [22mgetCalculatorById[2m > [22mfinds coming-soon entries too
+ [2m[90m↓[39m[22m src/calculators/__tests__/adhesive.test.ts[2m > [22mcalculateAdhesive — spec test cases[2m > [22mTC1: Adesilex P9, 12m², 300×300mm, wall-dry → 30kg, 2×20kg bags
+ [2m[90m↓[39m[22m src/calculators/__tests__/adhesive.test.ts[2m > [22mcalculateAdhesive — spec test cases[2m > [22mTC2: Adesilex P9, 12m², 600×600mm, floor-wet → 48kg, 3 bags
+ [2m[90m↓[39m[22m src/calculators/__tests__/adhesive.test.ts[2m > [22mcalculateAdhesive — spec test cases[2m > [22mTC3: CX-24, 20m², 300×300mm, floor-dry → 70kg, 4 bags
+ [2m[90m↓[39m[22m src/calculators/__tests__/adhesive.test.ts[2m > [22mcalculateAdhesive — spec test cases[2m > [22mTC4: Keraflex Maxi S1, 10m², bedDepthMm=6 → 72kg, 4 bags
+ [2m[90m↓[39m[22m src/calculators/__tests__/adhesive.test.ts[2m > [22mcalculateAdhesive — spec test cases[2m > [22mTC5: RX-3000 on floor → "wall" warning, still computes (30kg, 2×15kg bags)
+ [2m[90m↓[39m[22m src/calculators/__tests__/adhesive.test.ts[2m > [22mcalculateAdhesive — spec test cases[2m > [22mTC6: Fast Set Plus, 450×450mm tile → max-tile warning (mentions "330")
+ [2m[90m↓[39m[22m src/calculators/__tests__/adhesive.test.ts[2m > [22mcalculateAdhesive — spec test cases[2m > [22mTC7: Ultralite D2 on floor → "wall" warning
+ [2m[90m↓[39m[22m src/calculators/__tests__/adhesive.test.ts[2m > [22mcalculateAdhesive — spec test cases[2m > [22mthrows for unknown productId
+ [2m[90m↓[39m[22m src/calculators/__tests__/adhesive.test.ts[2m > [22mcalculateAdhesiveByBedDepth[2m > [22mscales linearly at 6mm (double the 3mm base)
+ [2m[90m↓[39m[22m src/calculators/__tests__/adhesive.test.ts[2m > [22mcalculateAdhesiveByBedDepth[2m > [22mreturns base coverage unchanged at 3mm bed depth
+ [2m[90m↓[39m[22m src/calculators/__tests__/adhesive.test.ts[2m > [22mcalculateAdhesiveByBedDepth[2m > [22mthrows for zero bed depth
+ [2m[90m↓[39m[22m src/calculators/__tests__/adhesive.test.ts[2m > [22mcalculateAdhesiveByBedDepth[2m > [22mthrows for negative wastage
+ [2m[90m↓[39m[22m src/test/homepage-search.test.ts[2m > [22mHomepage Search Filtering[2m > [22mEmpty search query[2m > [22mshould return all items when query is empty
+ [2m[90m↓[39m[22m src/test/homepage-search.test.ts[2m > [22mHomepage Search Filtering[2m > [22mEmpty search query[2m > [22mshould return all items when query is whitespace only
+ [2m[90m↓[39m[22m src/test/homepage-search.test.ts[2m > [22mHomepage Search Filtering[2m > [22mSearch by calculator name[2m > [22mshould find calculator by exact name match
+ [2m[90m↓[39m[22m src/test/homepage-search.test.ts[2m > [22mHomepage Search Filtering[2m > [22mSearch by calculator name[2m > [22mshould find calculator by partial name match (case insensitive)
+ [2m[90m↓[39m[22m src/test/homepage-search.test.ts[2m > [22mHomepage Search Filtering[2m > [22mSearch by calculator name[2m > [22mshould find calculator by partial name
+ [2m[90m↓[39m[22m src/test/homepage-search.test.ts[2m > [22mHomepage Search Filtering[2m > [22mSearch by calculator description[2m > [22mshould find calculator by keyword in description
+ [2m[90m↓[39m[22m src/test/homepage-search.test.ts[2m > [22mHomepage Search Filtering[2m > [22mSearch by calculator description[2m > [22mshould find calculator by material keyword
+ [2m[90m↓[39m[22m src/test/homepage-search.test.ts[2m > [22mHomepage Search Filtering[2m > [22mSearch by calculator description[2m > [22mshould find Unit Converter by material keyword
+ [2m[90m↓[39m[22m src/test/homepage-search.test.ts[2m > [22mHomepage Search Filtering[2m > [22mNo results[2m > [22mshould return empty array for non-matching query
+ [2m[90m↓[39m[22m src/test/homepage-search.test.ts[2m > [22mHomepage Search Filtering[2m > [22mNo results[2m > [22mshould return empty array for query that matches nothing
+ [2m[90m↓[39m[22m src/test/homepage-search.test.ts[2m > [22mHomepage Search Filtering[2m > [22mCase insensitivity[2m > [22mshould match query regardless of case
+ [2m[90m↓[39m[22m src/test/homepage-search.test.ts[2m > [22mHomepage Search Filtering[2m > [22mMultiple word searches[2m > [22mshould find items matching any word in the query
+ [2m[90m↓[39m[22m src/test/homepage-search.test.ts[2m > [22mHomepage Search Filtering[2m > [22mSpecial characters and whitespace[2m > [22mshould trim leading and trailing whitespace
+ [2m[90m↓[39m[22m src/test/homepage-search.test.ts[2m > [22mHomepage Search Filtering[2m > [22mSpecial characters and whitespace[2m > [22mshould handle ampersand in Concrete & Groundworks
+ [2m[90m↓[39m[22m src/calculators/board-coverage.test.ts[2m > [22mcalculateBoardCoverage[2m > [22mcalculates boards needed with 10% wastage (standard plywood)
+ [2m[90m↓[39m[22m src/calculators/board-coverage.test.ts[2m > [22mcalculateBoardCoverage[2m > [22mcalculates boards with zero wastage
+ [2m[90m↓[39m[22m src/calculators/board-coverage.test.ts[2m > [22mcalculateBoardCoverage[2m > [22mreturns exactly the right count when area is an exact multiple of board area
+ [2m[90m↓[39m[22m src/calculators/board-coverage.test.ts[2m > [22mcalculateBoardCoverage[2m > [22mtotalCoverageM2 equals boardsNeeded × boardAreaM2
+ [2m[90m↓[39m[22m src/calculators/board-coverage.test.ts[2m > [22mcalculateBoardCoverage[2m > [22mhandles small boards (flooring boards)
+ [2m[90m↓[39m[22m src/calculators/board-coverage.test.ts[2m > [22mcalculateBoardCoverage[2m > [22mhandles large wastage percentage
+ [2m[90m↓[39m[22m src/calculators/board-coverage.test.ts[2m > [22mcalculateBoardCoverage[2m > [22mthrows for zero area
+ [2m[90m↓[39m[22m src/calculators/board-coverage.test.ts[2m > [22mcalculateBoardCoverage[2m > [22mthrows for negative board dimensions
+ [2m[90m↓[39m[22m src/calculators/board-coverage.test.ts[2m > [22mcalculateBoardCoverage[2m > [22mthrows for wastage over 100
+ [2m[90m↓[39m[22m src/calculators/board-coverage.test.ts[2m > [22mcalculateBoardCoverage[2m > [22mthrows for negative wastage
+ [2m[90m↓[39m[22m src/calculators/board-coverage.test.ts[2m > [22mBOARD_PRESETS[2m > [22mexports an array of board presets
+ [2m[90m↓[39m[22m src/calculators/board-coverage.test.ts[2m > [22mBOARD_PRESETS[2m > [22meach preset has label, lengthM, widthM, and description
+ [2m[90m↓[39m[22m src/calculators/board-coverage.test.ts[2m > [22mBOARD_PRESETS[2m > [22mincludes the standard plasterboard size (2400 × 1200)
+ [2m[90m↓[39m[22m src/calculators/__tests__/cavity-trays.test.ts[2m > [22mcalculateCavityTray()[2m > [22mTC1: quantity=1, manthorpe-type-e → traysNeeded=1
+ [2m[90m↓[39m[22m src/calculators/__tests__/cavity-trays.test.ts[2m > [22mcalculateCavityTray()[2m > [22mTC2: quantity=3 → traysNeeded=3
+ [2m[90m↓[39m[22m src/calculators/__tests__/cavity-trays.test.ts[2m > [22mcalculateCavityTray()[2m > [22mTC3: unknown productId → throws descriptive error
+ [2m[90m↓[39m[22m src/calculators/__tests__/cavity-trays.test.ts[2m > [22mcalculateCavityTray()[2m > [22mTC4: materials has 1 entry, unit=each, quantity=traysNeeded
+ [2m[90m↓[39m[22m src/calculators/__tests__/bricks.test.ts[2m > [22mcalculateBricks()[2m > [22mTC1: 65mm brick, 10 m², 10% → 660 bricks, 2 packs
+ [2m[90m↓[39m[22m src/calculators/__tests__/bricks.test.ts[2m > [22mcalculateBricks()[2m > [22mTC2: 73mm brick, 10 m², 10% → 550 bricks
+ [2m[90m↓[39m[22m src/calculators/__tests__/bricks.test.ts[2m > [22mcalculateBricks()[2m > [22mTC3: 68mm brick, 10 m², 5% → 588 bricks
+ [2m[90m↓[39m[22m src/calculators/__tests__/bricks.test.ts[2m > [22mcalculateBricks()[2m > [22mTC4: zero area → 0 bricks, 0 packs
+ [2m[90m↓[39m[22m src/calculators/__tests__/bricks.test.ts[2m > [22mcalculateBricks()[2m > [22mTC5: product lookup returns correct bricksPerM2
+ [2m[90m↓[39m[22m src/calculators/__tests__/bricks.test.ts[2m > [22mcalculateBricks()[2m > [22mTC6: invalid productId throws descriptive error
+ [2m[90m↓[39m[22m src/calculators/__tests__/bricks.test.ts[2m > [22mcalculateBricks()[2m > [22mTC7: 50 m², 10% → 3300 bricks, 9 packs
+ [2m[90m↓[39m[22m src/calculators/__tests__/bricks.test.ts[2m > [22mcalculateBricks()[2m > [22mTC8: flemish bond emits mortar consumption warning, same brick count as stretcher
+ [2m[90m↓[39m[22m src/calculators/__tests__/bricks.test.ts[2m > [22mcalculateBricks()[2m > [22mTC9: materials array contains bricks entry with correct fields
+ [2m[90m↓[39m[22m src/calculators/__tests__/slc.test.ts[2m > [22mcalculateSLC — spec test cases[2m > [22mTC1: 10m² at 10mm depth, 25kg bags → 100L, 150kg, 6 bags
+ [2m[90m↓[39m[22m src/calculators/__tests__/slc.test.ts[2m > [22mcalculateSLC — spec test cases[2m > [22mTC2: 20m² at 5mm depth, 25kg bags → 100L, 150kg, 6 bags
+ [2m[90m↓[39m[22m src/calculators/__tests__/slc.test.ts[2m > [22mcalculateSLC — spec test cases[2m > [22mTC3: 5m² at 3mm depth, 20kg bags → 15L, 22.5kg, 2 bags
+ [2m[90m↓[39m[22m src/calculators/__tests__/slc.test.ts[2m > [22mcalculateSLC — spec test cases[2m > [22mTC4: exact bag (40m² at 1mm, 60kg bags) → 60kg, 1 bag
+ [2m[90m↓[39m[22m src/calculators/__tests__/slc.test.ts[2m > [22mcalculateSLC — spec test cases[2m > [22mTC5: coverageAtDepthM2PerBag = bagSizeKg / (1.5 × depthMm)
+ [2m[90m↓[39m[22m src/calculators/__tests__/slc.test.ts[2m > [22mcalculateSLC — spec test cases[2m > [22mTC6: coverageAtDepthM2PerBag scales with depth
+ [2m[90m↓[39m[22m src/calculators/__tests__/slc.test.ts[2m > [22mcalculateSLC — spec test cases[2m > [22mTC7: default bagSizeKg is 25
+ [2m[90m↓[39m[22m src/calculators/__tests__/slc.test.ts[2m > [22mcalculateSLC — spec test cases[2m > [22mTC8: custom bagSize=20 gives more bags than default 25
+ [2m[90m↓[39m[22m src/calculators/__tests__/slc.test.ts[2m > [22mcalculateSLC — validation[2m > [22mthrows for zero area
+ [2m[90m↓[39m[22m src/calculators/__tests__/slc.test.ts[2m > [22mcalculateSLC — validation[2m > [22mthrows for negative area
+ [2m[90m↓[39m[22m src/calculators/__tests__/slc.test.ts[2m > [22mcalculateSLC — validation[2m > [22mthrows for zero depth
+ [2m[90m↓[39m[22m src/calculators/__tests__/slc.test.ts[2m > [22mcalculateSLC — validation[2m > [22mthrows for negative depth
+ [2m[90m↓[39m[22m src/calculators/__tests__/slc.test.ts[2m > [22mcalculateSLC — validation[2m > [22mthrows for zero bag size
+ [2m[90m↓[39m[22m src/calculators/__tests__/primer.test.ts[2m > [22mcalculatePrimer — spec test cases[2m > [22mTC1: Mapei Primer G, 5m², 1 coat → 1kg needed, 1×5kg pack
+ [2m[90m↓[39m[22m src/calculators/__tests__/primer.test.ts[2m > [22mcalculatePrimer — spec test cases[2m > [22mTC2: Mapei Primer G, 25m², 1 coat → 5kg needed, 1×5kg pack (exact)
+ [2m[90m↓[39m[22m src/calculators/__tests__/primer.test.ts[2m > [22mcalculatePrimer — spec test cases[2m > [22mTC3: Mapei Primer G, 30m², 1 coat → 6kg needed, 2×5kg packs
+ [2m[90m↓[39m[22m src/calculators/__tests__/primer.test.ts[2m > [22mcalculatePrimer — spec test cases[2m > [22mTC4: Dunlop Multi-Purpose Primer, 20m², neat → 2kg, 2×1kg packs
+ [2m[90m↓[39m[22m src/calculators/__tests__/primer.test.ts[2m > [22mcalculatePrimer — spec test cases[2m > [22mTC5: Dunlop Multi-Purpose Primer, 20m², diluted → 1kg, 1 pack
+ [2m[90m↓[39m[22m src/calculators/__tests__/primer.test.ts[2m > [22mcalculatePrimer — spec test cases[2m > [22mTC6: 2 coats doubles consumption
+ [2m[90m↓[39m[22m src/calculators/__tests__/primer.test.ts[2m > [22mcalculatePrimer — spec test cases[2m > [22mTC7: default coats=1 gives same result as explicit coats=1
+ [2m[90m↓[39m[22m src/calculators/__tests__/primer.test.ts[2m > [22mcalculatePrimer — spec test cases[2m > [22mTC8: materials[0].material contains brand
+ [2m[90m↓[39m[22m src/calculators/__tests__/primer.test.ts[2m > [22mcalculatePrimer — spec test cases[2m > [22mTC9: Dunlop Universal Bonding Agent, 12m² neat → 1kg, 1×5kg pack
+ [2m[90m↓[39m[22m src/calculators/__tests__/primer.test.ts[2m > [22mcalculatePrimer — spec test cases[2m > [22mTC10: Dunlop Universal Bonding Agent, diluted (slurry) → 3 m²/kg rate
+ [2m[90m↓[39m[22m src/calculators/__tests__/primer.test.ts[2m > [22mcalculatePrimer — validation[2m > [22mthrows for unknown productId
+ [2m[90m↓[39m[22m src/calculators/__tests__/primer.test.ts[2m > [22mcalculatePrimer — validation[2m > [22mthrows for zero area
+ [2m[90m↓[39m[22m src/calculators/__tests__/primer.test.ts[2m > [22mcalculatePrimer — validation[2m > [22mthrows for negative area
+ [2m[90m↓[39m[22m src/calculators/__tests__/primer.test.ts[2m > [22mcalculatePrimer — validation[2m > [22mthrows for zero coats
+ [2m[90m↓[39m[22m src/calculators/__tests__/grout.test.ts[2m > [22mcalculateGrout — spec test cases[2m > [22mTC1: Ultracolor Plus, 300×300×10mm, 3mm joint, 12m² → 3.84kg, 1×5kg bag
+ [2m[90m↓[39m[22m src/calculators/__tests__/grout.test.ts[2m > [22mcalculateGrout — spec test cases[2m > [22mTC2: Ultracolor Plus, 100×100×7mm, 3mm joint, 12m² → 8.064kg, 2×5kg bags
+ [2m[90m↓[39m[22m src/calculators/__tests__/grout.test.ts[2m > [22mcalculateGrout — spec test cases[2m > [22mTC3: Flexible Grout, 150×150×6mm, 3mm joint, 10m² → 3.84kg, 2×2.5kg bags
+ [2m[90m↓[39m[22m src/calculators/__tests__/grout.test.ts[2m > [22mcalculateGrout — spec test cases[2m > [22mTC4: Flexible Grout, 20×20×4mm mosaic, 2mm joint, 5m² → 6.4kg, 3×2.5kg bags
+ [2m[90m↓[39m[22m src/calculators/__tests__/grout.test.ts[2m > [22mcalculateGrout — spec test cases[2m > [22mTC5: Dunlop GX-500, 600×600×10mm, 3mm joint, 20m² → 0.17 kg/m², 3.4kg, 1 bag
+ [2m[90m↓[39m[22m src/calculators/__tests__/grout.test.ts[2m > [22mcalculateGrout — spec test cases[2m > [22mTC6: Flexible Grout, 8mm joint (max 6mm) → warning, still computes
+ [2m[90m↓[39m[22m src/calculators/__tests__/grout.test.ts[2m > [22mcalculateGrout — spec test cases[2m > [22mTC7: zero area → throws
+ [2m[90m↓[39m[22m src/calculators/__tests__/grout.test.ts[2m > [22mcalculateGrout — spec test cases[2m > [22mTC8: Wall Tile Grout on floor context → walls-only warning
+ [2m[90m↓[39m[22m src/calculators/__tests__/grout.test.ts[2m > [22mcalculateGrout — validation[2m > [22mthrows for unknown productId
+ [2m[90m↓[39m[22m src/calculators/__tests__/grout.test.ts[2m > [22mcalculateGrout — validation[2m > [22mthrows for zero tile dimensions
+ [2m[90m↓[39m[22m src/calculators/__tests__/grout.test.ts[2m > [22mcalculateGrout — validation[2m > [22mthrows for zero joint width
+ [2m[90m↓[39m[22m src/calculators/__tests__/grout.test.ts[2m > [22mcalculateGrout — validation[2m > [22mGX-500 warns for joint below 2mm minimum
+ [2m[90m↓[39m[22m src/calculators/__tests__/blocks.test.ts[2m > [22mcalculateBlocks()[2m > [22mTC1: aerated 100mm, 10 m², 5% → 105 blocks
+ [2m[90m↓[39m[22m src/calculators/__tests__/blocks.test.ts[2m > [22mcalculateBlocks()[2m > [22mTC2: dense 140mm, 24 m², 5% → 252 blocks
+ [2m[90m↓[39m[22m src/calculators/__tests__/blocks.test.ts[2m > [22mcalculateBlocks()[2m > [22mTC3: zero area → 0 blocks
+ [2m[90m↓[39m[22m src/calculators/__tests__/blocks.test.ts[2m > [22mcalculateBlocks()[2m > [22mTC4a: valid productId returns correct blocksPerM2
+ [2m[90m↓[39m[22m src/calculators/__tests__/blocks.test.ts[2m > [22mcalculateBlocks()[2m > [22mTC4b: invalid productId throws descriptive error
+ [2m[90m↓[39m[22m src/calculators/__tests__/blocks.test.ts[2m > [22mcalculateBlocks()[2m > [22mTC5: catalogue blocksPerM2=10 matches (440+10)×(215+10) mm² geometry
+ [2m[90m↓[39m[22m src/calculators/__tests__/blocks.test.ts[2m > [22mcalculateBlocks()[2m > [22mTC6: materials array contains blocks entry with correct fields
+ [2m[90m↓[39m[22m scripts/lint-css-tokens.test.mjs[2m > [22mextractDefinitions[2m > [22mextracts definitions from @theme / :root content
+ [2m[90m↓[39m[22m scripts/lint-css-tokens.test.mjs[2m > [22mextractDefinitions[2m > [22mdoes NOT treat a var() value as a definition
+ [2m[90m↓[39m[22m scripts/lint-css-tokens.test.mjs[2m > [22mextractDefinitions[2m > [22mhandles Tailwind v4 companion line-height tokens (double-dash in name)
+ [2m[90m↓[39m[22m scripts/lint-css-tokens.test.mjs[2m > [22mextractReferences[2m > [22mextracts standard var() references
+ [2m[90m↓[39m[22m scripts/lint-css-tokens.test.mjs[2m > [22mextractReferences[2m > [22mextracts Tailwind v4 arbitrary CSS-variable references
+ [2m[90m↓[39m[22m scripts/lint-css-tokens.test.mjs[2m > [22mextractReferences[2m > [22mdoes NOT extract Tailwind @apply utility class names as token references
+ [2m[90m↓[39m[22m scripts/lint-css-tokens.test.mjs[2m > [22mextractReferences[2m > [22mhandles Tailwind opacity modifier syntax: [--token]/30
+ [2m[90m↓[39m[22m scripts/lint-css-tokens.test.mjs[2m > [22mgetDefinitionContent[2m > [22mreturns full content unchanged for .css files
+ [2m[90m↓[39m[22m scripts/lint-css-tokens.test.mjs[2m > [22mgetDefinitionContent[2m > [22mreturns full content unchanged for .tsx files
+ [2m[90m↓[39m[22m scripts/lint-css-tokens.test.mjs[2m > [22mgetDefinitionContent[2m > [22mreturns only <style> block content for .astro files
+ [2m[90m↓[39m[22m scripts/lint-css-tokens.test.mjs[2m > [22mgetDefinitionContent[2m > [22mreturns empty string for .astro files with no <style> block
+ [2m[90m↓[39m[22m scripts/lint-css-tokens.test.mjs[2m > [22mgetDefinitionContent[2m > [22mconcatenates content from multiple <style> blocks in a single .astro file
+ [2m[90m↓[39m[22m scripts/lint-css-tokens.test.mjs[2m > [22mfindUndefinedTokens[2m > [22mreturns empty map when all referenced tokens are defined
+ [2m[90m↓[39m[22m scripts/lint-css-tokens.test.mjs[2m > [22mfindUndefinedTokens[2m > [22mreturns a map entry for each undefined token with its source files
+ [2m[90m↓[39m[22m scripts/lint-css-tokens.test.mjs[2m > [22mfindUndefinedTokens[2m > [22mflags multiple undefined tokens independently
+ [2m[90m↓[39m[22m src/calculators/__tests__/cavity-closers.test.ts[2m > [22mcalculateCavityCloser()[2m > [22mTC1: 1200×1200 opening, multicor-closer-50-100 → closersNeeded=2
+ [2m[90m↓[39m[22m src/calculators/__tests__/cavity-closers.test.ts[2m > [22mcalculateCavityCloser()[2m > [22mTC2: unknown productId → throws descriptive error
+ [2m[90m↓[39m[22m src/calculators/__tests__/cavity-closers.test.ts[2m > [22mcalculateCavityCloser()[2m > [22mTC3: materials has 1 entry, unit=each, quantity=closersNeeded
+ [2m[90m↓[39m[22m src/calculators/__tests__/tanking.test.ts[2m > [22mcalculateTanking — spec test cases[2m > [22mTC1: Mapei Mapegum WPS, 8m² → 2 kits
+ [2m[90m↓[39m[22m src/calculators/__tests__/tanking.test.ts[2m > [22mcalculateTanking — spec test cases[2m > [22mTC2: Mapei Mapegum WPS, 4m² (exact) → 1 kit
+ [2m[90m↓[39m[22m src/calculators/__tests__/tanking.test.ts[2m > [22mcalculateTanking — spec test cases[2m > [22mTC3: Mapei Mapegum WPS, 5m² → 2 kits (rounds up)
+ [2m[90m↓[39m[22m src/calculators/__tests__/tanking.test.ts[2m > [22mcalculateTanking — spec test cases[2m > [22mTC4: Dunlop Shower Waterproofing Kit, 7m² → 2 kits
+ [2m[90m↓[39m[22m src/calculators/__tests__/tanking.test.ts[2m > [22mcalculateTanking — spec test cases[2m > [22mTC5: Dunlop, 3.5m² (exact) → 1 kit
+ [2m[90m↓[39m[22m src/calculators/__tests__/tanking.test.ts[2m > [22mcalculateTanking — spec test cases[2m > [22mTC6: notes propagated from product
+ [2m[90m↓[39m[22m src/calculators/__tests__/tanking.test.ts[2m > [22mcalculateTanking — spec test cases[2m > [22mTC7: materials array has correct unit and brand
+ [2m[90m↓[39m[22m src/calculators/__tests__/tanking.test.ts[2m > [22mcalculateTanking — validation[2m > [22mthrows for unknown productId
+ [2m[90m↓[39m[22m src/calculators/__tests__/tanking.test.ts[2m > [22mcalculateTanking — validation[2m > [22mthrows for zero area
+ [2m[90m↓[39m[22m src/calculators/__tests__/tanking.test.ts[2m > [22mcalculateTanking — validation[2m > [22mthrows for negative area
+ [2m[90m↓[39m[22m src/calculators/__tests__/spacers.test.ts[2m > [22mcalculateSpacers — spec test cases[2m > [22mTC1: 134 tiles, 3mm, straight, pack=250 → 402 spacers, 2 packs
+ [2m[90m↓[39m[22m src/calculators/__tests__/spacers.test.ts[2m > [22mcalculateSpacers — spec test cases[2m > [22mTC2: 134 tiles, 2mm, straight, pack=1500 → 402 spacers, 1 pack
+ [2m[90m↓[39m[22m src/calculators/__tests__/spacers.test.ts[2m > [22mcalculateSpacers — spec test cases[2m > [22mTC3: 50 tiles, 5mm, diagonal, pack=250 → 200 spacers, 1 pack
+ [2m[90m↓[39m[22m src/calculators/__tests__/spacers.test.ts[2m > [22mcalculateSpacers — spec test cases[2m > [22mTC4: zero tiles → throws
+ [2m[90m↓[39m[22m src/calculators/__tests__/spacers.test.ts[2m > [22mcalculateSpacers — validation + pattern coverage[2m > [22mbrick-bond uses 3 spacers per tile
+ [2m[90m↓[39m[22m src/calculators/__tests__/spacers.test.ts[2m > [22mcalculateSpacers — validation + pattern coverage[2m > [22mherringbone uses 4 spacers per tile
+ [2m[90m↓[39m[22m src/calculators/__tests__/spacers.test.ts[2m > [22mcalculateSpacers — validation + pattern coverage[2m > [22mthrows for zero pack size
+ [2m[90m↓[39m[22m src/calculators/__tests__/spacers.test.ts[2m > [22mcalculateSpacers — validation + pattern coverage[2m > [22mmaterials array has 1 entry with correct spacer size label
+ [2m[90m↓[39m[22m src/calculators/__tests__/tiles.test.ts[2m > [22mcalculateTiles — spec test cases[2m > [22mTC1: 3×4m, 300×300mm, 3mm gap, straight, pack=9 → 144 tiles, 16 packs
+ [2m[90m↓[39m[22m src/calculators/__tests__/tiles.test.ts[2m > [22mcalculateTiles — spec test cases[2m > [22mTC2: 5×4m, 600×600mm, 3mm gap, straight → 61 tiles
+ [2m[90m↓[39m[22m src/calculators/__tests__/tiles.test.ts[2m > [22mcalculateTiles — spec test cases[2m > [22mTC3: 2×2m, 100×100mm, 2mm gap, straight → 423 tiles
+ [2m[90m↓[39m[22m src/calculators/__tests__/tiles.test.ts[2m > [22mcalculateTiles — spec test cases[2m > [22mTC4: 3×3m, 300×300mm, 3mm gap, diagonal (15% waste) → 113 tiles
+ [2m[90m↓[39m[22m src/calculators/__tests__/tiles.test.ts[2m > [22mcalculateTiles — spec test cases[2m > [22mTC5: 2×2m, 300×300mm, 0mm gap, straight → 49 tiles
+ [2m[90m↓[39m[22m src/calculators/__tests__/tiles.test.ts[2m > [22mcalculateTiles — spec test cases[2m > [22mTC6: areaM2=15, 300×300mm, 3mm gap, straight → 180 tiles
+ [2m[90m↓[39m[22m src/calculators/__tests__/tiles.test.ts[2m > [22mcalculateTiles — spec test cases[2m > [22mTC7: TC1 repeated but packSize=25 → 6 packs
+ [2m[90m↓[39m[22m src/calculators/__tests__/tiles.test.ts[2m > [22mcalculateTiles — validation[2m > [22mthrows for zero tile length
+ [2m[90m↓[39m[22m src/calculators/__tests__/tiles.test.ts[2m > [22mcalculateTiles — validation[2m > [22mthrows for zero room dimensions (no override)
+ [2m[90m↓[39m[22m src/calculators/__tests__/tiles.test.ts[2m > [22mcalculateTiles — validation[2m > [22mthrows for zero areaM2 override
+ [2m[90m↓[39m[22m src/calculators/__tests__/tiles.test.ts[2m > [22mcalculateTiles — validation[2m > [22mbrick-bond uses 12% waste
+ [2m[90m↓[39m[22m src/calculators/__tests__/tiles.test.ts[2m > [22mcalculateTiles — validation[2m > [22mherringbone uses 15% waste
+ [2m[90m↓[39m[22m src/calculators/__tests__/masonry-project.test.ts[2m > [22mScenario A — brick wall, no openings[2m > [22mA1: netAreaM2 = grossAreaM2 when no openings
+ [2m[90m↓[39m[22m src/calculators/__tests__/masonry-project.test.ts[2m > [22mScenario A — brick wall, no openings[2m > [22mA2: bricks = ceil(10.8 × 56 × 1.05) = 636
+ [2m[90m↓[39m[22m src/calculators/__tests__/masonry-project.test.ts[2m > [22mScenario A — brick wall, no openings[2m > [22mA3: DPC = 1 entry for outer leaf (6m of DPC required)
+ [2m[90m↓[39m[22m src/calculators/__tests__/masonry-project.test.ts[2m > [22mScenario B — cavity wall, no openings[2m > [22mB1: bricks = ceil(24 × 56 × 1.05) = 1412
+ [2m[90m↓[39m[22m src/calculators/__tests__/masonry-project.test.ts[2m > [22mScenario B — cavity wall, no openings[2m > [22mB2: blocks = ceil(24 × 10 × 1.05) = 252
+ [2m[90m↓[39m[22m src/calculators/__tests__/masonry-project.test.ts[2m > [22mScenario B — cavity wall, no openings[2m > [22mB3: wall ties = ceil(24 × 2.5) = 60
+ [2m[90m↓[39m[22m src/calculators/__tests__/masonry-project.test.ts[2m > [22mScenario B — cavity wall, no openings[2m > [22mB4: DPC = 2 entries total (one per leaf, 10m each)
+ [2m[90m↓[39m[22m src/calculators/__tests__/masonry-project.test.ts[2m > [22mScenario B — cavity wall, no openings[2m > [22mB5: air bricks = ceil(10000/450) = 23
+ [2m[90m↓[39m[22m src/calculators/__tests__/masonry-project.test.ts[2m > [22mScenario C — block wall, no openings[2m > [22mC1: blocks = ceil(9.6 × 10 × 1.05) = 101
+ [2m[90m↓[39m[22m src/calculators/__tests__/masonry-project.test.ts[2m > [22mScenario C — block wall, no openings[2m > [22mC2: no DPC materials
+ [2m[90m↓[39m[22m src/calculators/__tests__/masonry-project.test.ts[2m > [22mScenario C — block wall, no openings[2m > [22mC3: no air brick materials
+ [32m✓[39m src/calculators/__tests__/masonry-project.test.ts[2m > [22mScenario D — cavity wall, 2 × 1200×1200 openings[2m > [22mD1: openingAreaM2 = 2.88, netAreaM2 = 21.12[32m 3[2mms[22m[39m
+ [32m✓[39m src/calculators/__tests__/masonry-project.test.ts[2m > [22mScenario D — cavity wall, 2 × 1200×1200 openings[2m > [22mD2: bricks = ceil(21.12 × 56 × 1.05) = 1242[32m 1[2mms[22m[39m
+ [32m✓[39m src/calculators/__tests__/masonry-project.test.ts[2m > [22mScenario D — cavity wall, 2 × 1200×1200 openings[2m > [22mD3: blocks = ceil(21.12 × 10 × 1.05) = 222[32m 1[2mms[22m[39m
+ [32m✓[39m src/calculators/__tests__/masonry-project.test.ts[2m > [22mScenario D — cavity wall, 2 × 1200×1200 openings[2m > [22mD4: wall ties use GROSS area = ceil(24 × 2.5) = 60[32m 0[2mms[22m[39m
+ [32m✓[39m src/calculators/__tests__/masonry-project.test.ts[2m > [22mScenario D — cavity wall, 2 × 1200×1200 openings[2m > [22mD5: 2 lintels (one per opening)[32m 0[2mms[22m[39m
+ [32m✓[39m src/calculators/__tests__/masonry-project.test.ts[2m > [22mScenario D — cavity wall, 2 × 1200×1200 openings[2m > [22mD6: 4 padstones (2 per opening)[32m 0[2mms[22m[39m
+ [32m✓[39m src/calculators/__tests__/masonry-project.test.ts[2m > [22mScenario D — cavity wall, 2 × 1200×1200 openings[2m > [22mD7: 4 cavity closers total (2 per opening)[32m 0[2mms[22m[39m
+ [32m✓[39m src/calculators/__tests__/masonry-project.test.ts[2m > [22mScenario D — cavity wall, 2 × 1200×1200 openings[2m > [22mD8: 2 cavity trays (1 per opening)[32m 0[2mms[22m[39m
+ [2m[90m↓[39m[22m src/calculators/__tests__/sand.test.ts[2m > [22mcalculateSand()[2m > [22mTC1: 110 kg, 35 kg bags → 4 packs
+ [2m[90m↓[39m[22m src/calculators/__tests__/sand.test.ts[2m > [22mcalculateSand()[2m > [22mTC2: 110 kg, 875 kg jumbo → 1 pack
+ [2m[90m↓[39m[22m src/calculators/__tests__/sand.test.ts[2m > [22mcalculateSand()[2m > [22mTC3: unknown productId throws descriptive error
+ [2m[90m↓[39m[22m src/calculators/__tests__/sand.test.ts[2m > [22mcalculateSand()[2m > [22mTC4: materials array has correct shape
+ [2m[90m↓[39m[22m src/calculators/__tests__/wall-ties.test.ts[2m > [22mcalculateWallTies()[2m > [22mTC1: 24 m² wall, 75mm cavity → 60 ties, 225mm tie
+ [2m[90m↓[39m[22m src/calculators/__tests__/wall-ties.test.ts[2m > [22mcalculateWallTies()[2m > [22mTC2: 10 m² wall, 50mm cavity → 25 ties, 200mm tie
+ [2m[90m↓[39m[22m src/calculators/__tests__/wall-ties.test.ts[2m > [22mcalculateWallTies()[2m > [22mTC3: 60 ties, pack of 50 → 2 packs; pack of 250 → 1 pack
+ [2m[90m↓[39m[22m src/calculators/__tests__/wall-ties.test.ts[2m > [22mcalculateWallTies()[2m > [22mTC4: cavity 50mm → wall-tie-200-50-75; cavity 100mm → wall-tie-250-100-125
+ [2m[90m↓[39m[22m src/calculators/__tests__/wall-ties.test.ts[2m > [22mcalculateWallTies()[2m > [22mTC5: cavity 200mm → throws descriptive error
+ [2m[90m↓[39m[22m src/calculators/__tests__/wall-ties.test.ts[2m > [22mcalculateWallTies()[2m > [22mTC6: materials has 1 entry with correct shape
+ [2m[90m↓[39m[22m src/calculators/__tests__/dpc.test.ts[2m > [22mcalculateDPC()[2m > [22mTC1: 20m wall, 112mm DPC → 1 roll
+ [2m[90m↓[39m[22m src/calculators/__tests__/dpc.test.ts[2m > [22mcalculateDPC()[2m > [22mTC2: 35m wall, 112mm DPC → 2 rolls
+ [2m[90m↓[39m[22m src/calculators/__tests__/dpc.test.ts[2m > [22mcalculateDPC()[2m > [22mTC3: 102.5mm brick leaf → recommend dpc-polythene-112mm-30m
+ [2m[90m↓[39m[22m src/calculators/__tests__/dpc.test.ts[2m > [22mcalculateDPC()[2m > [22mTC4: materials has 1 entry with correct shape
+ [2m[90m↓[39m[22m src/calculators/__tests__/padstones.test.ts[2m > [22mcalculatePadstone()[2m > [22mTC1: quantity=2, supreme-padstone-215x140x102 → padstonesNeeded=2
+ [2m[90m↓[39m[22m src/calculators/__tests__/padstones.test.ts[2m > [22mcalculatePadstone()[2m > [22mTC2: unknown productId → throws descriptive error
+ [2m[90m↓[39m[22m src/calculators/__tests__/padstones.test.ts[2m > [22mcalculatePadstone()[2m > [22mTC3: materials has 1 entry, unit=each, quantity matches input
+ [2m[90m↓[39m[22m src/projects/tiling-suggestions.test.ts[2m > [22mTILING_SUGGESTIONS[2m > [22mexports at least 10 suggestions
+ [2m[90m↓[39m[22m src/projects/tiling-suggestions.test.ts[2m > [22mTILING_SUGGESTIONS[2m > [22meach suggestion has item and description strings
+ [2m[90m↓[39m[22m src/projects/tiling-suggestions.test.ts[2m > [22mTILING_SUGGESTIONS[2m > [22mincludes tile cutter, spirit level, and silicone sealant
+ [2m[90m↓[39m[22m src/calculators/__tests__/air-bricks.test.ts[2m > [22mcalculateAirBricks()[2m > [22mTC1: 10m wall → 23 air bricks
+ [2m[90m↓[39m[22m src/calculators/__tests__/air-bricks.test.ts[2m > [22mcalculateAirBricks()[2m > [22mTC2: 4.5m wall → 10 air bricks
+ [2m[90m↓[39m[22m src/calculators/__tests__/air-bricks.test.ts[2m > [22mcalculateAirBricks()[2m > [22mTC3: zero wall length → 0 air bricks
+ [2m[90m↓[39m[22m src/calculators/__tests__/air-bricks.test.ts[2m > [22mcalculateAirBricks()[2m > [22mTC4: materials has 1 entry with correct shape
+ [2m[90m↓[39m[22m src/calculators/__tests__/cement.test.ts[2m > [22mcalculateCement()[2m > [22mTC1: 40 kg cement, Rugby Premium 25 kg → 2 bags
+ [2m[90m↓[39m[22m src/calculators/__tests__/cement.test.ts[2m > [22mcalculateCement()[2m > [22mTC2: 40 kg cement, Carlton 20 kg → 2 bags
+ [2m[90m↓[39m[22m src/calculators/__tests__/cement.test.ts[2m > [22mcalculateCement()[2m > [22mTC3: 6 kg cement, Jetcem 6 kg → 1 bag
+ [2m[90m↓[39m[22m src/calculators/__tests__/cement.test.ts[2m > [22mcalculateCement()[2m > [22mTC4: unknown productId throws descriptive error
+ [2m[90m↓[39m[22m src/calculators/__tests__/cement.test.ts[2m > [22mcalculateCement()[2m > [22mTC5: materials array has correct shape
+ [2m[90m↓[39m[22m src/calculators/__tests__/lintels.test.ts[2m > [22mcalculateLintel()[2m > [22mTC1: 1200mm opening, concrete lintel-100 → lintelLengthMm=1500
+ [2m[90m↓[39m[22m src/calculators/__tests__/lintels.test.ts[2m > [22mcalculateLintel()[2m > [22mTC2: 1200mm opening, IG L1/S75 steel cavity → lintelLengthMm=1500
+ [2m[90m↓[39m[22m src/calculators/__tests__/lintels.test.ts[2m > [22mcalculateLintel()[2m > [22mTC3: unknown productId → throws descriptive error
+ [2m[90m↓[39m[22m src/calculators/__tests__/lintels.test.ts[2m > [22mcalculateLintel()[2m > [22mTC4: materials has 1 entry, unit=each, quantity=1
+
+[2m Test Files [22m [1m[32m1 passed[39m[22m[2m | [22m[33m28 skipped[39m[90m (29)[39m
+[2m      Tests [22m [1m[32m8 passed[39m[22m[2m | [22m[33m364 skipped[39m[90m (372)[39m
+[2m   Start at [22m 19:21:26
+[2m   Duration [22m 13.27s[2m (transform 2.84s, setup 11.41s, import 3.09s, tests 11ms, environment 52.34s)[22m
+
