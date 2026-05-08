@@ -71,7 +71,7 @@ export const CALCULATOR_REGISTRY: CalculatorMeta[] = [
         slug: 'decking',
         name: 'Decking',
         description:
-            'Estimate decking boards, joists, screws, and concrete posts for outdoor decking areas.',
+            'Estimate decking boards, joists, screws or hidden clips, and concrete deck blocks for outdoor decking areas.',
         category: 'project',
         status: 'coming-soon',
         comingSoon: true,

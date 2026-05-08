@@ -1,0 +1,169 @@
+---
+import SelcoLayout from '../../layouts/SelcoLayout.astro';
+import Disclaimer from '../../components/Disclaimer.astro';
+import SelcoSidebar from '../../components/selco/SelcoSidebar.astro';
+import DeckingProjectWizard from '../../components/DeckingProjectWizard.tsx';
+
+const BASE_URL = import.meta.env.BASE_URL;
+const base = BASE_URL.endsWith('/') ? BASE_URL : `${BASE_URL}/`;
+
+const breadcrumbs = [
+  { label: 'Home', href: `${base}` },
+  { label: 'Decking' }
+];
+
+const title = 'Decking Calculator — Boards, Joists, Screws & Deck Blocks';
+const description = 'Decking calculator for tradespeople. Calculate decking boards, joists, screws or hidden clips, and concrete deck blocks for any rectangular deck. Enter dimensions once and get a full bill of materials.';
+
+const faqs = [
+  {
+    question: 'How many decking boards do I need?',
+    answer: 'Divide your total deck area (m²) by the coverage of each board. A 135 × 3600 mm board with a 5 mm gap covers about 0.504 m². Add 10% wastage for straight runs, more for angled cuts.'
+  },
+  {
+    question: 'What joist spacing should I use for decking?',
+    answer: '400 mm centres is the standard for most 32 mm timber boards and composite boards. Use 300 mm for thinner composite boards and 450 mm for thicker 38 mm+ boards. Always check the board manufacturer recommendations.'
+  },
+  {
+    question: 'How many screws do I need per deck board?',
+    answer: 'Two screws per board at each joist crossing point. A 3.6 m board over joists at 400 mm centres crosses about 10 joists, so you need 20 screws per board.'
+  },
+  {
+    question: 'Should I use screws or hidden clips?',
+    answer: 'Face-fix screws suit treated softwood boards — they are faster to install and cheaper. Hidden clips suit composite boards — they give a cleaner finish and are usually recommended by composite board manufacturers for the full warranty.'
+  },
+  {
+    question: 'Do I need concrete deck blocks?',
+    answer: 'Yes, for ground-level decks. Deck blocks support each joist at regular intervals (typically every 1200 mm). They raise the frame off the ground, prevent moisture contact, and allow airflow underneath.'
+  },
+  {
+    question: 'What size joists should I use for decking?',
+    answer: '47 × 100 mm treated softwood is standard for most domestic decks. Use 47 × 150 mm for longer spans (over 3 m between supports) or raised decks where additional strength is needed.'
+  },
+  {
+    question: 'What gap should I leave between decking boards?',
+    answer: 'Leave 5–8 mm between boards for drainage and expansion. Composite boards typically need 5 mm, timber boards 6–8 mm. The gap allows rainwater to drain through and prevents boards from buckling.'
+  },
+  {
+    question: 'How much wastage should I allow for decking?',
+    answer: '10% is standard for rectangular decks with straight cuts. Increase to 15% for L-shaped decks or designs with angled cuts. Composite boards should always have at least 10% wastage.'
+  }
+];
+
+const faqSchema = {
+  '@context': 'https://schema.org',
+  '@type': 'FAQPage',
+  mainEntity: faqs.map((faq) => ({
+    '@type': 'Question',
+    name: faq.question,
+    acceptedAnswer: {
+      '@type': 'Answer',
+      text: faq.answer,
+    },
+  })),
+};
+
+const howToSchema = {
+  '@context': 'https://schema.org',
+  '@type': 'HowTo',
+  name: 'How to calculate decking materials',
+  description: 'Step-by-step guide to calculate decking boards, fixings, joists, and deck blocks for a rectangular deck.',
+  step: [
+    { '@type': 'HowToStep', name: 'Enter deck dimensions', text: 'Input the length and width of your deck in metres. Select a board type from the presets or enter custom board dimensions.' },
+    { '@type': 'HowToStep', name: 'Choose fixing method', text: 'Select face-fix screws or hidden clips. The calculator adjusts quantities based on joist crossings per board.' },
+    { '@type': 'HowToStep', name: 'Configure substructure', text: 'Set joist spacing, select joist timber size and stock length, and choose whether to include concrete deck blocks.' },
+    { '@type': 'HowToStep', name: 'Review materials list', text: 'Check the full bill of materials showing boards, fixings, joists, and deck blocks with pack quantities.' },
+  ],
+};
+---
+
+<SelcoLayout
+  title={title}
+  description={description}
+  pageTitle="Trade Materials Calculators"
+  breadcrumbs={breadcrumbs}
+  showSidebar
+>
+  <SelcoSidebar />
+
+  <main class="w-full">
+    <script type="application/ld+json" set:html={JSON.stringify(howToSchema)} />
+    <script type="application/ld+json" set:html={JSON.stringify(faqSchema)} />
+
+    <div class="space-y-6">
+      <section class="space-y-6">
+        <div>
+          <h2 class="text-2xl md:text-3xl font-bold text-surface-foreground">Decking Calculator — Boards, Joists, Screws & Deck Blocks</h2>
+          <p class="text-muted-foreground mt-3 max-w-3xl">
+            Calculate decking boards, fixings, joists, and concrete deck blocks in one guided flow. Enter your deck dimensions once and the wizard carries them through every step.
+          </p>
+        </div>
+
+        <div class="rounded-2xl border border-border bg-surface p-6 shadow-sm">
+          <DeckingProjectWizard client:load />
+        </div>
+      </section>
+
+      <section class="space-y-6 max-w-4xl mt-12">
+        <h2 class="text-2xl md:text-3xl font-bold text-surface-foreground">What's Included in This Calculator</h2>
+        <p class="text-muted-foreground">
+          The Decking calculator covers the four core material categories for any rectangular deck build.
+        </p>
+        <div class="grid gap-6 md:grid-cols-2">
+          <div class="rounded-xl border border-border bg-surface p-5">
+            <h3 class="font-semibold text-surface-foreground">Calculated for every deck</h3>
+            <ol class="mt-3 space-y-2 text-muted-foreground text-sm list-decimal list-inside">
+              <li>Decking boards — quantity including wastage, with pack rounding.</li>
+              <li>Fixings — screws or hidden clips based on joist crossings per board.</li>
+              <li>Joists — stock-length pieces with wastage, based on deck span and joist spacing.</li>
+            </ol>
+          </div>
+          <div class="rounded-xl border border-border bg-surface p-5">
+            <h3 class="font-semibold text-surface-foreground">Optional</h3>
+            <ol class="mt-3 space-y-2 text-muted-foreground text-sm list-decimal list-inside">
+              <li>Concrete deck blocks — for ground-level builds, based on joist count and support spacing.</li>
+            </ol>
+            <p class="text-xs text-muted-foreground mt-3">Fascia boards, step nosings, and weed membrane are not yet included — coming soon.</p>
+          </div>
+        </div>
+      </section>
+
+      <section class="space-y-6 max-w-4xl mt-12">
+        <h2 class="text-2xl md:text-3xl font-bold text-surface-foreground">Step-by-Step Guide</h2>
+        <div class="space-y-4 text-muted-foreground">
+          <h3 class="text-lg font-semibold text-surface-foreground">Before you start</h3>
+          <p>Measure the area where you want to build the deck and note the length and width in metres. Decide whether you want composite or timber boards, and face-fix screws or hidden clips.</p>
+
+          <h3 class="text-lg font-semibold text-surface-foreground">Step 1: Enter deck dimensions and board selection</h3>
+          <p>Enter the deck length and width. Select a board preset from the dropdown — this auto-fills board width, length, gap, recommended joist spacing, and fixing method. Override any value if needed.</p>
+
+          <h3 class="text-lg font-semibold text-surface-foreground">Step 2: Choose your fixing method</h3>
+          <p>Select face-fix screws (2 per board at each joist crossing) or hidden clips (1 per crossing). Pick a product from the dropdown to set the pack size.</p>
+
+          <h3 class="text-lg font-semibold text-surface-foreground">Step 3: Configure substructure</h3>
+          <p>Set joist spacing (400 mm for most boards), select joist timber size and stock length, and choose whether to include concrete deck blocks for a ground-level build.</p>
+
+          <h3 class="text-lg font-semibold text-surface-foreground">Step 4: Review your bill of materials</h3>
+          <p>The summary shows every material with quantities and pack counts. All calculations include wastage. Take this list to your local branch for ordering.</p>
+        </div>
+      </section>
+
+      <section class="space-y-6 max-w-4xl mt-12">
+        <h2 class="text-2xl md:text-3xl font-bold text-surface-foreground">Frequently Asked Questions</h2>
+        <div class="space-y-4">
+          {faqs.map((faq) => (
+            <details class="rounded-xl border border-border bg-surface p-4 group">
+              <summary class="cursor-pointer font-semibold text-surface-foreground list-none flex items-center justify-between">
+                {faq.question}
+                <span class="text-muted-foreground transition-transform group-open:rotate-180">▼</span>
+              </summary>
+              <p class="text-muted-foreground mt-3 text-sm">{faq.answer}</p>
+            </details>
+          ))}
+        </div>
+      </section>
+
+      <Disclaimer />
+    </div>
+  </main>
+</SelcoLayout>
