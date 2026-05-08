@@ -1,0 +1,28 @@
+
+[1m[46m RUN [49m[22m [36mv4.1.0 [39m[90m/Users/sami/Projects/selco[39m
+
+ [32m✓[39m src/calculators/__tests__/masonry-project.test.ts[2m > [22mScenario A — brick wall, no openings[2m > [22mA1: netAreaM2 = grossAreaM2 when no openings[32m 6[2mms[22m[39m
+ [32m✓[39m src/calculators/__tests__/masonry-project.test.ts[2m > [22mScenario A — brick wall, no openings[2m > [22mA2: bricks = ceil(10.8 × 56 × 1.05) = 636[32m 1[2mms[22m[39m
+ [32m✓[39m src/calculators/__tests__/masonry-project.test.ts[2m > [22mScenario A — brick wall, no openings[2m > [22mA3: DPC = 1 entry for outer leaf (6m of DPC required)[32m 1[2mms[22m[39m
+ [32m✓[39m src/calculators/__tests__/masonry-project.test.ts[2m > [22mScenario B — cavity wall, no openings[2m > [22mB1: bricks = ceil(24 × 56 × 1.05) = 1412[32m 4[2mms[22m[39m
+ [32m✓[39m src/calculators/__tests__/masonry-project.test.ts[2m > [22mScenario B — cavity wall, no openings[2m > [22mB2: blocks = ceil(24 × 10 × 1.05) = 252[32m 1[2mms[22m[39m
+ [32m✓[39m src/calculators/__tests__/masonry-project.test.ts[2m > [22mScenario B — cavity wall, no openings[2m > [22mB3: wall ties = ceil(24 × 2.5) = 60[32m 1[2mms[22m[39m
+ [32m✓[39m src/calculators/__tests__/masonry-project.test.ts[2m > [22mScenario B — cavity wall, no openings[2m > [22mB4: DPC = 2 entries total (one per leaf, 10m each)[32m 1[2mms[22m[39m
+ [32m✓[39m src/calculators/__tests__/masonry-project.test.ts[2m > [22mScenario B — cavity wall, no openings[2m > [22mB5: air bricks = ceil(10000/450) = 23[32m 0[2mms[22m[39m
+ [32m✓[39m src/calculators/__tests__/masonry-project.test.ts[2m > [22mScenario C — block wall, no openings[2m > [22mC1: blocks = ceil(9.6 × 10 × 1.05) = 101[32m 1[2mms[22m[39m
+ [32m✓[39m src/calculators/__tests__/masonry-project.test.ts[2m > [22mScenario C — block wall, no openings[2m > [22mC2: no DPC materials[32m 0[2mms[22m[39m
+ [32m✓[39m src/calculators/__tests__/masonry-project.test.ts[2m > [22mScenario C — block wall, no openings[2m > [22mC3: no air brick materials[32m 0[2mms[22m[39m
+ [32m✓[39m src/calculators/__tests__/masonry-project.test.ts[2m > [22mScenario D — cavity wall, 2 × 1200×1200 openings[2m > [22mD1: openingAreaM2 = 2.88, netAreaM2 = 21.12[32m 1[2mms[22m[39m
+ [32m✓[39m src/calculators/__tests__/masonry-project.test.ts[2m > [22mScenario D — cavity wall, 2 × 1200×1200 openings[2m > [22mD2: bricks = ceil(21.12 × 56 × 1.05) = 1242[32m 1[2mms[22m[39m
+ [32m✓[39m src/calculators/__tests__/masonry-project.test.ts[2m > [22mScenario D — cavity wall, 2 × 1200×1200 openings[2m > [22mD3: blocks = ceil(21.12 × 10 × 1.05) = 222[32m 0[2mms[22m[39m
+ [32m✓[39m src/calculators/__tests__/masonry-project.test.ts[2m > [22mScenario D — cavity wall, 2 × 1200×1200 openings[2m > [22mD4: wall ties use GROSS area = ceil(24 × 2.5) = 60[32m 0[2mms[22m[39m
+ [32m✓[39m src/calculators/__tests__/masonry-project.test.ts[2m > [22mScenario D — cavity wall, 2 × 1200×1200 openings[2m > [22mD5: 2 lintels (one per opening)[32m 0[2mms[22m[39m
+ [32m✓[39m src/calculators/__tests__/masonry-project.test.ts[2m > [22mScenario D — cavity wall, 2 × 1200×1200 openings[2m > [22mD6: 4 padstones (2 per opening)[32m 1[2mms[22m[39m
+ [32m✓[39m src/calculators/__tests__/masonry-project.test.ts[2m > [22mScenario D — cavity wall, 2 × 1200×1200 openings[2m > [22mD7: 4 cavity closers total (2 per opening)[32m 0[2mms[22m[39m
+ [32m✓[39m src/calculators/__tests__/masonry-project.test.ts[2m > [22mScenario D — cavity wall, 2 × 1200×1200 openings[2m > [22mD8: 2 cavity trays (1 per opening)[32m 0[2mms[22m[39m
+
+[2m Test Files [22m [1m[32m1 passed[39m[22m[90m (1)[39m
+[2m      Tests [22m [1m[32m19 passed[39m[22m[90m (19)[39m
+[2m   Start at [22m 19:16:53
+[2m   Duration [22m 2.55s[2m (transform 212ms, setup 337ms, import 193ms, tests 30ms, environment 1.73s)[22m
+

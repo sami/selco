@@ -1,0 +1,19 @@
+BRICK_PRODUCTS: 3 products
+BLOCK_PRODUCTS: 4 products
+SAND_PRODUCTS: 3 products
+CEMENT_PRODUCTS: 4 products
+WALL_TIE_PRODUCTS: 4 products
+DPC_PRODUCTS: 4 products
+CONCRETE_LINTEL_PRODUCTS: 3 products
+STEEL_LINTEL_PRODUCTS: 5 products
+PADSTONE_PRODUCTS: 4 products
+CAVITY_CLOSER_PRODUCTS: 2 products
+CAVITY_TRAY_PRODUCTS: 3 products
+WALL_STARTER_PRODUCTS: 1 products
+
+Total: 40 products across 12 arrays
+Wall tie cavity ranges (4 products): wall-tie-200-50-75: 50–75mm, wall-tie-225-75-100: 75–100mm, wall-tie-250-100-125: 100–125mm, wall-tie-275-125-150: 125–150mm
+  → No overlaps ✓
+Lintel bearing rule (8 lintels): minBearingMm=150 each side ✓
+
+✅ All catalogue invariants pass
