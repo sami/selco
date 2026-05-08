@@ -40,7 +40,7 @@ gap and a 35-day post-rebuild gap — bracketing the heaviest sustained work.
 | 3 — Idle gap | 2026-02-23 → 2026-03-17 | 23 | 0 | Ramadan; awaiting tutor feedback |
 | 4 — TMA 02 audit and rebuild | 2026-03-18 → 2026-03-26 | 9 | ~99 | Audit, design tokens, TDD rebuild, Layer 2 wizards, shared UI |
 | 4.5 — Uncommitted decking sprint | 2026-03-27 → 2026-03-29 | 3 | 0 (uncommitted) | Decking calculator built but not committed |
-| 5 — Dormancy | 2026-03-30 → 2026-05-02 | 34 | 0 | No file activity (`[reason: TO FILL — see §11]`) |
+| 5 — Dormancy | 2026-03-30 → 2026-05-02 | 34 | 0 | No file activity — day-job commitments at SELCO and general life |
 | 6 — TMA 02 recovery sprint | 2026-05-03 → ongoing | 6+ | 7+ | Project audit, decking integration, cleanup pass |
 
 ### Era 1 — TMA 01 prototype (2026-02-09 → 2026-02-11)
@@ -186,10 +186,20 @@ earlier and describe the same sequence of work.
 ### Era 5 — Dormancy (2026-03-30 → 2026-05-02)
 
 34 calendar days with no file activity in the working tree. No commits, no
-mtimes after 2026-03-29 12:57. `[reason: TO FILL — see §11]`. The
-consequences — uncommitted work, a compressed write-up window, and the
-TMA 02 dormancy gap — are reflected in the action plan in the report's
-Section 5.6 and in the gaps list at §10 below.
+mtimes after 2026-03-29 12:57. The honest cause is a combination of
+day-job commitments at SELCO Builders Warehouse — where shifts ramped up
+into May — and general life pulling away from the project after the
+intensive nine-day rebuild and the three further days of decking work
+that closed Era 4.5.
+
+The consequences are real and worth naming: three days of finished
+decking work sat uncommitted, no fortnightly tutor update went out
+during the gap, and the TMA 02 write-up window was compressed from a
+projected six weeks down to roughly one. The recovery measures live in
+Era 6 and in the gaps list at §10 below — the cherry-pick of the
+dormant decking work was the single highest-leverage item, lifting the
+shipped calculator count from five to six and turning unshipped effort
+into marker-visible evidence.
 
 ### Era 6 — TMA 02 recovery sprint (2026-05-03 → ongoing)
 
@@ -709,10 +719,34 @@ apply at HEAD.
 
 ---
 
-## 11. Era 5 dormancy — reflection placeholder
+## 11. Era 5 dormancy — reflection notes for TMA 02 §6
 
-`[reason: TO FILL — Sami to provide. Use this to populate the timeline
-table in §2 and the Era 5 narrative. Honest framing per the TMA report's
-Section 5.6 action plan: name the reason, name the consequence, and link
-to the recovery measures in Era 6. Markers expect honest reflection, not
-a perfect record.]`
+The dormancy gap (2026-03-30 → 2026-05-02) is named honestly above in §2.
+For the report's Personal Development, Review and Reflection section, the
+useful framing — Gibbs cycle, applied to this period — is roughly:
+
+- **Description.** 34 calendar days with zero commits and zero file-mtime
+  activity, immediately following the most intensive nine-day sprint
+  in the project. Three days of completed decking work sat uncommitted
+  through the entire gap.
+- **Feelings.** A natural drop-off after sustained effort, compounded
+  by SELCO shift demands and life outside the module.
+- **Evaluation.** Bad in the moment — fortnightly tutor updates were
+  missed; the write-up window was compressed; uncommitted work risked
+  being lost. Less bad on reflection — the work that *had* been done
+  was substantial and integrated cleanly when picked back up; nothing
+  was lost.
+- **Analysis.** The dormancy was driven by external commitments rather
+  than blockers in the codebase. The Era 4.5 / Era 5 boundary is
+  exactly where committing the decking work would have made it visible
+  to the future me; the underlying lesson is *commit-on-end-of-day*
+  even for incomplete sprints, especially before any planned break.
+- **Conclusion.** A six-week write-up window ought to have absorbed a
+  four-week gap and still left two weeks; instead it was telescoped
+  into one. The tutor-update cadence was the more obvious failure mode
+  and the one most worth changing in future modules.
+- **Action plan.** Era 6 captures the recovery: a deliberate audit
+  pass (this document), a conditional cherry-pick of the dormant work
+  with test-suite gating, a minimal cleanup pass, and a planned deploy
+  + screenshot capture for marker-visible evidence in Section
+  "Project Work" of TMA 02.
