@@ -73,8 +73,7 @@ export const CALCULATOR_REGISTRY: CalculatorMeta[] = [
         description:
             'Estimate decking boards, joists, screws or hidden clips, and concrete deck blocks for outdoor decking areas.',
         category: 'project',
-        status: 'coming-soon',
-        comingSoon: true,
+        status: 'live',
         path: '/decking/',
         icon: '/images/hero/hero-decking.svg',
     },
