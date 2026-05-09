@@ -1,0 +1,84 @@
+
+ RUN  v4.1.0 /Users/sami/Projects/selco
+      Coverage enabled with v8
+
+
+ Test Files  52 passed (52)
+      Tests  515 passed (515)
+   Start at  21:16:00
+   Duration  29.45s (transform 3.30s, setup 25.54s, import 4.34s, tests 15.02s, environment 110.01s)
+
+ % Coverage report from v8
+-------------------|---------|----------|---------|---------|-------------------
+File               | % Stmts | % Branch | % Funcs | % Lines | Uncovered Line #s 
+-------------------|---------|----------|---------|---------|-------------------
+All files          |   68.74 |     59.4 |   56.09 |    70.3 |                   
+ scripts           |   46.77 |    35.71 |      80 |   43.85 |                   
+  ...ss-tokens.mjs |   46.77 |    35.71 |      80 |   43.85 | 94-103,109-143    
+ src/calculators   |   97.83 |    89.87 |   98.94 |   98.87 |                   
+  adhesive.ts      |   97.61 |    90.69 |     100 |     100 | 84-125,127-128    
+  air-bricks.ts    |     100 |      100 |     100 |     100 |                   
+  backer-board.ts  |     100 |      100 |     100 |     100 |                   
+  blocks.ts        |     100 |      100 |     100 |     100 |                   
+  ...d-coverage.ts |     100 |      100 |     100 |     100 |                   
+  board-presets.ts |     100 |       80 |     100 |     100 | 60-61             
+  bricks.ts        |     100 |      100 |     100 |     100 |                   
+  ...ty-closers.ts |     100 |      100 |     100 |     100 |                   
+  cavity-trays.ts  |     100 |      100 |     100 |     100 |                   
+  cement.ts        |     100 |      100 |     100 |     100 |                   
+  constants.ts     |     100 |      100 |     100 |     100 |                   
+  conversions.ts   |     100 |      100 |     100 |     100 |                   
+  ...ng-fixings.ts |   92.85 |       90 |     100 |     100 | 78                
+  ...ng-project.ts |     100 |       75 |     100 |     100 | 96                
+  ...bstructure.ts |     100 |       80 |     100 |     100 | 78-79             
+  decking.ts       |     100 |       70 |     100 |     100 | 93-95             
+  dpc.ts           |      80 |       50 |   83.33 |   78.57 | 16-18,30          
+  ...-ancillary.ts |   97.14 |    91.66 |     100 |     100 | 39                
+  ...ing-config.ts |     100 |      100 |     100 |     100 |                   
+  ...-constants.ts |     100 |      100 |     100 |     100 |                   
+  flooring-room.ts |   86.95 |    78.94 |     100 |   97.56 | 137               
+  flooring.ts      |   93.75 |       90 |     100 |   93.75 | 47                
+  grout.ts         |     100 |       92 |     100 |     100 | 45,57             
+  lintels.ts       |      95 |    83.33 |     100 |   93.75 | 14                
+  ...ry-project.ts |     100 |       82 |     100 |     100 | 19-20,46,89-113   
+  masonry.ts       |    98.7 |    94.44 |     100 |   98.68 | 161               
+  mortar.ts        |     100 |      100 |     100 |     100 |                   
+  padstones.ts     |     100 |      100 |     100 |     100 |                   
+  primer.ts        |     100 |      100 |     100 |     100 |                   
+  primitives.ts    |     100 |      100 |     100 |     100 |                   
+  registry.ts      |       0 |        0 |       0 |       0 |                   
+  sand.ts          |     100 |      100 |     100 |     100 |                   
+  slc.ts           |     100 |      100 |     100 |     100 |                   
+  spacers.ts       |     100 |      100 |     100 |     100 |                   
+  tanking.ts       |     100 |      100 |     100 |     100 |                   
+  tiles.ts         |     100 |      100 |     100 |     100 |                   
+  types.ts         |     100 |      100 |     100 |     100 |                   
+  wall-ties.ts     |     100 |      100 |     100 |     100 |                   
+ src/components    |    37.3 |    23.64 |    25.3 |   39.51 |                   
+  ...alculator.tsx |   38.77 |       25 |   30.76 |   38.63 | ...6,71-77,90-161 
+  ...torLayout.tsx |     100 |    91.66 |     100 |     100 | 104               
+  ...alculator.tsx |   51.92 |    35.13 |      60 |   51.02 | ...15,145-198,218 
+  ...ectWizard.tsx |      40 |    17.64 |   11.76 |   40.84 | ...38-140,189-303 
+  ...alculator.tsx |   33.33 |     12.5 |   33.33 |   38.59 | ...,81-89,101-181 
+  ...alculator.tsx |    24.3 |    21.12 |   11.11 |    26.4 | ...41-263,283-423 
+  ...ectWizard.tsx |   28.07 |     7.14 |   11.11 |   28.97 | ...67-169,187-412 
+  ...alculator.tsx |   77.94 |       76 |      50 |   85.45 | 68-69,111-174     
+  ...alculator.tsx |   24.32 |     6.06 |   15.38 |   28.57 | ...,87-95,108-189 
+ ...ts/calculators |   72.72 |     43.9 |    62.5 |   70.96 |                   
+  ...alculator.tsx |   72.72 |     43.9 |    62.5 |   70.96 | ...8,46,83-98,150 
+ src/components/ui |     100 |    95.91 |     100 |     100 |                   
+  FormField.tsx    |     100 |     87.5 |     100 |     100 | 45-51             
+  ...rialsList.tsx |     100 |      100 |     100 |     100 |                   
+  NumberInput.tsx  |     100 |      100 |     100 |     100 |                   
+  ...tSelector.tsx |     100 |      100 |     100 |     100 |                   
+  ResultCard.tsx   |     100 |      100 |     100 |     100 |                   
+  WizardShell.tsx  |     100 |      100 |     100 |     100 |                   
+ src/data          |     100 |      100 |     100 |     100 |                   
+  ...y-products.ts |     100 |      100 |     100 |     100 |                   
+  ...g-products.ts |     100 |      100 |     100 |     100 |                   
+ src/projects      |     100 |      100 |     100 |     100 |                   
+  flooring.ts      |     100 |      100 |     100 |     100 |                   
+  masonry.ts       |     100 |      100 |     100 |     100 |                   
+  registry.ts      |     100 |      100 |     100 |     100 |                   
+  ...uggestions.ts |     100 |      100 |     100 |     100 |                   
+-------------------|---------|----------|---------|---------|-------------------

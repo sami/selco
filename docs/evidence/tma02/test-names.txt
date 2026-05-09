@@ -1,0 +1,524 @@
+
+ RUN  v4.1.0 /Users/sami/Projects/selco
+
+ ✓ src/components/ui/__tests__/MaterialsList.test.tsx > renders table with Material, Quantity, Unit column headers 142ms
+ ✓ src/components/ui/__tests__/MaterialsList.test.tsx > renders a row for each material entry 57ms
+ ✓ src/components/__tests__/SpacersCalculator.test.tsx > renders calculator title and description 272ms
+ ✓ src/components/__tests__/MasonryCalculator.test.tsx > renders masonry calculator with title and form 396ms
+ ✓ src/components/__tests__/MasonryCalculator.test.tsx > renders wall dimension inputs 130ms
+ ✓ src/components/__tests__/MasonryCalculator.test.tsx > renders mortar and waste fields 87ms
+ ✓ src/components/__tests__/SpacersCalculator.test.tsx > renders area, tile width, tile height, wastage, and pack size number inputs 198ms
+ ✓ src/components/__tests__/SpacersCalculator.test.tsx > renders spacer size and layout pattern selects 71ms
+ ✓ src/components/__tests__/SpacersCalculator.test.tsx > shows validation error when area is empty and calculate is clicked 128ms
+ ✓ src/components/ui/__tests__/ProductSelector.test.tsx > renders the label 106ms
+ ✓ src/components/ui/__tests__/ProductSelector.test.tsx > renders an option for each product 44ms
+ ✓ src/components/ui/__tests__/ProductSelector.test.tsx > shows placeholder option when placeholder prop provided 30ms
+ ✓ src/components/ui/__tests__/FormField.test.tsx > renders label and text input 918ms
+ ✓ src/components/ui/__tests__/WizardShell.test.tsx > renders progress bar with step label text 120ms
+ ✓ src/components/ui/__tests__/WizardShell.test.tsx > renders current step label in progress subtitle 43ms
+ ✓ src/components/ui/__tests__/WizardShell.test.tsx > renders children content 38ms
+ ✓ src/components/ui/__tests__/MaterialsList.test.tsx > displays quantity value in correct row 59ms
+ ✓ src/components/ui/__tests__/ProductSelector.test.tsx > calls onChange when selection changes 836ms
+ ✓ src/components/ui/__tests__/ProductSelector.test.tsx > shows error message when error prop provided 13ms
+ ✓ src/components/ui/__tests__/NumberInput.test.tsx > renders label and number input 980ms
+ ✓ src/components/ui/__tests__/NumberInput.test.tsx > shows unit suffix when unit prop provided 35ms
+ ✓ src/components/ui/__tests__/NumberInput.test.tsx > does not render unit element when unit prop omitted 19ms
+ ✓ src/components/ui/__tests__/FormField.test.tsx > renders number input when type is number 154ms
+ ✓ src/components/ui/__tests__/WizardShell.test.tsx > Back button is disabled on first step (currentStep=0) 873ms
+ ✓ src/components/ui/__tests__/ProductSelector.test.tsx > renders as a select element with form-select class 116ms
+ ✓ src/components/ui/__tests__/ProductSelector.test.tsx > sets selected value on the select element 84ms
+ ✓ src/components/ui/__tests__/NumberInput.test.tsx > calls onChange with string value when value changes 128ms
+ ✓ src/components/ui/__tests__/NumberInput.test.tsx > shows error message when error prop provided 7ms
+ ✓ src/components/ui/__tests__/NumberInput.test.tsx > shows helper text when helperText prop provided 13ms
+ ✓ src/components/ui/__tests__/FormField.test.tsx > renders select with options when type is select 130ms
+ ✓ src/components/ui/__tests__/FormField.test.tsx > shows error message when error prop provided 13ms
+ ✓ src/components/ui/__tests__/FormField.test.tsx > shows helper text when helperText prop provided 13ms
+ ✓ src/components/ui/__tests__/MaterialsList.test.tsx > renders an empty table body for empty materials array 871ms
+ ✓ src/components/ui/__tests__/MaterialsList.test.tsx > renders multiple rows when given multiple materials 228ms
+ ✓ src/components/ui/__tests__/WizardShell.test.tsx > Back button is enabled on steps after the first 157ms
+ ✓ src/components/ui/__tests__/NumberInput.test.tsx > passes min, max, and step attributes to input 125ms
+ ✓ src/components/ui/__tests__/FormField.test.tsx > calls onChange when text input value changes 107ms
+ ✓ src/components/ui/__tests__/NumberInput.test.tsx > input is disabled when disabled prop is true 125ms
+ ✓ src/components/ui/__tests__/WizardShell.test.tsx > renders Next button with btn-accent class on non-last step 169ms
+ ✓ src/components/ui/__tests__/FormField.test.tsx > input is disabled when disabled prop is true 137ms
+ ✓ src/components/ui/__tests__/FormField.test.tsx > input has required attribute when required prop is true 93ms
+ ✓ src/components/ui/__tests__/NumberInput.test.tsx > input has required attribute when required prop is true 123ms
+ ✓ src/components/ui/__tests__/NumberInput.test.tsx > input uses form-input class 87ms
+ ✓ src/components/ui/__tests__/WizardShell.test.tsx > renders Calculate button with btn-primary class on last step 179ms
+ ✓ src/components/ui/__tests__/FormField.test.tsx > input uses form-input class 72ms
+ ✓ src/components/ui/__tests__/FormField.test.tsx > select uses form-select class 82ms
+ ✓ src/components/ui/__tests__/WizardShell.test.tsx > Back button has btn-ghost class 118ms
+ ✓ src/components/__tests__/SpacersCalculator.test.tsx > displays ResultCard with materials after valid calculation 150ms
+ ✓ src/components/__tests__/SpacersCalculator.test.tsx > reset clears the results 855ms
+ ✓ src/components/ui/__tests__/WizardShell.test.tsx > calls onNext when Next button is clicked 141ms
+ ✓ src/components/ui/__tests__/WizardShell.test.tsx > calls onBack when Back button is clicked 167ms
+ ✓ src/components/ui/__tests__/WizardShell.test.tsx > calls onCalculate when Calculate button is clicked on last step 112ms
+ ✓ src/components/ui/__tests__/WizardShell.test.tsx > shows Skip button on optional steps when onSkip provided 15ms
+ ✓ src/components/ui/__tests__/WizardShell.test.tsx > does not show Skip button on non-optional steps 7ms
+ ✓ src/components/ui/__tests__/WizardShell.test.tsx > shows Start over button on last step when onStartOver provided 11ms
+ ✓ src/components/__tests__/GroutCalculator.test.tsx > renders grout calculator with title and product select 180ms
+ ✓ src/components/__tests__/GroutCalculator.test.tsx > renders area input field 63ms
+ ✓ src/components/__tests__/GroutCalculator.test.tsx > renders tile dimension inputs 67ms
+ ✓ src/components/__tests__/GroutCalculator.test.tsx > renders joint width select and tile thickness input 55ms
+ ✓ src/components/__tests__/AdhesiveCalculator.test.tsx > renders adhesive calculator with title and product select 199ms
+ ✓ src/components/ui/__tests__/ResultCard.test.tsx > renders the title 111ms
+ ✓ src/components/ui/__tests__/ResultCard.test.tsx > renders MaterialsList with provided materials 19ms
+ ✓ src/components/ui/__tests__/ResultCard.test.tsx > renders all warning messages when provided 21ms
+ ✓ src/components/ui/__tests__/ResultCard.test.tsx > does not render warnings section when warnings prop omitted 20ms
+ ✓ src/components/ui/__tests__/ResultCard.test.tsx > renders children when provided 23ms
+ ✓ src/components/ui/__tests__/ResultCard.test.tsx > uses the card CSS class on the container 8ms
+ ✓ src/components/__tests__/TileCalculator.test.tsx > renders tile calculator with title and form 206ms
+ ✓ src/components/calculators/__tests__/CoverageCalculator.test.tsx > renders coverage calculator with area input and board presets 146ms
+ ✓ src/components/__tests__/ConversionsCalculator.test.tsx > renders unit converter with value input and unit selects 320ms
+ ✓ src/components/__tests__/FlooringProjectWizard.test.tsx > renders wizard with room dimensions step 137ms
+ ✓ src/calculators/__tests__/conversions.test.ts > convert() — LENGTH family > TC-L1: 1 m → mm = 1000 4ms
+ ✓ src/calculators/__tests__/conversions.test.ts > convert() — LENGTH family > TC-L2: 1 ft → mm = 304.8 1ms
+ ✓ src/calculators/__tests__/conversions.test.ts > convert() — LENGTH family > TC-L3: 1 yd → m = 0.9144 1ms
+ ✓ src/calculators/__tests__/conversions.test.ts > convert() — LENGTH family > TC-L4: 1 km → m = 1000 1ms
+ ✓ src/calculators/__tests__/conversions.test.ts > convert() — LENGTH family > TC-L5: same unit — 5 ft → ft = 5 1ms
+ ✓ src/calculators/__tests__/conversions.test.ts > convert() — LENGTH family > TC-L6: 1 m → ft ≈ 3.28084 1ms
+ ✓ src/calculators/__tests__/conversions.test.ts > convert() — AREA family > TC-A1: 1 m² → mm² = 1,000,000 1ms
+ ✓ src/calculators/__tests__/conversions.test.ts > convert() — AREA family > TC-A2: 1 m² → ft² ≈ 10.7639 1ms
+ ✓ src/calculators/__tests__/conversions.test.ts > convert() — AREA family > TC-A3: 1 hectare → m² = 10,000 1ms
+ ✓ src/calculators/__tests__/conversions.test.ts > convert() — AREA family > TC-A4: 1 ft² → m² ≈ 0.09290 1ms
+ ✓ src/calculators/__tests__/conversions.test.ts > convert() — AREA family > TC-A5: 1 yd² → m² ≈ 0.8361 1ms
+ ✓ src/calculators/__tests__/conversions.test.ts > convert() — VOLUME family > TC-V1: 1 m³ → litres = 1000 1ms
+ ✓ src/calculators/__tests__/conversions.test.ts > convert() — VOLUME family > TC-V2: 1 m³ → ft³ ≈ 35.3147 1ms
+ ✓ src/calculators/__tests__/conversions.test.ts > convert() — VOLUME family > TC-V3: 1 litre → cm³ = 1000 0ms
+ ✓ src/calculators/__tests__/conversions.test.ts > convert() — VOLUME family > TC-V4: 1 ft³ → m³ ≈ 0.028317 0ms
+ ✓ src/calculators/__tests__/conversions.test.ts > convert() — WEIGHT family > TC-W1: 1 kg → lb ≈ 2.20462 1ms
+ ✓ src/calculators/__tests__/conversions.test.ts > convert() — WEIGHT family > TC-W2: 1 tonne → kg = 1000 (tonnes identifier) 1ms
+ ✓ src/calculators/__tests__/conversions.test.ts > convert() — WEIGHT family > TC-W3: 1 cwt → kg ≈ 50.802 (new unit — UK hundredweight) 1ms
+ ✓ src/calculators/__tests__/conversions.test.ts > convert() — WEIGHT family > TC-W4: 1 stone → kg ≈ 6.350 (stones identifier) 1ms
+ ✓ src/calculators/__tests__/conversions.test.ts > convert() — WEIGHT family > TC-W5: 1 lb → g ≈ 453.59 1ms
+ ✓ src/calculators/__tests__/conversions.test.ts > convert() — TEMPERATURE family > TC-T1: 0°C → °F = 32 1ms
+ ✓ src/calculators/__tests__/conversions.test.ts > convert() — TEMPERATURE family > TC-T2: 100°C → °F = 212 0ms
+ ✓ src/calculators/__tests__/conversions.test.ts > convert() — TEMPERATURE family > TC-T3: 32°F → °C = 0 0ms
+ ✓ src/calculators/__tests__/conversions.test.ts > convert() — TEMPERATURE family > TC-T4: −40°C → °F = −40 (cross-check) 1ms
+ ✓ src/calculators/__tests__/conversions.test.ts > convert() — result shape > returns fromUnit, toUnit, formula and result 3ms
+ ✓ src/calculators/__tests__/conversions.test.ts > convert() — result shape > formula contains the converted result value 1ms
+ ✓ src/calculators/__tests__/conversions.test.ts > convert() — result shape > throws for unknown fromUnit 3ms
+ ✓ src/calculators/__tests__/conversions.test.ts > convert() — result shape > handles zero value 1ms
+ ✓ src/calculators/__tests__/conversions.test.ts > convertArea() — hectare (new unit) > 1 hectare → m² = 10,000 1ms
+ ✓ src/calculators/__tests__/conversions.test.ts > convertArea() — hectare (new unit) > 10,000 m² → 1 hectare 1ms
+ ✓ src/calculators/__tests__/conversions.test.ts > convertWeight() — cwt (new unit) > 1 cwt → kg ≈ 50.802 1ms
+ ✓ src/calculators/__tests__/conversions.test.ts > convertWeight() — cwt (new unit) > 50.80234544 kg → 1 cwt 0ms
+ ✓ src/calculators/__tests__/conversions.test.ts > CONVERSION_FACTORS > exports factor table for length family 1ms
+ ✓ src/calculators/__tests__/conversions.test.ts > CONVERSION_FACTORS > exports factor table for area family 1ms
+ ✓ src/calculators/__tests__/conversions.test.ts > CONVERSION_FACTORS > exports factor table for weight family with cwt 1ms
+ ✓ src/calculators/__tests__/conversions.test.ts > getUnitsForFamily() > returns unit list for length 1ms
+ ✓ src/calculators/__tests__/conversions.test.ts > getUnitsForFamily() > returns unit list for area including hectare 1ms
+ ✓ src/calculators/__tests__/conversions.test.ts > getUnitsForFamily() > returns unit list for weight including cwt 1ms
+ ✓ src/calculators/__tests__/conversions.test.ts > getUnitsForFamily() > returns unit list for temperature 0ms
+ ✓ src/calculators/__tests__/conversions.test.ts > getUnitsForFamily() > throws for unknown family 10ms
+ ✓ src/calculators/__tests__/conversions.test.ts > DENSITIES > exports same values as DENSITY 0ms
+ ✓ src/calculators/__tests__/conversions.test.ts > DENSITIES > concrete density is 2.4 t/m³ 0ms
+ ✓ src/calculators/__tests__/conversions.test.ts > DENSITIES > sand density is 1.6 t/m³ 0ms
+ ✓ src/calculators/__tests__/conversions.test.ts > convertDensityToWeight — density helpers > 2 m³ concrete → 4.8 tonnes 0ms
+ ✓ src/calculators/__tests__/conversions.test.ts > convertDensityToWeight — density helpers > 5 m³ sand → 8.0 tonnes 0ms
+ ✓ src/calculators/__tests__/conversions.test.ts > convertDensityToWeight — density helpers > 1 m³ hardcore → 2.1 tonnes 1ms
+ ✓ src/calculators/__tests__/conversions.test.ts > convertDensityToWeight — density helpers > handles zero volume 0ms
+ ✓ src/calculators/__tests__/conversions.test.ts > convert() — same-unit identity (branch guards) > area: m2 → m2 returns input unchanged 0ms
+ ✓ src/calculators/__tests__/conversions.test.ts > convert() — same-unit identity (branch guards) > weight: kg → kg returns input unchanged 0ms
+ ✓ src/calculators/__tests__/conversions.test.ts > convert() — same-unit identity (branch guards) > volume: litres → litres returns input unchanged 0ms
+ ✓ src/calculators/__tests__/conversions.test.ts > convert() — same-unit identity (branch guards) > temperature: C → C returns input unchanged 0ms
+ ✓ src/calculators/__tests__/conversions.test.ts > convert() — same-unit identity (branch guards) > temperature: F → C converts 212°F to 100°C 0ms
+ ✓ src/calculators/__tests__/tanking.test.ts > calculateTanking — spec test cases > TC1: Mapei Mapegum WPS, 8m² → 2 kits 7ms
+ ✓ src/calculators/__tests__/tanking.test.ts > calculateTanking — spec test cases > TC2: Mapei Mapegum WPS, 4m² (exact) → 1 kit 1ms
+ ✓ src/calculators/__tests__/tanking.test.ts > calculateTanking — spec test cases > TC3: Mapei Mapegum WPS, 5m² → 2 kits (rounds up) 1ms
+ ✓ src/calculators/__tests__/tanking.test.ts > calculateTanking — spec test cases > TC4: Dunlop Shower Waterproofing Kit, 7m² → 2 kits 1ms
+ ✓ src/calculators/__tests__/tanking.test.ts > calculateTanking — spec test cases > TC5: Dunlop, 3.5m² (exact) → 1 kit 1ms
+ ✓ src/calculators/__tests__/tanking.test.ts > calculateTanking — spec test cases > TC6: notes propagated from product 1ms
+ ✓ src/calculators/__tests__/tanking.test.ts > calculateTanking — spec test cases > TC7: materials array has correct unit and brand 1ms
+ ✓ src/calculators/__tests__/tanking.test.ts > calculateTanking — validation > throws for unknown productId 3ms
+ ✓ src/calculators/__tests__/tanking.test.ts > calculateTanking — validation > throws for zero area 1ms
+ ✓ src/calculators/__tests__/tanking.test.ts > calculateTanking — validation > throws for negative area 1ms
+ ✓ src/calculators/board-coverage.test.ts > calculateBoardCoverage > calculates boards needed with 10% wastage (standard plywood) 6ms
+ ✓ src/calculators/board-coverage.test.ts > calculateBoardCoverage > calculates boards with zero wastage 1ms
+ ✓ src/calculators/board-coverage.test.ts > calculateBoardCoverage > returns exactly the right count when area is an exact multiple of board area 3ms
+ ✓ src/calculators/board-coverage.test.ts > calculateBoardCoverage > boardsNeeded × coveragePerBoardM2 ≥ grossAreaM2 1ms
+ ✓ src/calculators/board-coverage.test.ts > calculateBoardCoverage > handles small boards (flooring boards) 1ms
+ ✓ src/calculators/board-coverage.test.ts > calculateBoardCoverage > handles large wastage percentage 1ms
+ ✓ src/calculators/board-coverage.test.ts > calculateBoardCoverage > returns 0 boards for zero area 1ms
+ ✓ src/calculators/board-coverage.test.ts > calculateBoardCoverage > throws for negative area 6ms
+ ✓ src/calculators/board-coverage.test.ts > BOARD_PRESETS > exports an array of board presets 1ms
+ ✓ src/calculators/board-coverage.test.ts > BOARD_PRESETS > each preset has id, label, description, lengthMm, widthMm, coverageM2 4ms
+ ✓ src/calculators/board-coverage.test.ts > BOARD_PRESETS > includes the standard plasterboard size (2400 × 1200) 3ms
+ ✓ src/calculators/__tests__/flooring-ancillary.test.ts > estimateUnderlay > TC1: 12 m² + 5% overlap = 12.6 m² → 1 × 15 m² roll 5ms
+ ✓ src/calculators/__tests__/flooring-ancillary.test.ts > estimateUnderlay > TC2: 30 m² + 5% = 31.5 m² → best fit roll size 1ms
+ ✓ src/calculators/__tests__/flooring-ancillary.test.ts > estimateUnderlay > TC3: 0 m² → 0 rolls 1ms
+ ✓ src/calculators/__tests__/flooring-ancillary.test.ts > estimateFlooringAdhesive > TC4: 12 m² at 5 m²/L = 2.4L → 1 × 5L bucket 1ms
+ ✓ src/calculators/__tests__/flooring-ancillary.test.ts > estimateFlooringAdhesive > TC5: 30 m² = 6L → best fit bucket 1ms
+ ✓ src/calculators/__tests__/flooring-ancillary.test.ts > estimateFlooringAdhesive > TC6: 0 m² → 0 buckets 1ms
+ ✓ src/calculators/__tests__/flooring-ancillary.test.ts > estimateScotia > TC7: 14m perimeter + 10% waste = 15.4m → 7 lengths 2ms
+ ✓ src/calculators/__tests__/flooring-ancillary.test.ts > estimateScotia > TC8: 10m perimeter + 10% = 11m → 5 lengths 2ms
+ ✓ src/calculators/__tests__/flooring-ancillary.test.ts > estimateScotia > TC9: 0 perimeter → 0 lengths 2ms
+ ✓ src/calculators/__tests__/flooring-ancillary.test.ts > estimateThresholdStrips > TC10: 1 doorway → 1 strip 1ms
+ ✓ src/calculators/__tests__/flooring-ancillary.test.ts > estimateThresholdStrips > TC11: 3 doorways → 3 strips 1ms
+ ✓ src/calculators/__tests__/flooring-ancillary.test.ts > estimateThresholdStrips > TC12: 0 doorways → 0 strips 0ms
+ ✓ src/calculators/__tests__/flooring-ancillary.test.ts > estimateDPM > TC13: 12 m² + 10% overlap = 13.2 m² → 1 × 15 m² roll 1ms
+ ✓ src/calculators/__tests__/flooring-ancillary.test.ts > estimateDPM > TC14: 30 m² + 10% = 33 m² → best fit roll 1ms
+ ✓ src/calculators/__tests__/flooring-ancillary.test.ts > estimateDPM > TC15: 0 m² → 0 rolls 1ms
+ ✓ src/calculators/masonry.test.ts > calculateWallArea > calculates area for a single wall 7ms
+ ✓ src/calculators/masonry.test.ts > calculateWallArea > subtracts openings from gross area 1ms
+ ✓ src/calculators/masonry.test.ts > calculateWallArea > handles multiple walls 1ms
+ ✓ src/calculators/masonry.test.ts > calculateWallArea > handles zero openings 1ms
+ ✓ src/calculators/masonry.test.ts > calculateWallArea > throws for empty walls array 6ms
+ ✓ src/calculators/masonry.test.ts > calculateWallArea > throws for zero wall dimension 1ms
+ ✓ src/calculators/masonry.test.ts > calculateWallArea > throws for negative opening 1ms
+ ✓ src/calculators/masonry.test.ts > calculateWallArea > clamps net area to zero 1ms
+ ✓ src/calculators/masonry.test.ts > calculateBricks > half-brick = 60/m² 1ms
+ ✓ src/calculators/masonry.test.ts > calculateBricks > one-brick = 120/m² 1ms
+ ✓ src/calculators/masonry.test.ts > calculateBricks > cavity outer leaf = 60/m² 0ms
+ ✓ src/calculators/masonry.test.ts > calculateBricks > applies waste 0ms
+ ✓ src/calculators/masonry.test.ts > calculateBricks > returns 0 for blockwork 1ms
+ ✓ src/calculators/masonry.test.ts > calculateBlocks > 10/m² for 100mm 0ms
+ ✓ src/calculators/masonry.test.ts > calculateBlocks > 10/m² for 140mm 0ms
+ ✓ src/calculators/masonry.test.ts > calculateBlocks > 10/m² for cavity inner leaf 0ms
+ ✓ src/calculators/masonry.test.ts > calculateBlocks > applies waste 0ms
+ ✓ src/calculators/masonry.test.ts > calculateBlocks > returns 0 for half-brick 0ms
+ ✓ src/calculators/masonry.test.ts > calculateMortar > half-brick mortar volume 4ms
+ ✓ src/calculators/masonry.test.ts > calculateMortar > one-brick mortar volume 0ms
+ ✓ src/calculators/masonry.test.ts > calculateMortar > cavity = brick leaf + block leaf 1ms
+ ✓ src/calculators/masonry.test.ts > calculateMortar > blockwork mortar volume 1ms
+ ✓ src/calculators/masonry.test.ts > calculateMortar > 1:4 mix produces correct cement bags 1ms
+ ✓ src/calculators/masonry.test.ts > calculateMortar > 1:4 mix produces correct sand tonnes 1ms
+ ✓ src/calculators/masonry.test.ts > calculateMortar > applies mortar waste 1ms
+ ✓ src/calculators/masonry.test.ts > calculateMortar > 1:3 mix uses more cement than 1:6 1ms
+ ✓ src/calculators/masonry.test.ts > calculateWallTies > general = 2.5/m² 1ms
+ ✓ src/calculators/masonry.test.ts > calculateWallTies > extra ties at openings 0ms
+ ✓ src/calculators/masonry.test.ts > calculateLintels > length = width + 300mm 2ms
+ ✓ src/calculators/masonry.test.ts > calculateLintels > handles multiple openings 1ms
+ ✓ src/calculators/masonry.test.ts > calculateDPC > calculates total length 1ms
+ ✓ src/calculators/masonry.test.ts > calculateDPC > half-brick width = 112.5mm 1ms
+ ✓ src/calculators/masonry.test.ts > calculateDPC > cavity width = 225mm 0ms
+ ✓ src/calculators/masonry.test.ts > calculateMasonry > full calculation for half-brick wall 1ms
+ ✓ src/calculators/masonry.test.ts > calculateMasonry > full calculation for cavity wall 1ms
+ ✓ src/calculators/masonry.test.ts > calculateMasonry > starterKits = number of wall sections 2ms
+ ✓ src/calculators/masonry.test.ts > calculateMasonry > cavity wall returns insulationAreaM2 = gross area 2ms
+ ✓ src/calculators/masonry.test.ts > calculateMasonry > non-cavity wall has no insulation fields 2ms
+ ✓ src/calculators/masonry.test.ts > calculateMasonry > throws for invalid waste 2ms
+ ✓ src/calculators/masonry.test.ts > calculateMasonry > throws for waste over 100 2ms
+ ✓ src/calculators/masonry.test.ts > sand bag calculations > calculates jumbo bags correctly 1ms
+ ✓ src/calculators/masonry.test.ts > sand bag calculations > calculates large bags correctly 0ms
+ ✓ src/calculators/masonry.test.ts > sand bag calculations > handles zero sand (small area) 1ms
+ ✓ src/calculators/masonry.test.ts > sand bag calculations > handles zero wall area -> zero bags 1ms
+ ✓ src/calculators/masonry.test.ts > SAND_BAG_SIZES constant > exports correct bag definitions 2ms
+ ✓ src/components/__tests__/MasonryProjectWizard.test.tsx > renders wizard with wall dimensions step 131ms
+ ✓ src/calculators/__tests__/grout.test.ts > calculateGrout — spec test cases > TC1: Ultracolor Plus, 300×300×10mm, 3mm joint, 12m² → 3.84kg, 1×5kg bag 12ms
+ ✓ src/calculators/__tests__/grout.test.ts > calculateGrout — spec test cases > TC2: Ultracolor Plus, 100×100×7mm, 3mm joint, 12m² → 8.064kg, 2×5kg bags 1ms
+ ✓ src/calculators/__tests__/grout.test.ts > calculateGrout — spec test cases > TC3: Flexible Grout, 150×150×6mm, 3mm joint, 10m² → 3.84kg, 2×2.5kg bags 1ms
+ ✓ src/calculators/__tests__/grout.test.ts > calculateGrout — spec test cases > TC4: Flexible Grout, 20×20×4mm mosaic, 2mm joint, 5m² → 6.4kg, 3×2.5kg bags 1ms
+ ✓ src/calculators/__tests__/grout.test.ts > calculateGrout — spec test cases > TC5: Dunlop GX-500, 600×600×10mm, 3mm joint, 20m² → 0.17 kg/m², 3.4kg, 1 bag 1ms
+ ✓ src/calculators/__tests__/grout.test.ts > calculateGrout — spec test cases > TC6: Flexible Grout, 8mm joint (max 6mm) → warning, still computes 1ms
+ ✓ src/calculators/__tests__/grout.test.ts > calculateGrout — spec test cases > TC7: zero area → throws 6ms
+ ✓ src/calculators/__tests__/grout.test.ts > calculateGrout — spec test cases > TC8: Wall Tile Grout on floor context → walls-only warning 1ms
+ ✓ src/calculators/__tests__/grout.test.ts > calculateGrout — validation > throws for unknown productId 1ms
+ ✓ src/calculators/__tests__/grout.test.ts > calculateGrout — validation > throws for zero tile dimensions 1ms
+ ✓ src/calculators/__tests__/grout.test.ts > calculateGrout — validation > throws for zero joint width 1ms
+ ✓ src/calculators/__tests__/grout.test.ts > calculateGrout — validation > GX-500 warns for joint below 2mm minimum 1ms
+ ✓ src/calculators/__tests__/masonry-project.test.ts > Scenario A — brick wall, no openings > A1: netAreaM2 = grossAreaM2 when no openings 7ms
+ ✓ src/calculators/__tests__/masonry-project.test.ts > Scenario A — brick wall, no openings > A2: bricks = ceil(10.8 × 56 × 1.05) = 636 1ms
+ ✓ src/calculators/__tests__/masonry-project.test.ts > Scenario A — brick wall, no openings > A3: DPC = 1 entry for outer leaf (6m of DPC required) 5ms
+ ✓ src/calculators/__tests__/masonry-project.test.ts > Scenario B — cavity wall, no openings > B1: bricks = ceil(24 × 56 × 1.05) = 1412 2ms
+ ✓ src/calculators/__tests__/masonry-project.test.ts > Scenario B — cavity wall, no openings > B2: blocks = ceil(24 × 10 × 1.05) = 252 1ms
+ ✓ src/calculators/__tests__/masonry-project.test.ts > Scenario B — cavity wall, no openings > B3: wall ties = ceil(24 × 2.5) = 60 1ms
+ ✓ src/calculators/__tests__/masonry-project.test.ts > Scenario B — cavity wall, no openings > B4: DPC = 2 entries total (one per leaf, 10m each) 1ms
+ ✓ src/calculators/__tests__/masonry-project.test.ts > Scenario B — cavity wall, no openings > B5: air bricks = ceil(10000/450) = 23 1ms
+ ✓ src/calculators/__tests__/masonry-project.test.ts > Scenario C — block wall, no openings > C1: blocks = ceil(9.6 × 10 × 1.05) = 101 1ms
+ ✓ src/calculators/__tests__/masonry-project.test.ts > Scenario C — block wall, no openings > C2: no DPC materials 1ms
+ ✓ src/calculators/__tests__/masonry-project.test.ts > Scenario C — block wall, no openings > C3: no air brick materials 5ms
+ ✓ src/calculators/__tests__/masonry-project.test.ts > Scenario D — cavity wall, 2 × 1200×1200 openings > D1: openingAreaM2 = 2.88, netAreaM2 = 21.12 1ms
+ ✓ src/calculators/__tests__/masonry-project.test.ts > Scenario D — cavity wall, 2 × 1200×1200 openings > D2: bricks = ceil(21.12 × 56 × 1.05) = 1242 0ms
+ ✓ src/calculators/__tests__/masonry-project.test.ts > Scenario D — cavity wall, 2 × 1200×1200 openings > D3: blocks = ceil(21.12 × 10 × 1.05) = 222 0ms
+ ✓ src/calculators/__tests__/masonry-project.test.ts > Scenario D — cavity wall, 2 × 1200×1200 openings > D4: wall ties use GROSS area = ceil(24 × 2.5) = 60 1ms
+ ✓ src/calculators/__tests__/masonry-project.test.ts > Scenario D — cavity wall, 2 × 1200×1200 openings > D5: 2 lintels (one per opening) 11ms
+ ✓ src/calculators/__tests__/masonry-project.test.ts > Scenario D — cavity wall, 2 × 1200×1200 openings > D6: 4 padstones (2 per opening) 1ms
+ ✓ src/calculators/__tests__/masonry-project.test.ts > Scenario D — cavity wall, 2 × 1200×1200 openings > D7: 4 cavity closers total (2 per opening) 0ms
+ ✓ src/calculators/__tests__/masonry-project.test.ts > Scenario D — cavity wall, 2 × 1200×1200 openings > D8: 2 cavity trays (1 per opening) 0ms
+ ✓ src/calculators/__tests__/slc.test.ts > calculateSLC — spec test cases > TC1: 10m² at 10mm depth, 25kg bags → 100L, 150kg, 6 bags 9ms
+ ✓ src/calculators/__tests__/slc.test.ts > calculateSLC — spec test cases > TC2: 20m² at 5mm depth, 25kg bags → 100L, 150kg, 6 bags 8ms
+ ✓ src/calculators/__tests__/slc.test.ts > calculateSLC — spec test cases > TC3: 5m² at 3mm depth, 20kg bags → 15L, 22.5kg, 2 bags 1ms
+ ✓ src/calculators/__tests__/slc.test.ts > calculateSLC — spec test cases > TC4: exact bag (40m² at 1mm, 60kg bags) → 60kg, 1 bag 1ms
+ ✓ src/calculators/__tests__/slc.test.ts > calculateSLC — spec test cases > TC5: coverageAtDepthM2PerBag = bagSizeKg / (1.5 × depthMm) 3ms
+ ✓ src/calculators/__tests__/slc.test.ts > calculateSLC — spec test cases > TC6: coverageAtDepthM2PerBag scales with depth 1ms
+ ✓ src/calculators/__tests__/slc.test.ts > calculateSLC — spec test cases > TC7: default bagSizeKg is 25 1ms
+ ✓ src/calculators/__tests__/slc.test.ts > calculateSLC — spec test cases > TC8: custom bagSize=20 gives more bags than default 25 1ms
+ ✓ src/calculators/__tests__/slc.test.ts > calculateSLC — validation > throws for zero area 3ms
+ ✓ src/calculators/__tests__/slc.test.ts > calculateSLC — validation > throws for negative area 3ms
+ ✓ src/calculators/__tests__/slc.test.ts > calculateSLC — validation > throws for zero depth 1ms
+ ✓ src/calculators/__tests__/slc.test.ts > calculateSLC — validation > throws for negative depth 1ms
+ ✓ src/calculators/__tests__/slc.test.ts > calculateSLC — validation > throws for zero bag size 1ms
+ ✓ src/calculators/__tests__/padstones.test.ts > calculatePadstone() > TC1: quantity=2, supreme-padstone-215x140x102 → padstonesNeeded=2 4ms
+ ✓ src/calculators/__tests__/padstones.test.ts > calculatePadstone() > TC2: unknown productId → throws descriptive error 4ms
+ ✓ src/calculators/__tests__/padstones.test.ts > calculatePadstone() > TC3: materials has 1 entry, unit=each, quantity matches input 3ms
+ ✓ src/calculators/__tests__/primitives.test.ts > roundUp > rounds up to 2 decimal places by default 3ms
+ ✓ src/calculators/__tests__/primitives.test.ts > roundUp > returns the same value when already exact at that precision 2ms
+ ✓ src/calculators/__tests__/primitives.test.ts > roundUp > rounds up to 1 decimal place 1ms
+ ✓ src/calculators/__tests__/primitives.test.ts > roundUp > rounds up to 0 decimal places (whole number ceiling) 1ms
+ ✓ src/calculators/__tests__/primitives.test.ts > roundUp > handles zero 1ms
+ ✓ src/calculators/__tests__/primitives.test.ts > roundUp > leaves whole numbers unchanged 1ms
+ ✓ src/calculators/__tests__/primitives.test.ts > roundUp > handles values that are already at max precision 0ms
+ ✓ src/calculators/__tests__/primitives.test.ts > ceilToWhole > rounds fractional values up to next whole number 2ms
+ ✓ src/calculators/__tests__/primitives.test.ts > ceilToWhole > leaves whole numbers unchanged 1ms
+ ✓ src/calculators/__tests__/primitives.test.ts > ceilToWhole > handles zero 1ms
+ ✓ src/calculators/__tests__/primitives.test.ts > ceilToWhole > handles values just under a whole number 1ms
+ ✓ src/calculators/__tests__/primitives.test.ts > applyWaste > adds 10% waste to a quantity 2ms
+ ✓ src/calculators/__tests__/primitives.test.ts > applyWaste > adds 15% waste 1ms
+ ✓ src/calculators/__tests__/primitives.test.ts > applyWaste > applies zero waste (returns quantity unchanged) 1ms
+ ✓ src/calculators/__tests__/primitives.test.ts > applyWaste > handles fractional results 2ms
+ ✓ src/calculators/__tests__/primitives.test.ts > applyWaste > handles 100% waste (doubles the quantity) 0ms
+ ✓ src/calculators/__tests__/primitives.test.ts > packsNeeded > returns exact count when evenly divisible 1ms
+ ✓ src/calculators/__tests__/primitives.test.ts > packsNeeded > rounds up when not evenly divisible 0ms
+ ✓ src/calculators/__tests__/primitives.test.ts > packsNeeded > returns 0 when quantity is 0 0ms
+ ✓ src/calculators/__tests__/primitives.test.ts > packsNeeded > works with pack size of 1 0ms
+ ✓ src/calculators/__tests__/primitives.test.ts > packsNeeded > works with large numbers 0ms
+ ✓ src/calculators/__tests__/primitives.test.ts > areaMSquared > multiplies length by width 0ms
+ ✓ src/calculators/__tests__/primitives.test.ts > areaMSquared > handles fractional dimensions 0ms
+ ✓ src/calculators/__tests__/primitives.test.ts > areaMSquared > returns 0 when either dimension is 0 0ms
+ ✓ src/calculators/__tests__/primitives.test.ts > areaMSquared > handles non-integer square areas 0ms
+ ✓ src/calculators/__tests__/primitives.test.ts > volumeMCubed > computes volume converting depth from mm to m 1ms
+ ✓ src/calculators/__tests__/primitives.test.ts > volumeMCubed > handles shallow depths 1ms
+ ✓ src/calculators/__tests__/primitives.test.ts > volumeMCubed > returns 0 when depth is 0 0ms
+ ✓ src/calculators/__tests__/primitives.test.ts > volumeMCubed > handles a typical floor screed scenario 0ms
+ ✓ src/calculators/__tests__/primitives.test.ts > mmToM > converts 1000 mm to 1 m 0ms
+ ✓ src/calculators/__tests__/primitives.test.ts > mmToM > converts 100 mm to 0.1 m 0ms
+ ✓ src/calculators/__tests__/primitives.test.ts > mmToM > converts 1 mm to 0.001 m 0ms
+ ✓ src/calculators/__tests__/primitives.test.ts > mmToM > converts 0 mm to 0 m 1ms
+ ✓ src/calculators/__tests__/primitives.test.ts > mmToM > converts common tile dimensions 0ms
+ ✓ src/calculators/__tests__/primitives.test.ts > mToMm > converts 1 m to 1000 mm 0ms
+ ✓ src/calculators/__tests__/primitives.test.ts > mToMm > converts 0.1 m to 100 mm 0ms
+ ✓ src/calculators/__tests__/primitives.test.ts > mToMm > converts 2.5 m to 2500 mm 0ms
+ ✓ src/calculators/__tests__/primitives.test.ts > mToMm > converts 0 m to 0 mm 0ms
+ ✓ src/calculators/__tests__/primitives.test.ts > mToMm > is the inverse of mmToM 0ms
+ ✓ src/calculators/__tests__/adhesive.test.ts > calculateAdhesive — spec test cases > TC1: Adesilex P9, 12m², 300×300mm, wall-dry → 30kg, 2×20kg bags 11ms
+ ✓ src/calculators/__tests__/adhesive.test.ts > calculateAdhesive — spec test cases > TC2: Adesilex P9, 12m², 600×600mm, floor-wet → 48kg, 3 bags 3ms
+ ✓ src/calculators/__tests__/adhesive.test.ts > calculateAdhesive — spec test cases > TC3: CX-24, 20m², 300×300mm, floor-dry → 70kg, 4 bags 1ms
+ ✓ src/calculators/__tests__/adhesive.test.ts > calculateAdhesive — spec test cases > TC4: Keraflex Maxi S1, 10m², bedDepthMm=6 → 72kg, 4 bags 2ms
+ ✓ src/calculators/__tests__/adhesive.test.ts > calculateAdhesive — spec test cases > TC5: RX-3000 on floor → "wall" warning, still computes (30kg, 2×15kg bags) 2ms
+ ✓ src/calculators/__tests__/adhesive.test.ts > calculateAdhesive — spec test cases > TC6: Fast Set Plus, 450×450mm tile → max-tile warning (mentions "330") 1ms
+ ✓ src/calculators/__tests__/adhesive.test.ts > calculateAdhesive — spec test cases > TC7: Ultralite D2 on floor → "wall" warning 1ms
+ ✓ src/calculators/__tests__/adhesive.test.ts > calculateAdhesive — spec test cases > throws for unknown productId 2ms
+ ✓ src/calculators/__tests__/adhesive.test.ts > calculateAdhesiveByBedDepth > scales linearly at 6mm (double the 3mm base) 1ms
+ ✓ src/calculators/__tests__/adhesive.test.ts > calculateAdhesiveByBedDepth > returns base coverage unchanged at 3mm bed depth 8ms
+ ✓ src/calculators/__tests__/adhesive.test.ts > calculateAdhesiveByBedDepth > throws for zero bed depth 1ms
+ ✓ src/calculators/__tests__/adhesive.test.ts > calculateAdhesiveByBedDepth > throws for negative wastage 1ms
+ ✓ src/test/homepage-search.test.ts > Homepage Search Filtering > Empty search query > should return all items when query is empty 9ms
+ ✓ src/test/homepage-search.test.ts > Homepage Search Filtering > Empty search query > should return all items when query is whitespace only 1ms
+ ✓ src/test/homepage-search.test.ts > Homepage Search Filtering > Search by calculator name > should find calculator by exact name match 1ms
+ ✓ src/test/homepage-search.test.ts > Homepage Search Filtering > Search by calculator name > should find calculator by partial name match (case insensitive) 2ms
+ ✓ src/test/homepage-search.test.ts > Homepage Search Filtering > Search by calculator name > should find calculator by partial name 1ms
+ ✓ src/test/homepage-search.test.ts > Homepage Search Filtering > Search by calculator description > should find calculator by keyword in description 1ms
+ ✓ src/test/homepage-search.test.ts > Homepage Search Filtering > Search by calculator description > should find calculator by material keyword 2ms
+ ✓ src/test/homepage-search.test.ts > Homepage Search Filtering > Search by calculator description > should find Unit Converter by material keyword 1ms
+ ✓ src/test/homepage-search.test.ts > Homepage Search Filtering > No results > should return empty array for non-matching query 1ms
+ ✓ src/test/homepage-search.test.ts > Homepage Search Filtering > No results > should return empty array for query that matches nothing 1ms
+ ✓ src/test/homepage-search.test.ts > Homepage Search Filtering > Case insensitivity > should match query regardless of case 2ms
+ ✓ src/test/homepage-search.test.ts > Homepage Search Filtering > Multiple word searches > should find items matching any word in the query 1ms
+ ✓ src/test/homepage-search.test.ts > Homepage Search Filtering > Special characters and whitespace > should trim leading and trailing whitespace 1ms
+ ✓ src/test/homepage-search.test.ts > Homepage Search Filtering > Special characters and whitespace > should handle ampersand in Concrete & Groundworks 0ms
+ ✓ src/calculators/__tests__/spacers.test.ts > calculateSpacers — spec test cases > TC1: 134 tiles, 3mm, straight, pack=250 → 402 spacers, 2 packs 13ms
+ ✓ src/calculators/__tests__/spacers.test.ts > calculateSpacers — spec test cases > TC2: 134 tiles, 2mm, straight, pack=1500 → 402 spacers, 1 pack 1ms
+ ✓ src/calculators/__tests__/spacers.test.ts > calculateSpacers — spec test cases > TC3: 50 tiles, 5mm, diagonal, pack=250 → 200 spacers, 1 pack 1ms
+ ✓ src/calculators/__tests__/spacers.test.ts > calculateSpacers — spec test cases > TC4: zero tiles → throws 2ms
+ ✓ src/calculators/__tests__/spacers.test.ts > calculateSpacers — validation + pattern coverage > brick-bond uses 3 spacers per tile 1ms
+ ✓ src/calculators/__tests__/spacers.test.ts > calculateSpacers — validation + pattern coverage > herringbone uses 4 spacers per tile 1ms
+ ✓ src/calculators/__tests__/spacers.test.ts > calculateSpacers — validation + pattern coverage > throws for zero pack size 1ms
+ ✓ src/calculators/__tests__/spacers.test.ts > calculateSpacers — validation + pattern coverage > materials array has 1 entry with correct spacer size label 1ms
+ ✓ src/calculators/__tests__/flooring-room.test.ts > calculateFlooringRoom — Scenario A: Small room, engineered > returns correct packs, underlay, scotia, and threshold 15ms
+ ✓ src/calculators/__tests__/flooring-room.test.ts > calculateFlooringRoom — Scenario B: Large room, laminate > returns correct packs, underlay, scotia, and thresholds 2ms
+ ✓ src/calculators/__tests__/flooring-room.test.ts > calculateFlooringRoom — Scenario C: Room, LVT > returns correct packs, no underlay, no adhesive, scotia, threshold 2ms
+ ✓ src/calculators/__tests__/flooring-room.test.ts > calculateFlooringRoom — Scenario D: L-shaped room, solid wood glue-down > returns correct packs, adhesive, no underlay, scotia, thresholds 11ms
+ ✓ src/calculators/__tests__/flooring-room.test.ts > calculateFlooringRoom — defaults > solid-wood floating defaults to underlay=true, adhesive=false 1ms
+ ✓ src/calculators/__tests__/flooring-room.test.ts > calculateFlooringRoom — defaults > doorwayCount defaults to 1 1ms
+ ✓ src/calculators/__tests__/flooring-room.test.ts > calculateFlooringRoom — defaults > totalMaterials merges flooring packs and ancillaries 1ms
+ ✓ src/calculators/registry.test.ts > CALCULATOR_REGISTRY > exports a non-empty array 4ms
+ ✓ src/calculators/registry.test.ts > CALCULATOR_REGISTRY > every entry has the required CalculatorMeta fields 10ms
+ ✓ src/calculators/registry.test.ts > CALCULATOR_REGISTRY > every category value is "project" or "handy" 1ms
+ ✓ src/calculators/registry.test.ts > CALCULATOR_REGISTRY > every status value is "live" or "coming-soon" 1ms
+ ✓ src/calculators/registry.test.ts > CALCULATOR_REGISTRY > comingSoon flag is consistent with status 3ms
+ ✓ src/calculators/registry.test.ts > CALCULATOR_REGISTRY > all id and slug values are unique 1ms
+ ✓ src/calculators/registry.test.ts > CALCULATOR_REGISTRY > icon paths (when present) reference SVG files that exist in public/images/hero/ 2ms
+ ✓ src/calculators/registry.test.ts > CALCULATOR_REGISTRY — known entries > includes the tiling project calculator 1ms
+ ✓ src/calculators/registry.test.ts > CALCULATOR_REGISTRY — known entries > includes at least 5 project calculators (1 live + 4 coming-soon) 1ms
+ ✓ src/calculators/registry.test.ts > CALCULATOR_REGISTRY — known entries > includes the unit-converter handy calculator 1ms
+ ✓ src/calculators/registry.test.ts > CALCULATOR_REGISTRY — known entries > includes the board-coverage handy calculator 1ms
+ ✓ src/calculators/registry.test.ts > CALCULATOR_REGISTRY — known entries > includes at least 3 handy calculators 0ms
+ ✓ src/calculators/registry.test.ts > PROJECT_CALCULATORS > contains only project-category entries 1ms
+ ✓ src/calculators/registry.test.ts > PROJECT_CALCULATORS > is a subset of CALCULATOR_REGISTRY 1ms
+ ✓ src/calculators/registry.test.ts > HANDY_CALCULATORS > contains only handy-category entries 1ms
+ ✓ src/calculators/registry.test.ts > HANDY_CALCULATORS > PROJECT_CALCULATORS and HANDY_CALCULATORS together equal CALCULATOR_REGISTRY 1ms
+ ✓ src/calculators/registry.test.ts > LIVE_CALCULATORS > contains only live-status entries 1ms
+ ✓ src/calculators/registry.test.ts > LIVE_CALCULATORS > contains no coming-soon entries 1ms
+ ✓ src/calculators/registry.test.ts > getCalculatorById > returns the correct entry for a known id 1ms
+ ✓ src/calculators/registry.test.ts > getCalculatorById > returns undefined for an unknown id 0ms
+ ✓ src/calculators/registry.test.ts > getCalculatorById > finds coming-soon entries too 0ms
+ ✓ src/calculators/__tests__/flooring.test.ts > calculateFlooring — core calculation > TC1: 12 m², engineered, 2.13 m²/pack, brick-bond (10%) → 7 packs 6ms
+ ✓ src/calculators/__tests__/flooring.test.ts > calculateFlooring — core calculation > TC2: 30 m², laminate, 2.2 m²/pack, straight (5%) → 15 packs 2ms
+ ✓ src/calculators/__tests__/flooring.test.ts > calculateFlooring — core calculation > TC3: 16 m², lvt, 3.0 m²/pack, brick-bond (10%) → 6 packs 1ms
+ ✓ src/calculators/__tests__/flooring.test.ts > calculateFlooring — core calculation > TC4: 20 m², solid-wood, 1.5 m²/pack, herringbone (15%) → 16 packs 1ms
+ ✓ src/calculators/__tests__/flooring.test.ts > calculateFlooring — core calculation > TC5: 25 m², engineered, 2.5 m²/pack, diagonal (15%) → 12 packs 1ms
+ ✓ src/calculators/__tests__/flooring.test.ts > calculateFlooring — core calculation > TC6: zero area → 0 packs 1ms
+ ✓ src/calculators/__tests__/flooring.test.ts > calculateFlooring — core calculation > TC7: invalid flooring type → throws 2ms
+ ✓ src/calculators/__tests__/flooring.test.ts > calculateFlooring — core calculation > TC8: coveragePerPackM2 <= 0 → throws 38ms
+ ✓ src/calculators/__tests__/flooring.test.ts > calculateFlooring — defaults > TC9: engineered with no pattern → defaults to brick-bond (10%) 1ms
+ ✓ src/calculators/__tests__/flooring.test.ts > calculateFlooring — defaults > TC10: lvt with no pattern → defaults to brick-bond (10%) 1ms
+ ✓ src/calculators/__tests__/flooring.test.ts > calculateFlooring — defaults > TC11: solid-wood with no pattern → defaults to brick-bond (10%) 1ms
+ ✓ src/calculators/__tests__/flooring.test.ts > calculateFlooring — defaults > TC12: laminate with no pattern → defaults to brick-bond (10%) 1ms
+ ✓ src/calculators/__tests__/flooring.test.ts > calculateFlooring — output shape > TC13: returns materials array with flooring entry 3ms
+ ✓ src/calculators/__tests__/flooring.test.ts > calculateFlooring — output shape > TC14: result includes grossAreaM2, netAreaM2, wastagePercent, layingPattern 2ms
+ ✓ src/calculators/__tests__/wall-ties.test.ts > calculateWallTies() > TC1: 24 m² wall, 75mm cavity → 60 ties, 225mm tie 12ms
+ ✓ src/calculators/__tests__/wall-ties.test.ts > calculateWallTies() > TC2: 10 m² wall, 50mm cavity → 25 ties, 200mm tie 1ms
+ ✓ src/calculators/__tests__/wall-ties.test.ts > calculateWallTies() > TC3: 60 ties, pack of 50 → 2 packs; pack of 250 → 1 pack 4ms
+ ✓ src/calculators/__tests__/wall-ties.test.ts > calculateWallTies() > TC4: cavity 50mm → wall-tie-200-50-75; cavity 100mm → wall-tie-250-100-125 1ms
+ ✓ src/calculators/__tests__/wall-ties.test.ts > calculateWallTies() > TC5: cavity 200mm → throws descriptive error 4ms
+ ✓ src/calculators/__tests__/wall-ties.test.ts > calculateWallTies() > TC6: materials has 1 entry with correct shape 4ms
+ ✓ src/projects/tiling-suggestions.test.ts > TILING_SUGGESTIONS > exports at least 10 suggestions 4ms
+ ✓ src/projects/tiling-suggestions.test.ts > TILING_SUGGESTIONS > each suggestion has item and description strings 6ms
+ ✓ src/projects/tiling-suggestions.test.ts > TILING_SUGGESTIONS > includes tile cutter, spirit level, and silicone sealant 4ms
+ ✓ src/calculators/__tests__/board-coverage.test.ts > calculateBoardCoverage — preset mode > TC1: 10 m², 2400×1200 (2.88 m²/board), 10% waste → 4 boards 5ms
+ ✓ src/calculators/__tests__/board-coverage.test.ts > calculateBoardCoverage — preset mode > TC2: 24 m², 2400×1200, 10% waste → 10 boards 1ms
+ ✓ src/calculators/__tests__/board-coverage.test.ts > calculateBoardCoverage — preset mode > TC3: 10 m², 1200×600 (0.72 m²/board), 5% waste → 15 boards 2ms
+ ✓ src/calculators/__tests__/board-coverage.test.ts > calculateBoardCoverage — preset mode > TC4: 24 m², 2440×600 (1.464 m²/sheet), 5% waste → 18 sheets 2ms
+ ✓ src/calculators/__tests__/board-coverage.test.ts > calculateBoardCoverage — preset mode > TC5: zero area → 0 boards (no throw) 1ms
+ ✓ src/calculators/__tests__/board-coverage.test.ts > calculateBoardCoverage — preset mode > TC6: invalid preset ID → throws descriptive error 4ms
+ ✓ src/calculators/__tests__/board-coverage.test.ts > calculateBoardCoverage — custom mode > TC7: 10 m², custom 2400×1200mm, 10% waste → 4 boards 1ms
+ ✓ src/calculators/__tests__/board-coverage.test.ts > calculateBoardCoverage — custom mode > TC8: 10 m², custom 1000×500mm (0.5 m²/board), 0% waste → 20 boards 1ms
+ ✓ src/calculators/__tests__/board-coverage.test.ts > calculateBoardCoverage — custom mode > TC9: customLabel present → boardLabel matches 1ms
+ ✓ src/calculators/__tests__/board-coverage.test.ts > calculateBoardCoverage — custom mode > TC10: no customLabel → auto-generated label 1ms
+ ✓ src/calculators/__tests__/board-coverage.test.ts > calculateBoardCoverage — result shape > TC11: materials array has correct material, quantity, and unit 2ms
+ ✓ src/calculators/__tests__/board-coverage.test.ts > calculateBoardCoverage — result shape > TC12: grossAreaM2 includes waste; netAreaM2 is original area 1ms
+ ✓ src/calculators/__tests__/board-coverage.test.ts > board-presets module > TC13: getPresetById returns correct preset 1ms
+ ✓ src/calculators/__tests__/board-coverage.test.ts > board-presets module > TC14: getPresetById returns undefined for unknown ID 0ms
+ ✓ src/calculators/__tests__/board-coverage.test.ts > board-presets module > TC15: every preset coverageM2 equals lengthMm × widthMm / 1_000_000 24ms
+ ✓ src/calculators/__tests__/board-coverage.test.ts > board-presets module > TC16: all preset IDs are unique 5ms
+ ✓ src/calculators/__tests__/board-coverage.test.ts > board-presets module > TC17: getBoardDimensions resolves preset and custom correctly 8ms
+ ✓ src/calculators/__tests__/primer.test.ts > calculatePrimer — spec test cases > TC1: Mapei Primer G, 5m², 1 coat → 1kg needed, 1×5kg pack 15ms
+ ✓ src/calculators/__tests__/primer.test.ts > calculatePrimer — spec test cases > TC2: Mapei Primer G, 25m², 1 coat → 5kg needed, 1×5kg pack (exact) 4ms
+ ✓ src/calculators/__tests__/primer.test.ts > calculatePrimer — spec test cases > TC3: Mapei Primer G, 30m², 1 coat → 6kg needed, 2×5kg packs 1ms
+ ✓ src/calculators/__tests__/primer.test.ts > calculatePrimer — spec test cases > TC4: Dunlop Multi-Purpose Primer, 20m², neat → 2kg, 2×1kg packs 7ms
+ ✓ src/calculators/__tests__/primer.test.ts > calculatePrimer — spec test cases > TC5: Dunlop Multi-Purpose Primer, 20m², diluted → 1kg, 1 pack 1ms
+ ✓ src/calculators/__tests__/primer.test.ts > calculatePrimer — spec test cases > TC6: 2 coats doubles consumption 1ms
+ ✓ src/calculators/__tests__/primer.test.ts > calculatePrimer — spec test cases > TC7: default coats=1 gives same result as explicit coats=1 5ms
+ ✓ src/calculators/__tests__/primer.test.ts > calculatePrimer — spec test cases > TC8: materials[0].material contains brand 1ms
+ ✓ src/calculators/__tests__/primer.test.ts > calculatePrimer — spec test cases > TC9: Dunlop Universal Bonding Agent, 12m² neat → 1kg, 1×5kg pack 1ms
+ ✓ src/calculators/__tests__/primer.test.ts > calculatePrimer — spec test cases > TC10: Dunlop Universal Bonding Agent, diluted (slurry) → 3 m²/kg rate 1ms
+ ✓ src/calculators/__tests__/primer.test.ts > calculatePrimer — validation > throws for unknown productId 3ms
+ ✓ src/calculators/__tests__/primer.test.ts > calculatePrimer — validation > throws for zero area 1ms
+ ✓ src/calculators/__tests__/primer.test.ts > calculatePrimer — validation > throws for negative area 1ms
+ ✓ src/calculators/__tests__/primer.test.ts > calculatePrimer — validation > throws for zero coats 1ms
+ ✓ src/calculators/__tests__/bricks.test.ts > calculateBricks() > TC1: 65mm brick, 10 m², 10% → 660 bricks, 2 packs 6ms
+ ✓ src/calculators/__tests__/bricks.test.ts > calculateBricks() > TC2: 73mm brick, 10 m², 10% → 550 bricks 2ms
+ ✓ src/calculators/__tests__/bricks.test.ts > calculateBricks() > TC3: 68mm brick, 10 m², 5% → 588 bricks 1ms
+ ✓ src/calculators/__tests__/bricks.test.ts > calculateBricks() > TC4: zero area → 0 bricks, 0 packs 1ms
+ ✓ src/calculators/__tests__/bricks.test.ts > calculateBricks() > TC5: product lookup returns correct bricksPerM2 1ms
+ ✓ src/calculators/__tests__/bricks.test.ts > calculateBricks() > TC6: invalid productId throws descriptive error 5ms
+ ✓ src/calculators/__tests__/bricks.test.ts > calculateBricks() > TC7: 50 m², 10% → 3300 bricks, 9 packs 1ms
+ ✓ src/calculators/__tests__/bricks.test.ts > calculateBricks() > TC8: flemish bond emits mortar consumption warning, same brick count as stretcher 1ms
+ ✓ src/calculators/__tests__/bricks.test.ts > calculateBricks() > TC9: materials array contains bricks entry with correct fields 2ms
+ ✓ src/calculators/__tests__/decking-fixings.test.ts > calculateDeckingFixings — fixings quantity calculations > TC1: 27 boards, 3600mm length, 400mm joist spacing, face-fix, pack=200, 10% waste → 594 screws 15ms
+ ✓ src/calculators/__tests__/decking-fixings.test.ts > calculateDeckingFixings — fixings quantity calculations > TC2: 27 boards, 3600mm, 400mm spacing, hidden-clips, pack=100, 10% waste → 297 clips 2ms
+ ✓ src/calculators/__tests__/decking-fixings.test.ts > calculateDeckingFixings — fixings quantity calculations > TC3: 37 boards, 4800mm, 450mm spacing, face-fix, pack=600, 10% waste → 898 screws 1ms
+ ✓ src/calculators/__tests__/decking-fixings.test.ts > calculateDeckingFixings — fixings quantity calculations > TC4: 0% wastage — no rounding artefacts 1ms
+ ✓ src/calculators/__tests__/decking-fixings.test.ts > calculateDeckingFixings — fixings quantity calculations > TC5: throws on zero joist spacing 2ms
+ ✓ scripts/lint-css-tokens.test.mjs > extractDefinitions > extracts definitions from @theme / :root content 8ms
+ ✓ scripts/lint-css-tokens.test.mjs > extractDefinitions > does NOT treat a var() value as a definition 1ms
+ ✓ scripts/lint-css-tokens.test.mjs > extractDefinitions > handles Tailwind v4 companion line-height tokens (double-dash in name) 2ms
+ ✓ scripts/lint-css-tokens.test.mjs > extractReferences > extracts standard var() references 1ms
+ ✓ scripts/lint-css-tokens.test.mjs > extractReferences > extracts Tailwind v4 arbitrary CSS-variable references 1ms
+ ✓ scripts/lint-css-tokens.test.mjs > extractReferences > does NOT extract Tailwind @apply utility class names as token references 1ms
+ ✓ scripts/lint-css-tokens.test.mjs > extractReferences > handles Tailwind opacity modifier syntax: [--token]/30 1ms
+ ✓ scripts/lint-css-tokens.test.mjs > getDefinitionContent > returns full content unchanged for .css files 1ms
+ ✓ scripts/lint-css-tokens.test.mjs > getDefinitionContent > returns full content unchanged for .tsx files 1ms
+ ✓ scripts/lint-css-tokens.test.mjs > getDefinitionContent > returns only <style> block content for .astro files 1ms
+ ✓ scripts/lint-css-tokens.test.mjs > getDefinitionContent > returns empty string for .astro files with no <style> block 1ms
+ ✓ scripts/lint-css-tokens.test.mjs > getDefinitionContent > concatenates content from multiple <style> blocks in a single .astro file 1ms
+ ✓ scripts/lint-css-tokens.test.mjs > findUndefinedTokens > returns empty map when all referenced tokens are defined 2ms
+ ✓ scripts/lint-css-tokens.test.mjs > findUndefinedTokens > returns a map entry for each undefined token with its source files 4ms
+ ✓ scripts/lint-css-tokens.test.mjs > findUndefinedTokens > flags multiple undefined tokens independently 0ms
+ ✓ src/calculators/__tests__/backer-board.test.ts > calculateBackerBoard — spec test cases > TC1: HardieBacker 6mm, 12m², 10% waste → 14 boards (sold individually) 13ms
+ ✓ src/calculators/__tests__/backer-board.test.ts > calculateBackerBoard — spec test cases > TC2: Jackoboard Plano 6mm, 12m², 10% waste → 19 boards 4ms
+ ✓ src/calculators/__tests__/backer-board.test.ts > calculateBackerBoard — spec test cases > TC3: Flexel ECOMAX 6mm, 12m², 10% waste → 19 boards → 4 packs 2ms
+ ✓ src/calculators/__tests__/backer-board.test.ts > calculateBackerBoard — spec test cases > TC4: HardieBacker 12mm, 4m², 5% waste → 5 boards 1ms
+ ✓ src/calculators/__tests__/backer-board.test.ts > calculateBackerBoard — spec test cases > default wastePercent = 10 when omitted 1ms
+ ✓ src/calculators/__tests__/backer-board.test.ts > calculateBackerBoard — spec test cases > Flexel warnings include "Do NOT mechanically fix" 1ms
+ ✓ src/calculators/__tests__/backer-board.test.ts > calculateBackerBoard — validation > throws for unknown productId 11ms
+ ✓ src/calculators/__tests__/backer-board.test.ts > calculateBackerBoard — validation > throws for zero area 2ms
+ ✓ src/calculators/__tests__/backer-board.test.ts > calculateBackerBoard — validation > throws for negative area 3ms
+ ✓ src/calculators/__tests__/cement.test.ts > calculateCement() > TC1: 40 kg cement, Rugby Premium 25 kg → 2 bags 5ms
+ ✓ src/calculators/__tests__/cement.test.ts > calculateCement() > TC2: 40 kg cement, Carlton 20 kg → 2 bags 2ms
+ ✓ src/calculators/__tests__/cement.test.ts > calculateCement() > TC3: 6 kg cement, Jetcem 6 kg → 1 bag 4ms
+ ✓ src/calculators/__tests__/cement.test.ts > calculateCement() > TC4: unknown productId throws descriptive error 2ms
+ ✓ src/calculators/__tests__/cement.test.ts > calculateCement() > TC5: materials array has correct shape 3ms
+ ✓ src/calculators/__tests__/decking.test.ts > calculateDecking — board quantity calculations > TC1: 12m², 135mm composite board, 3600mm length, 5mm gap, 10% waste, pack=1 → 27 boards 11ms
+ ✓ src/calculators/__tests__/decking.test.ts > calculateDecking — board quantity calculations > TC2: 20m², 120mm treated softwood, 4800mm length, 6mm gap, 10% waste, pack=1 → 35 boards 2ms
+ ✓ src/calculators/__tests__/decking.test.ts > calculateDecking — board quantity calculations > TC3: 9m², 150mm board, 3600mm length, 8mm gap, 10% waste, pack=5 → 4 packs (18 boards) 1ms
+ ✓ src/calculators/__tests__/decking.test.ts > calculateDecking — board quantity calculations > TC4: 6m², 100mm easi board, 3600mm length, 5mm gap, 15% waste, pack=1 → 19 boards 1ms
+ ✓ src/calculators/__tests__/decking.test.ts > calculateDecking — board quantity calculations > TC5: 25m², 135mm composite, 4800mm length, 5mm gap, 0% waste, pack=1 → 38 boards 1ms
+ ✓ src/calculators/__tests__/decking.test.ts > calculateDecking — board quantity calculations > TC6: zero area throws 4ms
+ ✓ src/calculators/__tests__/decking.test.ts > calculateDecking — board quantity calculations > TC7: negative board width throws 1ms
+ ✓ src/calculators/__tests__/decking.test.ts > calculateDecking — board quantity calculations > TC8: effectiveBoardWidthM is correctly computed in result 1ms
+ ✓ src/calculators/__tests__/mortar.test.ts > calculateMortar() > TC1: 10 m² brickwork, 1:3 → 0.12 m³ 10ms
+ ✓ src/calculators/__tests__/mortar.test.ts > calculateMortar() > TC2: 10 m² blockwork, 1:3 → 0.07 m³ 1ms
+ ✓ src/calculators/__tests__/mortar.test.ts > calculateMortar() > TC3: 0.12 m³ × 1,600 kg/m³ = 192 kg mortar weight 1ms
+ ✓ src/calculators/__tests__/mortar.test.ts > calculateMortar() > TC4: sand component 1:3 mix → 144 kg (75% of 0.12 m³ × 1,600) 1ms
+ ✓ src/calculators/__tests__/mortar.test.ts > calculateMortar() > TC5: cement component 1:3 mix → 45 kg (25% of 0.12 m³ × 1,500) 1ms
+ ✓ src/calculators/__tests__/mortar.test.ts > calculateMortar() > TC6: 1:4 mix → sand 153.6 kg, cement 36 kg 1ms
+ ✓ src/calculators/__tests__/mortar.test.ts > calculateMortar() > TC7: materials has 2 entries — sand and cement 3ms
+ ✓ src/calculators/__tests__/mortar.test.ts > calculateMortar() > TC8: zero area → zero mortar 1ms
+ ✓ src/calculators/__tests__/lintels.test.ts > calculateLintel() > TC1: 1200mm opening, concrete lintel-100 → lintelLengthMm=1500 5ms
+ ✓ src/calculators/__tests__/lintels.test.ts > calculateLintel() > TC2: 1200mm opening, IG L1/S75 steel cavity → lintelLengthMm=1500 1ms
+ ✓ src/calculators/__tests__/lintels.test.ts > calculateLintel() > TC3: unknown productId → throws descriptive error 3ms
+ ✓ src/calculators/__tests__/lintels.test.ts > calculateLintel() > TC4: materials has 1 entry, unit=each, quantity=1 2ms
+ ✓ src/calculators/__tests__/tiles.test.ts > calculateTiles — spec test cases > TC1: 3×4m, 300×300mm, 3mm gap, straight, pack=9 → 144 tiles, 16 packs 9ms
+ ✓ src/calculators/__tests__/tiles.test.ts > calculateTiles — spec test cases > TC2: 5×4m, 600×600mm, 3mm gap, straight → 61 tiles 1ms
+ ✓ src/calculators/__tests__/tiles.test.ts > calculateTiles — spec test cases > TC3: 2×2m, 100×100mm, 2mm gap, straight → 423 tiles 1ms
+ ✓ src/calculators/__tests__/tiles.test.ts > calculateTiles — spec test cases > TC4: 3×3m, 300×300mm, 3mm gap, diagonal (15% waste) → 113 tiles 1ms
+ ✓ src/calculators/__tests__/tiles.test.ts > calculateTiles — spec test cases > TC5: 2×2m, 300×300mm, 0mm gap, straight → 49 tiles 1ms
+ ✓ src/calculators/__tests__/tiles.test.ts > calculateTiles — spec test cases > TC6: areaM2=15, 300×300mm, 3mm gap, straight → 180 tiles 1ms
+ ✓ src/calculators/__tests__/tiles.test.ts > calculateTiles — spec test cases > TC7: TC1 repeated but packSize=25 → 6 packs 1ms
+ ✓ src/calculators/__tests__/tiles.test.ts > calculateTiles — validation > throws for zero tile length 2ms
+ ✓ src/calculators/__tests__/tiles.test.ts > calculateTiles — validation > throws for zero room dimensions (no override) 4ms
+ ✓ src/calculators/__tests__/tiles.test.ts > calculateTiles — validation > throws for zero areaM2 override 1ms
+ ✓ src/calculators/__tests__/tiles.test.ts > calculateTiles — validation > brick-bond uses 12% waste 1ms
+ ✓ src/calculators/__tests__/tiles.test.ts > calculateTiles — validation > herringbone uses 15% waste 1ms
+ ✓ src/calculators/__tests__/blocks.test.ts > calculateBlocks() > TC1: aerated 100mm, 10 m², 5% → 105 blocks 4ms
+ ✓ src/calculators/__tests__/blocks.test.ts > calculateBlocks() > TC2: dense 140mm, 24 m², 5% → 252 blocks 1ms
+ ✓ src/calculators/__tests__/blocks.test.ts > calculateBlocks() > TC3: zero area → 0 blocks 2ms
+ ✓ src/calculators/__tests__/blocks.test.ts > calculateBlocks() > TC4a: valid productId returns correct blocksPerM2 1ms
+ ✓ src/calculators/__tests__/blocks.test.ts > calculateBlocks() > TC4b: invalid productId throws descriptive error 5ms
+ ✓ src/calculators/__tests__/blocks.test.ts > calculateBlocks() > TC5: catalogue blocksPerM2=10 matches (440+10)×(215+10) mm² geometry 1ms
+ ✓ src/calculators/__tests__/blocks.test.ts > calculateBlocks() > TC6: materials array contains blocks entry with correct fields 2ms
+ ✓ src/calculators/__tests__/decking-project.test.ts > calculateDeckingProject — full project orchestration > TC1: 4×3m deck, 135mm composite boards, 3600mm, 5mm gap, 400mm joists, face-fix 10ms
+ ✓ src/calculators/__tests__/decking-project.test.ts > calculateDeckingProject — full project orchestration > TC2: hidden clips, no deck blocks — materials should have 3 entries 1ms
+ ✓ src/calculators/__tests__/decking-project.test.ts > calculateDeckingProject — full project orchestration > TC3: throws on zero dimensions 2ms
+ ✓ src/calculators/__tests__/decking-substructure.test.ts > calculateDeckingSubstructure — joist and deck block calculations > TC1: 4×3m deck, 400mm spacing, 3600mm stock joists, 1200mm supports, with blocks, 10% waste 5ms
+ ✓ src/calculators/__tests__/decking-substructure.test.ts > calculateDeckingSubstructure — joist and deck block calculations > TC2: 5×4m deck, 450mm spacing, 4800mm stock, no blocks, 10% waste 1ms
+ ✓ src/calculators/__tests__/decking-substructure.test.ts > calculateDeckingSubstructure — joist and deck block calculations > TC3: joist length exceeds stock length → multiple pieces per joist 6ms
+ ✓ src/calculators/__tests__/decking-substructure.test.ts > calculateDeckingSubstructure — joist and deck block calculations > TC4: throws on zero deck span 2ms
+ ✓ src/calculators/__tests__/decking-substructure.test.ts > calculateDeckingSubstructure — joist and deck block calculations > TC5: joist material line in materials array 1ms
+ ✓ src/calculators/__tests__/dpc.test.ts > calculateDPC() > TC1: 20m wall, 112mm DPC → 1 roll 5ms
+ ✓ src/calculators/__tests__/dpc.test.ts > calculateDPC() > TC2: 35m wall, 112mm DPC → 2 rolls 1ms
+ ✓ src/calculators/__tests__/dpc.test.ts > calculateDPC() > TC3: 102.5mm brick leaf → recommend dpc-polythene-112mm-30m 2ms
+ ✓ src/calculators/__tests__/dpc.test.ts > calculateDPC() > TC4: materials has 1 entry with correct shape 3ms
+ ✓ src/calculators/__tests__/cavity-trays.test.ts > calculateCavityTray() > TC1: quantity=1, manthorpe-type-e → traysNeeded=1 4ms
+ ✓ src/calculators/__tests__/cavity-trays.test.ts > calculateCavityTray() > TC2: quantity=3 → traysNeeded=3 1ms
+ ✓ src/calculators/__tests__/cavity-trays.test.ts > calculateCavityTray() > TC3: unknown productId → throws descriptive error 3ms
+ ✓ src/calculators/__tests__/cavity-trays.test.ts > calculateCavityTray() > TC4: materials has 1 entry, unit=each, quantity=traysNeeded 7ms
+ ✓ src/calculators/__tests__/air-bricks.test.ts > calculateAirBricks() > TC1: 10m wall → 23 air bricks 3ms
+ ✓ src/calculators/__tests__/air-bricks.test.ts > calculateAirBricks() > TC2: 4.5m wall → 10 air bricks 1ms
+ ✓ src/calculators/__tests__/air-bricks.test.ts > calculateAirBricks() > TC3: zero wall length → 0 air bricks 1ms
+ ✓ src/calculators/__tests__/air-bricks.test.ts > calculateAirBricks() > TC4: materials has 1 entry with correct shape 3ms
+ ✓ src/calculators/__tests__/sand.test.ts > calculateSand() > TC1: 110 kg, 35 kg bags → 4 packs 4ms
+ ✓ src/calculators/__tests__/sand.test.ts > calculateSand() > TC2: 110 kg, 875 kg jumbo → 1 pack 1ms
+ ✓ src/calculators/__tests__/sand.test.ts > calculateSand() > TC3: unknown productId throws descriptive error 1ms
+ ✓ src/calculators/__tests__/sand.test.ts > calculateSand() > TC4: materials array has correct shape 2ms
+ ✓ src/calculators/__tests__/cavity-closers.test.ts > calculateCavityCloser() > TC1: 1200×1200 opening, multicor-closer-50-100 → closersNeeded=2 3ms
+ ✓ src/calculators/__tests__/cavity-closers.test.ts > calculateCavityCloser() > TC2: unknown productId → throws descriptive error 2ms
+ ✓ src/calculators/__tests__/cavity-closers.test.ts > calculateCavityCloser() > TC3: materials has 1 entry, unit=each, quantity=closersNeeded 1ms
+
+ Test Files  52 passed (52)
+      Tests  515 passed (515)
+   Start at  21:17:06
+   Duration  29.90s (transform 4.21s, setup 26.17s, import 5.44s, tests 13.52s, environment 120.41s)
+
