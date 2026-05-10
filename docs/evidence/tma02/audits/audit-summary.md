@@ -1,7 +1,11 @@
-# Audit summary — 2026-05-09
+# Audit summary — 2026-05-09 (baseline) and 2026-05-10 (post-fix)
 
-Audit run on the live deploy at `https://sami.github.io/selco/` (HEAD
-`280b6bc`). Three tiers: automated greens, axe-core accessibility,
+Two audit passes against the live deploy at `https://sami.github.io/selco/`:
+
+- **Baseline (CC-02, HEAD `280b6bc`, 2026-05-09)** — sections 1–4 below.
+- **Post-fix (CC-03, HEAD `8394ff2`, 2026-05-10)** — section 5 below.
+
+Three tiers per pass: automated greens, axe-core accessibility,
 Lighthouse audit.
 
 ## Tier 1 — automated greens
@@ -97,3 +101,86 @@ npx --yes lighthouse https://sami.github.io/selco/ \
   --only-categories=performance,accessibility,best-practices,seo \
   --output=html --output-path=lh-report
 ```
+
+---
+
+## 5. Post-fix re-audit (CC-03, HEAD `8394ff2`, 2026-05-10)
+
+Four chrome-level fixes were applied as a single commit
+(`8394ff2`, branch `main`):
+
+1. **`button-name`** — `aria-label="Search (coming soon)"` on the
+   disabled header search button in `SelcoHeader.astro`. Icon
+   marked `aria-hidden`.
+2. **`link-name`** — `aria-label` per footer social-icon link in
+   `SelcoFooter.astro` (Facebook, Instagram, X / Twitter, LinkedIn,
+   YouTube — all marked "(placeholder)" since the hrefs are
+   currently `#`).
+3. **`heading-order`** — DEMO ONLY banner promoted from `<h4>` to
+   `<h3>` in `SelcoFooter.astro`. The actual offending sequence on
+   every page is `h2 "How it works" → h4 banner`; promoting to
+   `h3` makes that `h2 → h3` (clean +1 increment) and leaves the
+   following footer column h4s as `h3 → h4` (also clean).
+4. **`favicon`** — `<link rel="icon" type="image/svg+xml">` and
+   `<link rel="shortcut icon">` in `SelcoLayout.astro`, pointing at
+   `${base}selco-logo.svg` so the path remains correct under both
+   the `/selco/` GitHub Pages base and local dev.
+
+Out of scope for CC-03 (deferred to TMA 03): the remaining 80
+`color-contrast` violations (token-system change) and the mobile
+performance ceiling at 71–77 (render-blocking CSS, FontAwesome
+import).
+
+### Tier 1 — automated greens (post-fix)
+
+| Check | Result |
+|-------|--------|
+| `npm run build` | ✓ unchanged |
+| HTTP 200 on 7 live routes | ✓ all pass |
+| `npx vitest run --exclude '**/.worktrees/**'` | ✓ 52 files / 515 tests pass in 27.55 s — **identical** to baseline |
+
+### Tier 2 — axe before / after (WCAG 2 AA)
+
+| Route | Before | After | Δ |
+|-------|------:|------:|---:|
+| `/` | 15 | 9 | −6 |
+| `/tiling/` | 49 | 43 | −6 |
+| `/hard-flooring/` | 8 | 2 | −6 |
+| `/brick-wall/` | 9 | 3 | −6 |
+| `/decking/` | 22 | 16 | −6 |
+| `/unit-converter/` | 9 | 3 | −6 |
+| `/coverage/` | 10 | 4 | −6 |
+| **Total** | **122** | **80** | **−42** |
+
+Per page each lost the same six violations: 1 critical
+`button-name` + 5 serious `link-name`, all chrome-wide. **Zero
+critical violations remain on any page.** All 80 remaining
+violations are `color-contrast` (deferred).
+
+Raw post-fix output: `audits/axe-postfix/{01-home..07-board-coverage}.json`.
+
+### Tier 3 — Lighthouse before / after
+
+| Route | Perf (b → a) | A11y (b → a) | Best (b → a) | SEO (b → a) |
+|-------|:-----------:|:-----------:|:-----------:|:-----------:|
+| `/` | 71 → 77 | **83 → 96** | **96 → 100** | 100 → 100 |
+| `/tiling/` | 73 → 76 | **86 → 96** | **96 → 100** | 100 → 100 |
+| `/hard-flooring/` | 73 → 76 | **84 → 96** | **96 → 100** | 100 → 100 |
+| `/brick-wall/` | 73 → 77 | **84 → 96** | **96 → 100** | 100 → 100 |
+| `/decking/` | 76 → 76 | **85 → 96** | **96 → 100** | 100 → 100 |
+| `/unit-converter/` | 77 → 76 | **84 → 96** | **96 → 100** | 100 → 100 |
+| `/coverage/` | 76 → 87 | **83 → 96** | **96 → 100** | 100 → 100 |
+
+Targets:
+- A11y → 95+ on every route — **hit (96 across the board)**.
+- Best-practices → 100 on every route — **hit**.
+- Perf and SEO unchanged — **confirmed** (perf moved 0–11 points
+  within normal slow-4G simulation variance; SEO 100 throughout).
+
+The remaining a11y gap from 96 to 100 is the same `color-contrast`
+findings that remain in axe — Lighthouse uses axe-core internally
+for a11y rules, so the two reports agree. Closing the contrast gap
+will lift Lighthouse a11y to 100.
+
+Raw post-fix Lighthouse HTML reports:
+`audits/lighthouse-postfix/{01-home..07-board-coverage}.report.html`.
