@@ -4,7 +4,7 @@
  * Kitchen layout planner — concept engine.
  *
  * Takes a layout shape (galley / L-shape / U-shape) and wall lengths, packs
- * standard-width carcasses along each run, then prices worktops, plinths and
+ * standard-width carcasses along each run, then counts worktops, plinths and
  * trims. The fill algorithm mirrors how a fitter sets a kitchen out: corner
  * units claim their 900 mm first, the sink base and appliances take fixed
  * slots, and the remaining run is filled with the widest base units that fit,
@@ -199,7 +199,6 @@ export function calculateKitchen(input: KitchenInput): BillOfMaterials {
                       detail: 'inc. carousel hardware',
                       qty: corners.length,
                       unit: 'units',
-                      unitPrice: 185.0,
                   },
               ]
             : []),
@@ -208,7 +207,6 @@ export function calculateKitchen(input: KitchenInput): BillOfMaterials {
             name: 'Sink base unit, 1000 mm',
             qty: 1,
             unit: 'units',
-            unitPrice: 120.0,
         },
         ...BASE_WIDTHS_MM.filter((w) =>
             baseUnits.some((u) => u.widthMm === w),
@@ -217,7 +215,6 @@ export function calculateKitchen(input: KitchenInput): BillOfMaterials {
             name: `Base unit, ${w} mm`,
             qty: baseUnits.filter((u) => u.widthMm === w).length,
             unit: 'units',
-            unitPrice: 55 + w / 12,
         })),
         ...(plan.wallUnitCount
             ? [
@@ -226,7 +223,6 @@ export function calculateKitchen(input: KitchenInput): BillOfMaterials {
                       name: 'Wall unit, 600 mm',
                       qty: plan.wallUnitCount,
                       unit: 'units',
-                      unitPrice: 72.0,
                   },
               ]
             : []),
@@ -241,7 +237,6 @@ export function calculateKitchen(input: KitchenInput): BillOfMaterials {
             detail: '3 m × 600 mm × 38 mm',
             qty: worktopLengths,
             unit: 'lengths',
-            unitPrice: 89.0,
         },
         {
             id: 'plinth',
@@ -249,7 +244,6 @@ export function calculateKitchen(input: KitchenInput): BillOfMaterials {
             detail: '2.4 m × 150 mm',
             qty: units(plan.worktopMm / 2400),
             unit: 'lengths',
-            unitPrice: 24.0,
         },
         {
             id: 'worktop-bolts',
@@ -257,7 +251,6 @@ export function calculateKitchen(input: KitchenInput): BillOfMaterials {
             detail: 'pack of 3 — one pack per joint',
             qty: Math.max(0, worktopLengths - 1),
             unit: 'packs',
-            unitPrice: 4.5,
         },
         {
             id: 'legs',
@@ -265,7 +258,6 @@ export function calculateKitchen(input: KitchenInput): BillOfMaterials {
             detail: 'pack of 4',
             qty: plan.baseUnitCount,
             unit: 'packs',
-            unitPrice: 6.0,
         },
         {
             id: 'handles',
@@ -273,7 +265,6 @@ export function calculateKitchen(input: KitchenInput): BillOfMaterials {
             detail: 'brushed steel bar',
             qty: plan.baseUnitCount + plan.wallUnitCount,
             unit: 'handles',
-            unitPrice: 5.5,
         },
     ];
 
@@ -289,6 +280,14 @@ export function calculateKitchen(input: KitchenInput): BillOfMaterials {
         sections: [
             { title: 'Cabinets', lines: cabinetLines },
             { title: 'Worktops & finishing', lines: finishLines },
+        ],
+        tools: [
+            'Cordless drill driver + hole saw set for pipework and waste cut-outs',
+            'Worktop jig and 12.7 mm router cutter for mason mitre joints',
+            'Spirit level, stud detector and laser level for the wall unit line',
+            'Colour-fit worktop sealant and silicone — Everbuild Forever White for sink and upstands',
+            'Unit connector bolts, 40 mm woodscrews and wall-unit brackets',
+            'PTFE tape and flexible tap connectors for the plumbing reconnect',
         ],
         notes: [
             'Layout packed automatically: corners first, sink and appliance slots, then widest base units, finished with a filler strip.',

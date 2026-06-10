@@ -122,27 +122,24 @@ export function calculateGrass(input: GrassInput): BillOfMaterials {
     const grassLines: BomLine[] = [
         {
             id: 'grass',
-            name: 'Artificial grass, 30 mm pile',
+            name: 'Luxigraze 30 Luxury artificial grass',
             detail: `${plan.rollWidthM} m roll — ${plan.strips.length} strip${plan.strips.length === 1 ? '' : 's'} cut to length`,
             qty: Math.ceil(plan.boughtM2 * 10) / 10,
             unit: 'm²',
-            unitPrice: 17.5,
         },
         {
             id: 'membrane',
-            name: 'Weed control membrane',
+            name: 'Weedtex weed control membrane',
             detail: '1 m × 15 m roll',
             qty: units((lawnM2 * 1.1) / 15),
             unit: 'rolls',
-            unitPrice: 9.5,
         },
         {
             id: 'pins',
-            name: 'Galvanised fixing pins',
+            name: 'Galvanised turf fixing U-pins',
             detail: 'pack of 50 — one per 0.5 m of edge',
             qty: units(perimeterM / 0.5 / 50),
             unit: 'packs',
-            unitPrice: 8.0,
         },
     ];
 
@@ -150,19 +147,17 @@ export function calculateGrass(input: GrassInput): BillOfMaterials {
         grassLines.push(
             {
                 id: 'tape',
-                name: 'Joining tape',
+                name: 'Luxigraze self-adhesive joining tape',
                 detail: '150 mm × 10 m roll',
                 qty: units(plan.jointLengthM / 10),
                 unit: 'rolls',
-                unitPrice: 12.0,
             },
             {
                 id: 'adhesive',
-                name: 'Grass seam adhesive',
+                name: 'Artificial grass seam adhesive',
                 detail: '310 ml cartridge — covers ~3 m of seam',
                 qty: units(plan.jointLengthM / 3),
                 unit: 'tubes',
-                unitPrice: 7.5,
             },
         );
     }
@@ -171,21 +166,19 @@ export function calculateGrass(input: GrassInput): BillOfMaterials {
         ? [
               {
                   id: 'mot',
-                  name: 'MOT Type 1 sub-base',
+                  name: 'Hanson MOT Type 1 sub-base',
                   detail: 'bulk bag (~850 kg) — 50 mm compacted',
                   // 50 mm at ~2.2 t/m³ compacted ≈ 110 kg per m²
                   qty: units((lawnM2 * 0.05 * 2200) / 850),
                   unit: 'bulk bags',
-                  unitPrice: 52.0,
               },
               {
                   id: 'sharp-sand',
-                  name: 'Sharp sand laying course',
+                  name: 'Hanson sharp sand',
                   detail: 'bulk bag (~850 kg) — 25 mm bed',
                   // 25 mm at ~1.7 t/m³ ≈ 42.5 kg per m²
                   qty: units((lawnM2 * 0.025 * 1700) / 850),
                   unit: 'bulk bags',
-                  unitPrice: 48.0,
               },
           ]
         : [];
@@ -194,11 +187,10 @@ export function calculateGrass(input: GrassInput): BillOfMaterials {
         ? [
               {
                   id: 'infill',
-                  name: 'Kiln-dried sand infill',
+                  name: 'Kiln-dried paving sand (infill)',
                   detail: '25 kg bag — ~5 kg per m²',
                   qty: units((lawnM2 * 5) / 25),
                   unit: 'bags',
-                  unitPrice: 6.5,
               },
           ]
         : [];
@@ -218,6 +210,14 @@ export function calculateGrass(input: GrassInput): BillOfMaterials {
             { title: 'Grass & fixing', lines: grassLines },
             ...(groundLines.length ? [{ title: 'Groundworks', lines: groundLines }] : []),
             ...(finishLines.length ? [{ title: 'Finishing', lines: finishLines }] : []),
+        ],
+        tools: [
+            'Sharp utility knife + spare blades — one fresh blade per 10 m of cut',
+            'Turf cutter and wacker plate (hire) for the dig and compaction',
+            'Landscaping rake and screed bar for the sand bed',
+            'Stiff broom — brush the pile upright and work in the infill',
+            'Everbuild general purpose silicone — seal any edging upstands',
+            'Tape measure, string line and marking paint',
         ],
         notes: [
             'All strips laid with pile leaning the same way — towards the main viewpoint.',

@@ -18,13 +18,12 @@ export interface SlabFormat {
     label: string;
     wMm: number;
     hMm: number;
-    price: number;
 }
 
 export const SLAB_FORMATS: SlabFormat[] = [
-    { id: '450', label: '450 × 450 mm', wMm: 450, hMm: 450, price: 4.8 },
-    { id: '600', label: '600 × 600 mm', wMm: 600, hMm: 600, price: 9.5 },
-    { id: '900x600', label: '900 × 600 mm', wMm: 900, hMm: 600, price: 14.5 },
+    { id: '450', label: '450 × 450 mm', wMm: 450, hMm: 450 },
+    { id: '600', label: '600 × 600 mm', wMm: 600, hMm: 600 },
+    { id: '900x600', label: '900 × 600 mm', wMm: 900, hMm: 600 },
 ];
 
 export interface PatioInput {
@@ -73,54 +72,48 @@ export function calculatePatio(input: PatioInput): BillOfMaterials {
     const lines: BomLine[] = [
         {
             id: 'slabs',
-            name: `Paving slab, ${plan.slab.label}`,
+            name: `Bradstone paving slab, ${plan.slab.label}`,
             detail: `${plan.cols} × ${plan.rows} grid + ${input.wastePct}% cuts`,
             qty: plan.slabs,
             unit: 'slabs',
-            unitPrice: plan.slab.price,
         },
         {
             id: 'sharp-sand',
-            name: 'Sharp sand',
+            name: 'Hanson sharp sand',
             detail: 'bulk bag (~850 kg) — 30 mm bed',
             qty: units((sandT * 1000) / 850),
             unit: 'bulk bags',
-            unitPrice: 48.0,
         },
         {
             id: 'cement',
-            name: 'Cement',
+            name: 'Blue Circle Mastercrete cement',
             detail: '25 kg bag — 5:1 bed mix',
             qty: cementBags,
             unit: 'bags',
-            unitPrice: 5.8,
         },
         {
             id: 'jointing',
-            name: 'Brush-in jointing compound',
+            name: 'Sika FastFix jointing compound',
             detail: '15 kg tub — covers ~12 m²',
             qty: units(a / 12),
             unit: 'tubs',
-            unitPrice: 22.0,
         },
         {
             id: 'primer',
-            name: 'Slurry primer',
+            name: 'Ultrascape Pro-Prime slurry primer',
             detail: '5 kg — bonds slab to bed',
             qty: units(a / 15),
             unit: 'tubs',
-            unitPrice: 18.0,
         },
     ];
 
     if (input.includeSubBase) {
         lines.splice(1, 0, {
             id: 'mot',
-            name: 'MOT Type 1 sub-base',
+            name: 'Hanson MOT Type 1 sub-base',
             detail: 'bulk bag (~850 kg) — 100 mm compacted',
             qty: units((a * SUBBASE_M * 2200) / 850),
             unit: 'bulk bags',
-            unitPrice: 52.0,
         });
     }
 
@@ -128,11 +121,10 @@ export function calculatePatio(input: PatioInput): BillOfMaterials {
         const perimeterM = 2 * (input.widthM + input.lengthM);
         lines.push({
             id: 'edging',
-            name: 'Concrete edging stone',
+            name: 'Concrete round-top edging stone',
             detail: '915 × 150 × 50 mm',
             qty: units(perimeterM / 0.915),
             unit: 'stones',
-            unitPrice: 3.8,
         });
     }
 
@@ -144,6 +136,14 @@ export function calculatePatio(input: PatioInput): BillOfMaterials {
             { label: 'Total slabs', value: `${plan.slabs} inc. waste` },
         ],
         sections: [{ title: 'Paving', lines }],
+        tools: [
+            'Wacker plate (hire) for compacting the sub-base',
+            'Rubber mallet and 1.2 m spirit level for bedding slabs',
+            'Angle grinder + diamond blade for cuts (with dust suppression)',
+            'String line, pegs and a long straight edge for falls',
+            'Soft brush for the jointing compound',
+            'Knee pads and gloves — slabs are heavier than they look',
+        ],
         notes: [
             'Build-up: 100 mm compacted MOT Type 1, 30 mm full mortar bed (5:1), 10 mm joints.',
             'Fall of 1:80 away from the house assumed — adjust dig depth accordingly.',

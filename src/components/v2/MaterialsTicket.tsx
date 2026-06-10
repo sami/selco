@@ -2,25 +2,19 @@
  * @file src/components/v2/MaterialsTicket.tsx
  *
  * The "counter ticket" — renders any v2 BillOfMaterials as a trade-counter
- * style materials list with indicative pricing, a VAT toggle, and a
- * copy-to-clipboard action so the list can be pasted into a text or email.
+ * style materials list: quantities of named products, a tick-off tools and
+ * consumables checklist, and a copy-to-clipboard action so the list can be
+ * pasted into a text or email.
+ *
+ * Deliberately price-free: quantities first, product mapping and live
+ * branch pricing are a later phase.
  */
 
 import { useState } from 'react';
 import type { BillOfMaterials } from '../../calculators/v2/types';
-import { bomTotal } from '../../calculators/v2/types';
+import { bomLineCount } from '../../calculators/v2/types';
 
-const VAT_RATE = 0.2;
-
-function gbp(n: number): string {
-    return n.toLocaleString('en-GB', {
-        style: 'currency',
-        currency: 'GBP',
-        minimumFractionDigits: 2,
-    });
-}
-
-function ticketAsText(bom: BillOfMaterials, incVat: boolean): string {
+function ticketAsText(bom: BillOfMaterials): string {
     const lines: string[] = ['MATERIALS LIST', ''];
     for (const f of bom.facts) lines.push(`${f.label}: ${f.value}`);
     lines.push('');
@@ -31,23 +25,30 @@ function ticketAsText(bom: BillOfMaterials, incVat: boolean): string {
         }
         lines.push('');
     }
-    const total = bomTotal(bom) * (incVat ? 1 + VAT_RATE : 1);
-    lines.push(`Estimated total ${incVat ? 'inc' : 'ex'} VAT: ${gbp(total)}`);
-    lines.push('Indicative pricing — confirm at your local branch.');
+    if (bom.tools.length) {
+        lines.push('-- TOOLS & CONSUMABLES --');
+        for (const t of bom.tools) lines.push(`[ ] ${t}`);
+        lines.push('');
+    }
+    lines.push('Quantities are estimates — verify coverage and site conditions before ordering.');
     return lines.join('\n');
 }
 
 export default function MaterialsTicket({ bom }: { bom: BillOfMaterials }) {
-    const [incVat, setIncVat] = useState(false);
     const [copied, setCopied] = useState(false);
+    const [ticked, setTicked] = useState<Set<string>>(new Set());
 
-    const exVat = bomTotal(bom);
-    const shown = incVat ? exVat * (1 + VAT_RATE) : exVat;
-    const vatFactor = incVat ? 1 + VAT_RATE : 1;
+    const toggleTool = (t: string) =>
+        setTicked((prev) => {
+            const next = new Set(prev);
+            if (next.has(t)) next.delete(t);
+            else next.add(t);
+            return next;
+        });
 
     const copy = async () => {
         try {
-            await navigator.clipboard.writeText(ticketAsText(bom, incVat));
+            await navigator.clipboard.writeText(ticketAsText(bom));
             setCopied(true);
             setTimeout(() => setCopied(false), 2000);
         } catch {
@@ -106,15 +107,9 @@ export default function MaterialsTicket({ bom }: { bom: BillOfMaterials }) {
                                             </span>
                                         )}
                                     </div>
-                                    <div className="text-right shrink-0">
-                                        <span className="block text-sm font-bold text-brand-navy tabular-nums">
-                                            {l.qty} {l.unit}
-                                        </span>
-                                        <span className="block text-xs text-text-muted tabular-nums">
-                                            @ {gbp(l.unitPrice * vatFactor)} ·{' '}
-                                            {gbp(l.qty * l.unitPrice * vatFactor)}
-                                        </span>
-                                    </div>
+                                    <span className="shrink-0 text-sm font-bold text-brand-navy tabular-nums">
+                                        {l.qty} {l.unit}
+                                    </span>
                                 </li>
                             ))}
                         </ul>
@@ -122,37 +117,57 @@ export default function MaterialsTicket({ bom }: { bom: BillOfMaterials }) {
                 ))}
             </div>
 
-            {/* Total bar */}
-            <div className="flex flex-wrap items-center justify-between gap-3 px-5 py-4 bg-brand-navy">
-                <button
-                    type="button"
-                    role="switch"
-                    aria-checked={incVat}
-                    onClick={() => setIncVat(!incVat)}
-                    className="flex items-center gap-2 text-xs font-bold uppercase tracking-wider text-white/80 hover:text-white transition-colors cursor-pointer"
-                >
-                    <span
-                        aria-hidden="true"
-                        className={`relative w-9 h-5 rounded-full transition-colors ${
-                            incVat ? 'bg-brand-yellow' : 'bg-white/25'
-                        }`}
-                    >
-                        <span
-                            className={`absolute top-0.5 w-4 h-4 rounded-full bg-white shadow transition-all ${
-                                incVat ? 'left-[18px]' : 'left-0.5'
-                            }`}
-                        />
-                    </span>
-                    {incVat ? 'Inc VAT' : 'Ex VAT'}
-                </button>
-                <div className="text-right">
-                    <span className="block text-[0.65rem] font-bold uppercase tracking-wider text-white/70">
-                        Estimated total ({incVat ? 'inc' : 'ex'} VAT)
-                    </span>
-                    <span className="block text-2xl font-extrabold text-brand-yellow tabular-nums leading-tight">
-                        {gbp(shown)}
-                    </span>
+            {/* Tools & consumables checklist */}
+            {bom.tools.length > 0 && (
+                <div className="px-5 py-4 bg-brand-navy">
+                    <h3 className="flex items-center gap-2 text-[0.7rem] font-bold uppercase tracking-[0.15em] text-brand-yellow mb-2">
+                        <i className="fas fa-toolbox" aria-hidden="true"></i>
+                        Tools &amp; consumables — don't get caught short
+                    </h3>
+                    <ul className="m-0 p-0 list-none space-y-1">
+                        {bom.tools.map((t) => {
+                            const done = ticked.has(t);
+                            return (
+                                <li key={t}>
+                                    <button
+                                        type="button"
+                                        onClick={() => toggleTool(t)}
+                                        aria-pressed={done}
+                                        className="w-full flex items-start gap-2.5 py-1.5 text-left cursor-pointer group"
+                                    >
+                                        <span
+                                            aria-hidden="true"
+                                            className={`mt-0.5 shrink-0 w-4 h-4 rounded-sm border flex items-center justify-center text-[0.6rem] font-bold transition-colors ${
+                                                done
+                                                    ? 'bg-brand-yellow border-brand-yellow text-brand-navy'
+                                                    : 'border-white/40 text-transparent group-hover:border-brand-yellow'
+                                            }`}
+                                        >
+                                            ✓
+                                        </span>
+                                        <span
+                                            className={`text-xs leading-relaxed transition-colors ${
+                                                done ? 'text-white/45 line-through' : 'text-white/85'
+                                            }`}
+                                        >
+                                            {t}
+                                        </span>
+                                    </button>
+                                </li>
+                            );
+                        })}
+                    </ul>
                 </div>
+            )}
+
+            {/* Summary bar */}
+            <div className="flex flex-wrap items-center justify-between gap-2 px-5 py-3 bg-bg-page border-t border-border-default">
+                <span className="text-xs font-bold uppercase tracking-wider text-text-muted">
+                    {bomLineCount(bom)} order lines · {bom.tools.length} checklist items
+                </span>
+                <span className="text-xs text-text-muted">
+                    Take this list to your local branch or Click &amp; Deliver
+                </span>
             </div>
 
             {/* Notes */}
@@ -172,8 +187,8 @@ export default function MaterialsTicket({ bom }: { bom: BillOfMaterials }) {
                             aria-hidden="true"
                             className="absolute left-0 top-1 w-2 h-2 rounded-sm bg-brand-navy"
                         />
-                        Pricing is indicative, for concept demonstration only — confirm at
-                        your local branch.
+                        Quantities are estimates — verify product coverage and site
+                        conditions before ordering.
                     </li>
                 </ul>
             )}

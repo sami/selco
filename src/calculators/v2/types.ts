@@ -3,12 +3,12 @@
  *
  * Shared types for the v2 concept calculators.
  *
- * Every v2 engine returns a `BillOfMaterials` — a flat list of line items
- * with indicative unit prices — so the shared MaterialsTicket component can
- * render any calculator's output without per-calculator wiring.
+ * Every v2 engine returns a `BillOfMaterials` — product line items named
+ * after ranges SELCO stocks, plus a tools-and-consumables checklist — so
+ * the shared MaterialsTicket component can render any calculator's output
+ * without per-calculator wiring.
  *
- * Prices are indicative, for concept-demonstration only; they are NOT live
- * SELCO trade prices.
+ * Quantities only: product mapping and live pricing are a later phase.
  */
 
 /** One line on the bill of materials. */
@@ -23,8 +23,6 @@ export interface BomLine {
     qty: number;
     /** Sellable unit, e.g. "bags", "rolls", "lengths", "tubs". */
     unit: string;
-    /** Indicative price per unit in GBP (ex VAT). */
-    unitPrice: number;
 }
 
 /** A grouped section of the bill, e.g. "Groundworks" / "Finishing". */
@@ -38,15 +36,18 @@ export interface BillOfMaterials {
     sections: BomSection[];
     /** Headline facts shown above the ticket, e.g. "Lawn area 24.0 m²". */
     facts: Array<{ label: string; value: string }>;
+    /**
+     * Tools and consumables worth having for the job — own, buy or hire.
+     * Rendered as a tick-off checklist, not quantified order lines.
+     */
+    tools: string[];
     /** Practical site notes / assumptions the estimate relies on. */
     notes: string[];
 }
 
-/** Sum a bill's total in GBP (ex VAT). */
-export function bomTotal(bom: BillOfMaterials): number {
-    return bom.sections
-        .flatMap((s) => s.lines)
-        .reduce((sum, l) => sum + l.qty * l.unitPrice, 0);
+/** Count total order lines on a bill. */
+export function bomLineCount(bom: BillOfMaterials): number {
+    return bom.sections.reduce((sum, s) => sum + s.lines.length, 0);
 }
 
 /** Round a continuous requirement up to whole sellable units. */

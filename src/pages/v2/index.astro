@@ -1,6 +1,6 @@
 ---
 import SelcoLayout from '../../layouts/SelcoLayout.astro';
-import { V2_CALCULATORS } from '../../components/v2/registry';
+import { V2_CALCULATORS, V2_CATEGORY_ORDER } from '../../components/v2/registry';
 
 const BASE_URL = import.meta.env.BASE_URL;
 const base = BASE_URL.endsWith('/') ? BASE_URL : `${BASE_URL}/`;
@@ -12,7 +12,14 @@ const breadcrumbs = [
 
 const title = 'Project Hub — v2 concept';
 const description =
-  'Concept showcase: a new generation of trade materials calculators with live previews and counter-ready materials lists.';
+  'Concept showcase: a new generation of trade materials calculators — live previews, named products, and counter-ready lists for every job.';
+
+const calculatorCount = V2_CALCULATORS.length;
+
+const grouped = V2_CATEGORY_ORDER.map((category) => ({
+  category,
+  calculators: V2_CALCULATORS.filter((c) => c.category === category),
+})).filter((g) => g.calculators.length > 0);
 
 const pillars = [
   {
@@ -23,13 +30,22 @@ const pillars = [
   {
     icon: 'fa-drafting-compass',
     title: 'See the job, not just numbers',
-    body: 'Each calculator draws the job — roll strips, slab grids, unit layouts — so customers trust the quantities.',
+    body: 'Calculators draw the job — roll strips, slab grids, unit layouts — so customers trust the quantities.',
   },
   {
-    icon: 'fa-receipt',
-    title: 'Counter-ready lists',
-    body: 'One tap copies the full list with quantities — ready to paste into a text, an email, or read out at the trade counter.',
+    icon: 'fa-toolbox',
+    title: 'Never caught short',
+    body: 'Every list ends with the tools and consumables the job needs — the hinges, the silicone, the FFP3 mask.',
   },
+];
+
+const v1Live = [
+  { label: 'Tiling project', href: `${base}tiling/` },
+  { label: 'Hard flooring', href: `${base}hard-flooring/` },
+  { label: 'Brick & block wall', href: `${base}brick-wall/` },
+  { label: 'Decking', href: `${base}decking/` },
+  { label: 'Unit converter', href: `${base}unit-converter/` },
+  { label: 'Board coverage', href: `${base}coverage/` },
 ];
 ---
 
@@ -65,20 +81,20 @@ const pillars = [
           class="text-3xl md:text-5xl font-extrabold uppercase tracking-tight leading-[1.05] mb-4"
           style="font-family: 'Arial Black', sans-serif; letter-spacing: -1px;"
         >
-          Every job. <span class="text-brand-yellow">Every material.</span><br />
-          One list.
+          {calculatorCount} trades.<br />
+          <span class="text-brand-yellow">One counter-ready list</span> each.
         </h1>
         <p class="text-base md:text-lg text-white/85 leading-relaxed mb-8 max-w-xl">
-          {description} Built for builders and DIYers planning real jobs — and
-          built to show where the calculators can go next.
+          {description} Built for builders and DIYers planning real jobs — and built to
+          show where the calculators can go next.
         </p>
         <div class="flex flex-wrap gap-3">
           <a href={`${base}v2/artificial-grass/`} class="btn-accent">
             Try artificial grass
             <i class="fas fa-arrow-right text-sm" aria-hidden="true"></i>
           </a>
-          <a href={`${base}v2/kitchen-planner/`} class="btn-ghost !text-white !border-white hover:!bg-white/10">
-            Plan a kitchen
+          <a href={`${base}v2/roof-pitched/`} class="btn-ghost !text-white !border-white hover:!bg-white/10">
+            Price up a roof
           </a>
         </div>
       </div>
@@ -99,51 +115,95 @@ const pillars = [
       ))}
     </section>
 
-    {/* Calculator grid */}
+    {/* Calculator catalogue, grouped by trade */}
     <section class="mb-14">
-      <div class="flex items-end justify-between gap-4 mb-6 flex-wrap">
+      <div class="flex items-end justify-between gap-4 mb-8 flex-wrap">
         <div>
-          <h2 class="text-2xl md:text-3xl font-bold text-text-main mb-1">Six new calculators</h2>
+          <h2 class="text-2xl md:text-3xl font-bold text-text-main mb-1">
+            The full catalogue — {calculatorCount} calculators
+          </h2>
           <p class="text-text-muted text-base m-0">
-            New trades, new visuals — all in the same SELCO look and feel as v1.
+            Organised the way the yard is: by trade. Quantities and named products — pricing
+            comes when the catalogue is mapped.
           </p>
         </div>
-        <a href={base} class="text-sm font-bold text-primary-nav hover:underline whitespace-nowrap">
-          ← Back to the live v1 calculators
-        </a>
       </div>
 
-      <div class="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-        {V2_CALCULATORS.map((calc) => (
-          <a
-            href={`${base}v2/${calc.slug}/`}
-            class="group card card-hover relative overflow-hidden flex flex-col"
-          >
-            <div
-              aria-hidden="true"
-              class="absolute inset-x-0 top-0 h-1 opacity-0 group-hover:opacity-100 transition-opacity"
-              style="background: repeating-linear-gradient(-45deg, #ffd407 0 10px, #04204b 10px 20px);"
-            >
-            </div>
-            <span class="text-[0.65rem] font-bold uppercase tracking-[0.15em] text-text-muted mb-2">
-              {calc.strap}
-            </span>
-            <div class="flex items-center gap-3 mb-2">
-              <span class="inline-flex items-center justify-center w-10 h-10 rounded-lg bg-brand-navy text-brand-yellow shrink-0">
-                <i class={`fas ${calc.icon}`} aria-hidden="true"></i>
-              </span>
-              <h3 class="text-lg font-bold text-text-main m-0 group-hover:text-primary transition-colors">
-                {calc.name}
+      <div class="space-y-10">
+        {grouped.map((group) => (
+          <div>
+            <div class="flex items-center gap-3 mb-4">
+              <h3 class="text-lg font-extrabold uppercase tracking-wide text-brand-navy m-0 whitespace-nowrap">
+                {group.category}
               </h3>
+              <span
+                aria-hidden="true"
+                class="h-0.5 flex-1"
+                style="background: repeating-linear-gradient(-45deg, #ffd407 0 8px, transparent 8px 16px);"
+              ></span>
+              <span class="text-xs font-bold text-text-muted whitespace-nowrap">
+                {group.calculators.length} tools
+              </span>
             </div>
-            <p class="text-sm text-text-muted leading-relaxed mb-4">{calc.description}</p>
-            <span class="mt-auto inline-flex items-center gap-2 text-xs font-bold text-primary-nav">
-              <i class="fas fa-drafting-compass" aria-hidden="true"></i>
-              {calc.preview}
-            </span>
+            <div class="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+              {group.calculators.map((calc) => (
+                <a
+                  href={`${base}v2/${calc.slug}/`}
+                  class="group card card-hover relative overflow-hidden flex flex-col"
+                >
+                  <div
+                    aria-hidden="true"
+                    class="absolute inset-x-0 top-0 h-1 opacity-0 group-hover:opacity-100 transition-opacity"
+                    style="background: repeating-linear-gradient(-45deg, #ffd407 0 10px, #04204b 10px 20px);"
+                  >
+                  </div>
+                  <div class="flex items-center gap-3 mb-2">
+                    <span class="inline-flex items-center justify-center w-10 h-10 rounded-lg bg-brand-navy text-brand-yellow shrink-0">
+                      <i class={`fas ${calc.icon}`} aria-hidden="true"></i>
+                    </span>
+                    <h4 class="text-base font-bold text-text-main m-0 group-hover:text-primary transition-colors">
+                      {calc.name}
+                    </h4>
+                  </div>
+                  <p class="text-sm text-text-muted leading-relaxed mb-3">{calc.description}</p>
+                  <span class="mt-auto inline-flex items-center gap-2 text-xs font-bold text-primary-nav">
+                    <i
+                      class={`fas ${calc.kind === 'bespoke' ? 'fa-drafting-compass' : 'fa-list-check'}`}
+                      aria-hidden="true"
+                    ></i>
+                    {calc.kind === 'bespoke' ? calc.preview : 'Materials + tools checklist'}
+                  </span>
+                </a>
+              ))}
+            </div>
+          </div>
+        ))}
+      </div>
+    </section>
+
+    {/* Already live in v1 */}
+    <section class="rounded-2xl bg-bg-page border border-border-default p-6 md:p-8 mb-14">
+      <div class="flex flex-wrap items-center justify-between gap-3 mb-4">
+        <h2 class="text-lg font-bold text-text-main m-0">Already live in v1 today</h2>
+        <a href={base} class="text-sm font-bold text-primary-nav hover:underline">
+          Open the v1 calculators →
+        </a>
+      </div>
+      <div class="flex flex-wrap gap-2">
+        {v1Live.map((c) => (
+          <a
+            href={c.href}
+            class="inline-flex items-center gap-2 rounded-full border border-border-default bg-bg-section px-4 py-2 text-sm font-semibold text-text-main hover:border-brand-navy hover:text-primary transition-colors"
+          >
+            <i class="fas fa-circle-check text-success text-xs" aria-hidden="true"></i>
+            {c.label}
           </a>
         ))}
       </div>
+      <p class="text-xs text-text-muted mt-4 mb-0">
+        v2 doesn't duplicate what already works — it extends the same engine and design system
+        to {calculatorCount} more trades.
+      </p>
     </section>
 
     {/* Director pitch strip */}
@@ -152,23 +212,24 @@ const pillars = [
       <div class="grid gap-5 md:grid-cols-3 text-sm text-text-muted leading-relaxed">
         <p class="m-0">
           <strong class="text-text-main block mb-1">Customers buy with confidence.</strong>
-          A visible plan and a complete list means fewer under-orders, fewer second trips, and fewer
-          returns at the counter.
+          A visible plan and a complete list means fewer under-orders, fewer second trips, and
+          fewer returns at the counter.
         </p>
         <p class="m-0">
           <strong class="text-text-main block mb-1">Every estimate cross-sells.</strong>
-          The list doesn't stop at slabs — it adds the primer, the jointing compound, and the
-          sundries customers forget until halfway through the job.
+          Lists don't stop at the headline product — they add the primer, the silicone, the
+          fixings and the consumables customers forget until halfway through the job.
         </p>
         <p class="m-0">
-          <strong class="text-text-main block mb-1">Built on what already works.</strong>
-          v2 reuses the v1 calculation engines and design system — each new trade is a thin layer on
-          proven foundations.
+          <strong class="text-text-main block mb-1">Ready for the catalogue.</strong>
+          Every line is a named product slot. Map them to live SKUs and pricing, and each list
+          becomes a basket.
         </p>
       </div>
       <p class="text-xs text-text-muted mt-6 mb-0 pt-4 border-t border-border-default">
         <i class="fas fa-circle-info mr-1" aria-hidden="true"></i>
-        All pricing in v2 is indicative and for concept demonstration only — not live SELCO trade pricing.
+        Concept demonstration: quantities are estimates and product names are representative of
+        stocked ranges — final mapping to live SKUs and pricing is the next phase.
       </p>
     </section>
   </main>
