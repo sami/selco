@@ -13,6 +13,8 @@ interface WizardShellProps {
     onCalculate?: () => void;
     onSkip?: () => void;
     onStartOver?: () => void;
+    /** Optional action(s) shown beside the step label, e.g. a Copy link button. */
+    actions?: ReactNode;
     children: ReactNode;
 }
 
@@ -24,6 +26,7 @@ export function WizardShell({
     onCalculate,
     onSkip,
     onStartOver,
+    actions,
     children,
 }: WizardShellProps) {
     const isFirstStep = currentStep === 0;
@@ -43,9 +46,12 @@ export function WizardShell({
                         />
                     ))}
                 </div>
-                <p className="text-sm text-text-muted font-medium">
-                    Step {currentStep + 1} of {steps.length} — {steps[currentStep]?.label}
-                </p>
+                <div className="flex flex-wrap items-center justify-between gap-2">
+                    <p className="text-sm text-text-muted font-medium">
+                        Step {currentStep + 1} of {steps.length} — {steps[currentStep]?.label}
+                    </p>
+                    {actions}
+                </div>
             </div>
 
             {/* Step content */}
