@@ -1,0 +1,175 @@
+---
+import SelcoLayout from '../../layouts/SelcoLayout.astro';
+import { V2_CALCULATORS } from '../../components/v2/registry';
+
+const BASE_URL = import.meta.env.BASE_URL;
+const base = BASE_URL.endsWith('/') ? BASE_URL : `${BASE_URL}/`;
+
+const breadcrumbs = [
+  { label: 'Home', href: base },
+  { label: 'Concept Hub v2' },
+];
+
+const title = 'Project Hub — v2 concept';
+const description =
+  'Concept showcase: a new generation of trade materials calculators with live previews and counter-ready materials lists.';
+
+const pillars = [
+  {
+    icon: 'fa-bolt',
+    title: 'Answers as you type',
+    body: 'No submit button, no waiting. Every measurement updates the plan and the materials list instantly.',
+  },
+  {
+    icon: 'fa-drafting-compass',
+    title: 'See the job, not just numbers',
+    body: 'Each calculator draws the job — roll strips, slab grids, unit layouts — so customers trust the quantities.',
+  },
+  {
+    icon: 'fa-receipt',
+    title: 'Counter-ready lists',
+    body: 'One tap copies the full list with quantities — ready to paste into a text, an email, or read out at the trade counter.',
+  },
+];
+---
+
+<SelcoLayout
+  title={title}
+  description={description}
+  breadcrumbs={breadcrumbs}
+  pageTitle=""
+>
+  <main class="w-full">
+    {/* Hero */}
+    <section class="relative overflow-hidden rounded-2xl bg-brand-navy text-white mb-12">
+      <div
+        aria-hidden="true"
+        class="absolute inset-0 opacity-[0.08]"
+        style="background-image: linear-gradient(to right, #fff 1px, transparent 1px), linear-gradient(to bottom, #fff 1px, transparent 1px); background-size: 32px 32px;"
+      >
+      </div>
+      <div
+        aria-hidden="true"
+        class="absolute inset-x-0 top-0 h-1.5"
+        style="background: repeating-linear-gradient(-45deg, #ffd407 0 12px, #04204b 12px 24px);"
+      >
+      </div>
+      <div class="relative px-6 py-12 md:px-12 md:py-16 max-w-3xl">
+        <span
+          class="inline-flex items-center gap-2 rounded-full bg-brand-yellow text-brand-navy px-3 py-1 text-[0.7rem] font-extrabold uppercase tracking-[0.15em] mb-5"
+        >
+          <i class="fas fa-flask" aria-hidden="true"></i>
+          Concept showcase · v2
+        </span>
+        <h1
+          class="text-3xl md:text-5xl font-extrabold uppercase tracking-tight leading-[1.05] mb-4"
+          style="font-family: 'Arial Black', sans-serif; letter-spacing: -1px;"
+        >
+          Every job. <span class="text-brand-yellow">Every material.</span><br />
+          One list.
+        </h1>
+        <p class="text-base md:text-lg text-white/85 leading-relaxed mb-8 max-w-xl">
+          {description} Built for builders and DIYers planning real jobs — and
+          built to show where the calculators can go next.
+        </p>
+        <div class="flex flex-wrap gap-3">
+          <a href={`${base}v2/artificial-grass/`} class="btn-accent">
+            Try artificial grass
+            <i class="fas fa-arrow-right text-sm" aria-hidden="true"></i>
+          </a>
+          <a href={`${base}v2/kitchen-planner/`} class="btn-ghost !text-white !border-white hover:!bg-white/10">
+            Plan a kitchen
+          </a>
+        </div>
+      </div>
+    </section>
+
+    {/* Pillars */}
+    <section class="grid gap-4 sm:grid-cols-3 mb-14">
+      {pillars.map((p) => (
+        <div class="card card-hover">
+          <span
+            class="inline-flex items-center justify-center w-11 h-11 rounded-lg bg-brand-yellow text-brand-navy text-lg mb-3"
+          >
+            <i class={`fas ${p.icon}`} aria-hidden="true"></i>
+          </span>
+          <h2 class="text-lg font-bold text-text-main mb-1.5">{p.title}</h2>
+          <p class="text-sm text-text-muted leading-relaxed m-0">{p.body}</p>
+        </div>
+      ))}
+    </section>
+
+    {/* Calculator grid */}
+    <section class="mb-14">
+      <div class="flex items-end justify-between gap-4 mb-6 flex-wrap">
+        <div>
+          <h2 class="text-2xl md:text-3xl font-bold text-text-main mb-1">Six new calculators</h2>
+          <p class="text-text-muted text-base m-0">
+            New trades, new visuals — all in the same SELCO look and feel as v1.
+          </p>
+        </div>
+        <a href={base} class="text-sm font-bold text-primary-nav hover:underline whitespace-nowrap">
+          ← Back to the live v1 calculators
+        </a>
+      </div>
+
+      <div class="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+        {V2_CALCULATORS.map((calc) => (
+          <a
+            href={`${base}v2/${calc.slug}/`}
+            class="group card card-hover relative overflow-hidden flex flex-col"
+          >
+            <div
+              aria-hidden="true"
+              class="absolute inset-x-0 top-0 h-1 opacity-0 group-hover:opacity-100 transition-opacity"
+              style="background: repeating-linear-gradient(-45deg, #ffd407 0 10px, #04204b 10px 20px);"
+            >
+            </div>
+            <span class="text-[0.65rem] font-bold uppercase tracking-[0.15em] text-text-muted mb-2">
+              {calc.strap}
+            </span>
+            <div class="flex items-center gap-3 mb-2">
+              <span class="inline-flex items-center justify-center w-10 h-10 rounded-lg bg-brand-navy text-brand-yellow shrink-0">
+                <i class={`fas ${calc.icon}`} aria-hidden="true"></i>
+              </span>
+              <h3 class="text-lg font-bold text-text-main m-0 group-hover:text-primary transition-colors">
+                {calc.name}
+              </h3>
+            </div>
+            <p class="text-sm text-text-muted leading-relaxed mb-4">{calc.description}</p>
+            <span class="mt-auto inline-flex items-center gap-2 text-xs font-bold text-primary-nav">
+              <i class="fas fa-drafting-compass" aria-hidden="true"></i>
+              {calc.preview}
+            </span>
+          </a>
+        ))}
+      </div>
+    </section>
+
+    {/* Director pitch strip */}
+    <section class="rounded-2xl border-2 border-primary-nav bg-gradient-to-br from-primary-nav/5 to-transparent p-6 md:p-8 mb-6">
+      <h2 class="text-xl md:text-2xl font-bold text-text-main mb-4">Why this matters for SELCO</h2>
+      <div class="grid gap-5 md:grid-cols-3 text-sm text-text-muted leading-relaxed">
+        <p class="m-0">
+          <strong class="text-text-main block mb-1">Customers buy with confidence.</strong>
+          A visible plan and a complete list means fewer under-orders, fewer second trips, and fewer
+          returns at the counter.
+        </p>
+        <p class="m-0">
+          <strong class="text-text-main block mb-1">Every estimate cross-sells.</strong>
+          The list doesn't stop at slabs — it adds the primer, the jointing compound, and the
+          sundries customers forget until halfway through the job.
+        </p>
+        <p class="m-0">
+          <strong class="text-text-main block mb-1">Built on what already works.</strong>
+          v2 reuses the v1 calculation engines and design system — each new trade is a thin layer on
+          proven foundations.
+        </p>
+      </div>
+      <p class="text-xs text-text-muted mt-6 mb-0 pt-4 border-t border-border-default">
+        <i class="fas fa-circle-info mr-1" aria-hidden="true"></i>
+        All pricing in v2 is indicative and for concept demonstration only — not live SELCO trade pricing.
+      </p>
+    </section>
+  </main>
+</SelcoLayout>
