@@ -3,6 +3,7 @@ import SelcoLayout from '../../layouts/SelcoLayout.astro';
 import Disclaimer from '../../components/Disclaimer.astro';
 import SelcoSidebar from '../../components/selco/SelcoSidebar.astro';
 import CoverageCalculator from '../../components/calculators/CoverageCalculator.tsx';
+import { CalculatorPageHeader } from '../../components/ui/CalculatorPageHeader.tsx';
 
 const BASE_URL = import.meta.env.BASE_URL;
 const base = BASE_URL.endsWith('/') ? BASE_URL : `${BASE_URL}/`;
@@ -21,20 +22,15 @@ const description = "Work out exactly how many boards (plasterboard, plywood, or
   description={description}
   showSidebar
   breadcrumbs={breadcrumbs}
-  pageTitle="Board coverage calculator"
+  pageTitle=""
 >
   <SelcoSidebar />
 
   <main class="w-full">
     <div class="space-y-12 pb-12">
       
-      {/* Header Section */}
-      <section class="page-section pt-0 pb-4 max-w-3xl">
-        <h1 class="text-3xl md:text-4xl font-extrabold text-primary-dark mb-4">Coverage calculator</h1>
-        <p class="text-lg text-text-muted leading-relaxed">
-          Work out exactly how many units (packs, sheets, or rolls) you need based on the area you have to cover.
-        </p>
-      </section>
+      {/* Header banner — title, blurb, and icon from the registry */}
+      <CalculatorPageHeader calculatorId="board-coverage" />
 
       {/* Calculator React Island */}
       <section class="w-full">

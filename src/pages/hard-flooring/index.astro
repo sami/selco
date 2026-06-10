@@ -3,6 +3,7 @@ import SelcoLayout from '../../layouts/SelcoLayout.astro';
 import Disclaimer from '../../components/Disclaimer.astro';
 import SelcoSidebar from '../../components/selco/SelcoSidebar.astro';
 import FlooringProjectWizard from '../../components/FlooringProjectWizard.tsx';
+import { CalculatorPageHeader } from '../../components/ui/CalculatorPageHeader.tsx';
 
 const BASE_URL = import.meta.env.BASE_URL;
 const base = BASE_URL.endsWith('/') ? BASE_URL : `${BASE_URL}/`;
@@ -42,7 +43,7 @@ const faqs = [
 <SelcoLayout
   title={title}
   description={description}
-  pageTitle="Trade Materials Calculators"
+  pageTitle=""
   breadcrumbs={breadcrumbs}
   showSidebar
 >
@@ -51,13 +52,7 @@ const faqs = [
   <main class="w-full">
     <div class="space-y-6">
       <section class="space-y-6">
-        <div>
-          <h2 class="text-2xl md:text-3xl font-bold text-surface-foreground">Hard Flooring Calculator</h2>
-          <p class="text-muted-foreground mt-3 max-w-3xl">
-            Calculate flooring packs, underlay, scotia beading, threshold strips, and adhesive for any room.
-            Supports laminate, engineered wood, solid wood, and luxury vinyl tile (LVT).
-          </p>
-        </div>
+        <CalculatorPageHeader calculatorId="flooring" />
 
         <div class="rounded-2xl border border-border bg-surface p-6 shadow-sm">
           <FlooringProjectWizard client:load />

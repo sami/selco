@@ -142,8 +142,11 @@ export interface CalculatorMeta {
     /** URL path relative to `BASE_URL` (e.g. `'/tiling/'`). */
     path: string;
     /**
-     * Path to the SVG hero banner in `public/images/hero/`.
-     * Used as `<img src={calc.icon}>` in card and page headers.
+     * Inline SVG markup for the calculator's icon, rendered by
+     * `CalculatorPageHeader` on the navy page banner. One uniform icon set:
+     * `viewBox="0 0 24 24"`, `stroke-width="2"`, coloured via
+     * `stroke="currentColor"` so it inherits the SELCO-yellow token. Icons are
+     * decorative (the banner applies `aria-hidden`). See the UI Conventions note.
      */
     icon?: string;
 }
