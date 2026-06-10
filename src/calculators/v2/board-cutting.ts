@@ -3,16 +3,33 @@
  *
  * Board cutting optimiser — plans how to cut a list of required parts out
  * of standard sheets using guillotine-friendly shelf packing (first-fit
- * decreasing height): parts sort largest-first, each sheet fills up as
- * horizontal shelves, and every layout can be cut with straight
- * edge-to-edge passes.
+ * decreasing height), modelled on SELCO's in-store cutting service.
  *
- * The saw kerf (blade width) is added around every part so the plan
- * survives contact with a real saw.
+ * In-store service (vertical panel saw, straight cuts only):
+ *   - cuttable: hardboard, chipboard, OSB, MDF, kitchen worktops, plywood,
+ *     sundeala, door blanks, pegboard, T&G flooring — bought in store
+ *   - NOT cuttable: plasterboard, doors, fence panels, thick structural timber
+ *   - blade kerf: 3 mm, allowed between every part in the plan
+ *   - min workpiece: 500 × 230 mm (with support fitted) / 500 × 400 without
+ *   - max workpiece: 3100 × 1644 mm, max depth 60 mm
+ *
+ * Smaller parts still appear in the plan — they're flagged to be cut
+ * oversize in store and trimmed at home.
  */
 
 import type { BillOfMaterials } from './types';
 import { units } from './types';
+
+/** SELCO in-store vertical panel saw limits. */
+export const PANEL_SAW = {
+    kerfMm: 3,
+    minLMm: 500,
+    minHFittedMm: 230,
+    minHMm: 400,
+    maxLMm: 3100,
+    maxHMm: 1644,
+    maxDepthMm: 60,
+} as const;
 
 export interface SheetFormat {
     id: string;
@@ -20,43 +37,20 @@ export interface SheetFormat {
     productName: string;
     wMm: number;
     hMm: number;
-    /** Default kerf: 0 for score-and-snap boards, 3 mm for sawn sheets. */
-    defaultKerfMm: number;
+    thicknessMm: number;
+    /** Eligible for the in-store panel saw service. */
+    sawEligible: boolean;
 }
 
 export const SHEET_FORMATS: SheetFormat[] = [
-    {
-        id: 'plasterboard',
-        label: 'Plasterboard',
-        productName: 'Gyproc WallBoard, 12.5 mm',
-        wMm: 1200,
-        hMm: 2400,
-        defaultKerfMm: 0,
-    },
-    {
-        id: 'plywood',
-        label: 'Plywood',
-        productName: 'Hardwood-faced plywood, 18 mm',
-        wMm: 1220,
-        hMm: 2440,
-        defaultKerfMm: 3,
-    },
-    {
-        id: 'osb',
-        label: 'OSB3',
-        productName: 'OSB3 board, 18 mm',
-        wMm: 1220,
-        hMm: 2440,
-        defaultKerfMm: 3,
-    },
-    {
-        id: 'mdf',
-        label: 'MDF',
-        productName: 'MDF board, 18 mm',
-        wMm: 1220,
-        hMm: 2440,
-        defaultKerfMm: 3,
-    },
+    { id: 'plywood', label: 'Plywood 2440 × 1220 × 18', productName: 'Hardwood-faced plywood, 18 mm', wMm: 1220, hMm: 2440, thicknessMm: 18, sawEligible: true },
+    { id: 'mdf', label: 'MDF 2440 × 1220 × 18', productName: 'MDF board, 18 mm', wMm: 1220, hMm: 2440, thicknessMm: 18, sawEligible: true },
+    { id: 'osb', label: 'OSB3 2440 × 1220 × 18', productName: 'OSB3 board, 18 mm', wMm: 1220, hMm: 2440, thicknessMm: 18, sawEligible: true },
+    { id: 'chipboard', label: 'Chipboard 2440 × 1220 × 18', productName: 'Furniture-grade chipboard, 18 mm', wMm: 1220, hMm: 2440, thicknessMm: 18, sawEligible: true },
+    { id: 'hardboard', label: 'Hardboard 2440 × 1220 × 3', productName: 'Standard hardboard, 3 mm', wMm: 1220, hMm: 2440, thicknessMm: 3, sawEligible: true },
+    { id: 'pegboard', label: 'Pegboard 2440 × 1220 × 6', productName: 'Perforated hardboard (pegboard), 6 mm', wMm: 1220, hMm: 2440, thicknessMm: 6, sawEligible: true },
+    { id: 'worktop', label: 'Worktop 3000 × 600 × 38', productName: 'Laminate kitchen worktop, 38 mm', wMm: 600, hMm: 3000, thicknessMm: 38, sawEligible: true },
+    { id: 'plasterboard', label: 'Plasterboard 2400 × 1200 × 12.5', productName: 'Gyproc WallBoard, 12.5 mm', wMm: 1200, hMm: 2400, thicknessMm: 12.5, sawEligible: false },
 ];
 
 export interface RequiredPart {
@@ -79,12 +73,15 @@ export interface PlacedPart {
     wMm: number;
     hMm: number;
     rotated: boolean;
+    /** Below the in-store saw minimum — cut oversize, trim at home. */
+    belowMin: boolean;
     /** "800×600" style label for the preview. */
     label: string;
 }
 
 export interface SheetLayout {
     parts: PlacedPart[];
+    shelfCount: number;
     /** Used area as a fraction of the sheet. */
     utilisation: number;
 }
@@ -94,6 +91,10 @@ export interface CuttingPlan {
     kerfMm: number;
     layouts: SheetLayout[];
     placedCount: number;
+    /** Approximate straight saw passes: one rip per shelf + one per part. */
+    sawCuts: number;
+    /** Placed parts below the 500 × 230 mm in-store minimum. */
+    belowMinCount: number;
     /** Parts too big for the sheet in any orientation. */
     unplaceable: RequiredPart[];
     /** Overall utilisation across all sheets. */
@@ -115,9 +116,16 @@ interface WorkingSheet {
 
 const MAX_INSTANCES = 300;
 
+function isBelowSawMin(wMm: number, hMm: number): boolean {
+    const long = Math.max(wMm, hMm);
+    const short = Math.min(wMm, hMm);
+    return long < PANEL_SAW.minLMm || short < PANEL_SAW.minHFittedMm;
+}
+
 export function planCutting(input: CuttingInput): CuttingPlan {
     const sheet = SHEET_FORMATS.find((s) => s.id === input.sheetId) ?? SHEET_FORMATS[0];
-    const kerf = sheet.defaultKerfMm;
+    // Plasterboard is score-and-snap at home: no blade, no kerf.
+    const kerf = sheet.sawEligible ? PANEL_SAW.kerfMm : 0;
 
     // Expand quantities into individual instances, largest first (FFDH).
     const instances: Array<{ w: number; h: number; src: RequiredPart }> = [];
@@ -156,6 +164,7 @@ export function planCutting(input: CuttingInput): CuttingPlan {
     };
 
     for (const inst of instances.slice(0, MAX_INSTANCES)) {
+        const belowMin = isBelowSawMin(inst.w, inst.h);
         const orientations: Array<{ w: number; h: number; rotated: boolean }> = [
             { w: inst.w, h: inst.h, rotated: false },
         ];
@@ -181,6 +190,7 @@ export function planCutting(input: CuttingInput): CuttingPlan {
                 wMm: o.w,
                 hMm: o.h,
                 rotated: o.rotated,
+                belowMin,
                 label: `${inst.w}×${inst.h}`,
             });
             slot.shelf.usedWMm = x + o.w;
@@ -203,6 +213,7 @@ export function planCutting(input: CuttingInput): CuttingPlan {
                             wMm: o.w,
                             hMm: o.h,
                             rotated: o.rotated,
+                            belowMin,
                             label: `${inst.w}×${inst.h}`,
                         });
                         placed = true;
@@ -221,7 +232,7 @@ export function planCutting(input: CuttingInput): CuttingPlan {
                 shelves: [{ yMm: 0, heightMm: o.h, usedWMm: o.w }],
                 nextShelfY: o.h,
                 parts: [
-                    { xMm: 0, yMm: 0, wMm: o.w, hMm: o.h, rotated: o.rotated, label: `${inst.w}×${inst.h}` },
+                    { xMm: 0, yMm: 0, wMm: o.w, hMm: o.h, rotated: o.rotated, belowMin, label: `${inst.w}×${inst.h}` },
                 ],
             };
             sheets.push(s);
@@ -231,6 +242,7 @@ export function planCutting(input: CuttingInput): CuttingPlan {
     const sheetArea = sheet.wMm * sheet.hMm;
     const layouts: SheetLayout[] = sheets.map((s) => ({
         parts: s.parts,
+        shelfCount: s.shelves.length,
         utilisation: s.parts.reduce((sum, p) => sum + p.wMm * p.hMm, 0) / sheetArea,
     }));
     const usedArea = layouts.reduce((sum, l) => sum + l.utilisation * sheetArea, 0);
@@ -241,6 +253,11 @@ export function planCutting(input: CuttingInput): CuttingPlan {
         kerfMm: kerf,
         layouts,
         placedCount: layouts.reduce((sum, l) => sum + l.parts.length, 0),
+        sawCuts: layouts.reduce((sum, l) => sum + l.shelfCount + l.parts.length, 0),
+        belowMinCount: layouts.reduce(
+            (sum, l) => sum + l.parts.filter((p) => p.belowMin).length,
+            0,
+        ),
         unplaceable,
         utilisation: totalArea > 0 ? usedArea / totalArea : 0,
         wasteM2: (totalArea - usedArea) / 1e6,
@@ -249,14 +266,17 @@ export function planCutting(input: CuttingInput): CuttingPlan {
 
 export function calculateCutting(input: CuttingInput): BillOfMaterials {
     const plan = planCutting(input);
-    const isPb = plan.sheet.id === 'plasterboard';
+    const inStore = plan.sheet.sawEligible;
 
     return {
         facts: [
             { label: 'Parts to cut', value: `${plan.placedCount}` },
             { label: 'Sheets needed', value: `${plan.layouts.length}` },
+            {
+                label: inStore ? 'Saw cuts' : 'Cutting',
+                value: inStore ? `≈ ${plan.sawCuts} straight passes` : 'Score & snap at home',
+            },
             { label: 'Material used', value: `${Math.round(plan.utilisation * 100)}%` },
-            { label: 'Off-cut waste', value: `${plan.wasteM2.toFixed(2)} m²` },
         ],
         sections: [
             {
@@ -265,28 +285,44 @@ export function calculateCutting(input: CuttingInput): BillOfMaterials {
                     {
                         id: 'sheets',
                         name: plan.sheet.productName,
-                        detail: `${plan.sheet.wMm} × ${plan.sheet.hMm} mm — cutting plan opposite`,
+                        detail: `${plan.sheet.wMm} × ${plan.sheet.hMm} × ${plan.sheet.thicknessMm} mm — cutting plan opposite`,
                         qty: units(plan.layouts.length),
                         unit: 'sheets',
                     },
                 ],
             },
         ],
-        tools: [
-            isPb
-                ? 'Sharp utility knife and a straight edge — score the face, snap, cut the back paper'
-                : 'Circular saw or track saw with a guide rail — fine-tooth blade for clean faces',
-            isPb ? 'Drywall rasp to clean up snapped edges' : 'Sawhorses or a cutting table with sacrificial battens',
-            'Tape measure, pencil and a marking square',
-            isPb ? 'Pad saw for cut-outs' : 'Clamps for the guide rail, and dust extraction or an FFP2 mask',
-            'Masking tape to label each part as it comes off the sheet',
-            'Offcut pile kept flat — the optimiser already counted them as spare',
-        ],
+        tools: inStore
+            ? [
+                  'Bring this plan to the counter — sheets bought in store are cut on our vertical panel saw',
+                  'Masking tape and a marker to label each part as it comes off the saw',
+                  plan.belowMinCount > 0
+                      ? 'Fine-tooth handsaw or track saw for trimming the flagged small parts at home'
+                      : 'Fine sandpaper or a block plane to ease any cut edges',
+                  'Tape measure — check the first cut against your list before the rest run',
+                  'A van or roof bars sized for your longest part, not the original sheet',
+                  'Offcut pile kept flat — the optimiser already counted them as spare',
+              ]
+            : [
+                  'Sharp utility knife and a straight edge — score the face, snap, cut the back paper',
+                  'Drywall rasp to clean up snapped edges',
+                  'Tape measure, pencil and a marking square',
+                  'Pad saw for cut-outs',
+                  'Masking tape to label each part as it comes off the sheet',
+                  'Offcut pile kept flat — the optimiser already counted them as spare',
+              ],
         notes: [
-            `Layouts are guillotine-friendly shelf cuts — every line runs straight across, the way a panel saw (or a track saw) actually cuts.`,
-            plan.kerfMm > 0
-                ? `A ${plan.kerfMm} mm saw kerf is allowed between every part.`
-                : 'Score-and-snap board: no kerf allowance needed.',
+            inStore
+                ? `In-store cutting service: straight cuts on the vertical panel saw with a ${PANEL_SAW.kerfMm} mm blade kerf — allowed for in this plan.`
+                : 'Plasterboard is not cut in store — this plan is score-and-snap at home (no kerf needed).',
+            inStore
+                ? `Saw limits: ${PANEL_SAW.minLMm} × ${PANEL_SAW.minHFittedMm} mm minimum workpiece (${PANEL_SAW.minLMm} × ${PANEL_SAW.minHMm} mm without the support fitted), ${PANEL_SAW.maxLMm} × ${PANEL_SAW.maxHMm} mm maximum, ${PANEL_SAW.maxDepthMm} mm maximum depth.`
+                : 'We cut hardboard, chipboard, OSB, MDF, worktops, plywood, sundeala, door blanks, pegboard and T&G flooring — not plasterboard, doors, fence panels or structural timber.',
+            ...(plan.belowMinCount > 0 && inStore
+                ? [
+                      `⚠ ${plan.belowMinCount} part${plan.belowMinCount === 1 ? '' : 's'} (marked ⚠ in the plan) below the ${PANEL_SAW.minLMm} × ${PANEL_SAW.minHFittedMm} mm saw minimum — have them cut oversize in store and trim at home.`,
+                  ]
+                : []),
             input.allowRotation
                 ? 'Parts may be rotated 90° — turn rotation off if grain or face pattern direction matters.'
                 : 'Rotation is off — parts keep their orientation for grain or face direction.',

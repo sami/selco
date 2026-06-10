@@ -154,10 +154,10 @@ const BESPOKE: V2CalculatorMeta[] = [
         name: 'Board cutting optimiser',
         category: 'Handy tools',
         description:
-            'Type in the parts you need and it packs them onto the fewest sheets — saw kerf allowed, grain direction respected.',
+            'Packs your parts onto the fewest sheets, planned for our in-store panel saw — 3 mm kerf, straight cuts, size limits checked.',
         icon: 'fa-scissors',
         kind: 'bespoke',
-        preview: 'Sheet-by-sheet cutting plan, drawn to scale',
+        preview: 'In-store cutting plan, drawn to scale',
     },
 ];
 

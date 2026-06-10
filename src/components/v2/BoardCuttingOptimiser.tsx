@@ -9,12 +9,13 @@
 import { useMemo, useState } from 'react';
 import {
     calculateCutting,
+    PANEL_SAW,
     planCutting,
     SHEET_FORMATS,
     type CuttingInput,
     type RequiredPart,
 } from '../../calculators/v2/board-cutting';
-import { BlueprintPanel, JobCard, Segmented, ToggleRow } from './ui';
+import { BlueprintPanel, JobCard, ToggleRow } from './ui';
 import MaterialsTicket from './MaterialsTicket';
 
 const YELLOW = '#ffd407';
@@ -85,6 +86,7 @@ function CuttingPreview({ input }: { input: CuttingInput }) {
                                     >
                                         {p.label}
                                         {p.rotated ? ' ↻' : ''}
+                                        {p.belowMin && plan.sheet.sawEligible ? ' ⚠' : ''}
                                     </text>
                                 )}
                             </g>
@@ -130,18 +132,58 @@ export default function BoardCuttingOptimiser() {
     const clamp = (v: number, max: number) =>
         Number.isFinite(v) ? Math.min(max, Math.max(0, Math.round(v))) : 0;
 
+    const sheet = SHEET_FORMATS.find((s) => s.id === sheetId) ?? SHEET_FORMATS[0];
+
     return (
         <div className="grid gap-6 lg:grid-cols-[380px_minmax(0,1fr)] items-start">
             <JobCard title="Sheet & parts">
-                <Segmented
-                    label="Sheet type"
-                    value={sheetId as 'plasterboard' | 'plywood' | 'osb' | 'mdf'}
-                    onChange={setSheetId}
-                    options={SHEET_FORMATS.map((s) => ({
-                        value: s.id as 'plasterboard' | 'plywood' | 'osb' | 'mdf',
-                        label: s.label,
-                    }))}
-                />
+                <div>
+                    <label htmlFor="sheet-type" className="form-label text-sm">
+                        Sheet material
+                    </label>
+                    <select
+                        id="sheet-type"
+                        className="form-select"
+                        value={sheetId}
+                        onChange={(e) => setSheetId(e.target.value)}
+                    >
+                        {SHEET_FORMATS.map((s) => (
+                            <option key={s.id} value={s.id}>
+                                {s.label}
+                            </option>
+                        ))}
+                    </select>
+                </div>
+
+                {/* In-store cutting service banner */}
+                <div
+                    className={`flex items-start gap-2.5 rounded-lg px-3 py-2.5 text-xs leading-relaxed border ${
+                        sheet.sawEligible
+                            ? 'bg-brand-navy text-white/90 border-brand-navy'
+                            : 'bg-brand-yellow/20 text-brand-navy border-brand-yellow'
+                    }`}
+                >
+                    <i
+                        className={`fas ${sheet.sawEligible ? 'fa-circle-check text-brand-yellow' : 'fa-circle-exclamation'} mt-0.5`}
+                        aria-hidden="true"
+                    ></i>
+                    <span>
+                        {sheet.sawEligible ? (
+                            <>
+                                <strong>Cut in store</strong> on our vertical panel saw —
+                                straight cuts, {PANEL_SAW.kerfMm} mm kerf, min part{' '}
+                                {PANEL_SAW.minLMm} × {PANEL_SAW.minHFittedMm} mm.
+                            </>
+                        ) : (
+                            <>
+                                <strong>Not cut in store</strong> — plasterboard is score &amp;
+                                snap at home. We cut sheet materials like ply, MDF, OSB,
+                                chipboard and worktops.
+                            </>
+                        )}
+                    </span>
+                </div>
+
                 <ToggleRow
                     label="Allow rotation"
                     hint="Turn off when grain / face direction matters"
