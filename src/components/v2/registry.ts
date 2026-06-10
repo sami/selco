@@ -89,6 +89,66 @@ const BESPOKE: V2CalculatorMeta[] = [
         kind: 'bespoke',
         preview: 'Cross-section of the system build-up',
     },
+    {
+        slug: 'tiling',
+        name: 'Tiling',
+        category: 'Interiors & finishing',
+        description:
+            'Tile grid for three formats, with BAL or Mapei adhesive, Ultracolor grout, spacers, trims and silicone counted.',
+        icon: 'fa-border-none',
+        kind: 'bespoke',
+        preview: 'Tile-by-tile layout, cuts highlighted',
+    },
+    {
+        slug: 'flooring',
+        name: 'Hard flooring',
+        category: 'Interiors & finishing',
+        description:
+            'Laminate, LVT click or engineered wood by the pack — underlay, scotia, thresholds and the expansion kit included.',
+        icon: 'fa-bars',
+        kind: 'bespoke',
+        preview: 'Plank rows with staggered end joints',
+    },
+    {
+        slug: 'masonry',
+        name: 'Brick & block wall',
+        category: 'Building & masonry',
+        description:
+            'Bricks or blocks, building sand and cement, wall ties, DPC and copings for skins, solid walls and cavity work.',
+        icon: 'fa-trowel-bricks',
+        kind: 'bespoke',
+        preview: 'Stretcher-bond elevation with DPC line',
+    },
+    {
+        slug: 'decking',
+        name: 'Decking',
+        category: 'Garden & outdoors',
+        description:
+            'Boards, joists at 400 mm centres, deck blocks or posts, screws or hidden clips — timber or composite.',
+        icon: 'fa-table-list',
+        kind: 'bespoke',
+        preview: 'Joist grid and board plan with supports',
+    },
+    {
+        slug: 'board-coverage',
+        name: 'Board & sheet coverage',
+        category: 'Handy tools',
+        description:
+            'Plasterboard, ply, OSB or backer board over any area — sheets, fixings and joint materials, portrait or landscape.',
+        icon: 'fa-clone',
+        kind: 'bespoke',
+        preview: 'Sheet-by-sheet layout, cuts highlighted',
+    },
+    {
+        slug: 'unit-converter',
+        name: 'Unit converter',
+        category: 'Handy tools',
+        description:
+            'Metric and imperial conversions for length, area, volume, weight and temperature — with trade-handy equivalents.',
+        icon: 'fa-right-left',
+        kind: 'bespoke',
+        preview: 'Live conversions with trade equivalents',
+    },
 ];
 
 /** Spec-driven calculators, surfaced with the same metadata shape. */
@@ -107,11 +167,13 @@ export const V2_CALCULATORS: V2CalculatorMeta[] = [...BESPOKE, ...SPEC_METAS];
 export const V2_CATEGORY_ORDER: V2Category[] = [
     'Garden & outdoors',
     'Groundworks & drainage',
+    'Building & masonry',
     'Kitchens & bathrooms',
     'Interiors & finishing',
     'Walls, ceilings & partitions',
     'Roofing & exteriors',
     'Insulation & heating',
+    'Handy tools',
 ];
 
 export function getV2CalculatorBySlug(slug: string): V2CalculatorMeta | undefined {

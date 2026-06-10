@@ -39,14 +39,6 @@ const pillars = [
   },
 ];
 
-const v1Live = [
-  { label: 'Tiling project', href: `${base}tiling/` },
-  { label: 'Hard flooring', href: `${base}hard-flooring/` },
-  { label: 'Brick & block wall', href: `${base}brick-wall/` },
-  { label: 'Decking', href: `${base}decking/` },
-  { label: 'Unit converter', href: `${base}unit-converter/` },
-  { label: 'Board coverage', href: `${base}coverage/` },
-];
 ---
 
 <SelcoLayout
@@ -179,31 +171,6 @@ const v1Live = [
           </div>
         ))}
       </div>
-    </section>
-
-    {/* Already live in v1 */}
-    <section class="rounded-2xl bg-bg-page border border-border-default p-6 md:p-8 mb-14">
-      <div class="flex flex-wrap items-center justify-between gap-3 mb-4">
-        <h2 class="text-lg font-bold text-text-main m-0">Already live in v1 today</h2>
-        <a href={base} class="text-sm font-bold text-primary-nav hover:underline">
-          Open the v1 calculators →
-        </a>
-      </div>
-      <div class="flex flex-wrap gap-2">
-        {v1Live.map((c) => (
-          <a
-            href={c.href}
-            class="inline-flex items-center gap-2 rounded-full border border-border-default bg-bg-section px-4 py-2 text-sm font-semibold text-text-main hover:border-brand-navy hover:text-primary transition-colors"
-          >
-            <i class="fas fa-circle-check text-success text-xs" aria-hidden="true"></i>
-            {c.label}
-          </a>
-        ))}
-      </div>
-      <p class="text-xs text-text-muted mt-4 mb-0">
-        v2 doesn't duplicate what already works — it extends the same engine and design system
-        to {calculatorCount} more trades.
-      </p>
     </section>
 
     {/* Director pitch strip */}
