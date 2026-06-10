@@ -6,12 +6,15 @@
  * decreasing height), modelled on SELCO's in-store cutting service.
  *
  * In-store service (vertical panel saw, straight cuts only):
- *   - cuttable: hardboard, chipboard, OSB, MDF, kitchen worktops, plywood,
- *     sundeala, door blanks, pegboard, T&G flooring — bought in store
- *   - NOT cuttable: plasterboard, doors, fence panels, thick structural timber
  *   - blade kerf: 3 mm, allowed between every part in the plan
  *   - min workpiece: 500 × 230 mm (with support fitted) / 500 × 400 without
  *   - max workpiece: 3100 × 1644 mm, max depth 60 mm
+ *
+ * The cutting plan is purely geometric — it depends on the sheet
+ * dimensions, not the material — so boards of the same size share one
+ * profile. There are two: the standard 2440 × 1220 sheet (ply, MDF, OSB,
+ * hardboard…) cut both ways, and the 3000 × 600 worktop cross-cut to
+ * length only.
  *
  * Smaller parts still appear in the plan — they're flagged to be cut
  * oversize in store and trimmed at home.
@@ -37,9 +40,8 @@ export interface SheetFormat {
     productName: string;
     wMm: number;
     hMm: number;
-    thicknessMm: number;
-    /** Eligible for the in-store panel saw service. */
-    sawEligible: boolean;
+    /** Fixed thickness, where the format has one (e.g. worktops). */
+    thicknessMm?: number;
     /**
      * Cross-cuts to length only — no rips along the length (postformed
      * worktops: a lengthways rip would remove the bullnose edge and is
@@ -48,14 +50,26 @@ export interface SheetFormat {
     crossCutOnly?: boolean;
 }
 
+// Boards of the same size cut identically, so each entry is a cutting
+// PROFILE (by dimensions), not a material. The standard 8 × 4 sheet covers
+// ply, MDF, OSB, hardboard and any other 2440 × 1220 board.
 export const SHEET_FORMATS: SheetFormat[] = [
-    { id: 'plywood', label: 'Plywood 2440 × 1220 × 18', productName: 'Hardwood-faced plywood, 18 mm', wMm: 1220, hMm: 2440, thicknessMm: 18, sawEligible: true },
-    { id: 'mdf', label: 'MDF 2440 × 1220 × 18', productName: 'MDF board, 18 mm', wMm: 1220, hMm: 2440, thicknessMm: 18, sawEligible: true },
-    { id: 'osb', label: 'OSB3 2440 × 1220 × 18', productName: 'OSB3 board, 18 mm', wMm: 1220, hMm: 2440, thicknessMm: 18, sawEligible: true },
-    { id: 'chipboard', label: 'Chipboard 2440 × 1220 × 18', productName: 'Furniture-grade chipboard, 18 mm', wMm: 1220, hMm: 2440, thicknessMm: 18, sawEligible: true },
-    { id: 'hardboard', label: 'Hardboard 2440 × 1220 × 3', productName: 'Standard hardboard, 3 mm', wMm: 1220, hMm: 2440, thicknessMm: 3, sawEligible: true },
-    { id: 'worktop', label: 'Worktop 3000 × 600 × 38 (cross-cuts only)', productName: 'Laminate kitchen worktop, 38 mm', wMm: 600, hMm: 3000, thicknessMm: 38, sawEligible: true, crossCutOnly: true },
-    { id: 'plasterboard', label: 'Plasterboard 2400 × 1200 × 12.5', productName: 'Gyproc WallBoard, 12.5 mm', wMm: 1200, hMm: 2400, thicknessMm: 12.5, sawEligible: false },
+    {
+        id: 'sheet',
+        label: 'Standard sheet — 2440 × 1220 (ply, MDF, OSB, hardboard)',
+        productName: 'Sheet material — ply / MDF / OSB / hardboard',
+        wMm: 1220,
+        hMm: 2440,
+    },
+    {
+        id: 'worktop',
+        label: 'Worktop — 3000 × 600 (cross-cuts to length only)',
+        productName: 'Laminate kitchen worktop',
+        wMm: 600,
+        hMm: 3000,
+        thicknessMm: 38,
+        crossCutOnly: true,
+    },
 ];
 
 export interface RequiredPart {
@@ -215,8 +229,7 @@ function planCrossCut(input: CuttingInput, sheet: SheetFormat, kerf: number): Cu
 
 export function planCutting(input: CuttingInput): CuttingPlan {
     const sheet = SHEET_FORMATS.find((s) => s.id === input.sheetId) ?? SHEET_FORMATS[0];
-    // Plasterboard is score-and-snap at home: no blade, no kerf.
-    const kerf = sheet.sawEligible ? PANEL_SAW.kerfMm : 0;
+    const kerf = PANEL_SAW.kerfMm;
 
     if (sheet.crossCutOnly) return planCrossCut(input, sheet, kerf);
 
@@ -362,16 +375,15 @@ export function planCutting(input: CuttingInput): CuttingPlan {
 
 export function calculateCutting(input: CuttingInput): BillOfMaterials {
     const plan = planCutting(input);
-    const inStore = plan.sheet.sawEligible;
+    const dims = plan.sheet.thicknessMm
+        ? `${plan.sheet.wMm} × ${plan.sheet.hMm} × ${plan.sheet.thicknessMm} mm`
+        : `${plan.sheet.wMm} × ${plan.sheet.hMm} mm, up to ${PANEL_SAW.maxDepthMm} mm thick`;
 
     return {
         facts: [
             { label: 'Parts to cut', value: `${plan.placedCount}` },
             { label: 'Sheets needed', value: `${plan.layouts.length}` },
-            {
-                label: inStore ? 'Saw cuts' : 'Cutting',
-                value: inStore ? `≈ ${plan.sawCuts} straight passes` : 'Score & snap at home',
-            },
+            { label: 'Saw cuts', value: `≈ ${plan.sawCuts} straight passes` },
             { label: 'Material used', value: `${Math.round(plan.utilisation * 100)}%` },
         ],
         sections: [
@@ -381,36 +393,25 @@ export function calculateCutting(input: CuttingInput): BillOfMaterials {
                     {
                         id: 'sheets',
                         name: plan.sheet.productName,
-                        detail: `${plan.sheet.wMm} × ${plan.sheet.hMm} × ${plan.sheet.thicknessMm} mm — cutting plan opposite`,
+                        detail: `${dims} — cutting plan opposite`,
                         qty: units(plan.layouts.length),
                         unit: 'sheets',
                     },
                 ],
             },
         ],
-        tools: inStore
-            ? [
-                  'Bring this plan to the counter — sheets bought in store are cut on our vertical panel saw',
-                  'Masking tape and a marker to label each part as it comes off the saw',
-                  plan.belowMinCount > 0
-                      ? 'Fine-tooth handsaw or track saw for trimming the flagged small parts at home'
-                      : 'Fine sandpaper or a block plane to ease any cut edges',
-                  'Tape measure — check the first cut against your list before the rest run',
-                  'A van or roof bars sized for your longest part, not the original sheet',
-                  'Offcut pile kept flat — the optimiser already counted them as spare',
-              ]
-            : [
-                  'Sharp utility knife and a straight edge — score the face, snap, cut the back paper',
-                  'Drywall rasp to clean up snapped edges',
-                  'Tape measure, pencil and a marking square',
-                  'Pad saw for cut-outs',
-                  'Masking tape to label each part as it comes off the sheet',
-                  'Offcut pile kept flat — the optimiser already counted them as spare',
-              ],
+        tools: [
+            'Bring this plan to the counter — sheets bought in store are cut on our vertical panel saw',
+            'Masking tape and a marker to label each part as it comes off the saw',
+            plan.belowMinCount > 0 || plan.needsRipCount > 0
+                ? 'Fine-tooth handsaw or track saw for trimming the flagged parts at home'
+                : 'Fine sandpaper or a block plane to ease any cut edges',
+            'Tape measure — check the first cut against your list before the rest run',
+            'A van or roof bars sized for your longest part, not the original sheet',
+            'Offcut pile kept flat — the optimiser already counted them as spare',
+        ],
         notes: [
-            inStore
-                ? `In-store cutting service: straight cuts on the vertical panel saw with a ${PANEL_SAW.kerfMm} mm blade kerf — allowed for in this plan.`
-                : 'Plasterboard is not cut in store — this plan is score-and-snap at home (no kerf needed).',
+            `In-store cutting service: straight cuts on the vertical panel saw with a ${PANEL_SAW.kerfMm} mm blade kerf — allowed for in this plan.`,
             ...(plan.sheet.crossCutOnly
                 ? [
                       'Worktops are cross-cut to length only — we cannot rip along the length (the postformed front edge would be lost). Every piece comes off at the full 600 mm width.',
@@ -421,10 +422,8 @@ export function calculateCutting(input: CuttingInput): BillOfMaterials {
                       `⚠ ${plan.needsRipCount} piece${plan.needsRipCount === 1 ? ' is' : 's are'} narrower than the full width — cut to length in store, then rip to width at home with a track saw and a fine blade (mask the cut line to stop laminate chipping).`,
                   ]
                 : []),
-            inStore
-                ? `Saw limits: ${PANEL_SAW.minLMm} × ${PANEL_SAW.minHFittedMm} mm minimum workpiece (${PANEL_SAW.minLMm} × ${PANEL_SAW.minHMm} mm without the support fitted), ${PANEL_SAW.maxLMm} × ${PANEL_SAW.maxHMm} mm maximum, ${PANEL_SAW.maxDepthMm} mm maximum depth.`
-                : 'We cut hardboard, chipboard, OSB, MDF, worktops, plywood, sundeala, door blanks, pegboard and T&G flooring — not plasterboard, doors, fence panels or structural timber.',
-            ...(plan.belowMinCount > 0 && inStore
+            `Saw limits: ${PANEL_SAW.minLMm} × ${PANEL_SAW.minHFittedMm} mm minimum workpiece (${PANEL_SAW.minLMm} × ${PANEL_SAW.minHMm} mm without the support fitted), ${PANEL_SAW.maxLMm} × ${PANEL_SAW.maxHMm} mm maximum, ${PANEL_SAW.maxDepthMm} mm maximum depth.`,
+            ...(plan.belowMinCount > 0
                 ? [
                       `⚠ ${plan.belowMinCount} part${plan.belowMinCount === 1 ? '' : 's'} (marked ⚠ in the plan) below the ${PANEL_SAW.minLMm} × ${PANEL_SAW.minHFittedMm} mm saw minimum — have them cut oversize in store and trim at home.`,
                   ]
