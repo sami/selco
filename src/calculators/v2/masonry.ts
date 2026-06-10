@@ -84,7 +84,7 @@ export function calculateMasonry(input: MasonryInput): BillOfMaterials {
                         ? [
                               {
                                   id: 'bricks',
-                                  name: 'Facing brick, 65 mm (e.g. Wienerberger range)',
+                                  name: 'Facing brick, 65 mm',
                                   detail: 'inc. 5% cuts & breakages — check pack quantities',
                                   qty: plan.bricks,
                                   unit: 'bricks',
@@ -120,21 +120,21 @@ export function calculateMasonry(input: MasonryInput): BillOfMaterials {
                 lines: [
                     {
                         id: 'sand',
-                        name: 'Hanson building sand',
+                        name: 'Building sand',
                         detail: 'bulk bag (~850 kg)',
                         qty: units(plan.sandKg / 850),
                         unit: 'bulk bags',
                     },
                     {
                         id: 'cement',
-                        name: 'Blue Circle Mastercrete cement',
+                        name: 'General-purpose cement',
                         detail: '25 kg bag — 1:5 with plasticiser',
                         qty: units(plan.cementBags),
                         unit: 'bags',
                     },
                     {
                         id: 'plasticiser',
-                        name: 'Everbuild mortar plasticiser',
+                        name: 'Mortar plasticiser',
                         detail: '5 L bottle',
                         qty: units(plan.cementBags / 20) || 1,
                         unit: 'bottles',
@@ -148,7 +148,7 @@ export function calculateMasonry(input: MasonryInput): BillOfMaterials {
                         ? [
                               {
                                   id: 'dpc',
-                                  name: 'Hyload-style DPC roll, 112 mm',
+                                  name: 'Damp-proof course (DPC) roll, 112 mm',
                                   detail: '20 m roll at 150 mm above ground',
                                   qty: units(input.lengthM / 20),
                                   unit: 'rolls',

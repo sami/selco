@@ -30,15 +30,15 @@ export interface FencePlan {
     posts: number;
     /** Post length in metres after burial allowance. */
     postLengthM: number;
-    /** Bags of postcrete across all posts. */
-    postcreteBags: number;
+    /** Bags of post-fix concrete across all posts. */
+    postFixBags: number;
     /** Actual fence length achievable, m. */
     builtRunM: number;
 }
 
 const PANEL_W_M = 1.83;
 const BURIAL_M = 0.6;
-/** Postcrete per post: timber post holes take ~1 bag, concrete ~2. */
+/** Post-fix concrete per post: timber post holes take ~1 bag, concrete ~2. */
 const BAGS_PER_POST: Record<PostType, number> = { timber: 1, concrete: 2 };
 
 export function planFence(input: FenceInput): FencePlan {
@@ -48,7 +48,7 @@ export function planFence(input: FenceInput): FencePlan {
         panels,
         posts,
         postLengthM: input.heightM + BURIAL_M,
-        postcreteBags: posts * BAGS_PER_POST[input.postType],
+        postFixBags: posts * BAGS_PER_POST[input.postType],
         builtRunM: panels * PANEL_W_M,
     };
 }
@@ -60,7 +60,7 @@ export function calculateFence(input: FenceInput): BillOfMaterials {
     const lines: BomLine[] = [
         {
             id: 'panels',
-            name: `Forest Garden lap panel, 6 × ${heightFt} ft`,
+            name: `Lap fence panel, 6 × ${heightFt} ft`,
             detail: `1.83 m × ${input.heightM.toFixed(1)} m, dip treated`,
             qty: plan.panels,
             unit: 'panels',
@@ -69,17 +69,17 @@ export function calculateFence(input: FenceInput): BillOfMaterials {
             id: 'posts',
             name:
                 input.postType === 'concrete'
-                    ? 'Supreme slotted concrete post'
+                    ? 'Slotted concrete post'
                     : 'UC4 treated timber post, 75 × 75 mm',
             detail: `${plan.postLengthM.toFixed(1)} m (${BURIAL_M * 1000} mm in ground)`,
             qty: plan.posts,
             unit: 'posts',
         },
         {
-            id: 'postcrete',
-            name: 'Blue Circle Postcrete',
+            id: 'postfix',
+            name: 'Fast-set post-fixing concrete',
             detail: '20 kg bag — fast set',
-            qty: plan.postcreteBags,
+            qty: plan.postFixBags,
             unit: 'bags',
         },
     ];
@@ -127,12 +127,12 @@ export function calculateFence(input: FenceInput): BillOfMaterials {
             'Post hole digger or auger (hire for runs over 10 posts)',
             'String line, pegs and a 1.2 m spirit level',
             'Panel clamps or a second pair of hands for fitting',
-            'Wheelbarrow and bucket — Postcrete needs water on hand',
+            'Wheelbarrow and bucket — Post-fix concrete needs water on hand',
             'Exterior wood preserver for cut timber ends',
             'Galvanised 40 mm screws and drill driver',
         ],
         notes: [
-            'Posts set 600 mm into the ground in postcrete; check for services before digging.',
+            'Posts set 600 mm into the ground in post-fix concrete; check for services before digging.',
             input.postType === 'concrete'
                 ? 'Concrete posts + gravel boards keep timber clear of soil — longest life, no panel fixings needed.'
                 : 'Timber posts: fix panels with clips, cap every post to stop end-grain rot.',

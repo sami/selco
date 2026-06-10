@@ -16,21 +16,21 @@ import { bool, num, str } from './spec-types';
 /** Coverage data per covering: pieces/m² and batten metres/m² (at gauge). */
 const COVERINGS = {
     clay: {
-        label: 'Rosemary clay plain tile',
+        label: 'Clay plain tile',
         detail: '265 × 165 mm, 100 mm gauge',
         perM2: 60,
         battenPerM2: 10,
         unit: 'tiles',
     },
     slate: {
-        label: 'Spanish natural slate',
+        label: 'Natural slate',
         detail: '500 × 250 mm, 205 mm gauge',
         perM2: 21,
         battenPerM2: 4.9,
         unit: 'slates',
     },
     concrete: {
-        label: 'Marley Modern interlocking tile',
+        label: 'Concrete interlocking tile',
         detail: '420 × 330 mm, 345 mm gauge',
         perM2: 9.7,
         battenPerM2: 2.9,
@@ -123,7 +123,7 @@ export const roofPitched: CalcSpec = {
                         },
                         {
                             id: 'membrane',
-                            name: 'Cromar Vent 3 breather membrane',
+                            name: 'Breather membrane (vapour-permeable)',
                             detail: '1 m × 50 m roll — 150 mm laps',
                             qty: units((area * 1.15) / 50),
                             unit: 'rolls',
@@ -202,8 +202,8 @@ export const roofFlat: CalcSpec = {
         const systemLines =
             system === 'grp'
                 ? [
-                      { id: 'resin', name: 'Cromar PRO 25 GRP roofing resin', detail: '~1.5 kg/m² laminate coat', qty: units((area * 1.5) / 20), unit: '20 kg tins' },
-                      { id: 'topcoat', name: 'Cromar PRO 25 GRP topcoat', detail: '~0.5 kg/m²', qty: units((area * 0.5) / 10), unit: '10 kg tins' },
+                      { id: 'resin', name: 'GRP roofing resin', detail: '~1.5 kg/m² laminate coat', qty: units((area * 1.5) / 20), unit: '20 kg tins' },
+                      { id: 'topcoat', name: 'GRP roofing topcoat', detail: '~0.5 kg/m²', qty: units((area * 0.5) / 10), unit: '10 kg tins' },
                       { id: 'csm', name: 'Chopped strand matting, 450 g/m²', detail: '1 m wide roll, 50 mm laps', qty: units((area * 1.1) / 45), unit: '45 m² rolls' },
                       { id: 'catalyst', name: 'GRP catalyst (hardener)', detail: '2% mix ratio — more in cold weather', qty: units(area / 25), unit: '500 g bottles' },
                       { id: 'trims', name: 'GRP edge trim (A170 drip / C100 raised edge)', detail: '3 m lengths', qty: units(perimeter / 3), unit: 'lengths' },
@@ -211,16 +211,16 @@ export const roofFlat: CalcSpec = {
                   ]
                 : system === 'epdm'
                   ? [
-                        { id: 'membrane', name: 'ClassicBond EPDM membrane, 1.2 mm', detail: 'one-piece sheet inc. 150 mm upstands', qty: Math.ceil((num(v, 'width') + 0.3) * (num(v, 'length') + 0.3) * 10) / 10, unit: 'm²' },
-                        { id: 'deck-adhesive', name: 'ClassicBond water-based deck adhesive', detail: '~3.5 m²/L on the flat deck', qty: units(area / 3.5 / 5), unit: '5 L tubs' },
-                        { id: 'contact-adhesive', name: 'ClassicBond contact bonding adhesive', detail: 'upstands and perimeter — ~2 m²/L', qty: units((perimeter * 0.3) / 2), unit: 'litres' },
+                        { id: 'membrane', name: 'EPDM rubber membrane, 1.2 mm', detail: 'one-piece sheet inc. 150 mm upstands', qty: Math.ceil((num(v, 'width') + 0.3) * (num(v, 'length') + 0.3) * 10) / 10, unit: 'm²' },
+                        { id: 'deck-adhesive', name: 'EPDM water-based deck adhesive', detail: '~3.5 m²/L on the flat deck', qty: units(area / 3.5 / 5), unit: '5 L tubs' },
+                        { id: 'contact-adhesive', name: 'EPDM contact bonding adhesive', detail: 'upstands and perimeter — ~2 m²/L', qty: units((perimeter * 0.3) / 2), unit: 'litres' },
                         { id: 'trims', name: 'EPDM kerb edge & drip trim set', detail: '2.5 m lengths + corners', qty: units(perimeter / 2.5), unit: 'lengths' },
                         { id: 'primer', name: 'EPDM primer & seam tape', detail: 'for any joins and details', qty: 1, unit: 'kits' },
                     ]
                   : [
-                        { id: 'underlay', name: 'IKO torch-on underlay (2 mm)', detail: '1 m × 16 m roll, laps allowed', qty: units((area * 1.15) / 14), unit: 'rolls' },
-                        { id: 'capsheet', name: 'IKO torch-on mineral cap sheet (4 mm)', detail: '1 m × 8 m roll, green or charcoal', qty: units((area * 1.2) / 7), unit: 'rolls' },
-                        { id: 'primer', name: 'IKO bitumen primer', detail: '~5 m²/L on the deck and upstands', qty: units(area / 5 / 5), unit: '5 L tins' },
+                        { id: 'underlay', name: 'Torch-on underlay (2 mm)', detail: '1 m × 16 m roll, laps allowed', qty: units((area * 1.15) / 14), unit: 'rolls' },
+                        { id: 'capsheet', name: 'Torch-on mineral cap sheet (4 mm)', detail: '1 m × 8 m roll, green or charcoal', qty: units((area * 1.2) / 7), unit: 'rolls' },
+                        { id: 'primer', name: 'Bitumen primer', detail: '~5 m²/L on the deck and upstands', qty: units(area / 5 / 5), unit: '5 L tins' },
                         { id: 'drip', name: 'Felt drip trim / gutter edge', detail: '2.4 m lengths', qty: units(perimeter / 2.4), unit: 'lengths' },
                     ];
 
@@ -252,7 +252,7 @@ export const roofFlat: CalcSpec = {
                 system === 'epdm' ? 'Silicone seam roller and scissors — EPDM cuts cold, no flames' : 'Acetone and rags for tool cleaning',
                 'Sharp utility knife and tin snips for trims',
                 'Broom and leaf blower — the deck must be bone dry and dust-free',
-                'Everbuild bitumen mastic or low-modulus silicone for detail sealing',
+                'Bitumen mastic or low-modulus silicone for detail sealing',
                 'Weather app open — none of these systems go down in rain or below 5 °C',
             ],
             notes: [
@@ -274,7 +274,7 @@ export const guttering: CalcSpec = {
     category: 'Roofing & exteriors',
     icon: 'fa-water',
     description:
-        'FloPlast gutter runs, unions, brackets, outlets and downpipes — counted the way a roofline fitter would.',
+        'uPVC gutter runs, unions, brackets, outlets and downpipes — counted the way a roofline fitter would.',
     fields: [
         { kind: 'number', id: 'run', label: 'Total gutter run', unit: 'm', min: 1, max: 60, default: 12 },
         { kind: 'number', id: 'downpipes', label: 'Downpipes', min: 1, max: 6, step: 1, default: 1 },
@@ -302,7 +302,7 @@ export const guttering: CalcSpec = {
         return {
             facts: [
                 { label: 'Gutter run', value: `${run.toFixed(1)} m` },
-                { label: 'Profile', value: `FloPlast ${profileLabel}` },
+                { label: 'Profile', value: `uPVC ${profileLabel}` },
                 { label: 'Downpipes', value: `${downpipes}` },
                 { label: 'Fall', value: '1:350 towards outlets' },
             ],
@@ -310,7 +310,7 @@ export const guttering: CalcSpec = {
                 {
                     title: 'Gutter',
                     lines: [
-                        { id: 'gutter', name: `FloPlast gutter, ${profileLabel}`, detail: '4 m lengths', qty: gutterLengths, unit: 'lengths' },
+                        { id: 'gutter', name: `uPVC gutter, ${profileLabel}`, detail: '4 m lengths', qty: gutterLengths, unit: 'lengths' },
                         { id: 'unions', name: 'Union brackets (joints)', qty: joints, unit: 'unions' },
                         { id: 'brackets', name: 'Fascia brackets', detail: 'one per 800 mm + one each side of joints', qty: units(run / 0.8) + joints * 2, unit: 'brackets' },
                         { id: 'outlets', name: 'Running outlets', qty: downpipes, unit: 'outlets' },
@@ -320,7 +320,7 @@ export const guttering: CalcSpec = {
                 {
                     title: 'Downpipes',
                     lines: [
-                        { id: 'pipe', name: 'FloPlast 68 mm round downpipe', detail: '2.5 m lengths', qty: pipeLengths, unit: 'lengths' },
+                        { id: 'pipe', name: 'uPVC round downpipe, 68 mm', detail: '2.5 m lengths', qty: pipeLengths, unit: 'lengths' },
                         { id: 'clips', name: 'Downpipe clips', detail: 'one per 1.8 m of drop', qty: units((downpipes * num(v, 'drop')) / 1.8), unit: 'clips' },
                         { id: 'offsets', name: 'Offset bends (swan neck pairs)', detail: '2 bends per downpipe at the eaves', qty: downpipes * 2, unit: 'bends' },
                         { id: 'shoes', name: 'Downpipe shoes', qty: downpipes, unit: 'shoes' },
@@ -332,7 +332,7 @@ export const guttering: CalcSpec = {
                 'String line and level for the 1:350 fall',
                 'Fine-tooth saw and file for clean pipe cuts',
                 '25 mm wood screws (stainless) for brackets — about 2 per bracket',
-                'Everbuild Roof & Gutter sealant for stop ends on old systems',
+                'Roof & gutter sealant for stop ends on old systems',
                 'Bucket and gutter scoop if you are clearing the old run first',
             ],
             notes: [
@@ -376,13 +376,13 @@ export const rendering: CalcSpec = {
 
         const systemLines = mono
             ? [
-                  { id: 'mono', name: 'Weber monocouche render (through-colour)', detail: '25 kg bag ≈ 1 m² at 15 mm, two passes', qty: units(area / 1), unit: 'bags' },
+                  { id: 'mono', name: 'Monocouche render (through-colour)', detail: '25 kg bag ≈ 1 m² at 15 mm, two passes', qty: units(area / 1), unit: 'bags' },
               ]
             : [
-                  { id: 'sand', name: 'Hanson plastering sand', detail: 'bulk bag — scratch + top coat at 18 mm total', qty: units((area * 31) / 850), unit: 'bulk bags' },
-                  { id: 'cement', name: 'Blue Circle Mastercrete cement', detail: '25 kg bag — 5:1 with plasticiser', qty: units((area * 6.2) / 25), unit: 'bags' },
-                  { id: 'plasticiser', name: 'Everbuild mortar plasticiser', detail: '5 L', qty: units(area / 100), unit: 'bottles' },
-                  { id: 'waterproofer', name: 'Everbuild 202 integral waterproofer', detail: '5 L — scratch coat', qty: units(area / 100), unit: 'bottles' },
+                  { id: 'sand', name: 'Plastering sand', detail: 'bulk bag — scratch + top coat at 18 mm total', qty: units((area * 31) / 850), unit: 'bulk bags' },
+                  { id: 'cement', name: 'General-purpose cement', detail: '25 kg bag — 5:1 with plasticiser', qty: units((area * 6.2) / 25), unit: 'bags' },
+                  { id: 'plasticiser', name: 'Mortar plasticiser', detail: '5 L', qty: units(area / 100), unit: 'bottles' },
+                  { id: 'waterproofer', name: 'Integral mortar waterproofer', detail: '5 L — scratch coat', qty: units(area / 100), unit: 'bottles' },
               ];
 
         return {
@@ -400,7 +400,7 @@ export const rendering: CalcSpec = {
                         ...(bool(v, 'mesh')
                             ? [{ id: 'mesh', name: 'Alkali-resistant render mesh, 160 g', detail: '1 m × 50 m roll', qty: units((area * 1.1) / 50), unit: 'rolls' }]
                             : []),
-                        { id: 'sbr', name: 'Everbuild SBR bond', detail: '5 L — key coat on dense or painted backgrounds', qty: units(area / 60), unit: 'bottles' },
+                        { id: 'sbr', name: 'SBR bonding agent', detail: '5 L — key coat on dense or painted backgrounds', qty: units(area / 60), unit: 'bottles' },
                     ],
                 },
             ],
@@ -459,7 +459,7 @@ export const cladding: CalcSpec = {
         return {
             facts: [
                 { label: 'Clad area', value: fmtM2(area) },
-                { label: 'Board', value: cedral ? 'Cedral Lap fibre cement' : 'Treated featheredge' },
+                { label: 'Board', value: cedral ? 'Fibre cement lap board' : 'Treated featheredge' },
                 { label: 'Board run', value: `${Math.ceil(area * lmPerM2)} lm` },
             ],
             sections: [
@@ -468,12 +468,12 @@ export const cladding: CalcSpec = {
                     lines: [
                         {
                             id: 'boards',
-                            name: cedral ? 'Cedral Lap weatherboard, 3.6 m' : 'Treated featheredge board, 150 mm × 4.8 m',
+                            name: cedral ? 'Fibre cement weatherboard, 3.6 m' : 'Treated featheredge board, 150 mm × 4.8 m',
                             detail: cedral ? '160 mm exposure — inc. 7.5% cuts' : '125 mm cover — inc. 7.5% cuts',
                             qty: units((area * lmPerM2 * 1.075) / boardLen),
                             unit: 'boards',
                         },
-                        { id: 'corner-trims', name: cedral ? 'Cedral external corner profile, 3 m' : 'Treated corner roll, 50 × 50 mm × 3 m', qty: Math.round(num(v, 'corners')), unit: 'lengths' },
+                        { id: 'corner-trims', name: cedral ? 'Fibre cement external corner profile, 3 m' : 'Treated corner roll, 50 × 50 mm × 3 m', qty: Math.round(num(v, 'corners')), unit: 'lengths' },
                         {
                             id: 'fixings',
                             name: cedral ? 'Colour-matched cladding screws' : 'Stainless annular ring nails, 50 mm',
@@ -488,7 +488,7 @@ export const cladding: CalcSpec = {
                     lines: [
                         { id: 'battens', name: 'Treated batten, 25 × 50 mm', detail: '4.8 m lengths, verticals at 600 mm centres', qty: units(battenM / 4.8), unit: 'lengths' },
                         ...(bool(v, 'membrane')
-                            ? [{ id: 'membrane', name: 'Cromar Vent 3 breather membrane', detail: '1 m × 50 m roll', qty: units((area * 1.15) / 50), unit: 'rolls' }]
+                            ? [{ id: 'membrane', name: 'Breather membrane (vapour-permeable)', detail: '1 m × 50 m roll', qty: units((area * 1.15) / 50), unit: 'rolls' }]
                             : []),
                         { id: 'batten-screws', name: 'Concrete frame screws, 100 mm', detail: 'box of 100 — battens to masonry', qty: units(battenM / 0.6 / 100), unit: 'boxes' },
                     ],
@@ -499,7 +499,7 @@ export const cladding: CalcSpec = {
                 'Laser level or water level for the first course — everything follows it',
                 'Cladding gauge / spacer blocks for consistent exposure',
                 'Insect mesh for the ventilation gap top and bottom',
-                'Everbuild low-modulus silicone for abutments and penetrations',
+                'Low-modulus silicone for abutments and penetrations',
                 'Touch-up paint pen (fibre cement) or end-grain preserver (timber)',
             ],
             notes: [

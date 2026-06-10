@@ -19,7 +19,7 @@ export const loftInsulation: CalcSpec = {
     category: 'Insulation & heating',
     icon: 'fa-temperature-arrow-down',
     description:
-        'Knauf Loft Roll to 270 mm: a 100 mm layer between joists and a 170 mm cross-layer over the top.',
+        'Loft insulation to 270 mm: a 100 mm layer between joists and a 170 mm cross-layer over the top.',
     fields: [
         { kind: 'number', id: 'width', label: 'Loft width', unit: 'm', min: 1, max: 20, default: 6 },
         { kind: 'number', id: 'length', label: 'Loft length', unit: 'm', min: 1, max: 25, default: 8 },
@@ -46,9 +46,9 @@ export const loftInsulation: CalcSpec = {
                     title: 'Insulation',
                     lines: [
                         ...(!bool(v, 'topup')
-                            ? [{ id: 'base', name: 'Knauf Loft Roll 44, 100 mm', detail: 'covers 13.89 m² per roll — between joists', qty: units(area / 13.89), unit: 'rolls' }]
+                            ? [{ id: 'base', name: 'Loft insulation roll, 100 mm', detail: 'covers 13.89 m² per roll — between joists', qty: units(area / 13.89), unit: 'rolls' }]
                             : []),
-                        { id: 'top', name: 'Knauf Loft Roll 44, 170 mm', detail: 'covers 8.34 m² per roll — cross-laid over joists', qty: units(area / 8.34), unit: 'rolls' },
+                        { id: 'top', name: 'Loft insulation roll, 170 mm', detail: 'covers 8.34 m² per roll — cross-laid over joists', qty: units(area / 8.34), unit: 'rolls' },
                     ],
                 },
                 ...(bool(v, 'boarding')
@@ -70,7 +70,7 @@ export const loftInsulation: CalcSpec = {
                 'Long-bladed insulation knife or old wood saw',
                 'Head torch — loft lighting never reaches the eaves',
                 'Loft cap / downlight covers for any spotlights below',
-                'Everbuild gap foam for sealing around the hatch and pipes',
+                'Expanding gap foam for sealing around the hatch and pipes',
             ],
             notes: [
                 'Never block the eaves — leave a 50 mm ventilation path or fit eaves trays.',
@@ -91,7 +91,7 @@ export const acousticInsulation: CalcSpec = {
     category: 'Insulation & heating',
     icon: 'fa-volume-xmark',
     description:
-        'Rockwool slabs between studs or joists to cut noise between rooms and floors.',
+        'Mineral wool slabs between studs or joists to cut noise between rooms and floors.',
     fields: [
         { kind: 'number', id: 'area', label: 'Wall / floor area', unit: 'm²', min: 1, max: 200, step: 0.5, default: 12 },
         {
@@ -105,7 +105,7 @@ export const acousticInsulation: CalcSpec = {
             ],
             default: '50',
         },
-        { kind: 'toggle', id: 'soundbloc', label: 'Upgrade the boards too', hint: 'Add Gyproc SoundBloc over the top', default: false },
+        { kind: 'toggle', id: 'soundbloc', label: 'Upgrade the boards too', hint: 'Add acoustic plasterboard over the top', default: false },
     ],
     compute: (v) => {
         const area = num(v, 'area');
@@ -115,18 +115,18 @@ export const acousticInsulation: CalcSpec = {
         return {
             facts: [
                 { label: 'Area', value: fmtM2(area) },
-                { label: 'Slab', value: `Rockwool RWA45, ${depth} mm` },
+                { label: 'Slab', value: `Acoustic mineral wool, ${depth} mm` },
                 { label: 'Packs', value: `${units(area / packM2)}` },
             ],
             sections: [
                 {
                     title: 'Insulation',
                     lines: [
-                        { id: 'slabs', name: `Rockwool RWA45 acoustic slab, ${depth} mm`, detail: `600 × 1200 mm slabs — ${packM2} m² per pack`, qty: units(area / packM2), unit: 'packs' },
+                        { id: 'slabs', name: `Acoustic mineral wool slab, ${depth} mm`, detail: `600 × 1200 mm slabs — ${packM2} m² per pack`, qty: units(area / packM2), unit: 'packs' },
                         ...(bool(v, 'soundbloc')
-                            ? [{ id: 'boards', name: 'Gyproc SoundBloc, 12.5 mm', detail: '1200 × 2400 mm — inc. 10% cuts', qty: units((area * 1.1) / 2.88), unit: 'boards' }]
+                            ? [{ id: 'boards', name: 'Acoustic plasterboard, 12.5 mm', detail: '1200 × 2400 mm — inc. 10% cuts', qty: units((area * 1.1) / 2.88), unit: 'boards' }]
                             : []),
-                        { id: 'sealant', name: 'Everbuild acoustic sealant', detail: 'perimeter joints — flanking kills sound ratings', qty: units(area / 15) + 1, unit: 'cartridges' },
+                        { id: 'sealant', name: 'Acoustic sealant', detail: 'perimeter joints — flanking kills sound ratings', qty: units(area / 15) + 1, unit: 'cartridges' },
                     ],
                 },
             ],
@@ -157,7 +157,7 @@ export const cavityInsulation: CalcSpec = {
     category: 'Insulation & heating',
     icon: 'fa-table-columns',
     description:
-        'Knauf DriTherm full-fill cavity batts for new masonry work, with retaining clips counted per tie.',
+        'Full-fill cavity batts for new masonry work, with retaining clips counted per tie.',
     fields: [
         { kind: 'number', id: 'area', label: 'Cavity wall area', unit: 'm²', min: 1, max: 500, step: 0.5, default: 35 },
         {
@@ -180,14 +180,14 @@ export const cavityInsulation: CalcSpec = {
         return {
             facts: [
                 { label: 'Wall area', value: fmtM2(area) },
-                { label: 'Batt', value: `DriTherm 32, ${t} mm` },
+                { label: 'Batt', value: `Full-fill batt, ${t} mm` },
                 { label: 'Packs', value: `${units(area / packM2)}` },
             ],
             sections: [
                 {
                     title: 'Insulation',
                     lines: [
-                        { id: 'batts', name: `Knauf DriTherm 32 cavity slab, ${t} mm`, detail: `455 × 1200 mm — ${packM2} m² per pack`, qty: units(area / packM2), unit: 'packs' },
+                        { id: 'batts', name: `Full-fill cavity slab, ${t} mm`, detail: `455 × 1200 mm — ${packM2} m² per pack`, qty: units(area / packM2), unit: 'packs' },
                         { id: 'clips', name: 'Insulation retaining clips', detail: 'one per wall tie — ties at 2.5/m²', qty: units((area * 2.5) / 50), unit: 'packs of 50' },
                         { id: 'cavity-closer', name: 'Cavity closers, 2.4 m', detail: 'reveals at openings — count your openings', qty: 0, unit: 'lengths' },
                     ],
@@ -199,7 +199,7 @@ export const cavityInsulation: CalcSpec = {
                 'Cavity battens / boards to protect batts as the wall rises',
                 'Gloves and FFP3 mask',
                 'String line — batts sit flush, not bulging the cavity',
-                'Everbuild expanding foam for awkward closures at eaves',
+                'Expanding foam for awkward closures at eaves',
             ],
             notes: [
                 'Batts go in as the work rises — never poked down from above.',
@@ -292,7 +292,7 @@ export const radiatorBtu: CalcSpec = {
     category: 'Insulation & heating',
     icon: 'fa-temperature-arrow-up',
     description:
-        'Sizes the heat output a room needs, suggests a Stelrad panel combination, and lists the install kit.',
+        'Sizes the heat output a room needs, suggests a panel-radiator combination, and lists the install kit.',
     fields: [
         { kind: 'number', id: 'length', label: 'Room length', unit: 'm', min: 1, max: 15, default: 4.5 },
         { kind: 'number', id: 'width', label: 'Room width', unit: 'm', min: 1, max: 15, default: 3.5 },
@@ -346,7 +346,7 @@ export const radiatorBtu: CalcSpec = {
                     title: 'Radiators',
                     lines: radiators.map((r) => ({
                         id: `rad-${r.len}`,
-                        name: `Stelrad Softline Compact K2 (Type 22), 600 × ${r.len} mm`,
+                        name: `Type 22 (K2) double-panel radiator, 600 × ${r.len} mm`,
                         detail: 'double panel, double convector — ΔT50 rated',
                         qty: r.count,
                         unit: 'radiators',
@@ -359,7 +359,7 @@ export const radiatorBtu: CalcSpec = {
                         { id: 'pipe', name: 'Copper tube, 15 mm × 3 m', detail: 'allowance for drops and tails', qty: radCount * 2, unit: 'lengths' },
                         { id: 'fittings', name: 'End-feed elbow & coupler selection, 15 mm', detail: 'trade pack', qty: 1, unit: 'packs' },
                         { id: 'clips', name: 'Pipe clips, 15 mm', detail: 'pack of 20', qty: units(radCount / 2) || 1, unit: 'packs' },
-                        { id: 'inhibitor', name: 'Fernox F1 central heating inhibitor', detail: 'top up after any drain-down', qty: 1, unit: 'bottles' },
+                        { id: 'inhibitor', name: 'Central heating inhibitor', detail: 'top up after any drain-down', qty: 1, unit: 'bottles' },
                         { id: 'ptfe', name: 'PTFE tape', qty: 2, unit: 'rolls' },
                     ],
                 },
@@ -423,7 +423,7 @@ export const underfloorHeating: CalcSpec = {
                 {
                     title: 'UFH system',
                     lines: [
-                        { id: 'pipe', name: 'JG Speedfit/PB UFH barrier pipe, 16 mm', detail: '100 m coils', qty: loops, unit: 'coils' },
+                        { id: 'pipe', name: 'UFH barrier pipe (PB), 16 mm', detail: '100 m coils', qty: loops, unit: 'coils' },
                         { id: 'manifold', name: `UFH manifold, ${loops}-port`, detail: 'inc. flow meters & blending valve', qty: 1, unit: 'manifolds' },
                         { id: 'staples', name: 'Pipe staples (insulation fix)', detail: 'box of 300 — every 400 mm, closer on bends', qty: units((pipeM / 0.4) / 300), unit: 'boxes' },
                         { id: 'edge', name: 'Perimeter edge insulation strip', detail: '25 m roll with skirt', qty: units(num(v, 'perimeter') / 25), unit: 'rolls' },

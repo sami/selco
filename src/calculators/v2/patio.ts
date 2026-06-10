@@ -72,35 +72,35 @@ export function calculatePatio(input: PatioInput): BillOfMaterials {
     const lines: BomLine[] = [
         {
             id: 'slabs',
-            name: `Bradstone paving slab, ${plan.slab.label}`,
+            name: `Concrete paving slab, ${plan.slab.label}`,
             detail: `${plan.cols} × ${plan.rows} grid + ${input.wastePct}% cuts`,
             qty: plan.slabs,
             unit: 'slabs',
         },
         {
             id: 'sharp-sand',
-            name: 'Hanson sharp sand',
+            name: 'Sharp sand',
             detail: 'bulk bag (~850 kg) — 30 mm bed',
             qty: units((sandT * 1000) / 850),
             unit: 'bulk bags',
         },
         {
             id: 'cement',
-            name: 'Blue Circle Mastercrete cement',
+            name: 'General-purpose cement',
             detail: '25 kg bag — 5:1 bed mix',
             qty: cementBags,
             unit: 'bags',
         },
         {
             id: 'jointing',
-            name: 'Sika FastFix jointing compound',
+            name: 'Brush-in paving jointing compound',
             detail: '15 kg tub — covers ~12 m²',
             qty: units(a / 12),
             unit: 'tubs',
         },
         {
             id: 'primer',
-            name: 'Ultrascape Pro-Prime slurry primer',
+            name: 'Slurry priming bond',
             detail: '5 kg — bonds slab to bed',
             qty: units(a / 15),
             unit: 'tubs',
@@ -110,7 +110,7 @@ export function calculatePatio(input: PatioInput): BillOfMaterials {
     if (input.includeSubBase) {
         lines.splice(1, 0, {
             id: 'mot',
-            name: 'Hanson MOT Type 1 sub-base',
+            name: 'MOT Type 1 sub-base',
             detail: 'bulk bag (~850 kg) — 100 mm compacted',
             qty: units((a * SUBBASE_M * 2200) / 850),
             unit: 'bulk bags',

@@ -25,14 +25,14 @@ export const FLOOR_TYPES: FloorType[] = [
         label: 'Laminate',
         plankMm: { w: 192, l: 1285 },
         packM2: 1.97,
-        productName: 'Kronospan 8 mm AC4 laminate',
+        productName: '8 mm AC4 laminate flooring',
     },
     {
         id: 'lvt',
         label: 'LVT click',
         plankMm: { w: 180, l: 1220 },
         packM2: 2.2,
-        productName: 'Luvanto-style LVT click plank',
+        productName: 'LVT click plank',
     },
     {
         id: 'engineered',
@@ -163,7 +163,7 @@ export function calculateFlooring(input: FlooringInput): BillOfMaterials {
             'Tapping block and pull bar (in the fitting kit) — never hammer the click joint directly',
             'Undercut saw or multi-tool to trim door casings so planks slide under',
             'Sharp knife for the underlay and a roll of underlay tape',
-            'Everbuild decorators caulk to finish the scotia after fitting',
+            'Decorators caulk to finish the scotia after fitting',
         ],
         notes: [
             'Acclimatise packs flat in the room for 48 hours before laying.',

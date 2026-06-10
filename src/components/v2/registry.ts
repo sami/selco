@@ -64,7 +64,7 @@ const BESPOKE: V2CalculatorMeta[] = [
         name: 'Fencing',
         category: 'Garden & outdoors',
         description:
-            'Panels, posts, postcrete and gravel boards for any run — timber or concrete, with corner posts handled.',
+            'Panels, posts, post-fix concrete and gravel boards for any run — timber or concrete, with corner posts handled.',
         icon: 'fa-grip-lines-vertical',
         kind: 'bespoke',
         preview: 'Bay-by-bay elevation with burial depth',
@@ -84,7 +84,7 @@ const BESPOKE: V2CalculatorMeta[] = [
         name: 'Plastering',
         category: 'Walls, ceilings & partitions',
         description:
-            'Bags of Thistle MultiFinish or BondingCoat for skim and float-and-set work, with PVA, scrim and beads where needed.',
+            'Bags of Multi-finish plaster or BondingCoat for skim and float-and-set work, with PVA, scrim and beads where needed.',
         icon: 'fa-layer-group',
         kind: 'bespoke',
         preview: 'Cross-section of the system build-up',
@@ -94,7 +94,7 @@ const BESPOKE: V2CalculatorMeta[] = [
         name: 'Tiling',
         category: 'Interiors & finishing',
         description:
-            'Tile grid for three formats, with BAL or Mapei adhesive, Ultracolor grout, spacers, trims and silicone counted.',
+            'Tile grid for three formats, with flexible adhesive, grout, spacers, trims and silicone counted.',
         icon: 'fa-border-none',
         kind: 'bespoke',
         preview: 'Tile-by-tile layout, cuts highlighted',
