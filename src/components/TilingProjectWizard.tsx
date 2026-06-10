@@ -13,7 +13,10 @@ import { calculateTanking } from '../calculators/tanking';
 import { calculateSLC } from '../calculators/slc';
 import { convertLength } from '../calculators/conversions';
 import { WizardShell } from './ui/WizardShell';
+import { CopyLinkButton } from './ui/CopyLinkButton';
 import { TILING_STEPS } from '../projects/tiling';
+import { decodePermalink, encodePermalink } from '../projects/permalink';
+import { TILING_PERMALINK_SCHEMA } from '../projects/tiling-permalink';
 
 import type { LayingPattern } from '../calculators/types';
 
@@ -143,13 +146,6 @@ export default function TilingProjectWizard() {
   }, [currentIndex, steps.length]);
 
   useEffect(() => {
-    const selected = PATTERNS.find((item) => item.value === pattern);
-    if (selected) {
-      setTileWastage(String(selected.wastage));
-    }
-  }, [pattern]);
-
-  useEffect(() => {
     if (application === 'floor') {
       const current = GROUT_PRODUCTS.find(p => p.id === selectedGroutProduct);
       if (current?.restrictions?.includes('walls-only')) {
@@ -159,10 +155,120 @@ export default function TilingProjectWizard() {
     }
   }, [application]);
 
+  // Prefill inputs from URL query params (permalink-share). Runs once on
+  // mount, after hydration, so the server-rendered HTML stays in sync with
+  // the first client render. Invalid or unknown params are dropped by
+  // decodePermalink and the defaults stand.
   useEffect(() => {
-    const product = SLC_PRODUCTS.find(p => p.id === selectedSLCProduct);
+    const params = decodePermalink(TILING_PERMALINK_SCHEMA, window.location.search);
+    if (Object.keys(params).length === 0) return;
+
+    if (params.unit) setAreaUnit(params.unit as Unit);
+    if (params.aw) setAreaWidth(params.aw);
+    if (params.ah) setAreaHeight(params.ah);
+    if (params.app) setApplication(params.app as Application);
+
+    if (params.tw) setTileWidth(params.tw);
+    if (params.th) setTileHeight(params.th);
+    if (params.tw || params.th) {
+      const widthMm = Number(params.tw ?? tileWidth);
+      const heightMm = Number(params.th ?? tileHeight);
+      const preset = TILE_PRESETS.find(
+        (item) => item.width === widthMm && item.height === heightMm,
+      );
+      setTilePreset(preset ? preset.value : 'custom');
+    }
+    if (params.gap) setGapWidth(params.gap);
+    if (params.pat) {
+      const nextPattern = params.pat as Pattern;
+      setPattern(nextPattern);
+      // Linked wastage suggestion only applies when the link carries no
+      // explicit wastage of its own.
+      if (!params.twa) {
+        const selected = PATTERNS.find((item) => item.value === nextPattern);
+        if (selected) setTileWastage(String(selected.wastage));
+      }
+    }
+    if (params.twa) setTileWastage(params.twa);
+
+    if (params.bed) setBedDepth(params.bed);
+    if (params.abag) setAdhesiveBagSize(params.abag);
+    if (params.awa) setAdhesiveWastage(params.awa);
+
+    if (params.tde) setTileDepth(params.tde);
+    if (params.gbag) setGroutBagSize(params.gbag);
+    if (params.gwa) setGroutWastage(params.gwa);
+    if (params.gpr) setSelectedGroutProduct(params.gpr);
+
+    if (params.spk) setSpacersPerPack(params.spk);
+
+    if (params.ppr) setSelectedPrimerProduct(params.ppr);
+    if (params.pco) setPrimerCoats(params.pco);
+    if (params.bpr) setSelectedBackerProduct(params.bpr);
+    if (params.tkp) setSelectedTankingProduct(params.tkp);
+    if (params.slp) setSelectedSLCProduct(params.slp);
+    if (params.sld) setSlcDepth(params.sld);
+    if (params.slb) setSlcBagSize(params.slb);
+
+    if (params.skp) setSkipPrimer(true);
+    if (params.skb) setSkipBacker(true);
+    if (params.skt) setSkipTanking(true);
+    if (params.sks) setSkipSlc(true);
+  }, []);
+
+  /** Builds the shareable URL for the current inputs (Copy link button). */
+  const buildShareUrl = () => {
+    const query = encodePermalink(TILING_PERMALINK_SCHEMA, {
+      unit: areaUnit,
+      aw: areaWidth,
+      ah: areaHeight,
+      app: application,
+      tw: tileWidth,
+      th: tileHeight,
+      gap: gapWidth,
+      pat: pattern,
+      twa: tileWastage,
+      bed: bedDepth,
+      abag: adhesiveBagSize,
+      awa: adhesiveWastage,
+      tde: tileDepth,
+      gbag: groutBagSize,
+      gwa: groutWastage,
+      gpr: selectedGroutProduct,
+      spk: spacersPerPack,
+      ppr: selectedPrimerProduct,
+      pco: primerCoats,
+      bpr: selectedBackerProduct,
+      tkp: selectedTankingProduct,
+      slp: selectedSLCProduct,
+      sld: slcDepth,
+      slb: slcBagSize,
+      skp: skipPrimer ? '1' : '',
+      skb: skipBacker ? '1' : '',
+      skt: skipTanking ? '1' : '',
+      sks: skipSlc ? '1' : '',
+    });
+    // The current page URL already carries the /selco base path, so the
+    // link is base-safe on GitHub Pages and in dev without hardcoding "/".
+    const url = new URL(window.location.href);
+    url.search = query;
+    url.hash = '';
+    return url.toString();
+  };
+
+  const handlePatternChange = (value: Pattern) => {
+    setPattern(value);
+    const selected = PATTERNS.find((item) => item.value === value);
+    if (selected) {
+      setTileWastage(String(selected.wastage));
+    }
+  };
+
+  const handleSLCProductChange = (id: string) => {
+    setSelectedSLCProduct(id);
+    const product = SLC_PRODUCTS.find(p => p.id === id);
     if (product) setSlcBagSize(String(product.bagSizeKg));
-  }, [selectedSLCProduct]);
+  };
 
   const handleUnitToggle = (nextUnit: Unit) => {
     if (nextUnit === areaUnit) return;
@@ -407,6 +513,7 @@ export default function TilingProjectWizard() {
       onBack={goBack}
       onSkip={() => currentStep && handleSkip(currentStep.id)}
       onStartOver={() => setCurrentIndex(0)}
+      actions={<CopyLinkButton getUrl={buildShareUrl} />}
     >
       {currentStep?.id === 'setup' && (
         <div className="space-y-6">
@@ -470,7 +577,7 @@ export default function TilingProjectWizard() {
                 id="pattern"
                 label="Laying pattern"
                 value={pattern}
-                onChange={(e) => setPattern(e.target.value as Pattern)}
+                onChange={(e) => handlePatternChange(e.target.value as Pattern)}
                 options={PATTERNS.map((p) => ({ value: p.value, label: `${p.label} (suggested wastage ${p.wastage}%)` }))}
               />
             </div>
@@ -832,7 +939,7 @@ export default function TilingProjectWizard() {
                   label="Product"
                   products={SLC_PRODUCTS}
                   value={selectedSLCProduct}
-                  onChange={(e) => setSelectedSLCProduct(e.target.value)}
+                  onChange={(e) => handleSLCProductChange(e.target.value)}
                 />
                 <div className="grid gap-4 sm:grid-cols-2">
                   <NumberInput
