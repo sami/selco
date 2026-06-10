@@ -13,8 +13,6 @@
  */
 
 import { describe, it, expect } from 'vitest';
-import { existsSync } from 'fs';
-import { join } from 'path';
 import {
     CALCULATOR_REGISTRY,
     PROJECT_CALCULATORS,
@@ -23,10 +21,6 @@ import {
     getCalculatorById,
 } from './registry';
 import type { CalculatorMeta } from '../types';
-
-// Resolve the project root so icon paths can be checked on disk.
-// vitest sets process.cwd() to the project root.
-const publicDir = join(process.cwd(), 'public');
 
 // ---------------------------------------------------------------------------
 // CALCULATOR_REGISTRY — structural integrity
@@ -97,14 +91,33 @@ describe('CALCULATOR_REGISTRY', () => {
         expect(new Set(slugs).size).toBe(slugs.length);
     });
 
-    it('icon paths (when present) reference SVG files that exist in public/images/hero/', () => {
+    // Icons are inline SVGs rendered by CalculatorPageHeader, coloured via the
+    // SELCO-yellow token (stroke="currentColor"). Every entry must carry one so
+    // the banner is uniform across pages — see the UI Conventions note.
+    it('every entry icon is an inline SVG coloured via currentColor (no hardcoded hex)', () => {
         for (const entry of CALCULATOR_REGISTRY) {
-            if (!entry.icon) continue;
-            const absolutePath = join(publicDir, entry.icon);
+            const svg = entry.icon;
+            expect(svg, `"${entry.id}" has no inline SVG icon`).toBeTruthy();
             expect(
-                existsSync(absolutePath),
-                `"${entry.id}" icon "${entry.icon}" not found at ${absolutePath}`,
+                svg!.trimStart().startsWith('<svg'),
+                `"${entry.id}" icon is not an inline <svg>`,
             ).toBe(true);
+            expect(svg!.includes('</svg>'), `"${entry.id}" icon is not closed`).toBe(true);
+            expect(
+                svg!.includes('currentColor'),
+                `"${entry.id}" icon must use currentColor, not a fixed colour`,
+            ).toBe(true);
+            expect(
+                /#[0-9a-fA-F]{3,6}\b/.test(svg!),
+                `"${entry.id}" icon must not hardcode a hex colour`,
+            ).toBe(false);
+        }
+    });
+
+    it('all icons share one stroke weight and viewBox (uniform iconography)', () => {
+        for (const entry of CALCULATOR_REGISTRY) {
+            expect(entry.icon, `"${entry.id}" missing icon`).toContain('viewBox="0 0 24 24"');
+            expect(entry.icon, `"${entry.id}" wrong stroke weight`).toContain('stroke-width="2"');
         }
     });
 });

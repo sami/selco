@@ -12,6 +12,11 @@
   --color-brand-light-grey: #f2f6fa;   /* page backgrounds, light surfaces */
   --color-brand-white:      #ffffff;
 
+  /* SELCO banner tokens — canonical names used by CalculatorPageHeader.
+     Aliased to the brand palette so the banner reads from one source. */
+  --color-selco-navy:       var(--color-brand-navy);
+  --color-selco-yellow:     var(--color-brand-yellow);
+
   /* =========================================================================
      Semantic tokens — derived from brand palette
      ========================================================================= */
