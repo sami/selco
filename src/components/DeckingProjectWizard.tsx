@@ -1,10 +1,13 @@
-import React, { useMemo, useState } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import { NumberInput } from './ui/NumberInput';
 import { FormField } from './ui/FormField';
 import { WizardShell } from './ui/WizardShell';
+import { CopyLinkButton } from './ui/CopyLinkButton';
 import { calculateDeckingProject } from '../calculators/decking-project';
 import { BOARD_PRESETS, FIXING_PRODUCTS, JOIST_PRODUCTS } from '../data/decking-products';
 import { DECKING_STEPS, DECKING_WASTAGE, DEFAULT_SUPPORT_SPACING_MM, DEFAULT_GAP_MM, DEFAULT_JOIST_SPACING_MM } from '../projects/decking';
+import { decodePermalink, encodePermalink } from '../projects/permalink';
+import { DECKING_PERMALINK_SCHEMA } from '../projects/decking-permalink';
 import type { DeckingFixingMethod } from '../calculators/decking';
 import type { MaterialQuantity } from '../types';
 
@@ -63,6 +66,69 @@ export default function DeckingProjectWizard() {
   const [joistStockLength, setJoistStockLength] = useState('3600');
   const [includeDeckBlocks, setIncludeDeckBlocks] = useState(true);
   const [joistWastage, setJoistWastage] = useState(String(DECKING_WASTAGE.joists));
+
+  // Prefill inputs from URL query params (permalink-share). Runs once on
+  // mount, after hydration. Invalid or unknown params are dropped by
+  // decodePermalink and the defaults stand.
+  useEffect(() => {
+    const params = decodePermalink(DECKING_PERMALINK_SCHEMA, window.location.search);
+    if (Object.keys(params).length === 0) return;
+
+    if (params.dl) setDeckLength(params.dl);
+    if (params.dw) setDeckWidth(params.dw);
+    if (params.bp) setBoardPreset(params.bp);
+    if (params.bw) setBoardWidthMm(params.bw);
+    if (params.bl) setBoardLengthMm(params.bl);
+    if (params.gap) setGapMm(params.gap);
+    if (params.bwa) setBoardWastage(params.bwa);
+
+    if (params.fm) {
+      const method = params.fm as DeckingFixingMethod;
+      setFixingMethod(method);
+      // Only accept a fixing product that matches the method; otherwise
+      // pick the first matching product, mirroring the method buttons.
+      const linked = FIXING_PRODUCTS.find((f) => f.id === params.fp);
+      const fallback = FIXING_PRODUCTS.find((f) => f.type === method);
+      const product = linked?.type === method ? linked : fallback;
+      if (product) setFixingProduct(product.id);
+    } else if (params.fp) {
+      setFixingProduct(params.fp);
+    }
+    if (params.fwa) setFixingWastage(params.fwa);
+
+    if (params.js) setJoistSpacingMm(params.js);
+    if (params.jp) setJoistProduct(params.jp);
+    if (params.jsl) setJoistStockLength(params.jsl);
+    if (params.blk) setIncludeDeckBlocks(params.blk === '1');
+    if (params.jwa) setJoistWastage(params.jwa);
+  }, []);
+
+  /** Builds the shareable URL for the current inputs (Copy link button). */
+  const buildShareUrl = () => {
+    const query = encodePermalink(DECKING_PERMALINK_SCHEMA, {
+      dl: deckLength,
+      dw: deckWidth,
+      bp: boardPreset,
+      bw: boardWidthMm,
+      bl: boardLengthMm,
+      gap: gapMm,
+      bwa: boardWastage,
+      fm: fixingMethod,
+      fp: fixingProduct,
+      fwa: fixingWastage,
+      js: joistSpacingMm,
+      jp: joistProduct,
+      jsl: joistStockLength,
+      blk: includeDeckBlocks ? '1' : '0',
+      jwa: joistWastage,
+    });
+    // The current page URL already carries the /selco base path, so the
+    // link is base-safe on GitHub Pages and in dev without hardcoding "/".
+    const url = new URL(window.location.href);
+    url.search = query;
+    url.hash = '';
+    return url.toString();
+  };
 
   const steps = useMemo(() => DECKING_STEPS.map(s => ({
     id: s.id as StepId,
@@ -333,6 +399,7 @@ export default function DeckingProjectWizard() {
       onNext={() => setCurrentIndex(i => Math.min(i + 1, steps.length - 1))}
       onBack={() => setCurrentIndex(i => Math.max(i - 1, 0))}
       onStartOver={() => setCurrentIndex(0)}
+      actions={<CopyLinkButton getUrl={buildShareUrl} />}
     >
       {renderStep()}
     </WizardShell>

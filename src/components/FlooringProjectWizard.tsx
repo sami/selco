@@ -1,11 +1,14 @@
-import React, { useState, useCallback } from 'react';
+import React, { useState, useCallback, useEffect } from 'react';
 import { WizardShell } from './ui/WizardShell';
 import { NumberInput } from './ui/NumberInput';
 import { FormField } from './ui/FormField';
 import { ResultCard } from './ui/ResultCard';
+import { CopyLinkButton } from './ui/CopyLinkButton';
 import { calculateFlooringRoom } from '../calculators/flooring-room';
 import type { FlooringRoomResult, FlooringType, LayingPattern } from '../calculators/types';
 import { FLOORING_STEPS } from '../projects/flooring';
+import { decodePermalink, encodePermalink } from '../projects/permalink';
+import { FLOORING_PERMALINK_SCHEMA } from '../projects/flooring-permalink';
 
 const STEPS = FLOORING_STEPS.map(s => ({
     label: s.label,
@@ -59,6 +62,59 @@ export default function FlooringProjectWizard() {
 
     // Result
     const [result, setResult] = useState<FlooringRoomResult | null>(null);
+
+    // Prefill inputs from URL query params (permalink-share). Runs once on
+    // mount, after hydration. Invalid or unknown params are dropped by
+    // decodePermalink and the defaults stand.
+    useEffect(() => {
+        const params = decodePermalink(FLOORING_PERMALINK_SCHEMA, window.location.search);
+        if (Object.keys(params).length === 0) return;
+
+        if (params.rl) setRoomLength(params.rl);
+        if (params.rw) setRoomWidth(params.rw);
+        if (params.ls) setHasLShape(true);
+        if (params.sl) setSecondLength(params.sl);
+        if (params.sw) setSecondWidth(params.sw);
+
+        if (params.ft) setFlooringType(params.ft as FlooringType);
+        if (params.cpp) setCoveragePerPack(params.cpp);
+        if (params.lp) setLayingPattern(params.lp as LayingPattern);
+        if (params.im) setInstallMethod(params.im as 'floating' | 'glue-down');
+
+        if (params.ul) setIncludeUnderlay(params.ul === '1');
+        if (params.ad) setIncludeAdhesive(params.ad === '1');
+        if (params.dpm) setIncludeDPM(params.dpm === '1');
+        if (params.sc) setIncludeScotia(params.sc === '1');
+        if (params.ts) setIncludeThresholds(params.ts === '1');
+        if (params.dc) setDoorwayCount(params.dc);
+    }, []);
+
+    /** Builds the shareable URL for the current inputs (Copy link button). */
+    const buildShareUrl = () => {
+        const query = encodePermalink(FLOORING_PERMALINK_SCHEMA, {
+            rl: roomLength,
+            rw: roomWidth,
+            ls: hasLShape ? '1' : '',
+            sl: hasLShape ? secondLength : '',
+            sw: hasLShape ? secondWidth : '',
+            ft: flooringType,
+            cpp: coveragePerPack,
+            lp: layingPattern,
+            im: installMethod,
+            ul: includeUnderlay ? '1' : '0',
+            ad: includeAdhesive ? '1' : '0',
+            dpm: includeDPM ? '1' : '0',
+            sc: includeScotia ? '1' : '0',
+            ts: includeThresholds ? '1' : '0',
+            dc: doorwayCount,
+        });
+        // The current page URL already carries the /selco base path, so the
+        // link is base-safe on GitHub Pages and in dev without hardcoding "/".
+        const url = new URL(window.location.href);
+        url.search = query;
+        url.hash = '';
+        return url.toString();
+    };
 
     const handleCalculate = useCallback(() => {
         setError(null);
@@ -150,6 +206,7 @@ export default function FlooringProjectWizard() {
             onNext={goNext}
             onBack={goBack}
             onStartOver={currentStep === STEPS.length - 1 ? onStartOver : undefined}
+            actions={<CopyLinkButton getUrl={buildShareUrl} />}
         >
             {error && (
                 <div className="mb-4 p-3 bg-destructive/10 text-destructive text-sm rounded">
