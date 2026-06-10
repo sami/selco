@@ -60,6 +60,18 @@ function CuttingPreview({ input }: { input: CuttingInput }) {
                         <rect x={x0} y={y0} width={sheetW} height={sheetH} fill="rgba(0,0,0,0.25)" stroke="#fff" strokeWidth={sheetW / 200} />
                         {layout.parts.map((p, pi) => (
                             <g key={pi}>
+                                {/* cross-cut-only: the saw pass runs the full width */}
+                                {plan.sheet.crossCutOnly && (
+                                    <line
+                                        x1={x0}
+                                        y1={y0 + p.yMm + p.hMm}
+                                        x2={x0 + sheetW}
+                                        y2={y0 + p.yMm + p.hMm}
+                                        stroke="#fff"
+                                        strokeWidth={sheetW / 150}
+                                        strokeDasharray={`${sheetW / 40} ${sheetW / 60}`}
+                                    />
+                                )}
                                 <rect
                                     x={x0 + p.xMm}
                                     y={y0 + p.yMm}
@@ -86,7 +98,7 @@ function CuttingPreview({ input }: { input: CuttingInput }) {
                                     >
                                         {p.label}
                                         {p.rotated ? ' ↻' : ''}
-                                        {p.belowMin && plan.sheet.sawEligible ? ' ⚠' : ''}
+                                        {(p.belowMin || p.needsRip) && plan.sheet.sawEligible ? ' ⚠' : ''}
                                     </text>
                                 )}
                             </g>
@@ -168,7 +180,13 @@ export default function BoardCuttingOptimiser() {
                         aria-hidden="true"
                     ></i>
                     <span>
-                        {sheet.sawEligible ? (
+                        {sheet.crossCutOnly ? (
+                            <>
+                                <strong>Cross-cuts to length only</strong> — worktops are cut
+                                across the width in store ({PANEL_SAW.kerfMm} mm kerf). No
+                                lengthways rips: narrower pieces are trimmed at home.
+                            </>
+                        ) : sheet.sawEligible ? (
                             <>
                                 <strong>Cut in store</strong> on our vertical panel saw —
                                 straight cuts, {PANEL_SAW.kerfMm} mm kerf, min part{' '}
@@ -184,12 +202,14 @@ export default function BoardCuttingOptimiser() {
                     </span>
                 </div>
 
-                <ToggleRow
-                    label="Allow rotation"
-                    hint="Turn off when grain / face direction matters"
-                    checked={allowRotation}
-                    onChange={setAllowRotation}
-                />
+                {!sheet.crossCutOnly && (
+                    <ToggleRow
+                        label="Allow rotation"
+                        hint="Turn off when grain / face direction matters"
+                        checked={allowRotation}
+                        onChange={setAllowRotation}
+                    />
+                )}
 
                 <div>
                     <div className="grid grid-cols-[1fr_1fr_72px_32px] gap-2 items-center mb-1.5">
