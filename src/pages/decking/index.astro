@@ -3,6 +3,7 @@ import SelcoLayout from '../../layouts/SelcoLayout.astro';
 import Disclaimer from '../../components/Disclaimer.astro';
 import SelcoSidebar from '../../components/selco/SelcoSidebar.astro';
 import DeckingProjectWizard from '../../components/DeckingProjectWizard.tsx';
+import { CalculatorPageHeader } from '../../components/ui/CalculatorPageHeader.tsx';
 
 const BASE_URL = import.meta.env.BASE_URL;
 const base = BASE_URL.endsWith('/') ? BASE_URL : `${BASE_URL}/`;
@@ -80,7 +81,7 @@ const howToSchema = {
 <SelcoLayout
   title={title}
   description={description}
-  pageTitle="Trade Materials Calculators"
+  pageTitle=""
   breadcrumbs={breadcrumbs}
   showSidebar
 >
@@ -92,12 +93,7 @@ const howToSchema = {
 
     <div class="space-y-6">
       <section class="space-y-6">
-        <div>
-          <h2 class="text-2xl md:text-3xl font-bold text-surface-foreground">Decking Calculator — Boards, Joists, Screws & Deck Blocks</h2>
-          <p class="text-muted-foreground mt-3 max-w-3xl">
-            Calculate decking boards, fixings, joists, and concrete deck blocks in one guided flow. Enter your deck dimensions once and the wizard carries them through every step.
-          </p>
-        </div>
+        <CalculatorPageHeader calculatorId="decking" />
 
         <div class="rounded-2xl border border-border bg-surface p-6 shadow-sm">
           <DeckingProjectWizard client:load />

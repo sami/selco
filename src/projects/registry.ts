@@ -20,6 +20,19 @@
 import type { CalculatorMeta } from '../types';
 
 // ---------------------------------------------------------------------------
+// Icon set
+// ---------------------------------------------------------------------------
+
+/**
+ * Wrap inner SVG markup in a uniform `<svg>` shell so every registry icon
+ * shares one viewBox, one stroke weight, and one colour source. Icons are
+ * coloured via `currentColor` (the SELCO-yellow token on the banner) and
+ * carry no hardcoded hex, so `lint:tokens` and the registry-shape test pass.
+ */
+const icon = (inner: string): string =>
+    `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">${inner}</svg>`;
+
+// ---------------------------------------------------------------------------
 // Registry — ordered as shown on the homepage
 // ---------------------------------------------------------------------------
 
@@ -42,7 +55,7 @@ export const CALCULATOR_REGISTRY: CalculatorMeta[] = [
         category: 'project',
         status: 'live',
         path: '/tiling/',
-        icon: '/images/hero/hero-tiling.svg',
+        icon: icon('<rect x="3" y="3" width="18" height="18" rx="1.5"/><path d="M3 9h18M3 15h18M9 3v18M15 3v18"/>'),
     },
     {
         id: 'flooring',
@@ -53,7 +66,7 @@ export const CALCULATOR_REGISTRY: CalculatorMeta[] = [
         category: 'project',
         status: 'live',
         path: '/hard-flooring/',
-        icon: '/images/hero/hero-flooring.svg',
+        icon: icon('<rect x="3" y="4" width="18" height="16" rx="1.5"/><path d="M3 9.5h18M3 14.5h18M10 4v5.5M7 9.5v5M14 9.5v5M11 14.5V20"/>'),
     },
     {
         id: 'brick-wall',
@@ -64,7 +77,7 @@ export const CALCULATOR_REGISTRY: CalculatorMeta[] = [
         category: 'project',
         status: 'live',
         path: '/brick-wall/',
-        icon: '/images/hero/hero-brick-wall.svg',
+        icon: icon('<rect x="3" y="5" width="18" height="14" rx="1"/><path d="M3 9.6h18M3 14.4h18M12 5v4.6M8 9.6v4.8M16 9.6v4.8M12 14.4V19"/>'),
     },
     {
         id: 'decking',
@@ -75,7 +88,7 @@ export const CALCULATOR_REGISTRY: CalculatorMeta[] = [
         category: 'project',
         status: 'live',
         path: '/decking/',
-        icon: '/images/hero/hero-decking.svg',
+        icon: icon('<rect x="3" y="3" width="18" height="18" rx="1.5"/><path d="M8 3v18M13 3v18M18 3v18"/>'),
     },
     {
         id: 'cladding',
@@ -87,7 +100,7 @@ export const CALCULATOR_REGISTRY: CalculatorMeta[] = [
         status: 'coming-soon',
         comingSoon: true,
         path: '/cladding/',
-        icon: '/images/hero/hero-cladding.svg',
+        icon: icon('<rect x="3" y="3" width="18" height="18" rx="1.5"/><path d="M3 8h18M3 13h18M3 18h18"/>'),
     },
 
     // -----------------------------------------------------------------------
@@ -103,7 +116,7 @@ export const CALCULATOR_REGISTRY: CalculatorMeta[] = [
         category: 'handy',
         status: 'live',
         path: '/unit-converter/',
-        icon: '/images/hero/hero-handy.svg',
+        icon: icon('<path d="M4 8h12M13 5l3 3-3 3"/><path d="M20 16H8M11 13l-3 3 3 3"/>'),
     },
     {
         id: 'board-coverage',
@@ -114,7 +127,7 @@ export const CALCULATOR_REGISTRY: CalculatorMeta[] = [
         category: 'handy',
         status: 'live',
         path: '/coverage/',
-        icon: '/images/hero/hero-handy.svg',
+        icon: icon('<path d="M6 3h8l6 6v12H6z"/><path d="M14 3v6h6"/>'),
     },
     {
         id: 'board-cutting',
@@ -126,7 +139,7 @@ export const CALCULATOR_REGISTRY: CalculatorMeta[] = [
         status: 'coming-soon',
         comingSoon: true,
         path: '/board-cutting/',
-        icon: '/images/hero/hero-handy.svg',
+        icon: icon('<circle cx="6" cy="6" r="2.5"/><circle cx="6" cy="18" r="2.5"/><path d="M8.2 7.6L20 16M8.2 16.4L20 8"/>'),
     },
 ];
 

@@ -5,3 +5,4 @@ export { ResultCard } from './ResultCard';
 export { ProductSelector } from './ProductSelector';
 export { WizardShell } from './WizardShell';
 export { CopyLinkButton } from './CopyLinkButton';
+export { CalculatorPageHeader } from './CalculatorPageHeader';
