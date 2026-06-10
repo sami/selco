@@ -98,7 +98,7 @@ function CuttingPreview({ input }: { input: CuttingInput }) {
                                     >
                                         {p.label}
                                         {p.rotated ? ' ↻' : ''}
-                                        {(p.belowMin || p.needsRip) && plan.sheet.sawEligible ? ' ⚠' : ''}
+                                        {p.belowMin || p.needsRip ? ' ⚠' : ''}
                                     </text>
                                 )}
                             </g>
@@ -121,7 +121,7 @@ function CuttingPreview({ input }: { input: CuttingInput }) {
 let nextId = 100;
 
 export default function BoardCuttingOptimiser() {
-    const [sheetId, setSheetId] = useState('plywood');
+    const [sheetId, setSheetId] = useState('sheet');
     const [allowRotation, setAllowRotation] = useState(true);
     const [parts, setParts] = useState<RequiredPart[]>([
         { id: 'p1', wMm: 800, hMm: 600, qty: 4 },
@@ -168,17 +168,8 @@ export default function BoardCuttingOptimiser() {
                 </div>
 
                 {/* In-store cutting service banner */}
-                <div
-                    className={`flex items-start gap-2.5 rounded-lg px-3 py-2.5 text-xs leading-relaxed border ${
-                        sheet.sawEligible
-                            ? 'bg-brand-navy text-white/90 border-brand-navy'
-                            : 'bg-brand-yellow/20 text-brand-navy border-brand-yellow'
-                    }`}
-                >
-                    <i
-                        className={`fas ${sheet.sawEligible ? 'fa-circle-check text-brand-yellow' : 'fa-circle-exclamation'} mt-0.5`}
-                        aria-hidden="true"
-                    ></i>
+                <div className="flex items-start gap-2.5 rounded-lg px-3 py-2.5 text-xs leading-relaxed border bg-brand-navy text-white/90 border-brand-navy">
+                    <i className="fas fa-circle-check text-brand-yellow mt-0.5" aria-hidden="true"></i>
                     <span>
                         {sheet.crossCutOnly ? (
                             <>
@@ -186,17 +177,11 @@ export default function BoardCuttingOptimiser() {
                                 across the width in store ({PANEL_SAW.kerfMm} mm kerf). No
                                 lengthways rips: narrower pieces are trimmed at home.
                             </>
-                        ) : sheet.sawEligible ? (
+                        ) : (
                             <>
                                 <strong>Cut in store</strong> on our vertical panel saw —
                                 straight cuts, {PANEL_SAW.kerfMm} mm kerf, min part{' '}
                                 {PANEL_SAW.minLMm} × {PANEL_SAW.minHFittedMm} mm.
-                            </>
-                        ) : (
-                            <>
-                                <strong>Not cut in store</strong> — plasterboard is score &amp;
-                                snap at home. We cut sheet materials like ply, MDF, OSB,
-                                chipboard and worktops.
                             </>
                         )}
                     </span>
