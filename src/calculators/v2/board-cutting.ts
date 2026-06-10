@@ -40,6 +40,12 @@ export interface SheetFormat {
     thicknessMm: number;
     /** Eligible for the in-store panel saw service. */
     sawEligible: boolean;
+    /**
+     * Cross-cuts to length only — no rips along the length (postformed
+     * worktops: a lengthways rip would remove the bullnose edge and is
+     * not offered in store). Every part consumes the full sheet width.
+     */
+    crossCutOnly?: boolean;
 }
 
 export const SHEET_FORMATS: SheetFormat[] = [
@@ -49,7 +55,7 @@ export const SHEET_FORMATS: SheetFormat[] = [
     { id: 'chipboard', label: 'Chipboard 2440 × 1220 × 18', productName: 'Furniture-grade chipboard, 18 mm', wMm: 1220, hMm: 2440, thicknessMm: 18, sawEligible: true },
     { id: 'hardboard', label: 'Hardboard 2440 × 1220 × 3', productName: 'Standard hardboard, 3 mm', wMm: 1220, hMm: 2440, thicknessMm: 3, sawEligible: true },
     { id: 'pegboard', label: 'Pegboard 2440 × 1220 × 6', productName: 'Perforated hardboard (pegboard), 6 mm', wMm: 1220, hMm: 2440, thicknessMm: 6, sawEligible: true },
-    { id: 'worktop', label: 'Worktop 3000 × 600 × 38', productName: 'Laminate kitchen worktop, 38 mm', wMm: 600, hMm: 3000, thicknessMm: 38, sawEligible: true },
+    { id: 'worktop', label: 'Worktop 3000 × 600 × 38 (cross-cuts only)', productName: 'Laminate kitchen worktop, 38 mm', wMm: 600, hMm: 3000, thicknessMm: 38, sawEligible: true, crossCutOnly: true },
     { id: 'plasterboard', label: 'Plasterboard 2400 × 1200 × 12.5', productName: 'Gyproc WallBoard, 12.5 mm', wMm: 1200, hMm: 2400, thicknessMm: 12.5, sawEligible: false },
 ];
 
@@ -75,6 +81,9 @@ export interface PlacedPart {
     rotated: boolean;
     /** Below the in-store saw minimum — cut oversize, trim at home. */
     belowMin: boolean;
+    /** Narrower than the full width on a cross-cut-only sheet — the
+     *  lengthways trim happens at home, not in store. */
+    needsRip: boolean;
     /** "800×600" style label for the preview. */
     label: string;
 }
@@ -95,6 +104,8 @@ export interface CuttingPlan {
     sawCuts: number;
     /** Placed parts below the 500 × 230 mm in-store minimum. */
     belowMinCount: number;
+    /** Parts needing a lengthways trim at home (cross-cut-only sheets). */
+    needsRipCount: number;
     /** Parts too big for the sheet in any orientation. */
     unplaceable: RequiredPart[];
     /** Overall utilisation across all sheets. */
@@ -122,10 +133,93 @@ function isBelowSawMin(wMm: number, hMm: number): boolean {
     return long < PANEL_SAW.minLMm || short < PANEL_SAW.minHFittedMm;
 }
 
+/**
+ * Cross-cut-only packing (worktops): a 1D cutting-stock problem. Every
+ * part takes the full sheet width; lengths pack first-fit decreasing into
+ * sticks with a kerf between cuts. Parts narrower than the sheet are
+ * placed full-width and flagged for a lengthways trim at home.
+ */
+function planCrossCut(input: CuttingInput, sheet: SheetFormat, kerf: number): CuttingPlan {
+    const instances: Array<{ lengthMm: number; crossMm: number; src: RequiredPart }> = [];
+    const unplaceable: RequiredPart[] = [];
+    for (const p of input.parts) {
+        if (p.wMm <= 0 || p.hMm <= 0 || p.qty <= 0) continue;
+        const crossMm = Math.min(p.wMm, p.hMm);
+        const lengthMm = Math.max(p.wMm, p.hMm);
+        if (crossMm > sheet.wMm || lengthMm > sheet.hMm) {
+            unplaceable.push(p);
+            continue;
+        }
+        for (let i = 0; i < Math.min(p.qty, MAX_INSTANCES); i++) {
+            instances.push({ lengthMm, crossMm, src: p });
+        }
+    }
+    instances.sort((a, b) => b.lengthMm - a.lengthMm);
+
+    const sticks: Array<{ usedLMm: number; parts: PlacedPart[] }> = [];
+    for (const inst of instances.slice(0, MAX_INSTANCES)) {
+        const needsRip = inst.crossMm < sheet.wMm - 1;
+        const belowMin = inst.lengthMm < PANEL_SAW.minHFittedMm;
+        const place = (stick: { usedLMm: number; parts: PlacedPart[] }) => {
+            const y = stick.usedLMm + (stick.usedLMm > 0 ? kerf : 0);
+            stick.parts.push({
+                xMm: 0,
+                yMm: y,
+                wMm: inst.crossMm,
+                hMm: inst.lengthMm,
+                rotated: false,
+                belowMin,
+                needsRip,
+                label: `${inst.src.wMm}×${inst.src.hMm}`,
+            });
+            stick.usedLMm = y + inst.lengthMm;
+        };
+        const fit = sticks.find(
+            (s) => s.usedLMm + (s.usedLMm > 0 ? kerf : 0) + inst.lengthMm <= sheet.hMm,
+        );
+        if (fit) place(fit);
+        else {
+            const stick = { usedLMm: 0, parts: [] as PlacedPart[] };
+            place(stick);
+            sticks.push(stick);
+        }
+    }
+
+    const sheetArea = sheet.wMm * sheet.hMm;
+    const layouts: SheetLayout[] = sticks.map((s) => ({
+        parts: s.parts,
+        shelfCount: s.parts.length,
+        utilisation: s.parts.reduce((sum, p) => sum + p.wMm * p.hMm, 0) / sheetArea,
+    }));
+    const usedArea = layouts.reduce((sum, l) => sum + l.utilisation * sheetArea, 0);
+    const totalArea = layouts.length * sheetArea;
+
+    return {
+        sheet,
+        kerfMm: kerf,
+        layouts,
+        placedCount: layouts.reduce((sum, l) => sum + l.parts.length, 0),
+        sawCuts: layouts.reduce((sum, l) => sum + l.parts.length, 0),
+        belowMinCount: layouts.reduce(
+            (sum, l) => sum + l.parts.filter((p) => p.belowMin).length,
+            0,
+        ),
+        needsRipCount: layouts.reduce(
+            (sum, l) => sum + l.parts.filter((p) => p.needsRip).length,
+            0,
+        ),
+        unplaceable,
+        utilisation: totalArea > 0 ? usedArea / totalArea : 0,
+        wasteM2: (totalArea - usedArea) / 1e6,
+    };
+}
+
 export function planCutting(input: CuttingInput): CuttingPlan {
     const sheet = SHEET_FORMATS.find((s) => s.id === input.sheetId) ?? SHEET_FORMATS[0];
     // Plasterboard is score-and-snap at home: no blade, no kerf.
     const kerf = sheet.sawEligible ? PANEL_SAW.kerfMm : 0;
+
+    if (sheet.crossCutOnly) return planCrossCut(input, sheet, kerf);
 
     // Expand quantities into individual instances, largest first (FFDH).
     const instances: Array<{ w: number; h: number; src: RequiredPart }> = [];
@@ -191,6 +285,7 @@ export function planCutting(input: CuttingInput): CuttingPlan {
                 hMm: o.h,
                 rotated: o.rotated,
                 belowMin,
+                needsRip: false,
                 label: `${inst.w}×${inst.h}`,
             });
             slot.shelf.usedWMm = x + o.w;
@@ -214,6 +309,7 @@ export function planCutting(input: CuttingInput): CuttingPlan {
                             hMm: o.h,
                             rotated: o.rotated,
                             belowMin,
+                            needsRip: false,
                             label: `${inst.w}×${inst.h}`,
                         });
                         placed = true;
@@ -232,7 +328,7 @@ export function planCutting(input: CuttingInput): CuttingPlan {
                 shelves: [{ yMm: 0, heightMm: o.h, usedWMm: o.w }],
                 nextShelfY: o.h,
                 parts: [
-                    { xMm: 0, yMm: 0, wMm: o.w, hMm: o.h, rotated: o.rotated, belowMin, label: `${inst.w}×${inst.h}` },
+                    { xMm: 0, yMm: 0, wMm: o.w, hMm: o.h, rotated: o.rotated, belowMin, needsRip: false, label: `${inst.w}×${inst.h}` },
                 ],
             };
             sheets.push(s);
@@ -258,6 +354,7 @@ export function planCutting(input: CuttingInput): CuttingPlan {
             (sum, l) => sum + l.parts.filter((p) => p.belowMin).length,
             0,
         ),
+        needsRipCount: 0,
         unplaceable,
         utilisation: totalArea > 0 ? usedArea / totalArea : 0,
         wasteM2: (totalArea - usedArea) / 1e6,
@@ -315,6 +412,16 @@ export function calculateCutting(input: CuttingInput): BillOfMaterials {
             inStore
                 ? `In-store cutting service: straight cuts on the vertical panel saw with a ${PANEL_SAW.kerfMm} mm blade kerf — allowed for in this plan.`
                 : 'Plasterboard is not cut in store — this plan is score-and-snap at home (no kerf needed).',
+            ...(plan.sheet.crossCutOnly
+                ? [
+                      'Worktops are cross-cut to length only — we cannot rip along the length (the postformed front edge would be lost). Every piece comes off at the full 600 mm width.',
+                  ]
+                : []),
+            ...(plan.needsRipCount > 0
+                ? [
+                      `⚠ ${plan.needsRipCount} piece${plan.needsRipCount === 1 ? ' is' : 's are'} narrower than the full width — cut to length in store, then rip to width at home with a track saw and a fine blade (mask the cut line to stop laminate chipping).`,
+                  ]
+                : []),
             inStore
                 ? `Saw limits: ${PANEL_SAW.minLMm} × ${PANEL_SAW.minHFittedMm} mm minimum workpiece (${PANEL_SAW.minLMm} × ${PANEL_SAW.minHMm} mm without the support fitted), ${PANEL_SAW.maxLMm} × ${PANEL_SAW.maxHMm} mm maximum, ${PANEL_SAW.maxDepthMm} mm maximum depth.`
                 : 'We cut hardboard, chipboard, OSB, MDF, worktops, plywood, sundeala, door blanks, pegboard and T&G flooring — not plasterboard, doors, fence panels or structural timber.',
@@ -323,9 +430,13 @@ export function calculateCutting(input: CuttingInput): BillOfMaterials {
                       `⚠ ${plan.belowMinCount} part${plan.belowMinCount === 1 ? '' : 's'} (marked ⚠ in the plan) below the ${PANEL_SAW.minLMm} × ${PANEL_SAW.minHFittedMm} mm saw minimum — have them cut oversize in store and trim at home.`,
                   ]
                 : []),
-            input.allowRotation
-                ? 'Parts may be rotated 90° — turn rotation off if grain or face pattern direction matters.'
-                : 'Rotation is off — parts keep their orientation for grain or face direction.',
+            ...(plan.sheet.crossCutOnly
+                ? []
+                : [
+                      input.allowRotation
+                          ? 'Parts may be rotated 90° — turn rotation off if grain or face pattern direction matters.'
+                          : 'Rotation is off — parts keep their orientation for grain or face direction.',
+                  ]),
             ...(plan.unplaceable.length
                 ? [
                       `⚠ ${plan.unplaceable.length} part size${plan.unplaceable.length === 1 ? '' : 's'} (${plan.unplaceable
