@@ -1,13 +1,22 @@
-import React, { useState, useCallback } from 'react';
+import React, { useState, useCallback, useEffect } from 'react';
 import { WizardShell } from './ui/WizardShell';
 import { NumberInput } from './ui/NumberInput';
 import { FormField } from './ui/FormField';
 import { ProductSelector } from './ui/ProductSelector';
 import { ResultCard } from './ui/ResultCard';
+import { CopyLinkButton } from './ui/CopyLinkButton';
 import { calculateMasonryProject } from '../calculators/masonry-project';
 import { BRICK_PRODUCTS, BLOCK_PRODUCTS } from '../data/masonry-products';
 import type { MasonryProjectResult } from '../calculators/types';
 import { MASONRY_STEPS } from '../projects/masonry';
+import { decodePermalink, encodePermalink } from '../projects/permalink';
+import {
+    MASONRY_PERMALINK_SCHEMA,
+    wallsToParams,
+    paramsToWalls,
+    openingsToParams,
+    paramsToOpenings,
+} from '../projects/masonry-permalink';
 
 const STEPS = MASONRY_STEPS.map(s => ({
     label: s.label,
@@ -51,6 +60,50 @@ export default function MasonryProjectWizard() {
 
     // Step 5: Results
     const [result, setResult] = useState<MasonryProjectResult | null>(null);
+
+    // Prefill inputs from URL query params (permalink-share). Runs once on
+    // mount, after hydration. Invalid or unknown params are dropped by
+    // decodePermalink and the defaults stand.
+    useEffect(() => {
+        const params = decodePermalink(MASONRY_PERMALINK_SCHEMA, window.location.search);
+        if (Object.keys(params).length === 0) return;
+
+        const linkedWalls = paramsToWalls(params);
+        if (linkedWalls.length > 0) setWalls(linkedWalls);
+        const linkedOpenings = paramsToOpenings(params);
+        if (linkedOpenings.length > 0) setOpenings(linkedOpenings);
+
+        if (params.wt) setWallType(params.wt as 'brick' | 'block' | 'cavity');
+        if (params.bpr) setBrickProductId(params.bpr);
+        if (params.blp) setBlockProductId(params.blp);
+        if (params.mix) setMixRatio(params.mix as '1:3' | '1:4');
+        if (params.cw) setCavityWidth(params.cw);
+        if (params.wa) setWastage(params.wa);
+        if (params.dpc) setIncludeDPC(params.dpc === '1');
+        if (params.ab) setIncludeAirBricks(params.ab === '1');
+    }, []);
+
+    /** Builds the shareable URL for the current inputs (Copy link button). */
+    const buildShareUrl = () => {
+        const query = encodePermalink(MASONRY_PERMALINK_SCHEMA, {
+            ...wallsToParams(walls),
+            ...openingsToParams(openings),
+            wt: wallType,
+            bpr: brickProductId,
+            blp: blockProductId,
+            mix: mixRatio,
+            cw: cavityWidth,
+            wa: wastage,
+            dpc: includeDPC ? '1' : '0',
+            ab: includeAirBricks ? '1' : '0',
+        });
+        // The current page URL already carries the /selco base path, so the
+        // link is base-safe on GitHub Pages and in dev without hardcoding "/".
+        const url = new URL(window.location.href);
+        url.search = query;
+        url.hash = '';
+        return url.toString();
+    };
 
     // ── Wall repeater ──────────────────────────────────────────────────
     const addWall = () => {
@@ -421,6 +474,7 @@ export default function MasonryProjectWizard() {
             onBack={goBack}
             onStartOver={currentStep === STEPS.length - 1 ? onStartOver : undefined}
             onSkip={currentStep === 2 ? goNext : undefined}
+            actions={<CopyLinkButton getUrl={buildShareUrl} />}
         >
             {error && currentStep !== 4 && (
                 <p className="text-sm text-destructive mb-4">{error}</p>
