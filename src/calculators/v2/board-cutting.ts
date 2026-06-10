@@ -54,7 +54,6 @@ export const SHEET_FORMATS: SheetFormat[] = [
     { id: 'osb', label: 'OSB3 2440 × 1220 × 18', productName: 'OSB3 board, 18 mm', wMm: 1220, hMm: 2440, thicknessMm: 18, sawEligible: true },
     { id: 'chipboard', label: 'Chipboard 2440 × 1220 × 18', productName: 'Furniture-grade chipboard, 18 mm', wMm: 1220, hMm: 2440, thicknessMm: 18, sawEligible: true },
     { id: 'hardboard', label: 'Hardboard 2440 × 1220 × 3', productName: 'Standard hardboard, 3 mm', wMm: 1220, hMm: 2440, thicknessMm: 3, sawEligible: true },
-    { id: 'pegboard', label: 'Pegboard 2440 × 1220 × 6', productName: 'Perforated hardboard (pegboard), 6 mm', wMm: 1220, hMm: 2440, thicknessMm: 6, sawEligible: true },
     { id: 'worktop', label: 'Worktop 3000 × 600 × 38 (cross-cuts only)', productName: 'Laminate kitchen worktop, 38 mm', wMm: 600, hMm: 3000, thicknessMm: 38, sawEligible: true, crossCutOnly: true },
     { id: 'plasterboard', label: 'Plasterboard 2400 × 1200 × 12.5', productName: 'Gyproc WallBoard, 12.5 mm', wMm: 1200, hMm: 2400, thicknessMm: 12.5, sawEligible: false },
 ];
