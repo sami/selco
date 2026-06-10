@@ -149,6 +149,16 @@ const BESPOKE: V2CalculatorMeta[] = [
         kind: 'bespoke',
         preview: 'Live conversions with trade equivalents',
     },
+    {
+        slug: 'board-cutting',
+        name: 'Board cutting optimiser',
+        category: 'Handy tools',
+        description:
+            'Type in the parts you need and it packs them onto the fewest sheets — saw kerf allowed, grain direction respected.',
+        icon: 'fa-scissors',
+        kind: 'bespoke',
+        preview: 'Sheet-by-sheet cutting plan, drawn to scale',
+    },
 ];
 
 /** Spec-driven calculators, surfaced with the same metadata shape. */
