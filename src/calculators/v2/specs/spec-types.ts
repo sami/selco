@@ -48,11 +48,13 @@ export type FieldSpec = NumberFieldSpec | ChoiceFieldSpec | ToggleFieldSpec;
 export type V2Category =
     | 'Garden & outdoors'
     | 'Groundworks & drainage'
+    | 'Building & masonry'
     | 'Kitchens & bathrooms'
     | 'Interiors & finishing'
     | 'Walls, ceilings & partitions'
     | 'Roofing & exteriors'
-    | 'Insulation & heating';
+    | 'Insulation & heating'
+    | 'Handy tools';
 
 export interface CalcSpec {
     slug: string;
