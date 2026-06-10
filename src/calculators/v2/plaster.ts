@@ -36,31 +36,28 @@ export function calculatePlaster(input: PlasterInput): BillOfMaterials {
     if (input.job === 'float-set') {
         lines.push({
             id: 'bonding',
-            name: 'Bonding coat plaster',
+            name: 'Thistle BondingCoat',
             detail: `25 kg bag — ~${BONDING_M2_PER_BAG} m² at 11 mm`,
             qty: units(a / BONDING_M2_PER_BAG),
             unit: 'bags',
-            unitPrice: 9.5,
         });
     }
 
     lines.push({
         id: 'multi-finish',
-        name: 'Multi-finish plaster',
+        name: 'Thistle MultiFinish',
         detail: `25 kg bag — ~${SKIM_M2_PER_BAG} m² at 2 mm, 2 coats`,
         qty: units(a / SKIM_M2_PER_BAG),
         unit: 'bags',
-        unitPrice: 10.5,
     });
 
     if (input.includePva) {
         lines.push({
             id: 'pva',
-            name: 'PVA bonding agent',
+            name: 'Everbuild 501 PVA bond',
             detail: '5 L — diluted 4:1 then 3:1',
             qty: units(a / 50),
             unit: 'bottles',
-            unitPrice: 12.0,
         });
     }
 
@@ -68,19 +65,17 @@ export function calculatePlaster(input: PlasterInput): BillOfMaterials {
         lines.push(
             {
                 id: 'scrim',
-                name: 'Scrim tape',
+                name: 'Gyproc FibaTape scrim',
                 detail: '48 mm × 90 m self-adhesive',
                 qty: units(a / 30),
                 unit: 'rolls',
-                unitPrice: 5.5,
             },
             {
                 id: 'beads',
-                name: 'Thin-coat angle bead',
+                name: 'Expamet thin-coat angle bead',
                 detail: '2.4 m galvanised',
                 qty: units(a / 8),
                 unit: 'lengths',
-                unitPrice: 2.8,
             },
         );
     }
@@ -99,6 +94,14 @@ export function calculatePlaster(input: PlasterInput): BillOfMaterials {
             { label: 'Total bags', value: `${bags} × 25 kg` },
         ],
         sections: [{ title: 'Plastering', lines }],
+        tools: [
+            'Plastering trowel (stainless) and hawk',
+            'Mixing drill + paddle and two clean buckets',
+            'Speedskim or feather edge for flattening',
+            'Water brush for the final trowel-up',
+            'Tin snips for cutting beads',
+            'Dust sheets — skimming is messier than it sounds',
+        ],
         notes: [
             'Plaster has a shelf life — check bag dates at the counter; stale plaster sets fast.',
             input.job === 'float-set'

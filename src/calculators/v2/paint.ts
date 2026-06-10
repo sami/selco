@@ -85,20 +85,18 @@ export function calculatePaint(input: PaintInput): BillOfMaterials {
         if (tins.five)
             lines.push({
                 id: 'wall-5l',
-                name: 'Matt emulsion — walls',
+                name: 'Leyland Trade Vinyl Matt — walls',
                 detail: '5 L tin, 12 m²/L per coat',
                 qty: tins.five,
                 unit: 'tins',
-                unitPrice: 28.0,
             });
         if (tins.twoFive)
             lines.push({
                 id: 'wall-2.5l',
-                name: 'Matt emulsion — walls',
+                name: 'Leyland Trade Vinyl Matt — walls',
                 detail: '2.5 L tin',
                 qty: tins.twoFive,
                 unit: 'tins',
-                unitPrice: 16.0,
             });
     }
 
@@ -107,20 +105,18 @@ export function calculatePaint(input: PaintInput): BillOfMaterials {
         if (tins.five)
             lines.push({
                 id: 'ceiling-5l',
-                name: 'Ceiling white emulsion',
+                name: 'Leyland Trade Contract Matt — ceiling white',
                 detail: '5 L tin',
                 qty: tins.five,
                 unit: 'tins',
-                unitPrice: 24.0,
             });
         if (tins.twoFive)
             lines.push({
                 id: 'ceiling-2.5l',
-                name: 'Ceiling white emulsion',
+                name: 'Leyland Trade Contract Matt — ceiling white',
                 detail: '2.5 L tin',
                 qty: tins.twoFive,
                 unit: 'tins',
-                unitPrice: 14.0,
             });
     }
 
@@ -131,19 +127,17 @@ export function calculatePaint(input: PaintInput): BillOfMaterials {
         lines.push(
             {
                 id: 'undercoat',
-                name: 'Wood undercoat',
+                name: 'Dulux Trade Undercoat',
                 detail: '750 ml tin',
                 qty: units(woodLitres / 0.75),
                 unit: 'tins',
-                unitPrice: 12.0,
             },
             {
                 id: 'gloss',
-                name: 'Gloss / satinwood',
+                name: 'Dulux Trade Gloss / Satinwood',
                 detail: '750 ml tin',
                 qty: units(woodLitres / 0.75),
                 unit: 'tins',
-                unitPrice: 14.0,
             },
         );
     }
@@ -151,35 +145,31 @@ export function calculatePaint(input: PaintInput): BillOfMaterials {
     const sundries: BomLine[] = [
         {
             id: 'roller',
-            name: 'Roller & tray set',
+            name: 'Harris Trade roller & tray set',
             detail: '9" medium pile + 2 sleeves',
             qty: 1,
             unit: 'sets',
-            unitPrice: 9.0,
         },
         {
             id: 'brushes',
-            name: 'Brush set',
+            name: 'Harris Trade brush set',
             detail: '1" / 2" / 3" cutting-in',
             qty: 1,
             unit: 'sets',
-            unitPrice: 8.0,
         },
         {
             id: 'tape',
-            name: 'Masking tape',
+            name: 'Low-tack masking tape',
             detail: '38 mm × 50 m',
             qty: 1,
             unit: 'rolls',
-            unitPrice: 4.0,
         },
         {
             id: 'sheets',
-            name: 'Dust sheets',
+            name: 'Cotton twill dust sheets',
             detail: 'cotton twill 12\' × 9\'',
             qty: 2,
             unit: 'sheets',
-            unitPrice: 7.0,
         },
     ];
 
@@ -195,6 +185,14 @@ export function calculatePaint(input: PaintInput): BillOfMaterials {
         sections: [
             { title: 'Paint', lines },
             { title: 'Sundries', lines: sundries },
+        ],
+        tools: [
+            'Filler and filling knife — Toupret or Easi-Fill for cracks and dents',
+            'Fine surface sandpaper (120/180 grit) and sanding block',
+            'Caulk gun + Everbuild decorators caulk for gaps at skirting and frames',
+            'Sugar soap for washing down previously painted surfaces',
+            'Step ladder and roller extension pole for ceilings',
+            'Rags and a paint kettle for cutting in',
         ],
         notes: [
             `Coverage taken at ${COVERAGE_M2_PER_L} m² per litre per coat.`,

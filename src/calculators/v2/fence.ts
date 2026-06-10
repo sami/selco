@@ -60,30 +60,27 @@ export function calculateFence(input: FenceInput): BillOfMaterials {
     const lines: BomLine[] = [
         {
             id: 'panels',
-            name: `Lap fence panel, 6 × ${heightFt} ft`,
+            name: `Forest Garden lap panel, 6 × ${heightFt} ft`,
             detail: `1.83 m × ${input.heightM.toFixed(1)} m, dip treated`,
             qty: plan.panels,
             unit: 'panels',
-            unitPrice: input.heightM >= 1.8 ? 32.0 : 26.0,
         },
         {
             id: 'posts',
             name:
                 input.postType === 'concrete'
-                    ? 'Slotted concrete post'
-                    : 'Timber fence post, 75 mm',
+                    ? 'Supreme slotted concrete post'
+                    : 'UC4 treated timber post, 75 × 75 mm',
             detail: `${plan.postLengthM.toFixed(1)} m (${BURIAL_M * 1000} mm in ground)`,
             qty: plan.posts,
             unit: 'posts',
-            unitPrice: input.postType === 'concrete' ? 24.0 : 11.0,
         },
         {
             id: 'postcrete',
-            name: 'Postcrete',
+            name: 'Blue Circle Postcrete',
             detail: '20 kg bag — fast set',
             qty: plan.postcreteBags,
             unit: 'bags',
-            unitPrice: 6.5,
         },
     ];
 
@@ -97,7 +94,6 @@ export function calculateFence(input: FenceInput): BillOfMaterials {
             detail: '1.83 m × 150 mm',
             qty: plan.panels,
             unit: 'boards',
-            unitPrice: input.postType === 'concrete' ? 14.0 : 8.0,
         });
     }
 
@@ -109,14 +105,12 @@ export function calculateFence(input: FenceInput): BillOfMaterials {
                 detail: 'pack of 6',
                 qty: units((plan.panels * 4) / 6),
                 unit: 'packs',
-                unitPrice: 4.0,
             },
             {
                 id: 'caps',
                 name: 'Post caps',
                 qty: plan.posts,
                 unit: 'caps',
-                unitPrice: 1.5,
             },
         );
     }
@@ -129,6 +123,14 @@ export function calculateFence(input: FenceInput): BillOfMaterials {
             { label: 'Built length', value: `${plan.builtRunM.toFixed(1)} m` },
         ],
         sections: [{ title: 'Fencing', lines }],
+        tools: [
+            'Post hole digger or auger (hire for runs over 10 posts)',
+            'String line, pegs and a 1.2 m spirit level',
+            'Panel clamps or a second pair of hands for fitting',
+            'Wheelbarrow and bucket — Postcrete needs water on hand',
+            'Exterior wood preserver for cut timber ends',
+            'Galvanised 40 mm screws and drill driver',
+        ],
         notes: [
             'Posts set 600 mm into the ground in postcrete; check for services before digging.',
             input.postType === 'concrete'
