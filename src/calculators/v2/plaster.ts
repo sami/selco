@@ -36,7 +36,7 @@ export function calculatePlaster(input: PlasterInput): BillOfMaterials {
     if (input.job === 'float-set') {
         lines.push({
             id: 'bonding',
-            name: 'Thistle BondingCoat',
+            name: 'Bonding coat plaster',
             detail: `25 kg bag — ~${BONDING_M2_PER_BAG} m² at 11 mm`,
             qty: units(a / BONDING_M2_PER_BAG),
             unit: 'bags',
@@ -45,7 +45,7 @@ export function calculatePlaster(input: PlasterInput): BillOfMaterials {
 
     lines.push({
         id: 'multi-finish',
-        name: 'Thistle MultiFinish',
+        name: 'Multi-finish plaster',
         detail: `25 kg bag — ~${SKIM_M2_PER_BAG} m² at 2 mm, 2 coats`,
         qty: units(a / SKIM_M2_PER_BAG),
         unit: 'bags',
@@ -54,7 +54,7 @@ export function calculatePlaster(input: PlasterInput): BillOfMaterials {
     if (input.includePva) {
         lines.push({
             id: 'pva',
-            name: 'Everbuild 501 PVA bond',
+            name: 'PVA bonding agent',
             detail: '5 L — diluted 4:1 then 3:1',
             qty: units(a / 50),
             unit: 'bottles',
@@ -65,14 +65,14 @@ export function calculatePlaster(input: PlasterInput): BillOfMaterials {
         lines.push(
             {
                 id: 'scrim',
-                name: 'Gyproc FibaTape scrim',
+                name: 'Self-adhesive scrim tape',
                 detail: '48 mm × 90 m self-adhesive',
                 qty: units(a / 30),
                 unit: 'rolls',
             },
             {
                 id: 'beads',
-                name: 'Expamet thin-coat angle bead',
+                name: 'Thin-coat galvanised angle bead',
                 detail: '2.4 m galvanised',
                 qty: units(a / 8),
                 unit: 'lengths',

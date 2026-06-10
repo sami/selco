@@ -125,8 +125,8 @@ export function calculateDecking(input: DeckingInput): BillOfMaterials {
                                   unit: 'posts',
                               },
                               {
-                                  id: 'postcrete',
-                                  name: 'Blue Circle Postcrete',
+                                  id: 'postfix',
+                                  name: 'Fast-set post-fixing concrete',
                                   detail: '20 kg bag — one per post',
                                   qty: units(plan.supports / 2),
                                   unit: 'bags',
@@ -143,7 +143,7 @@ export function calculateDecking(input: DeckingInput): BillOfMaterials {
                           ]),
                     {
                         id: 'membrane',
-                        name: 'Weedtex weed control membrane',
+                        name: 'Weed control membrane',
                         detail: '1 m × 15 m roll under the deck',
                         qty: units((plan.areaM2 * 1.1) / 15),
                         unit: 'rolls',

@@ -61,7 +61,7 @@ export const wallpapering: CalcSpec = {
                         ...(bool(v, 'lining')
                             ? [{ id: 'lining', name: 'Lining paper, 1400 grade', detail: 'double roll 0.56 × 20 m, hung horizontally', qty: units((num(v, 'perimeter') * num(v, 'height') * 1.1) / 11.2), unit: 'rolls' }]
                             : []),
-                        { id: 'paste', name: 'Solvite all-purpose paste', detail: 'one box hangs ~4–5 rolls', qty: units((rolls + (bool(v, 'lining') ? 2 : 0)) / 4), unit: 'boxes' },
+                        { id: 'paste', name: 'All-purpose wallpaper paste', detail: 'one box hangs ~4–5 rolls', qty: units((rolls + (bool(v, 'lining') ? 2 : 0)) / 4), unit: 'boxes' },
                         { id: 'size', name: 'Wall size / primer-sealer', detail: 'seals bare plaster before hanging', qty: 1, unit: 'packs' },
                     ],
                 },
@@ -135,9 +135,9 @@ export const skirtingArchitrave: CalcSpec = {
                 {
                     title: 'Fixing & finishing',
                     lines: [
-                        { id: 'adhesive', name: 'Everbuild Stixall grab adhesive', detail: 'one cartridge per ~8 lm', qty: units(skirtM / 8), unit: 'cartridges' },
+                        { id: 'adhesive', name: 'High-strength grab adhesive', detail: 'one cartridge per ~8 lm', qty: units(skirtM / 8), unit: 'cartridges' },
                         { id: 'pins', name: 'Lost-head nails, 40 mm', detail: '500 g pack — mechanical fix on bowed walls', qty: 1, unit: 'packs' },
-                        { id: 'caulk', name: 'Everbuild decorators caulk', detail: 'top edge and mitre gaps', qty: units(skirtM / 12), unit: 'cartridges' },
+                        { id: 'caulk', name: 'Decorators caulk', detail: 'top edge and mitre gaps', qty: units(skirtM / 12), unit: 'cartridges' },
                         { id: 'filler', name: 'Wood filler (fine surface)', qty: 1, unit: 'tubs' },
                     ],
                 },
@@ -206,7 +206,7 @@ export const doorsLinings: CalcSpec = {
                             ? [
                                   { id: 'linings', name: `Door lining set, 32 × ${fire ? 138 : 115} mm${fire ? ' FD30' : ''}`, detail: 'inc. loose stops', qty: n, unit: 'sets' },
                                   { id: 'packers', name: 'Assorted packers / shims', detail: 'bag of 100', qty: units(n / 4), unit: 'bags' },
-                                  { id: 'foam', name: 'Everbuild low-expansion foam', detail: 'one can per 2–3 linings', qty: units(n / 2.5), unit: 'cans' },
+                                  { id: 'foam', name: 'Low-expansion gun foam', detail: 'one can per 2–3 linings', qty: units(n / 2.5), unit: 'cans' },
                               ]
                             : []),
                     ],
@@ -234,7 +234,7 @@ export const doorsLinings: CalcSpec = {
                 'Block plane for easing edges — 2 mm gap all round, 6 mm at floor',
                 'Combination square and marking gauge',
                 str(v, 'doorType') === 'oak'
-                    ? 'Osmo door oil or clear varnish — seal all six faces including top and bottom edges'
+                    ? 'Hardwax oil or clear varnish — seal all six faces including top and bottom edges'
                     : 'Primer and undercoat — seal all six faces including top and bottom edges',
             ],
             notes: [
@@ -279,23 +279,23 @@ export const bathroom: CalcSpec = {
                     title: 'Substrate & waterproofing',
                     lines: [
                         ...(bool(v, 'backer')
-                            ? [{ id: 'backer', name: 'HardieBacker cement board, 12 mm', detail: '1200 × 800 mm (0.96 m²) — wet walls', qty: units(Math.min(wall, 6) / 0.96), unit: 'boards' },
-                               { id: 'backer-screws', name: 'HardieBacker screws & alkaline-resistant tape', detail: 'kit per ~6 boards', qty: 1, unit: 'kits' }]
+                            ? [{ id: 'backer', name: 'Cement backer board, 12 mm', detail: '1200 × 800 mm (0.96 m²) — wet walls', qty: units(Math.min(wall, 6) / 0.96), unit: 'boards' },
+                               { id: 'backer-screws', name: 'Backer board screws & alkaline-resistant tape', detail: 'kit per ~6 boards', qty: 1, unit: 'kits' }]
                             : []),
                         ...(bool(v, 'tanking')
-                            ? [{ id: 'tanking', name: 'Mapei Shower Waterproofing kit', detail: 'covers ~4.5 m² inc. corner tape', qty: units(Math.min(wall, 9) / 4.5), unit: 'kits' }]
+                            ? [{ id: 'tanking', name: 'Shower tanking (waterproofing) kit', detail: 'covers ~4.5 m² inc. corner tape', qty: units(Math.min(wall, 9) / 4.5), unit: 'kits' }]
                             : []),
-                        { id: 'primer', name: 'BAL APD acrylic primer', detail: 'porous backgrounds before adhesive', qty: 1, unit: 'bottles' },
+                        { id: 'primer', name: 'Acrylic tile primer', detail: 'porous backgrounds before adhesive', qty: 1, unit: 'bottles' },
                     ],
                 },
                 {
                     title: 'Tiling consumables',
                     lines: [
-                        { id: 'adhesive', name: 'Mapei rapid-set flexible adhesive (white)', detail: '20 kg bag ≈ 4 m² with a 10 mm trowel', qty: units(total / 4), unit: 'bags' },
-                        { id: 'grout', name: 'Mapei Ultracolor Plus grout', detail: '5 kg bag ≈ 8–10 m² (tile-size dependent)', qty: units(total / 8), unit: 'bags' },
+                        { id: 'adhesive', name: 'Rapid-set flexible tile adhesive (white)', detail: '20 kg bag ≈ 4 m² with a 10 mm trowel', qty: units(total / 4), unit: 'bags' },
+                        { id: 'grout', name: 'Flexible wall & floor grout', detail: '5 kg bag ≈ 8–10 m² (tile-size dependent)', qty: units(total / 8), unit: 'bags' },
                         { id: 'spacers', name: 'Tile spacers, 2 mm', detail: 'bag of 500', qty: units(total / 12), unit: 'bags' },
                         { id: 'trim', name: 'Chrome / PVC tile trim, 2.44 m', detail: 'external edges and niches', qty: units(Math.sqrt(wall) * 1.5 / 2.44) + 2, unit: 'lengths' },
-                        { id: 'silicone', name: 'Everbuild Forever White sanitary silicone', detail: 'every internal corner, tray and worktop joint', qty: units(total / 10) + 1, unit: 'cartridges' },
+                        { id: 'silicone', name: 'Mould-resistant sanitary silicone', detail: 'every internal corner, tray and worktop joint', qty: units(total / 10) + 1, unit: 'cartridges' },
                     ],
                 },
             ],

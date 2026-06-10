@@ -285,7 +285,7 @@ export function calculateKitchen(input: KitchenInput): BillOfMaterials {
             'Cordless drill driver + hole saw set for pipework and waste cut-outs',
             'Worktop jig and 12.7 mm router cutter for mason mitre joints',
             'Spirit level, stud detector and laser level for the wall unit line',
-            'Colour-fit worktop sealant and silicone — Everbuild Forever White for sink and upstands',
+            'Colour-matched worktop sealant and silicone for sink and upstands',
             'Unit connector bolts, 40 mm woodscrews and wall-unit brackets',
             'PTFE tape and flexible tap connectors for the plumbing reconnect',
         ],

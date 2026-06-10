@@ -2,7 +2,7 @@
  * @file src/components/v2/FenceCalculator.tsx
  *
  * Fencing island — elevation view of the run: posts, panels, gravel boards,
- * ground line and postcrete, with the burial depth called out.
+ * ground line and post-fix concrete, with the burial depth called out.
  */
 
 import { useMemo, useState } from 'react';
@@ -65,7 +65,7 @@ function FencePreview({ input }: { input: FenceInput }) {
                 const px = x0 + i * (panelWPx + postWPx);
                 return (
                     <g key={i}>
-                        {/* post + postcrete */}
+                        {/* post + post-fix concrete */}
                         <rect x={px} y={topY} width={postWPx} height={(input.heightM + gravelM + burialM) * scale} fill={postColor} stroke="#04204b" strokeWidth="0.5" />
                         <path
                             d={`M ${px - 7} ${groundY + burialM * scale} L ${px + postWPx + 7} ${groundY + burialM * scale} L ${px + postWPx + 4} ${groundY + 4} L ${px - 4} ${groundY + 4} Z`}
@@ -127,8 +127,8 @@ function FencePreview({ input }: { input: FenceInput }) {
 
             <text x={W / 2} y={H - 10} fill="#fff" fontSize="11" textAnchor="middle" opacity="0.8">
                 {truncated
-                    ? `Showing ${shownPanels} of ${plan.panels} bays — every post set in postcrete`
-                    : `${plan.panels} bays at 1.83 m — every post set in postcrete`}
+                    ? `Showing ${shownPanels} of ${plan.panels} bays — every post set in post-fix concrete`
+                    : `${plan.panels} bays at 1.83 m — every post set in post-fix concrete`}
             </text>
         </svg>
     );

@@ -98,15 +98,15 @@ export function calculateTiling(input: TilingInput): BillOfMaterials {
                     {
                         id: 'adhesive',
                         name: wall
-                            ? 'BAL white wall tile adhesive (powder)'
-                            : 'Mapei rapid-set flexible floor adhesive',
+                            ? 'White wall tile adhesive (powder)'
+                            : 'Rapid-set flexible floor tile adhesive',
                         detail: `20 kg bag ≈ ${adhesiveM2PerBag} m² at a ${wall ? 6 : 10} mm bed`,
                         qty: units(a / adhesiveM2PerBag),
                         unit: 'bags',
                     },
                     {
                         id: 'grout',
-                        name: 'Mapei Ultracolor Plus grout',
+                        name: 'Flexible wall & floor grout',
                         detail: `5 kg bag — ${plan.jointMm} mm joints on this format`,
                         qty: units(groutKg / 5),
                         unit: 'bags',
@@ -125,7 +125,7 @@ export function calculateTiling(input: TilingInput): BillOfMaterials {
                 lines: [
                     {
                         id: 'primer',
-                        name: 'BAL APD acrylic primer',
+                        name: 'Acrylic tile primer',
                         detail: 'porous backgrounds before adhesive',
                         qty: units(a / 40),
                         unit: 'bottles',
@@ -143,7 +143,7 @@ export function calculateTiling(input: TilingInput): BillOfMaterials {
                         : []),
                     {
                         id: 'silicone',
-                        name: 'Everbuild Forever White sanitary silicone',
+                        name: 'Mould-resistant sanitary silicone',
                         detail: 'internal corners and junctions — never grout them',
                         qty: units(a / 10) + 1,
                         unit: 'cartridges',

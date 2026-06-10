@@ -130,7 +130,7 @@ export default function DeckingCalculator() {
                 />
                 <ToggleRow
                     label="Raised deck"
-                    hint="Posts in postcrete instead of deck blocks"
+                    hint="Posts in post-fix concrete instead of deck blocks"
                     checked={input.raised}
                     onChange={(v) => set('raised', v)}
                 />

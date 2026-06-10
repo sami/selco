@@ -85,7 +85,7 @@ export function calculatePaint(input: PaintInput): BillOfMaterials {
         if (tins.five)
             lines.push({
                 id: 'wall-5l',
-                name: 'Leyland Trade Vinyl Matt — walls',
+                name: 'Vinyl matt emulsion — walls',
                 detail: '5 L tin, 12 m²/L per coat',
                 qty: tins.five,
                 unit: 'tins',
@@ -93,7 +93,7 @@ export function calculatePaint(input: PaintInput): BillOfMaterials {
         if (tins.twoFive)
             lines.push({
                 id: 'wall-2.5l',
-                name: 'Leyland Trade Vinyl Matt — walls',
+                name: 'Vinyl matt emulsion — walls',
                 detail: '2.5 L tin',
                 qty: tins.twoFive,
                 unit: 'tins',
@@ -105,7 +105,7 @@ export function calculatePaint(input: PaintInput): BillOfMaterials {
         if (tins.five)
             lines.push({
                 id: 'ceiling-5l',
-                name: 'Leyland Trade Contract Matt — ceiling white',
+                name: 'Contract matt emulsion — ceiling white',
                 detail: '5 L tin',
                 qty: tins.five,
                 unit: 'tins',
@@ -113,7 +113,7 @@ export function calculatePaint(input: PaintInput): BillOfMaterials {
         if (tins.twoFive)
             lines.push({
                 id: 'ceiling-2.5l',
-                name: 'Leyland Trade Contract Matt — ceiling white',
+                name: 'Contract matt emulsion — ceiling white',
                 detail: '2.5 L tin',
                 qty: tins.twoFive,
                 unit: 'tins',
@@ -127,14 +127,14 @@ export function calculatePaint(input: PaintInput): BillOfMaterials {
         lines.push(
             {
                 id: 'undercoat',
-                name: 'Dulux Trade Undercoat',
+                name: 'Trade wood undercoat',
                 detail: '750 ml tin',
                 qty: units(woodLitres / 0.75),
                 unit: 'tins',
             },
             {
                 id: 'gloss',
-                name: 'Dulux Trade Gloss / Satinwood',
+                name: 'Trade gloss / satinwood',
                 detail: '750 ml tin',
                 qty: units(woodLitres / 0.75),
                 unit: 'tins',
@@ -145,14 +145,14 @@ export function calculatePaint(input: PaintInput): BillOfMaterials {
     const sundries: BomLine[] = [
         {
             id: 'roller',
-            name: 'Harris Trade roller & tray set',
+            name: 'Roller & tray set',
             detail: '9" medium pile + 2 sleeves',
             qty: 1,
             unit: 'sets',
         },
         {
             id: 'brushes',
-            name: 'Harris Trade brush set',
+            name: 'Decorating brush set',
             detail: '1" / 2" / 3" cutting-in',
             qty: 1,
             unit: 'sets',
@@ -187,9 +187,9 @@ export function calculatePaint(input: PaintInput): BillOfMaterials {
             { title: 'Sundries', lines: sundries },
         ],
         tools: [
-            'Filler and filling knife — Toupret or Easi-Fill for cracks and dents',
+            'Filler and filling knife for cracks and dents',
             'Fine surface sandpaper (120/180 grit) and sanding block',
-            'Caulk gun + Everbuild decorators caulk for gaps at skirting and frames',
+            'Caulk gun + Decorators caulk for gaps at skirting and frames',
             'Sugar soap for washing down previously painted surfaces',
             'Step ladder and roller extension pole for ceilings',
             'Rags and a paint kettle for cutting in',

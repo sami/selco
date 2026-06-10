@@ -122,14 +122,14 @@ export function calculateGrass(input: GrassInput): BillOfMaterials {
     const grassLines: BomLine[] = [
         {
             id: 'grass',
-            name: 'Luxigraze 30 Luxury artificial grass',
+            name: 'Artificial grass, 30 mm pile',
             detail: `${plan.rollWidthM} m roll — ${plan.strips.length} strip${plan.strips.length === 1 ? '' : 's'} cut to length`,
             qty: Math.ceil(plan.boughtM2 * 10) / 10,
             unit: 'm²',
         },
         {
             id: 'membrane',
-            name: 'Weedtex weed control membrane',
+            name: 'Weed control membrane',
             detail: '1 m × 15 m roll',
             qty: units((lawnM2 * 1.1) / 15),
             unit: 'rolls',
@@ -147,7 +147,7 @@ export function calculateGrass(input: GrassInput): BillOfMaterials {
         grassLines.push(
             {
                 id: 'tape',
-                name: 'Luxigraze self-adhesive joining tape',
+                name: 'Self-adhesive grass joining tape',
                 detail: '150 mm × 10 m roll',
                 qty: units(plan.jointLengthM / 10),
                 unit: 'rolls',
@@ -166,7 +166,7 @@ export function calculateGrass(input: GrassInput): BillOfMaterials {
         ? [
               {
                   id: 'mot',
-                  name: 'Hanson MOT Type 1 sub-base',
+                  name: 'MOT Type 1 sub-base',
                   detail: 'bulk bag (~850 kg) — 50 mm compacted',
                   // 50 mm at ~2.2 t/m³ compacted ≈ 110 kg per m²
                   qty: units((lawnM2 * 0.05 * 2200) / 850),
@@ -174,7 +174,7 @@ export function calculateGrass(input: GrassInput): BillOfMaterials {
               },
               {
                   id: 'sharp-sand',
-                  name: 'Hanson sharp sand',
+                  name: 'Sharp sand',
                   detail: 'bulk bag (~850 kg) — 25 mm bed',
                   // 25 mm at ~1.7 t/m³ ≈ 42.5 kg per m²
                   qty: units((lawnM2 * 0.025 * 1700) / 850),
@@ -216,7 +216,7 @@ export function calculateGrass(input: GrassInput): BillOfMaterials {
             'Turf cutter and wacker plate (hire) for the dig and compaction',
             'Landscaping rake and screed bar for the sand bed',
             'Stiff broom — brush the pile upright and work in the infill',
-            'Everbuild general purpose silicone — seal any edging upstands',
+            'General-purpose silicone — seal any edging upstands',
             'Tape measure, string line and marking paint',
         ],
         notes: [

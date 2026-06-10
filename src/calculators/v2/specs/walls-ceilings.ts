@@ -21,7 +21,7 @@ export const drylining: CalcSpec = {
     category: 'Walls, ceilings & partitions',
     icon: 'fa-clone',
     description:
-        'Gyproc boards and DriWall adhesive for dot-and-dab onto masonry, with the joint finishing kit included.',
+        'Plasterboard and dot-and-dab adhesive bonded onto masonry, with the joint finishing kit included.',
     fields: [
         { kind: 'number', id: 'area', label: 'Wall area to board', unit: 'm²', min: 1, max: 500, step: 0.5, default: 30 },
         {
@@ -40,10 +40,10 @@ export const drylining: CalcSpec = {
     compute: (v) => {
         const area = num(v, 'area');
         const boardName = {
-            standard: 'Gyproc WallBoard, 12.5 mm',
-            moisture: 'Gyproc Moisture Resistant board, 12.5 mm',
-            acoustic: 'Gyproc SoundBloc, 12.5 mm',
-        }[str(v, 'board')] ?? 'Gyproc WallBoard, 12.5 mm';
+            standard: 'Plasterboard, 12.5 mm',
+            moisture: 'Moisture-resistant plasterboard, 12.5 mm',
+            acoustic: 'Acoustic plasterboard, 12.5 mm',
+        }[str(v, 'board')] ?? 'Plasterboard, 12.5 mm';
 
         return {
             facts: [
@@ -56,19 +56,19 @@ export const drylining: CalcSpec = {
                     title: 'Boards & adhesive',
                     lines: [
                         { id: 'boards', name: boardName, detail: '1200 × 2400 mm — inc. 10% cuts', qty: units((area * 1.1) / BOARD_M2), unit: 'boards' },
-                        { id: 'adhesive', name: 'Gyproc DriWall adhesive', detail: '25 kg bag ≈ 3 m² of dabs', qty: units(area / 3), unit: 'bags' },
+                        { id: 'adhesive', name: 'Drywall (dot & dab) adhesive', detail: '25 kg bag ≈ 3 m² of dabs', qty: units(area / 3), unit: 'bags' },
                     ],
                 },
                 {
                     title: 'Finishing',
                     lines: bool(v, 'skim')
                         ? [
-                              { id: 'scrim', name: 'Gyproc FibaTape scrim', detail: '90 m roll', qty: units(area / 30), unit: 'rolls' },
-                              { id: 'multifinish', name: 'Thistle MultiFinish', detail: '25 kg bag ≈ 10 m²', qty: units(area / 10), unit: 'bags' },
+                              { id: 'scrim', name: 'Self-adhesive scrim tape', detail: '90 m roll', qty: units(area / 30), unit: 'rolls' },
+                              { id: 'multifinish', name: 'Multi-finish plaster', detail: '25 kg bag ≈ 10 m²', qty: units(area / 10), unit: 'bags' },
                           ]
                         : [
                               { id: 'tape', name: 'Paper joint tape', detail: '150 m roll', qty: units(area / 60), unit: 'rolls' },
-                              { id: 'jointing', name: 'Gyproc Easi-Fill 60', detail: '10 kg bag — two-coat joints', qty: units(area / 15), unit: 'bags' },
+                              { id: 'jointing', name: 'Jointing & filling compound (60 min)', detail: '10 kg bag — two-coat joints', qty: units(area / 15), unit: 'bags' },
                               { id: 'primer', name: 'Drywall sealer / primer', detail: '10 L', qty: units(area / 80), unit: 'tubs' },
                           ],
                 },
@@ -78,7 +78,7 @@ export const drylining: CalcSpec = {
                 'Straight edge and 2 m level — dabs let you plumb the wall, use it',
                 'Mixing paddle and two buckets (adhesive goes off fast — small mixes)',
                 'Taping knives (100/200 mm) if taping & jointing',
-                'Everbuild foam gun cleaner and gap foam for reveals',
+                'Foam gun cleaner and gap foam for reveals',
                 'Acoustic sealant along floor and ceiling junctions',
             ],
             notes: [
@@ -100,12 +100,12 @@ export const metalStud: CalcSpec = {
     category: 'Walls, ceilings & partitions',
     icon: 'fa-grip-lines-vertical',
     description:
-        'Gypframe studs and track, boards both sides, acoustic insulation and screws for a new internal wall.',
+        'Metal studs and track, boards both sides, acoustic insulation and screws for a new internal wall.',
     fields: [
         { kind: 'number', id: 'length', label: 'Partition length', unit: 'm', min: 0.5, max: 20, default: 4 },
         { kind: 'number', id: 'height', label: 'Floor-to-ceiling height', unit: 'm', min: 2, max: 4, default: 2.4 },
         { kind: 'number', id: 'doors', label: 'Door openings', min: 0, max: 3, step: 1, default: 1 },
-        { kind: 'toggle', id: 'acoustic', label: 'Acoustic upgrade', hint: 'Sound insulation + SoundBloc boards', default: true },
+        { kind: 'toggle', id: 'acoustic', label: 'Acoustic upgrade', hint: 'Sound insulation + acoustic plasterboard', default: true },
     ],
     compute: (v) => {
         const len = num(v, 'length');
@@ -125,8 +125,8 @@ export const metalStud: CalcSpec = {
                 {
                     title: 'Framing',
                     lines: [
-                        { id: 'studs', name: 'Gypframe 70 S 50 C-stud', detail: `${h <= 3 ? '3.0' : '3.6'} m lengths`, qty: studs, unit: 'studs' },
-                        { id: 'track', name: 'Gypframe 72 mm floor & ceiling track', detail: '3.0 m lengths — head and base', qty: units((len * 2) / 3), unit: 'lengths' },
+                        { id: 'studs', name: 'Metal C-stud, 70 mm', detail: `${h <= 3 ? '3.0' : '3.6'} m lengths`, qty: studs, unit: 'studs' },
+                        { id: 'track', name: 'Metal floor & ceiling track, 72 mm', detail: '3.0 m lengths — head and base', qty: units((len * 2) / 3), unit: 'lengths' },
                         ...(doors > 0
                             ? [{ id: 'timber', name: 'CLS timber, 63 × 38 mm', detail: 'door head formers and fixing grounds', qty: doors * 2, unit: 'lengths' }]
                             : []),
@@ -135,10 +135,10 @@ export const metalStud: CalcSpec = {
                 {
                     title: 'Boarding & insulation',
                     lines: [
-                        { id: 'boards', name: bool(v, 'acoustic') ? 'Gyproc SoundBloc, 12.5 mm' : 'Gyproc WallBoard, 12.5 mm', detail: '1200 × 2400 mm — both faces, 10% cuts', qty: boards, unit: 'boards' },
-                        { id: 'insulation', name: bool(v, 'acoustic') ? 'Rockwool RWA45 acoustic slab, 50 mm' : 'Knauf acoustic partition roll (APR)', detail: bool(v, 'acoustic') ? 'pack covers 8.64 m²' : 'roll covers 11.25 m²', qty: units(area / (bool(v, 'acoustic') ? 8.64 : 11.25)), unit: bool(v, 'acoustic') ? 'packs' : 'rolls' },
+                        { id: 'boards', name: bool(v, 'acoustic') ? 'Acoustic plasterboard, 12.5 mm' : 'Plasterboard, 12.5 mm', detail: '1200 × 2400 mm — both faces, 10% cuts', qty: boards, unit: 'boards' },
+                        { id: 'insulation', name: bool(v, 'acoustic') ? 'Acoustic mineral wool slab, 50 mm' : 'Acoustic partition roll (APR)', detail: bool(v, 'acoustic') ? 'pack covers 8.64 m²' : 'roll covers 11.25 m²', qty: units(area / (bool(v, 'acoustic') ? 8.64 : 11.25)), unit: bool(v, 'acoustic') ? 'packs' : 'rolls' },
                         { id: 'screws', name: 'Drywall screws, 25 mm (fine thread)', detail: 'box of 1000 — ~15 per m² per face', qty: units((area * 30) / 1000), unit: 'boxes' },
-                        { id: 'scrim', name: 'Gyproc FibaTape + Easi-Fill 60', detail: 'joint finishing kit', qty: units(area / 25), unit: 'kits' },
+                        { id: 'scrim', name: 'Scrim tape + jointing compound', detail: 'joint finishing kit', qty: units(area / 25), unit: 'kits' },
                     ],
                 },
             ],
@@ -202,9 +202,9 @@ export const mfCeiling: CalcSpec = {
                 {
                     title: 'Grid',
                     lines: [
-                        { id: 'mf5', name: 'Gypframe MF5 ceiling section', detail: '3.6 m lengths @ 450 mm centres', qty: units((mf5M * 1.05) / 3.6), unit: 'lengths' },
-                        { id: 'mf7', name: 'Gypframe MF7 primary channel', detail: '3.6 m lengths @ 1200 mm centres', qty: units((mf7M * 1.05) / 3.6), unit: 'lengths' },
-                        { id: 'mf6a', name: 'Gypframe MF6A perimeter channel', detail: '3.6 m lengths', qty: units(perimeter / 3.6), unit: 'lengths' },
+                        { id: 'mf5', name: 'MF5 ceiling section', detail: '3.6 m lengths @ 450 mm centres', qty: units((mf5M * 1.05) / 3.6), unit: 'lengths' },
+                        { id: 'mf7', name: 'MF7 primary channel', detail: '3.6 m lengths @ 1200 mm centres', qty: units((mf7M * 1.05) / 3.6), unit: 'lengths' },
+                        { id: 'mf6a', name: 'MF6A perimeter channel', detail: '3.6 m lengths', qty: units(perimeter / 3.6), unit: 'lengths' },
                         { id: 'hangers', name: 'Strap hangers + soffit cleats', detail: 'one per 1200 mm along each MF7', qty: hangers, unit: 'sets' },
                         { id: 'clips', name: 'MF connecting clips', detail: 'MF5 to MF7 junctions', qty: units(mf5M / 0.45 / 10) * 10, unit: 'clips' },
                     ],
@@ -212,13 +212,13 @@ export const mfCeiling: CalcSpec = {
                 {
                     title: 'Boarding',
                     lines: [
-                        { id: 'boards', name: 'Gyproc WallBoard, 12.5 mm', detail: '1200 × 2400 mm — inc. 10% cuts', qty: units((area * 1.1) / BOARD_M2), unit: 'boards' },
+                        { id: 'boards', name: 'Plasterboard, 12.5 mm', detail: '1200 × 2400 mm — inc. 10% cuts', qty: units((area * 1.1) / BOARD_M2), unit: 'boards' },
                         { id: 'screws', name: 'Drywall screws, 25 mm (fine thread)', detail: 'box of 1000', qty: units((area * 18) / 1000), unit: 'boxes' },
                         { id: 'wafer', name: 'Wafer-head jack-point screws, 13 mm', detail: 'box of 500 — metal-to-metal', qty: 1, unit: 'boxes' },
                         ...(bool(v, 'insulation')
-                            ? [{ id: 'quilt', name: 'Knauf acoustic roll, 100 mm', detail: 'laid loose over the grid', qty: units(area / 11.25), unit: 'rolls' }]
+                            ? [{ id: 'quilt', name: 'Acoustic insulation roll, 100 mm', detail: 'laid loose over the grid', qty: units(area / 11.25), unit: 'rolls' }]
                             : []),
-                        { id: 'scrim', name: 'Gyproc FibaTape + Easi-Fill 60', detail: 'joint finishing kit', qty: units(area / 25), unit: 'kits' },
+                        { id: 'scrim', name: 'Scrim tape + jointing compound', detail: 'joint finishing kit', qty: units(area / 25), unit: 'kits' },
                     ],
                 },
             ],
@@ -249,7 +249,7 @@ export const suspendedCeiling: CalcSpec = {
     category: 'Walls, ceilings & partitions',
     icon: 'fa-table-cells',
     description:
-        'Zentia-style 600 × 600 lay-in grid: main runners, cross tees, perimeter trim, hangers and tiles.',
+        'Standard 600 × 600 lay-in grid: main runners, cross tees, perimeter trim, hangers and tiles.',
     fields: [
         { kind: 'number', id: 'width', label: 'Room width', unit: 'm', min: 1, max: 30, default: 5 },
         { kind: 'number', id: 'length', label: 'Room length', unit: 'm', min: 1, max: 30, default: 8 },
@@ -300,7 +300,7 @@ export const suspendedCeiling: CalcSpec = {
                 {
                     title: 'Tiles',
                     lines: [
-                        { id: 'tiles', name: str(v, 'tile') === 'vinyl' ? 'Vinyl-faced wipeable tile, 600 × 600' : 'Zentia mineral fibre tile, 600 × 600', detail: 'inc. 5% cutting margin', qty: tiles, unit: 'tiles' },
+                        { id: 'tiles', name: str(v, 'tile') === 'vinyl' ? 'Vinyl-faced wipeable tile, 600 × 600' : 'Mineral fibre ceiling tile, 600 × 600', detail: 'inc. 5% cutting margin', qty: tiles, unit: 'tiles' },
                     ],
                 },
             ],

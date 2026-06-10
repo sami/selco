@@ -24,7 +24,7 @@ export const BOARD_FORMATS: BoardFormat[] = [
     {
         id: 'plasterboard',
         label: 'Plasterboard',
-        productName: 'Gyproc WallBoard, 12.5 mm',
+        productName: 'Plasterboard, 12.5 mm',
         wMm: 1200,
         hMm: 2400,
         fixing: { name: 'Drywall screws, 38 mm', detail: 'box of 500', perBoard: 30, perBox: 500 },
@@ -48,10 +48,10 @@ export const BOARD_FORMATS: BoardFormat[] = [
     {
         id: 'backer',
         label: 'Backer board',
-        productName: 'HardieBacker cement board, 12 mm',
+        productName: 'Cement backer board, 12 mm',
         wMm: 1200,
         hMm: 800,
-        fixing: { name: 'HardieBacker screws', detail: 'box of 200', perBoard: 15, perBox: 200 },
+        fixing: { name: 'Backer board screws', detail: 'box of 200', perBoard: 15, perBox: 200 },
     },
 ];
 
@@ -126,14 +126,14 @@ export function calculateBoards(input: BoardsInput): BillOfMaterials {
                         ? [
                               {
                                   id: 'scrim',
-                                  name: 'Gyproc FibaTape scrim',
+                                  name: 'Self-adhesive scrim tape',
                                   detail: '90 m roll for the joints',
                                   qty: units(plan.areaM2 / 30),
                                   unit: 'rolls',
                               },
                               {
                                   id: 'filler',
-                                  name: 'Gyproc Easi-Fill 60',
+                                  name: 'Jointing & filling compound (60 min)',
                                   detail: '10 kg bag — joints and screw heads',
                                   qty: units(plan.areaM2 / 15),
                                   unit: 'bags',

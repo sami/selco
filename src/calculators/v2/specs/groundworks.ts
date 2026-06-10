@@ -62,8 +62,8 @@ export const concrete: CalcSpec = {
                 {
                     title: 'Concrete (site-mixed)',
                     lines: [
-                        { id: 'ballast', name: 'Hanson all-in ballast', detail: 'bulk bag (~850 kg)', qty: units(ballastKg / 850), unit: 'bulk bags' },
-                        { id: 'cement', name: 'Blue Circle Mastercrete cement', detail: '25 kg bag', qty: units(cementKg / 25), unit: 'bags' },
+                        { id: 'ballast', name: 'All-in ballast', detail: 'bulk bag (~850 kg)', qty: units(ballastKg / 850), unit: 'bulk bags' },
+                        { id: 'cement', name: 'General-purpose cement', detail: '25 kg bag', qty: units(cementKg / 25), unit: 'bags' },
                     ],
                 },
                 {
@@ -83,7 +83,7 @@ export const concrete: CalcSpec = {
                 },
             ],
             tools: [
-                'Belle-style cement mixer (hire) — hand mixing past 0.5 m³ is a false economy',
+                'Powered cement mixer (hire) — hand mixing past 0.5 m³ is a false economy',
                 'Wheelbarrow, shovels and a rake for placing',
                 'Long straight edge / screed bar and a float or power float for big slabs',
                 'String lines, pegs and a level for the formwork',
@@ -109,7 +109,7 @@ export const driveway: CalcSpec = {
     category: 'Groundworks & drainage',
     icon: 'fa-car',
     description:
-        'Marshalls-style block paving with the full build-up: deep sub-base, screeded sand bed, edge restraints and kiln sand.',
+        'Concrete block paving with the full build-up: deep sub-base, screeded sand bed, edge restraints and kiln sand.',
     fields: [
         { kind: 'number', id: 'width', label: 'Driveway width', unit: 'm', min: 1, max: 15, default: 3 },
         { kind: 'number', id: 'length', label: 'Driveway length', unit: 'm', min: 1, max: 25, default: 6 },
@@ -119,7 +119,7 @@ export const driveway: CalcSpec = {
             label: 'Block format',
             options: [
                 { value: 'standard', label: '200 × 100' },
-                { value: 'tegula', label: 'Tegula mix' },
+                { value: 'tegula', label: 'Tumbled mix' },
             ],
             default: 'standard',
         },
@@ -147,7 +147,7 @@ export const driveway: CalcSpec = {
                     lines: [
                         {
                             id: 'blocks',
-                            name: tegula ? 'Marshalls Tegula block paving, mixed-size project pack' : 'Marshalls Driveline 50 mm block paving',
+                            name: tegula ? 'Tumbled concrete block paving, mixed-size project pack' : 'Concrete block paving, 50 mm',
                             detail: tegula ? 'pack covers ~9.7 m² — inc. 5% cuts' : '~9.8 m² per pack (488 blocks) — inc. 5% cuts',
                             qty: units((area * 1.05) / 9.7),
                             unit: 'packs',
@@ -156,8 +156,8 @@ export const driveway: CalcSpec = {
                         ...(bool(v, 'edging')
                             ? [
                                   { id: 'edging', name: 'Concrete block paving kerb, 200 × 100', detail: 'laid on edge in concrete haunch', qty: units(perimeter / 0.2), unit: 'kerbs' },
-                                  { id: 'haunch-ballast', name: 'Hanson all-in ballast (haunching)', detail: 'bulk bag', qty: units((perimeter * 0.02 * 2000) / 850), unit: 'bulk bags' },
-                                  { id: 'haunch-cement', name: 'Blue Circle Mastercrete cement', detail: '25 kg bag', qty: units((perimeter * 0.02 * 300) / 25), unit: 'bags' },
+                                  { id: 'haunch-ballast', name: 'All-in ballast (haunching)', detail: 'bulk bag', qty: units((perimeter * 0.02 * 2000) / 850), unit: 'bulk bags' },
+                                  { id: 'haunch-cement', name: 'General-purpose cement', detail: '25 kg bag', qty: units((perimeter * 0.02 * 300) / 25), unit: 'bags' },
                               ]
                             : []),
                     ],
@@ -165,8 +165,8 @@ export const driveway: CalcSpec = {
                 {
                     title: 'Build-up',
                     lines: [
-                        { id: 'mot', name: 'Hanson MOT Type 1 sub-base', detail: 'bulk bag — 150 mm compacted (vehicles)', qty: units((area * 0.15 * 2200) / 850), unit: 'bulk bags' },
-                        { id: 'sharp-sand', name: 'Hanson sharp sand (laying course)', detail: 'bulk bag — 50 mm screeded', qty: units((area * 0.05 * 1700) / 850), unit: 'bulk bags' },
+                        { id: 'mot', name: 'MOT Type 1 sub-base', detail: 'bulk bag — 150 mm compacted (vehicles)', qty: units((area * 0.15 * 2200) / 850), unit: 'bulk bags' },
+                        { id: 'sharp-sand', name: 'Sharp sand (laying course)', detail: 'bulk bag — 50 mm screeded', qty: units((area * 0.05 * 1700) / 850), unit: 'bulk bags' },
                         { id: 'membrane', name: 'Geotextile separation membrane', detail: '2.25 × 20 m roll under the sub-base', qty: units((area * 1.1) / 45), unit: 'rolls' },
                     ],
                 },
@@ -316,7 +316,7 @@ export const aggregates: CalcSpec = {
                         { id: 'material', name: spec.name, detail: mat === 'bark' ? '100 L bag' : 'bulk bag (~850 kg)', qty: units(kg / spec.perUnit), unit: spec.unit },
                         ...(bool(v, 'membrane')
                             ? [
-                                  { id: 'membrane', name: 'Weedtex weed control membrane', detail: '1 m × 15 m roll, 100 mm laps', qty: units((area * 1.15) / 15), unit: 'rolls' },
+                                  { id: 'membrane', name: 'Weed control membrane', detail: '1 m × 15 m roll, 100 mm laps', qty: units((area * 1.15) / 15), unit: 'rolls' },
                                   { id: 'pins', name: 'Membrane fixing pegs', detail: 'pack of 50', qty: units(area / 2 / 50) || 1, unit: 'packs' },
                               ]
                             : []),
