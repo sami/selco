@@ -11,9 +11,10 @@
  * undercut.
  *
  * The customer chooses the underlay (foam, vapour-barrier, fibreboard,
- * acoustic, integrated-into-the-plank, or none) and the fixing method
- * (floating click or glued down). Wood floors keep a perimeter expansion
- * gap even when glued; a fully bonded LVT does not.
+ * acoustic, integrated-into-the-plank, or none) and the fixing method.
+ * Glue-down (SikaBond wood adhesive) is for the real-timber floors —
+ * engineered and solid; laminate and rigid-click LVT are floating only.
+ * A glued wood floor still keeps its perimeter expansion gap.
  */
 
 import type { BillOfMaterials, BomLine } from './types';
@@ -55,8 +56,8 @@ export const FLOOR_TYPES: FloorType[] = [
         label: 'LVT / SPC 5 mm',
         thicknessMm: 5,
         plankMm: { w: 180, l: 1220 },
-        productName: 'SPC rigid vinyl plank (e.g. Quickstep Alpha, Woodpecker)',
-        canGlue: true,
+        productName: 'SPC rigid vinyl click plank (e.g. Quickstep Alpha, Woodpecker)',
+        canGlue: false,
         wood: false,
     },
     {
@@ -191,7 +192,7 @@ export function calculateFlooring(input: FlooringInput): BillOfMaterials {
     if (glued) {
         flooringLines.push({
             id: 'adhesive',
-            name: floor.wood ? 'SikaBond-54 wood floor adhesive' : 'Flexible vinyl floor adhesive (LVT)',
+            name: 'SikaBond-54 wood floor adhesive',
             detail: `${(Math.ceil(a * 100) / 100).toFixed(2)} m² to bond. Trowel-applied; coverage per tub is on the tub.`,
             qty: Math.ceil(a * 100) / 100,
             unit: 'm² to bond',
@@ -257,9 +258,9 @@ export function calculateFlooring(input: FlooringInput): BillOfMaterials {
             'Acclimatise packs flat in the room for 48 hours before laying.',
             'Stagger end joints at least 300 mm row to row; never let joints line up.',
             `Plank thickness (${floor.thicknessMm} mm) doesn't change how much floor you buy — it sets the threshold-bar height and how far you undercut the door casings.`,
-            plan.needsExpansionGap
-                ? '10 mm expansion gap at every wall and fixed point; the floor needs room to move.'
-                : 'Bonded LVT sits tight to the wall — no expansion gap, so the skirting can sit straight down.',
+            glued
+                ? '10 mm expansion gap still left at every wall — a glued wood floor moves with the seasons.'
+                : '10 mm expansion gap at every wall and fixed point; the floating floor needs room to move.',
             ...(underlay.id === 'integrated' ? ['Your plank has integrated underlay, so there is no separate underlay to lay.'] : []),
             ...(concreteNote ? [concreteNote] : []),
         ],

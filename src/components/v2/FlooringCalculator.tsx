@@ -77,10 +77,8 @@ function FlooringPreview({ input }: { input: FlooringInput }) {
             ))}
 
             <rect x={x0} y={y0} width={rw} height={rh} fill="none" stroke="#fff" strokeWidth="2.5" />
-            {/* expansion gap callout, only for floors that float at the perimeter */}
-            {plan.needsExpansionGap && (
-                <rect x={x0 - 5} y={y0 - 5} width={rw + 10} height={rh + 10} fill="none" stroke={YELLOW} strokeWidth="1.2" strokeDasharray="6 5" />
-            )}
+            {/* expansion gap callout */}
+            <rect x={x0 - 5} y={y0 - 5} width={rw + 10} height={rh + 10} fill="none" stroke={YELLOW} strokeWidth="1.2" strokeDasharray="6 5" />
 
             <g fill={YELLOW} fontSize="13" fontWeight="700">
                 <text x={x0 + rw / 2} y={y0 - 24} textAnchor="middle">
@@ -92,9 +90,7 @@ function FlooringPreview({ input }: { input: FlooringInput }) {
             </g>
 
             <text x={W / 2} y={H - 12} fill="#fff" fontSize="11" textAnchor="middle" opacity="0.85">
-                {plan.needsExpansionGap
-                    ? 'Dashed line = 10 mm expansion gap all round · end joints staggered ⅓ plank'
-                    : 'Bonded down, no expansion gap · end joints staggered ⅓ plank'}
+                Dashed line = 10 mm expansion gap all round · end joints staggered ⅓ plank
             </text>
         </svg>
     );
