@@ -164,16 +164,6 @@ export const driveway: CalcSpec = {
     fields: [
         { kind: 'number', id: 'width', label: 'Driveway width', unit: 'm', min: 1, max: 15, default: 3 },
         { kind: 'number', id: 'length', label: 'Driveway length', unit: 'm', min: 1, max: 25, default: 6 },
-        {
-            kind: 'choice',
-            id: 'block',
-            label: 'Block format',
-            options: [
-                { value: 'standard', label: '200 × 100' },
-                { value: 'tegula', label: 'Tumbled mix' },
-            ],
-            default: 'standard',
-        },
         { kind: 'toggle', id: 'edging', label: 'New edge restraints', hint: 'Concrete kerb edging haunched in mortar', default: true },
     ],
     rectPreview: (v) => ({
@@ -184,7 +174,6 @@ export const driveway: CalcSpec = {
     compute: (v) => {
         const area = num(v, 'width') * num(v, 'length');
         const perimeter = 2 * (num(v, 'width') + num(v, 'length'));
-        const tegula = str(v, 'block') === 'tegula';
 
         return {
             facts: [
@@ -198,9 +187,9 @@ export const driveway: CalcSpec = {
                     lines: [
                         {
                             id: 'blocks',
-                            name: tegula ? 'Tumbled concrete block paving, mixed-size project pack' : 'Concrete block paving, 50 mm',
-                            detail: tegula ? 'pack covers ~9.7 m², inc. 5% cuts' : '~9.8 m² per pack (488 blocks), inc. 5% cuts',
-                            qty: units((area * 1.05) / 9.7),
+                            name: 'Concrete block paving, 200 × 100 × 50 mm',
+                            detail: '~9.8 m² per pack (488 blocks), inc. 5% cuts',
+                            qty: units((area * 1.05) / 9.8),
                             unit: 'packs',
                         },
                         { id: 'kiln-sand', name: 'Kiln Dried Sand 20 kg', detail: 'brushed into the joints, ~12 m² per bag', qty: units(area / 12), unit: 'bags' },
