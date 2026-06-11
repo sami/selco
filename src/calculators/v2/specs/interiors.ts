@@ -252,11 +252,9 @@ export const doorsLinings: CalcSpec = {
             id: 'doorType',
             label: 'Door type',
             options: [
-                { value: 'moulded4', label: '4-panel moulded' },
-                { value: 'moulded6', label: '6-panel moulded' },
+                { value: 'panel', label: 'Moulded panel' },
                 { value: 'oak', label: 'Oak veneer' },
                 { value: 'primed', label: 'Primed flush' },
-                { value: 'glazed', label: 'Glazed primed' },
             ],
             default: 'oak',
         },
@@ -291,11 +289,9 @@ export const doorsLinings: CalcSpec = {
         const n = Math.round(num(v, 'doors'));
         const fire = bool(v, 'fire');
         const doorName = {
-            moulded4: '4-panel smooth moulded door, white primed',
-            moulded6: '6-panel smooth moulded door, white primed',
+            panel: 'Moulded panel door (Premdor / LPD range)',
             oak: 'Oak veneer door (e.g. Belize, Shaker 4-panel)',
-            primed: 'White primed flush door (e.g. Amsterdam, Arnhem)',
-            glazed: '6-panel glazed primed door',
+            primed: 'White primed door (e.g. Amsterdam, Arnhem)',
         }[str(v, 'doorType')] ?? 'Oak veneer door';
         const widthMm = Number(str(v, 'doorSize')) || 762;
         const liningWidthMm = Number(str(v, 'liningWidth')) || 138;

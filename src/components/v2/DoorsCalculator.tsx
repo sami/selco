@@ -10,7 +10,7 @@
 import { useMemo, useState } from 'react';
 import { doorsLinings } from '../../calculators/v2/specs/interiors';
 import type { Values } from '../../calculators/v2/specs/spec-types';
-import { BlueprintPanel, JobCard, NumberField, ToggleRow } from './ui';
+import { BlueprintPanel, JobCard, NumberField, Segmented, ToggleRow } from './ui';
 import MaterialsTicket from './MaterialsTicket';
 
 const YELLOW = '#ffd407';
@@ -32,9 +32,7 @@ function DoorPreview({ v }: { v: Values }) {
     const dw = widthMm * scale;
     const x0 = 180;
     const y0 = (H - dh) / 2 + 8;
-    // Flush (primed) is a plain face; oak veneers brown; everything else is a primed white panel face.
-    const flush = doorType === 'primed';
-    const face = doorType === 'oak' ? OAK : flush ? '#cdc4b4' : PANEL;
+    const face = doorType === 'oak' ? OAK : doorType === 'primed' ? PANEL : '#cdc4b4';
 
     const hinges = [
         { y: 150, label: '150 mm down' },
@@ -53,7 +51,7 @@ function DoorPreview({ v }: { v: Values }) {
             {/* leaf */}
             <rect x={x0} y={y0} width={dw} height={dh} fill={face} stroke="#04204b" strokeWidth="1.5" />
             {/* simple 4-panel suggestion */}
-            {!flush &&
+            {doorType !== 'primed' &&
                 [0, 1].map((c) =>
                     [0, 1].map((r) => (
                         <rect
@@ -138,7 +136,6 @@ export default function DoorsCalculator() {
     const bom = useMemo(() => doorsLinings.compute(v), [v]);
     const set = (k: string, val: Values[string]) => setV((s) => ({ ...s, [k]: val }));
 
-    const typeOptions = doorsLinings.fields.find((f) => f.id === 'doorType');
     const sizeOptions = doorsLinings.fields.find((f) => f.id === 'doorSize');
     const liningOptions = doorsLinings.fields.find((f) => f.id === 'liningWidth');
 
@@ -146,16 +143,16 @@ export default function DoorsCalculator() {
         <div className="grid gap-6 lg:grid-cols-[340px_minmax(0,1fr)] items-start">
             <JobCard title="Job details">
                 <NumberField label="Number of doors" value={Number(v.doors)} onChange={(x) => set('doors', Math.round(x))} min={1} max={12} step={1} />
-                {typeOptions?.kind === 'choice' && (
-                    <div>
-                        <label htmlFor="door-type" className="form-label text-sm">Door type</label>
-                        <select id="door-type" className="form-select" value={String(v.doorType)} onChange={(e) => set('doorType', e.target.value)}>
-                            {typeOptions.options.map((o) => (
-                                <option key={o.value} value={o.value}>{o.label}</option>
-                            ))}
-                        </select>
-                    </div>
-                )}
+                <Segmented
+                    label="Door type"
+                    value={String(v.doorType)}
+                    onChange={(x) => set('doorType', x)}
+                    options={[
+                        { value: 'panel', label: 'Moulded' },
+                        { value: 'oak', label: 'Oak veneer' },
+                        { value: 'primed', label: 'Primed' },
+                    ]}
+                />
                 {sizeOptions?.kind === 'choice' && (
                     <div>
                         <label htmlFor="door-size" className="form-label text-sm">Door size</label>
