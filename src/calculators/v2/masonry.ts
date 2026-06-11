@@ -25,7 +25,7 @@ import { aggregateLines, fmtM2, units } from './types';
 
 export type WallConstruction = 'half-brick' | 'one-brick' | 'block' | 'cavity';
 export type BrickType = 'facing' | 'engineering';
-export type BlockType = 'dense' | 'thermalite';
+export type BlockType = 'dense' | 'thermalite' | 'mixed';
 export type OuterLeaf = 'brick' | 'block';
 export type LintelType = 'concrete' | 'steel';
 export type CopingStyle = 'once' | 'twice';
@@ -39,8 +39,12 @@ export interface MasonryInput {
     /** Render-ready outer leaf thickness: 100 or 140 mm dense block. */
     outerBlockThicknessMm: number;
     brickType: BrickType;
-    /** Inner leaf (cavity) or the wall itself (block wall). */
+    /** Inner leaf (cavity) or the wall itself. 'mixed' lays dense below
+     *  DPC and Thermalite above, the common single-skin recipe. */
     blockType: BlockType;
+    /** Cavity width, mm (50/75/100/150). Drives the L1/S lintel code and
+     *  the full-fill batt thickness. */
+    cavityWidthMm: number;
     /** Dense: 100 or 140. Thermalite: 100, or 215 party wall. */
     blockThicknessMm: number;
     /** Door/window openings in the wall, each its own width. */
@@ -48,6 +52,8 @@ export interface MasonryInput {
     lintelType: LintelType;
     /** Steel beams bearing on the wall (2 padstones each). */
     beams: number;
+    /** Stocked padstone, numbered the way the counter knows them. */
+    padstoneId: string;
     /** Ends that tee into an existing wall (wall starter kits). */
     joinsExisting: number;
     /** Below-DPC courses in engineering brick / dense block + DPC roll. */
@@ -78,6 +84,23 @@ export const CONSTRUCTIONS: Record<WallConstruction, ConstructionSpec> = {
 
 /** Supreme prestressed lintel stocked lengths, mm. */
 const LINTEL_LENGTHS = [600, 900, 1050, 1200, 1350, 1500, 1800, 2100, 2400, 2700, 3000];
+
+/** Stocked Supreme padstones, numbered in Selco's own catalogue order. */
+export const PADSTONES: Array<{ id: string; label: string }> = [
+    { id: '01', label: '215 × 140 × 102 mm' },
+    { id: '02', label: '215 × 140 × 215 mm' },
+    { id: '03', label: '215 × 215 × 102 mm' },
+    { id: '04', label: '300 × 140 × 102 mm' },
+    { id: '05', label: '440 × 140 × 102 mm' },
+    { id: '06', label: '440 × 140 × 215 mm' },
+    { id: '07', label: '440 × 215 × 102 mm' },
+];
+
+/** DPC widths stocked in 30 m rolls; pick the first that covers the leaf. */
+const DPC_WIDTHS = [100, 112.5, 150, 225, 300, 450, 600];
+function dpcWidthFor(leafMm: number): number {
+    return DPC_WIDTHS.find((w) => w >= leafMm) ?? 600;
+}
 
 export interface MasonryPlan {
     areaM2: number;
@@ -120,7 +143,8 @@ export function planMasonry(input: MasonryInput): MasonryPlan {
     let bricks = units(netArea * brickRate * 1.05);
     let engineeringBricks = 0;
     const hasBlocks = spec.blocksPerM2 > 0;
-    const thermalite = input.blockType === 'thermalite' && hasBlocks;
+    // 'mixed' walls are Thermalite above the DPC with dense laid below it.
+    const thermalite = (input.blockType === 'thermalite' || input.blockType === 'mixed') && hasBlocks;
 
     if (input.dpcCourses && brickRate > 0) {
         // Two courses below DPC, ~13.4 bricks per metre per course per skin.
@@ -139,7 +163,9 @@ export function planMasonry(input: MasonryInput): MasonryPlan {
     // Aircrete stays out of the ground: one course of dense block below
     // DPC under a Thermalite leaf (440 mm long blocks).
     const denseDpcBlocks =
-        input.dpcCourses && thermalite ? units(input.lengthM / 0.44) : 0;
+        thermalite && (input.dpcCourses || input.blockType === 'mixed')
+            ? units(input.lengthM / 0.44)
+            : 0;
 
     // Mortar: bricks at ~0.85 kg sand each; blocks scale with thickness
     // (the 2.1 kg base rate is for a 100 mm block).
@@ -197,7 +223,7 @@ export function calculateMasonry(input: MasonryInput): BillOfMaterials {
     const openings = input.openings.filter((o) => o.widthMm > 0).length;
     const beams = Math.round(input.beams);
     const hasBlocks = plan.blocks > 0;
-    const thermalite = input.blockType === 'thermalite';
+    const thermalite = input.blockType === 'thermalite' || input.blockType === 'mixed';
     const t = input.blockThicknessMm;
 
     const innerLabel = cavity ? ' (inner leaf)' : '';
@@ -262,7 +288,9 @@ export function calculateMasonry(input: MasonryInput): BillOfMaterials {
                   {
                       id: 'dpc-blocks',
                       name: `Concrete Block Dense 7N, ${Math.min(t, 140)} mm solid`,
-                      detail: 'one course below DPC, aircrete stays out of the wet',
+                      detail: input.blockType === 'mixed'
+                          ? 'the dense base courses, aircrete stays out of the wet'
+                          : 'one course below DPC, aircrete stays out of the wet',
                       qty: plan.denseDpcBlocks,
                       unit: 'blocks',
                   },
@@ -283,8 +311,8 @@ export function calculateMasonry(input: MasonryInput): BillOfMaterials {
             ? [
                   {
                       id: 'cavity-batts',
-                      name: 'Full-fill cavity wall batt, 100 mm',
-                      detail: 'pack covers ~6.5 m², built in as the wall rises',
+                      name: `Full-fill cavity wall batt, ${input.cavityWidthMm} mm`,
+                      detail: 'sized to the cavity, built in as the wall rises',
                       qty: units(plan.netAreaM2 / 6.5),
                       unit: 'packs',
                   },
@@ -337,18 +365,26 @@ export function calculateMasonry(input: MasonryInput): BillOfMaterials {
                     ? cavity
                         ? {
                               id: `lintels-${lc.lengthMm}`,
-                              name: `Steel cavity lintel L1/S100, ${lc.lengthMm} mm`,
-                              detail: 'one per opening, 150 mm bearing each end',
+                              name: `Steel cavity lintel L1/S ${input.cavityWidthMm}, ${lc.lengthMm} mm`,
+                              detail: `the code matches your ${input.cavityWidthMm} mm cavity, 150 mm bearing each end`,
                               qty: lc.count,
                               unit: 'lintels',
                           }
-                        : {
-                              id: `lintels-${lc.lengthMm}`,
-                              name: `Single leaf steel lintel, ${lc.lengthMm} mm`,
-                              detail: 'one per opening per leaf, 150 mm bearing each end',
-                              qty: input.construction === 'one-brick' ? lc.count * 2 : lc.count,
-                              unit: 'lintels',
-                          }
+                        : input.construction === 'one-brick'
+                          ? {
+                                id: `lintels-${lc.lengthMm}`,
+                                name: `L9 solid wall steel lintel, ${lc.lengthMm} mm`,
+                                detail: 'one per opening, 150 mm bearing each end',
+                                qty: lc.count,
+                                unit: 'lintels',
+                            }
+                          : {
+                                id: `lintels-${lc.lengthMm}`,
+                                name: `L10 single leaf steel lintel, ${lc.lengthMm} mm`,
+                                detail: 'internal single leaf lintels also stocked, 150 mm bearing each end',
+                                qty: lc.count,
+                                unit: 'lintels',
+                            }
                     : {
                           id: `lintels-${lc.lengthMm}`,
                           name: `Supreme prestressed concrete lintel, ${input.construction === 'one-brick' ? 215 : lintelWidth} mm × ${lc.lengthMm} mm`,
@@ -380,26 +416,40 @@ export function calculateMasonry(input: MasonryInput): BillOfMaterials {
         }
     }
     if (beams > 0) {
+        const pad = PADSTONES.find((x) => x.id === input.padstoneId) ?? PADSTONES[0];
         openingLines.push({
             id: 'padstones',
-            name: 'Supreme concrete padstone, 215 × 140 × 102 mm',
-            detail: 'two per beam, spreads the point load',
+            name: `Concrete padstone ${pad.id}, ${pad.label}`,
+            detail: 'two per beam, spreads the point load. Your engineer sizes these',
             qty: beams * 2,
             unit: 'padstones',
         });
     }
 
     const dampLines: BomLine[] = [
-        ...(input.dpcCourses
-            ? [
-                  {
-                      id: 'dpc',
-                      name: 'DPC roll, 112 mm × 20 m',
+        ...(input.dpcCourses || input.blockType === 'mixed'
+            ? (() => {
+                  // One DPC run per leaf, width picked for that leaf.
+                  const leaves: number[] = cavity
+                      ? [plan.outerBlocks > 0 ? input.outerBlockThicknessMm : 102, t]
+                      : input.construction === 'one-brick'
+                        ? [215]
+                        : input.construction === 'block'
+                          ? [t]
+                          : [102];
+                  const byWidth = new Map<number, number>();
+                  for (const leaf of leaves) {
+                      const w = dpcWidthFor(leaf);
+                      byWidth.set(w, (byWidth.get(w) ?? 0) + units(input.lengthM / 30));
+                  }
+                  return [...byWidth.entries()].map(([w, qty]) => ({
+                      id: `dpc-${w}`,
+                      name: `DPC roll, ${w} mm × 30 m`,
                       detail: 'bedded 150 mm above ground level',
-                      qty: units(input.lengthM / 20) * (cavity || input.construction === 'one-brick' ? 2 : 1),
+                      qty,
                       unit: 'rolls',
-                  },
-              ]
+                  }));
+              })()
             : []),
         ...(plan.airBrickCount > 0
             ? [
