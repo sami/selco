@@ -1,0 +1,36 @@
+---
+import SelcoLayout from '../../../layouts/SelcoLayout.astro';
+import UnitConverterV2 from '../../../components/v2/UnitConverterV2';
+import { getV2CalculatorBySlug } from '../../../components/v2/registry';
+
+const BASE_URL = import.meta.env.BASE_URL;
+const base = BASE_URL.endsWith('/') ? BASE_URL : `${BASE_URL}/`;
+const meta = getV2CalculatorBySlug('unit-converter')!;
+
+const breadcrumbs = [
+  { label: 'Home', href: base },
+  { label: 'Project Planner', href: `${base}concept/` },
+  { label: meta.name },
+];
+---
+
+<SelcoLayout
+  title={`${meta.name} | Project Planner`}
+  description={meta.description}
+  breadcrumbs={breadcrumbs}
+  pageTitle={meta.name}
+>
+  <main class="w-full">
+    <p class="text-base text-text-muted max-w-2xl -mt-2 mb-8">
+      {meta.description}
+    </p>
+
+    <UnitConverterV2 client:load />
+
+    <p class="mt-10 text-sm text-text-muted">
+      <a href={`${base}concept/`} class="font-bold text-primary-nav hover:underline">
+        ← All planning tools
+      </a>
+    </p>
+  </main>
+</SelcoLayout>
