@@ -27,11 +27,13 @@ const allLines = (input: FlooringInput) =>
     calculateFlooring(input).sections.flatMap((s) => s.lines);
 
 describe('catalogues', () => {
-    it('TC1: floor types carry a thickness; laminate cannot be glued, wood/LVT can', () => {
+    it('TC1: floor types carry a thickness; only wood floors can be glued down', () => {
         for (const f of FLOOR_TYPES) expect(f.thicknessMm).toBeGreaterThan(0);
+        // Laminate and rigid-click LVT are floating only; engineered/solid glue.
         expect(FLOOR_TYPES.find((f) => f.id === 'laminate8')!.canGlue).toBe(false);
+        expect(FLOOR_TYPES.find((f) => f.id === 'lvt')!.canGlue).toBe(false);
         expect(FLOOR_TYPES.find((f) => f.id === 'engineered')!.canGlue).toBe(true);
-        expect(FLOOR_TYPES.find((f) => f.id === 'lvt')!.canGlue).toBe(true);
+        expect(FLOOR_TYPES.find((f) => f.id === 'solid')!.canGlue).toBe(true);
     });
 
     it('TC2: underlay options include integrated and none plus real Selco types', () => {
@@ -70,14 +72,17 @@ describe('calculateFlooring — bill', () => {
         expect(u.unit.toLowerCase()).toContain('m²');
     });
 
-    it('TC8: glued fixing adds an adhesive line; floating does not', () => {
-        expect(allLines(job({ floorId: 'engineered', fixing: 'glued' })).some((l) => l.id === 'adhesive')).toBe(true);
+    it('TC8: glued fixing adds the wood adhesive line; floating does not', () => {
+        const glued = allLines(job({ floorId: 'engineered', fixing: 'glued' })).find((l) => l.id === 'adhesive');
+        expect(glued?.name.toLowerCase()).toContain('wood floor adhesive');
         expect(allLines(job({ floorId: 'engineered', fixing: 'floating' })).some((l) => l.id === 'adhesive')).toBe(false);
     });
 
-    it('TC9: glued-down LVT is bonded so needs no expansion beading; floating does', () => {
-        expect(allLines(job({ floorId: 'lvt', fixing: 'glued', underlay: 'none' })).some((l) => l.id === 'beading')).toBe(false);
-        expect(allLines(job({ floorId: 'lvt', fixing: 'floating' })).some((l) => l.id === 'beading')).toBe(true);
+    it('TC9: rigid-click LVT is floating only — a glue request adds no adhesive and keeps the beading', () => {
+        const lines = allLines(job({ floorId: 'lvt', fixing: 'glued' }));
+        expect(lines.some((l) => l.id === 'adhesive')).toBe(false);
+        expect(lines.some((l) => l.id === 'beading')).toBe(true);
+        expect(lines.some((l) => l.id === 'spacers')).toBe(true);
     });
 
     it('TC10: glued wood still needs the perimeter expansion beading', () => {
