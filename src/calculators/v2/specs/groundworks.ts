@@ -208,7 +208,6 @@ export const aggregates: CalcSpec = {
             label: 'Material',
             options: [
                 { value: 'gravel', label: 'Golden gravel' },
-                { value: 'limestone', label: 'Limestone' },
                 { value: 'slate', label: 'Blue slate' },
                 { value: 'cotswold', label: 'Cotswold' },
                 { value: 'bark', label: 'Bark' },
@@ -227,7 +226,6 @@ export const aggregates: CalcSpec = {
         const mat = str(v, 'material');
         const spec = {
             gravel: { name: '20 mm Golden Gravel', depthM: 0.05, density: 1600 },
-            limestone: { name: '20 mm Grey Limestone', depthM: 0.05, density: 1600 },
             slate: { name: 'Blue Slate chippings', depthM: 0.04, density: 1400 },
             cotswold: { name: 'Cotswold Chippings', depthM: 0.05, density: 1600 },
             bark: { name: 'Landscape Bark', depthM: 0.075, density: 280 },
