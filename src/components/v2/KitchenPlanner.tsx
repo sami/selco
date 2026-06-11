@@ -299,8 +299,8 @@ export default function KitchenPlanner() {
                     <ToggleRow label="Dishwasher" hint="Goes beside the sink, fascia door included" checked={input.dishwasher} onChange={(v) => set('dishwasher', v)} />
                     <ToggleRow label="Washing machine" hint="Integrated, fascia door included" checked={input.washingMachine} onChange={(v) => set('washingMachine', v)} />
                     <ToggleRow label="Larder cabinet" hint="Tall storage at the end of the run" checked={input.larder} onChange={(v) => set('larder', v)} />
-                    <ToggleRow label="Wine rack" hint="300 mm, slots into the run" checked={input.wineRack} onChange={(v) => set('wineRack', v)} />
-                    <ToggleRow label="Pull-out unit" hint="300 mm, oils and spices by the cooker" checked={input.pullOut} onChange={(v) => set('pullOut', v)} />
+                    <ToggleRow label="Wine rack" hint="150 mm, slots into the run" checked={input.wineRack} onChange={(v) => set('wineRack', v)} />
+                    <ToggleRow label="Pull-out unit" hint="150 mm, oils and spices by the cooker" checked={input.pullOut} onChange={(v) => set('pullOut', v)} />
                 </div>
                 <Segmented<DrawerChoice>
                     label="Drawer unit"
@@ -315,7 +315,7 @@ export default function KitchenPlanner() {
                 />
                 <ToggleRow label="Wall units" hint="Uppers over ~70% of the run" checked={input.includeWallUnits} onChange={(v) => set('includeWallUnits', v)} />
                 {input.includeWallUnits && (
-                    <ToggleRow label="Cornice & pelmet" hint="One 2.7 m profile does both jobs" checked={input.includeCornice} onChange={(v) => set('includeCornice', v)} />
+                    <ToggleRow label="Cornice & pelmet" hint="One 2745 mm profile does both jobs" checked={input.includeCornice} onChange={(v) => set('includeCornice', v)} />
                 )}
             </JobCard>
 

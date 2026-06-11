@@ -9,7 +9,7 @@
  *   - two corner choices: the 935 mm L-shape corner base (sold as two
  *     packs, order both) or the 1000 mm corner base; wall runs turn on a
  *     635 mm corner wall unit
- *   - cornice and pelmet are the same 2.7 m profile, one product does
+ *   - cornice and pelmet are the same 2745 mm profile, one product does
  *     both jobs
  *   - integrated appliances need an appliance fascia door each; exposed
  *     run ends need clad panels (base, wall and tall)
@@ -49,9 +49,9 @@ export interface KitchenInput {
     larder: boolean;
     /** Drawer stack beside the cooker: 500 four-drawer, 600 or 800 three-drawer. */
     drawers: DrawerChoice;
-    /** 300 mm wine rack unit. */
+    /** 150 mm wine rack unit. */
     wineRack: boolean;
-    /** 300 mm pull-out base unit, lives by the cooking zone. */
+    /** 150 mm pull-out base unit, lives by the cooking zone. */
     pullOut: boolean;
     includeWallUnits: boolean;
     includeCornice: boolean;
@@ -122,8 +122,8 @@ const LABELS: Record<string, string> = {
     'washing-machine': 'W/M 600',
     fridge: 'Fridge 600',
     larder: 'Larder 600',
-    wine: 'Wine 300',
-    pullout: 'Pull-out 300',
+    wine: 'Wine 150',
+    pullout: 'Pull-out 150',
 };
 
 const DRAWER_WIDTH_MM: Record<DrawerChoice, number> = { none: 0, d500: 500, d600: 600, d800: 800 };
@@ -162,9 +162,9 @@ export function planKitchen(input: KitchenInput): KitchenPlan {
     // cooker; the wine rack takes any 300 slot at the end of the run.
     if (input.drawers !== 'none')
         slotsByWall[cookerWall].push({ kind: 'drawers', w: DRAWER_WIDTH_MM[input.drawers] });
-    if (input.pullOut) slotsByWall[cookerWall].push({ kind: 'pullout', w: 300 });
+    if (input.pullOut) slotsByWall[cookerWall].push({ kind: 'pullout', w: 150 });
     if (input.wineRack)
-        slotsByWall[wallDefs[wallDefs.length - 1].id].push({ kind: 'wine', w: 300 });
+        slotsByWall[wallDefs[wallDefs.length - 1].id].push({ kind: 'wine', w: 150 });
 
     const placed: PlacedUnit[] = [];
     const warnings: string[] = [];
@@ -363,10 +363,10 @@ export function calculateKitchen(input: KitchenInput): BillOfMaterials {
               ]
             : []),
         ...(input.wineRack
-            ? [{ id: 'wine', name: '300 mm wine rack unit', qty: 1, unit: 'units' }]
+            ? [{ id: 'wine', name: '150 mm wine rack unit', qty: 1, unit: 'units' }]
             : []),
         ...(input.pullOut
-            ? [{ id: 'pullout', name: '300 mm pull-out base unit', detail: 'oils and spices by the cooking zone', qty: 1, unit: 'units' }]
+            ? [{ id: 'pullout', name: '150 mm pull-out base unit', detail: 'oils and spices by the cooking zone', qty: 1, unit: 'units' }]
             : []),
         ...(input.larder
             ? [
@@ -433,9 +433,9 @@ export function calculateKitchen(input: KitchenInput): BillOfMaterials {
             ? [
                   {
                       id: 'cornice-pelmet',
-                      name: 'Cornice & pelmet profile, 2.7 m',
+                      name: 'Cornice & pelmet profile, 2745 mm',
                       detail: 'the same profile runs over and under the wall units',
-                      qty: units((plan.wallRunMm * 2 * 1.1) / 2700),
+                      qty: units((plan.wallRunMm * 2 * 1.1) / 2745),
                       unit: 'lengths',
                   },
               ]
