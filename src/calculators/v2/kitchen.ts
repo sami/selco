@@ -14,9 +14,9 @@
  *   - base and wall units in 300/400/500/600/1000 mm; wine rack and
  *     pull-out at 150 mm; drawer packs at 500/600/800 (the 800 comes as
  *     two packs)
- *   - the sink zone is 1000 mm wide: over a 1000 base, twin 500 bases,
- *     or with a dishwasher or washing machine underneath (never under
- *     the 1000 unit)
+ *   - the sink zone follows what's underneath it: at least 500 mm of
+ *     base under the bowl (waste and trap), the rest base units or a
+ *     dishwasher / washing machine, never an appliance under a 1000 unit
  *   - corners: 935 L-shape (two packs) or 1000 corner; 635 corner wall
  *     unit where wall runs turn
  *   - cornice and pelmet are one 2745 mm profile
@@ -39,7 +39,42 @@ export type KitchenShape = 'galley' | 'l-shape' | 'u-shape';
 export type DoorStyle = 'handled' | 'handleless';
 export type CornerUnitType = 'l935' | 'c1000';
 export type FridgeType = 'freestanding' | 'integrated';
-export type SinkUnder = 'base1000' | 'twin500' | 'dw' | 'wm';
+export type SinkUnder =
+    | 'base1000'
+    | 'twin500'
+    | 'b500b600'
+    | 'twin600'
+    | 'dw500'
+    | 'dw600'
+    | 'wm500'
+    | 'wm600';
+
+/**
+ * What lives under the sink zone. House rule: the bowl always sits over
+ * a base of at least 500 mm (the waste and trap live there); an
+ * appliance can take the rest of the zone, never the bowl side. The
+ * zone's width follows the combination.
+ */
+export const SINK_COMBOS: Array<{
+    id: SinkUnder;
+    label: string;
+    widthMm: number;
+    appliance: 'dw' | 'wm' | null;
+    bases: number[];
+}> = [
+    { id: 'base1000', label: '1000 mm base unit (no appliance fits under)', widthMm: 1000, appliance: null, bases: [1000] },
+    { id: 'twin500', label: '2 × 500 mm bases', widthMm: 1000, appliance: null, bases: [500, 500] },
+    { id: 'b500b600', label: '500 + 600 mm bases', widthMm: 1100, appliance: null, bases: [500, 600] },
+    { id: 'twin600', label: '2 × 600 mm bases', widthMm: 1200, appliance: null, bases: [600, 600] },
+    { id: 'dw500', label: '500 mm base + dishwasher under', widthMm: 1100, appliance: 'dw', bases: [500] },
+    { id: 'dw600', label: '600 mm base + dishwasher under', widthMm: 1200, appliance: 'dw', bases: [600] },
+    { id: 'wm500', label: '500 mm base + washing machine under', widthMm: 1100, appliance: 'wm', bases: [500] },
+    { id: 'wm600', label: '600 mm base + washing machine under', widthMm: 1200, appliance: 'wm', bases: [600] },
+];
+
+export function sinkCombo(id: SinkUnder) {
+    return SINK_COMBOS.find((c) => c.id === id) ?? SINK_COMBOS[0];
+}
 export type WallId = 'A' | 'B' | 'C';
 
 export type UnitKind =
@@ -75,7 +110,7 @@ export const PALETTE: Array<{ kind: UnitKind; widthMm: number; label: string }> 
     { kind: 'drawers', widthMm: 800, label: 'Drawers 800 (3-drawer, 2 packs)' },
     { kind: 'wine', widthMm: 150, label: 'Wine rack 150' },
     { kind: 'pullout', widthMm: 150, label: 'Pull-out 150' },
-    { kind: 'sink', widthMm: 1000, label: 'Sink zone 1000' },
+    { kind: 'sink', widthMm: 1000, label: 'Sink zone (width follows your under-sink choice)' },
     { kind: 'cooker', widthMm: 600, label: 'Cooker / oven 600' },
     { kind: 'dishwasher', widthMm: 600, label: 'Dishwasher 600' },
     { kind: 'washing-machine', widthMm: 600, label: 'Washing machine 600' },
@@ -208,11 +243,14 @@ export function planKitchen(input: KitchenInput): KitchenPlan {
         }
         const effective = w.lengthMm - (i < wallDefs.length - 1 ? DEPTH_MM : 0);
         for (const it of input.layout[w.id] ?? []) {
+            // The sink zone's width follows the under-sink combination,
+            // whatever width the item was added at.
+            const widthMm = it.kind === 'sink' ? sinkCombo(input.sinkUnder).widthMm : it.widthMm;
             placed.push({
                 itemId: it.id,
                 wall: w.id,
                 offsetMm: cursor,
-                widthMm: it.widthMm,
+                widthMm,
                 kind: it.kind,
                 tall: it.kind === 'larder' || it.kind === 'fridge',
                 label:
@@ -220,9 +258,11 @@ export function planKitchen(input: KitchenInput): KitchenPlan {
                         ? `Base ${it.widthMm}`
                         : it.kind === 'drawers'
                           ? `Drawers ${it.widthMm}`
-                          : LABELS[it.kind] ?? it.kind,
+                          : it.kind === 'sink'
+                            ? `Sink ${widthMm}`
+                            : LABELS[it.kind] ?? it.kind,
             });
-            cursor += it.widthMm;
+            cursor += widthMm;
         }
         const spare = effective - cursor;
         spareByWall[w.id] = spare;
@@ -296,7 +336,7 @@ export function planKitchen(input: KitchenInput): KitchenPlan {
     if (sink && cooker) {
         const gap = onSameWallGap(sink, cooker);
         // A dishwasher between them counts: the worktop runs over it.
-        if (gap !== null && gap < SLOT_MM && input.sinkUnder !== 'dw') {
+        if (gap !== null && gap < SLOT_MM && sinkCombo(input.sinkUnder).appliance === null) {
             const between = placed.some(
                 (p) =>
                     p.wall === sink.wall &&
@@ -340,6 +380,11 @@ export function planKitchen(input: KitchenInput): KitchenPlan {
         });
     }
 
+    const sinkZones = placed.filter((p) => p.kind === 'sink').length;
+    if (sinkZones > 1) {
+        warnings.push('More than one sink zone in the layout. Priced as asked, but check it is what you meant.');
+    }
+
     const worktopMm = placed.filter((p) => !p.tall).reduce((s, p) => s + p.widthMm, 0);
     const baseUnitCount = placed.filter((p) =>
         ['base', 'sink', 'corner', 'drawers', 'wine', 'pullout'].includes(p.kind),
@@ -380,7 +425,7 @@ export function calculateKitchen(input: KitchenInput): BillOfMaterials {
     const fasciaDoors =
         count('dishwasher') +
         count('washing-machine') +
-        (sinkCount > 0 && (input.sinkUnder === 'dw' || input.sinkUnder === 'wm') ? 1 : 0);
+        (sinkCount > 0 && sinkCombo(input.sinkUnder).appliance !== null ? sinkCount : 0);
 
     const cabinetLines: BomLine[] = [
         ...(corners
@@ -392,16 +437,31 @@ export function calculateKitchen(input: KitchenInput): BillOfMaterials {
             : []),
         // The sink zone's under-units.
         ...(sinkCount > 0
-            ? input.sinkUnder === 'base1000'
-                ? [{ id: 'sink-base', name: '1000 mm base unit (sink over)', detail: 'no appliance fits under the 1000 unit', qty: sinkCount, unit: 'units' }]
-                : input.sinkUnder === 'twin500'
-                  ? [{ id: 'sink-base', name: '500 mm base unit (pair under the sink)', qty: sinkCount * 2, unit: 'units' }]
-                  : [
-                        { id: 'sink-base', name: '400 mm base unit (beside the under-sink appliance)', qty: sinkCount, unit: 'units' },
-                        input.sinkUnder === 'dw'
-                            ? { id: 'sink-appliance', name: 'Dishwasher space under the sink, 600 mm', detail: 'plumbing shared with the sink waste', qty: sinkCount, unit: 'spaces' }
-                            : { id: 'sink-appliance', name: 'Washing machine space under the sink, 600 mm', detail: 'plumbing shared with the sink waste', qty: sinkCount, unit: 'spaces' },
-                    ]
+            ? (() => {
+                  const combo = sinkCombo(input.sinkUnder);
+                  const baseCounts = new Map<number, number>();
+                  for (const b of combo.bases) baseCounts.set(b, (baseCounts.get(b) ?? 0) + 1);
+                  return [
+                      ...[...baseCounts.entries()].map(([w, n]) => ({
+                          id: `sink-base-${w}`,
+                          name: `${w} mm base unit (under the sink)`,
+                          detail: 'the bowl sits over a base of at least 500 mm, waste and trap live there',
+                          qty: n * sinkCount,
+                          unit: 'units',
+                      })),
+                      ...(combo.appliance
+                          ? [
+                                {
+                                    id: 'sink-appliance',
+                                    name: combo.appliance === 'dw' ? 'Dishwasher space under the sink, 600 mm' : 'Washing machine space under the sink, 600 mm',
+                                    detail: 'beside the bowl, plumbing shared with the sink waste',
+                                    qty: sinkCount,
+                                    unit: 'spaces',
+                                },
+                            ]
+                          : []),
+                  ];
+              })()
             : []),
         ...[300, 400, 500, 600, 1000]
             .filter((w) => count('base', w) > 0)
@@ -416,18 +476,24 @@ export function calculateKitchen(input: KitchenInput): BillOfMaterials {
         ...(count('wine') ? [{ id: 'wine', name: '150 mm wine rack unit', qty: count('wine'), unit: 'units' }] : []),
         ...(count('pullout') ? [{ id: 'pullout', name: '150 mm pull-out base unit', qty: count('pullout'), unit: 'units' }] : []),
         ...(count('cooker') && input.ovenHousing
-            ? [{ id: 'oven-housing', name: '600 mm built-under oven housing unit', qty: count('cooker'), unit: 'units' }]
+            ? [
+                  { id: 'oven-housing', name: '600 mm built-under oven housing unit', qty: count('cooker'), unit: 'units' },
+                  { id: 'oven-doors', name: 'Oven housing fascia door pack', detail: 'top and bottom doors around the oven aperture', qty: count('cooker'), unit: 'packs' },
+              ]
             : []),
         ...(larders
             ? [
                   { id: 'larder', name: '600 mm larder & appliance cabinet', qty: larders, unit: 'units' },
-                  { id: 'larder-doors', name: 'Larder fascia door pack', detail: 'the tall doors are separate from the carcass', qty: larders, unit: 'packs' },
+                  { id: 'larder-doors', name: 'Larder fascia door pack', detail: 'a tall and a top door, sizes differ by unit, the pack matches yours', qty: larders, unit: 'packs' },
                   { id: 'larder-fittings', name: 'Larder unit fitting pack', qty: larders, unit: 'packs' },
                   { id: 'larder-hinges', name: 'Larder unit hinges, pack of 5', qty: larders, unit: 'packs' },
               ]
             : []),
         ...(fridges && input.fridgeType === 'integrated'
-            ? [{ id: 'fridge-housing', name: '600 mm built-in 50/50 fridge freezer housing', qty: fridges, unit: 'units' }]
+            ? [
+                  { id: 'fridge-housing', name: '600 mm built-in 50/50 fridge freezer housing', qty: fridges, unit: 'units' },
+                  { id: 'fridge-doors', name: 'Fridge housing fascia door pair (50/50 split)', detail: '70/30 housings take a different pair, match yours in branch', qty: fridges, unit: 'pairs' },
+              ]
             : []),
         ...(plan.wallUnitCount ? [{ id: 'wall-units', name: '600 mm wall unit', qty: plan.wallUnitCount, unit: 'units' }] : []),
         ...(plan.wallCornerCount ? [{ id: 'wall-corner', name: '635 mm corner wall unit', qty: plan.wallCornerCount, unit: 'units' }] : []),
