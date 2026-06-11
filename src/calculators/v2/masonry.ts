@@ -43,9 +43,8 @@ export interface MasonryInput {
     blockType: BlockType;
     /** Dense: 100 or 140. Thermalite: 100, or 215 party wall. */
     blockThicknessMm: number;
-    /** Door/window openings in the wall, all at this width. */
-    openings: number;
-    openingWidthMm: number;
+    /** Door/window openings in the wall, each its own width. */
+    openings: Array<{ id: string; widthMm: number }>;
     lintelType: LintelType;
     /** Steel beams bearing on the wall (2 padstones each). */
     beams: number;
@@ -94,7 +93,10 @@ export interface MasonryPlan {
     ties: number;
     sandKg: number;
     cementBags: number;
-    lintelLengthMm: number;
+    /** Per stocked lintel length, how many lintels (single leaf count). */
+    lintelCounts: Array<{ lengthMm: number; count: number }>;
+    /** Per opening (in input order): its stocked lintel length. */
+    openingLintels: number[];
     /** Cavity trays and weep vents, counted individually. */
     cavityTrays: number;
     weepVents: number;
@@ -106,8 +108,9 @@ export interface MasonryPlan {
 export function planMasonry(input: MasonryInput): MasonryPlan {
     const spec = CONSTRUCTIONS[input.construction];
     const area = input.lengthM * input.heightM;
-    const openings = Math.round(input.openings);
-    const openingArea = openings * (input.openingWidthMm / 1000) * Math.min(1.2, input.heightM * 0.6);
+    const openings = input.openings.filter((o) => o.widthMm > 0);
+    const headM = Math.min(1.2, input.heightM * 0.6);
+    const openingArea = openings.reduce((sum, o) => sum + (o.widthMm / 1000) * headM, 0);
     const netArea = Math.max(0, area - openingArea);
 
     const cavityWall = input.construction === 'cavity';
@@ -147,14 +150,21 @@ export function planMasonry(input: MasonryInput): MasonryPlan {
     const sandKg = totalBrickish * 0.85 + blocks * 2.1 * blockSandFactor + denseBlockKg;
     const cementBags = totalBrickish * 0.01 + blocks * 0.025 * blockSandFactor + outerBlocks * 0.025 * outerFactor + denseDpcBlocks * 0.025;
 
-    const neededMm = input.openingWidthMm + 300;
-    const lintelLengthMm = LINTEL_LENGTHS.find((l) => l >= neededMm) ?? 3000;
-
-    // Cavity trays interlock in ~450 mm units over each lintel; weep vents
-    // at max 450 mm centres, never fewer than two per opening.
+    // Every opening gets its own stocked lintel length (+300 mm bearings),
+    // its own cavity trays (~450 mm interlocking units) and weep vents
+    // (max 450 mm apart, never fewer than two).
     const cavity = input.construction === 'cavity';
-    const traysPerOpening = Math.ceil(lintelLengthMm / 450);
-    const weepsPerOpening = Math.max(2, Math.ceil(input.openingWidthMm / 450));
+    const openingLintels = openings.map(
+        (o) => LINTEL_LENGTHS.find((l) => l >= o.widthMm + 300) ?? 3000,
+    );
+    const lintelCounts = [...new Set(openingLintels)]
+        .sort((a, b) => a - b)
+        .map((lengthMm) => ({
+            lengthMm,
+            count: openingLintels.filter((l) => l === lengthMm).length,
+        }));
+    const totalTrays = openingLintels.reduce((sum, l) => sum + Math.ceil(l / 450), 0);
+    const totalWeeps = openings.reduce((sum, o) => sum + Math.max(2, Math.ceil(o.widthMm / 450)), 0);
 
     // Wall starters: one kit per leaf per junction, per 2.4 m of height.
     const starterKits =
@@ -172,9 +182,10 @@ export function planMasonry(input: MasonryInput): MasonryPlan {
         ties: units(netArea * spec.tiesPerM2),
         sandKg,
         cementBags,
-        lintelLengthMm,
-        cavityTrays: cavity ? traysPerOpening * openings : 0,
-        weepVents: cavity ? weepsPerOpening * openings : 0,
+        lintelCounts,
+        openingLintels,
+        cavityTrays: cavity ? totalTrays : 0,
+        weepVents: cavity ? totalWeeps : 0,
         starterKits,
         airBrickCount: input.airBricks ? Math.max(2, Math.ceil(input.lengthM / 1.5)) : 0,
     };
@@ -183,7 +194,7 @@ export function planMasonry(input: MasonryInput): MasonryPlan {
 export function calculateMasonry(input: MasonryInput): BillOfMaterials {
     const plan = planMasonry(input);
     const cavity = input.construction === 'cavity';
-    const openings = Math.round(input.openings);
+    const openings = input.openings.filter((o) => o.widthMm > 0).length;
     const beams = Math.round(input.beams);
     const hasBlocks = plan.blocks > 0;
     const thermalite = input.blockType === 'thermalite';
@@ -320,33 +331,35 @@ export function calculateMasonry(input: MasonryInput): BillOfMaterials {
     const openingLines: BomLine[] = [];
     if (openings > 0) {
         const lintelWidth = Math.min(t || 100, 140);
-        openingLines.push(
-            input.lintelType === 'steel'
-                ? cavity
-                    ? {
-                          id: 'lintels',
-                          name: `Steel cavity lintel L1/S100, ${plan.lintelLengthMm} mm`,
-                          detail: 'one per opening, 150 mm bearing each end',
-                          qty: openings,
-                          unit: 'lintels',
-                      }
+        for (const lc of plan.lintelCounts) {
+            openingLines.push(
+                input.lintelType === 'steel'
+                    ? cavity
+                        ? {
+                              id: `lintels-${lc.lengthMm}`,
+                              name: `Steel cavity lintel L1/S100, ${lc.lengthMm} mm`,
+                              detail: 'one per opening, 150 mm bearing each end',
+                              qty: lc.count,
+                              unit: 'lintels',
+                          }
+                        : {
+                              id: `lintels-${lc.lengthMm}`,
+                              name: `Single leaf steel lintel, ${lc.lengthMm} mm`,
+                              detail: 'one per opening per leaf, 150 mm bearing each end',
+                              qty: input.construction === 'one-brick' ? lc.count * 2 : lc.count,
+                              unit: 'lintels',
+                          }
                     : {
-                          id: 'lintels',
-                          name: `Single leaf steel lintel, ${plan.lintelLengthMm} mm`,
-                          detail: 'one per opening per leaf, 150 mm bearing each end',
-                          qty: input.construction === 'one-brick' ? openings * 2 : openings,
+                          id: `lintels-${lc.lengthMm}`,
+                          name: `Supreme prestressed concrete lintel, ${input.construction === 'one-brick' ? 215 : lintelWidth} mm × ${lc.lengthMm} mm`,
+                          detail: cavity
+                              ? 'one per leaf per opening, 150 mm bearing each end'
+                              : 'one per opening, 150 mm bearing each end',
+                          qty: cavity ? lc.count * 2 : lc.count,
                           unit: 'lintels',
-                      }
-                : {
-                      id: 'lintels',
-                      name: `Supreme prestressed concrete lintel, ${input.construction === 'one-brick' ? 215 : lintelWidth} mm × ${plan.lintelLengthMm} mm`,
-                      detail: cavity
-                          ? 'one per leaf per opening, 150 mm bearing each end'
-                          : 'one per opening, 150 mm bearing each end',
-                      qty: cavity ? openings * 2 : openings,
-                      unit: 'lintels',
-                  },
-        );
+                      },
+            );
+        }
         if (plan.cavityTrays > 0) {
             openingLines.push(
                 {
