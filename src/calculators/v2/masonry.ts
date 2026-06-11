@@ -8,8 +8,10 @@
  *   - one-brick wall (215 mm): solid wall, two skins bonded together
  *   - block wall: dense 7N (100 or 140 mm) or Thermalite (100 mm, or
  *     215 mm party wall)
- *   - cavity wall: facing brick outer leaf + block inner leaf, tied at
- *     2.5 ties/m², with full-fill cavity batts as standard
+ *   - cavity wall: two leaves chosen independently. Outer in facing
+ *     brick, or dense block when the wall is getting rendered. Inner
+ *     usually Thermalite for the insulation, dense where strength rules.
+ *     Tied at 2.5 ties/m² with full-fill cavity batts as standard
  *
  * The details that catch people out are all here: wall starter kits when
  * the new wall tees into an existing one, dense blocks below DPC when the
@@ -24,6 +26,7 @@ import { aggregateLines, fmtM2, units } from './types';
 export type WallConstruction = 'half-brick' | 'one-brick' | 'block' | 'cavity';
 export type BrickType = 'facing' | 'engineering';
 export type BlockType = 'dense' | 'thermalite';
+export type OuterLeaf = 'brick' | 'block';
 export type LintelType = 'concrete' | 'steel';
 export type CopingStyle = 'once' | 'twice';
 
@@ -31,7 +34,10 @@ export interface MasonryInput {
     lengthM: number;
     heightM: number;
     construction: WallConstruction;
+    /** Cavity walls: facing brick outer, or dense block ready for render. */
+    outerLeaf: OuterLeaf;
     brickType: BrickType;
+    /** Inner leaf (cavity) or the wall itself (block wall). */
     blockType: BlockType;
     /** Dense: 100 or 140. Thermalite: 100, or 215 party wall. */
     blockThicknessMm: number;
@@ -79,6 +85,8 @@ export interface MasonryPlan {
     bricks: number;
     engineeringBricks: number;
     blocks: number;
+    /** Dense outer leaf when the cavity wall is getting rendered. */
+    outerBlocks: number;
     /** Dense blocks below DPC when the wall above is Thermalite. */
     denseDpcBlocks: number;
     ties: number;
@@ -100,22 +108,29 @@ export function planMasonry(input: MasonryInput): MasonryPlan {
     const openingArea = openings * (input.openingWidthMm / 1000) * Math.min(1.2, input.heightM * 0.6);
     const netArea = Math.max(0, area - openingArea);
 
-    let bricks = units(netArea * spec.bricksPerM2 * 1.05);
+    const cavityWall = input.construction === 'cavity';
+    const blockOuter = cavityWall && input.outerLeaf === 'block';
+    // Brick rate: zero when the cavity outer leaf is render-ready block.
+    const brickRate = blockOuter ? 0 : spec.bricksPerM2;
+    let bricks = units(netArea * brickRate * 1.05);
     let engineeringBricks = 0;
     const hasBlocks = spec.blocksPerM2 > 0;
     const thermalite = input.blockType === 'thermalite' && hasBlocks;
 
-    if (input.dpcCourses && spec.bricksPerM2 > 0) {
+    if (input.dpcCourses && brickRate > 0) {
         // Two courses below DPC, ~13.4 bricks per metre per course per skin.
         const brickSkins = input.construction === 'one-brick' ? 2 : 1;
         engineeringBricks = units(input.lengthM * 13.4 * 2 * brickSkins);
     }
-    if (input.brickType === 'engineering') {
+    if (input.brickType === 'engineering' && brickRate > 0) {
         engineeringBricks += bricks;
         bricks = 0;
     }
 
+    // Inner leaf (or the block wall itself), plus a dense outer leaf when
+    // the cavity wall is getting rendered.
     const blocks = units(netArea * spec.blocksPerM2 * 1.05);
+    const outerBlocks = blockOuter ? units(netArea * 10 * 1.05) : 0;
     // Aircrete stays out of the ground: one course of dense block below
     // DPC under a Thermalite leaf (440 mm long blocks).
     const denseDpcBlocks =
@@ -125,8 +140,9 @@ export function planMasonry(input: MasonryInput): MasonryPlan {
     // (the 2.1 kg base rate is for a 100 mm block).
     const blockSandFactor = input.blockThicknessMm / 100;
     const totalBrickish = bricks + engineeringBricks;
-    const sandKg = totalBrickish * 0.85 + (blocks + denseDpcBlocks) * 2.1 * blockSandFactor;
-    const cementBags = totalBrickish * 0.01 + (blocks + denseDpcBlocks) * 0.025 * blockSandFactor;
+    const denseBlockKg = (outerBlocks + denseDpcBlocks) * 2.1;
+    const sandKg = totalBrickish * 0.85 + blocks * 2.1 * blockSandFactor + denseBlockKg;
+    const cementBags = totalBrickish * 0.01 + blocks * 0.025 * blockSandFactor + (outerBlocks + denseDpcBlocks) * 0.025;
 
     const neededMm = input.openingWidthMm + 300;
     const lintelLengthMm = LINTEL_LENGTHS.find((l) => l >= neededMm) ?? 3000;
@@ -148,6 +164,7 @@ export function planMasonry(input: MasonryInput): MasonryPlan {
         bricks,
         engineeringBricks,
         blocks,
+        outerBlocks,
         denseDpcBlocks,
         ties: units(netArea * spec.tiesPerM2),
         sandKg,
@@ -169,19 +186,20 @@ export function calculateMasonry(input: MasonryInput): BillOfMaterials {
     const thermalite = input.blockType === 'thermalite';
     const t = input.blockThicknessMm;
 
+    const innerLabel = cavity ? ' (inner leaf)' : '';
     const blockLine: BomLine | null = hasBlocks
         ? thermalite
             ? {
                   id: 'blocks',
                   name: t >= 215 ? 'Thermalite Party Wall block, 215 mm' : '100 mm Thermalite Hi-Strength block, 7.3 N',
-                  detail: t >= 215 ? '440 × 215 mm aircrete, sound-tested for separating walls' : '440 × 215 mm aircrete, light, insulating, easy to cut',
+                  detail: (t >= 215 ? '440 × 215 mm aircrete, sound-tested for separating walls' : '440 × 215 mm aircrete, the insulating inner leaf') + innerLabel,
                   qty: plan.blocks,
                   unit: 'blocks',
               }
             : {
                   id: 'blocks',
                   name: `Concrete Block Dense 7N, ${t} mm solid`,
-                  detail: '440 × 215 mm, load-bearing and below-ground work',
+                  detail: '440 × 215 mm, load-bearing and below-ground work' + innerLabel,
                   qty: plan.blocks,
                   unit: 'blocks',
               }
@@ -210,6 +228,17 @@ export function calculateMasonry(input: MasonryInput): BillOfMaterials {
                               : 'dense, low absorption, high strength',
                       qty: plan.engineeringBricks,
                       unit: 'bricks',
+                  },
+              ]
+            : []),
+        ...(plan.outerBlocks > 0
+            ? [
+                  {
+                      id: 'outer-blocks',
+                      name: 'Concrete Block Dense 7N, 100 mm solid (outer leaf)',
+                      detail: '440 × 215 mm, the render-ready outer skin',
+                      qty: plan.outerBlocks,
+                      unit: 'blocks',
                   },
               ]
             : []),
@@ -409,7 +438,9 @@ export function calculateMasonry(input: MasonryInput): BillOfMaterials {
                 value:
                     input.construction === 'block'
                         ? `${t} mm ${thermalite ? 'Thermalite' : 'dense'} block wall`
-                        : plan.spec.label,
+                        : cavity
+                          ? `Cavity wall (${plan.outerBlocks > 0 ? 'block' : 'brick'} + ${thermalite ? 'Thermalite' : 'block'})`
+                          : plan.spec.label,
             },
             ...(plan.bricks + plan.engineeringBricks > 0
                 ? [{ label: 'Bricks', value: `${plan.bricks + plan.engineeringBricks}` }]
@@ -431,7 +462,10 @@ export function calculateMasonry(input: MasonryInput): BillOfMaterials {
                 ? 'Cavity walls are Building Regs territory: insulation, trays, weeps and ties all get inspected. This list is your starting point, not your sign-off.'
                 : 'Freestanding walls over about 1.2 m, or any wall holding ground back, need proper design. Ask before you build.',
             ...(thermalite && hasBlocks
-                ? ['Thermalite cuts with a hand saw and takes fixings well, but keep it above the DPC. Dense block handles the wet ground below.']
+                ? ['Thermalite is the usual inner leaf, it does the insulating. Keep it above the DPC, dense block handles the wet ground below.']
+                : []),
+            ...(plan.outerBlocks > 0
+                ? ['A block outer leaf wants a render system over it. The rendering calculator will count the sand, cement and beads for you.']
                 : []),
             ...(plan.starterKits > 0
                 ? ['Wall starter kits screw to the existing wall plumb, then every course hooks a tie in. Far cleaner than toothing out.']

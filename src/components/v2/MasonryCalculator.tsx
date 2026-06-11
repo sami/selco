@@ -14,6 +14,7 @@ import {
     type BrickType,
     type CopingStyle,
     type LintelType,
+    type OuterLeaf,
     type MasonryInput,
     type WallConstruction,
 } from '../../calculators/v2/masonry';
@@ -40,7 +41,9 @@ function MasonryPreview({ input }: { input: MasonryInput }) {
     const x0 = (W - ww) / 2;
     const y0 = (H - wh) / 2;
 
-    const isBlock = input.construction === 'block';
+    const isBlock =
+        input.construction === 'block' ||
+        (input.construction === 'cavity' && input.outerLeaf === 'block');
     const engineering = input.brickType === 'engineering' && !isBlock;
     const unitW = (isBlock ? 0.45 : 0.225) * scale;
     const unitH = (isBlock ? 0.225 : 0.075) * scale;
@@ -169,6 +172,7 @@ export default function MasonryCalculator() {
         lengthM: 6,
         heightM: 2.4,
         construction: 'cavity',
+        outerLeaf: 'brick',
         brickType: 'facing',
         blockType: 'thermalite',
         blockThicknessMm: 100,
@@ -203,13 +207,24 @@ export default function MasonryCalculator() {
                     value={input.construction}
                     onChange={(v) => set('construction', v)}
                     options={[
-                        { value: 'half-brick', label: '½ brick' },
-                        { value: 'one-brick', label: '1 brick' },
+                        { value: 'half-brick', label: 'Single leaf' },
+                        { value: 'one-brick', label: 'Double leaf' },
                         { value: 'block', label: 'Block' },
                         { value: 'cavity', label: 'Cavity' },
                     ]}
                 />
-                {hasBricks && (
+                {input.construction === 'cavity' && (
+                    <Segmented<OuterLeaf>
+                        label="Outer leaf"
+                        value={input.outerLeaf}
+                        onChange={(v) => set('outerLeaf', v)}
+                        options={[
+                            { value: 'brick', label: 'Facing brick' },
+                            { value: 'block', label: 'Block (render)' },
+                        ]}
+                    />
+                )}
+                {hasBricks && !(input.construction === 'cavity' && input.outerLeaf === 'block') && (
                     <Segmented<BrickType>
                         label="Brick"
                         value={input.brickType}
@@ -223,7 +238,7 @@ export default function MasonryCalculator() {
                 {hasBlocks && (
                     <>
                         <Segmented<BlockType>
-                            label="Block"
+                            label={input.construction === 'cavity' ? 'Inner leaf' : 'Block'}
                             value={input.blockType}
                             onChange={(v) =>
                                 setInput((s) => ({ ...s, blockType: v, blockThicknessMm: 100 }))
