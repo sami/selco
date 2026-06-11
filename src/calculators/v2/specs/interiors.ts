@@ -252,11 +252,37 @@ export const doorsLinings: CalcSpec = {
             id: 'doorType',
             label: 'Door type',
             options: [
-                { value: 'panel', label: 'Moulded panel' },
+                { value: 'moulded4', label: '4-panel moulded' },
+                { value: 'moulded6', label: '6-panel moulded' },
                 { value: 'oak', label: 'Oak veneer' },
                 { value: 'primed', label: 'Primed flush' },
+                { value: 'glazed', label: 'Glazed primed' },
             ],
             default: 'oak',
+        },
+        {
+            kind: 'choice',
+            id: 'doorSize',
+            label: 'Door size (1981 mm high)',
+            options: [
+                { value: '457', label: '1981 × 457 mm (6\'6" × 1\'6")' },
+                { value: '533', label: '1981 × 533 mm (6\'6" × 1\'9")' },
+                { value: '610', label: '1981 × 610 mm (6\'6" × 2\'0")' },
+                { value: '686', label: '1981 × 686 mm (6\'6" × 2\'3")' },
+                { value: '762', label: '1981 × 762 mm (6\'6" × 2\'6")' },
+                { value: '838', label: '1981 × 838 mm (6\'6" × 2\'9")' },
+            ],
+            default: '762',
+        },
+        {
+            kind: 'choice',
+            id: 'liningWidth',
+            label: 'Lining depth (to suit the wall)',
+            options: [
+                { value: '115', label: '32 × 115 mm — metal stud / thinner walls' },
+                { value: '138', label: '32 × 138 mm — timber stud / blockwork' },
+            ],
+            default: '138',
         },
         { kind: 'toggle', id: 'fire', label: 'FD30 fire doors', hint: 'Adds intumescent strips, fire hinges & closers', default: false },
         { kind: 'toggle', id: 'newLinings', label: 'New linings', hint: 'Off = hanging into existing frames', default: true },
@@ -265,14 +291,20 @@ export const doorsLinings: CalcSpec = {
         const n = Math.round(num(v, 'doors'));
         const fire = bool(v, 'fire');
         const doorName = {
-            panel: 'Moulded panel door (Premdor / LPD range)',
+            moulded4: '4-panel smooth moulded door, white primed',
+            moulded6: '6-panel smooth moulded door, white primed',
             oak: 'Oak veneer door (e.g. Belize, Shaker 4-panel)',
-            primed: 'White primed door (e.g. Amsterdam, Arnhem)',
+            primed: 'White primed flush door (e.g. Amsterdam, Arnhem)',
+            glazed: '6-panel glazed primed door',
         }[str(v, 'doorType')] ?? 'Oak veneer door';
+        const widthMm = Number(str(v, 'doorSize')) || 762;
+        const liningWidthMm = Number(str(v, 'liningWidth')) || 138;
+        const liningThicknessMm = fire ? 38 : 32;
 
         return {
             facts: [
                 { label: 'Doors', value: `${n}` },
+                { label: 'Size', value: `1981 × ${widthMm} × ${fire ? 44 : 35} mm` },
                 { label: 'Spec', value: fire ? 'FD30 fire-rated' : 'Standard internal' },
                 { label: 'Hinges', value: `${n * 3} (1.5 pairs each)` },
             ],
@@ -280,14 +312,12 @@ export const doorsLinings: CalcSpec = {
                 {
                     title: 'Doors & linings',
                     lines: [
-                        { id: 'doors', name: `${doorName}${fire ? ' FD30' : ''}`, detail: `1981 × 762 × ${fire ? 44 : 35} mm`, qty: n, unit: 'doors' },
+                        { id: 'doors', name: `${doorName}${fire ? ' FD30' : ''}`, detail: `1981 × ${widthMm} × ${fire ? 44 : 35} mm`, qty: n, unit: 'doors' },
                         ...(bool(v, 'newLinings')
                             ? [
                                   {
                                       id: 'linings',
-                                      name: fire
-                                          ? 'Firecheck BWF door lining, 38 × 138 mm'
-                                          : 'Door lining pack, 32 × 138 mm',
+                                      name: `${fire ? 'Firecheck BWF door lining' : 'Door lining pack'}, ${liningThicknessMm} × ${liningWidthMm} mm`,
                                       detail: 'inc. loose stops',
                                       qty: n,
                                       unit: 'sets',

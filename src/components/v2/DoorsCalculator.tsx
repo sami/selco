@@ -10,7 +10,7 @@
 import { useMemo, useState } from 'react';
 import { doorsLinings } from '../../calculators/v2/specs/interiors';
 import type { Values } from '../../calculators/v2/specs/spec-types';
-import { BlueprintPanel, JobCard, NumberField, Segmented, ToggleRow } from './ui';
+import { BlueprintPanel, JobCard, NumberField, ToggleRow } from './ui';
 import MaterialsTicket from './MaterialsTicket';
 
 const YELLOW = '#ffd407';
@@ -23,13 +23,18 @@ function DoorPreview({ v }: { v: Values }) {
 
     const fire = v.fire === true;
     const doorType = String(v.doorType);
-    // Door 1981 x 762, drawn at fixed scale.
+    const widthMm = Number(String(v.doorSize)) || 762;
+    const liningWidthMm = Number(String(v.liningWidth)) || 138;
+    const liningThicknessMm = fire ? 38 : 32;
+    // Door 1981 high, drawn at fixed scale.
     const scale = 0.165;
     const dh = 1981 * scale;
-    const dw = 762 * scale;
+    const dw = widthMm * scale;
     const x0 = 180;
     const y0 = (H - dh) / 2 + 8;
-    const face = doorType === 'oak' ? OAK : doorType === 'primed' ? PANEL : '#cdc4b4';
+    // Flush (primed) is a plain face; oak veneers brown; everything else is a primed white panel face.
+    const flush = doorType === 'primed';
+    const face = doorType === 'oak' ? OAK : flush ? '#cdc4b4' : PANEL;
 
     const hinges = [
         { y: 150, label: '150 mm down' },
@@ -42,13 +47,13 @@ function DoorPreview({ v }: { v: Values }) {
             {/* lining */}
             <rect x={x0 - 14} y={y0 - 14} width={dw + 28} height={dh + 14} fill="none" stroke="#fff" strokeWidth="6" />
             <text x={x0 + dw / 2} y={y0 - 26} fill="#fff" fontSize="11" textAnchor="middle" opacity="0.9">
-                {fire ? 'Firecheck lining, 38 × 138 mm' : 'door lining pack, 32 × 138 mm'}
+                {fire ? 'Firecheck lining' : 'Door lining pack'}, {liningThicknessMm} × {liningWidthMm} mm
             </text>
 
             {/* leaf */}
             <rect x={x0} y={y0} width={dw} height={dh} fill={face} stroke="#04204b" strokeWidth="1.5" />
             {/* simple 4-panel suggestion */}
-            {doorType !== 'primed' &&
+            {!flush &&
                 [0, 1].map((c) =>
                     [0, 1].map((r) => (
                         <rect
@@ -117,7 +122,7 @@ function DoorPreview({ v }: { v: Values }) {
                 <text fontWeight="700" fontSize="13" fill={YELLOW}>
                     {fire ? 'FD30 fire door' : 'Standard internal'}
                 </text>
-                <text y="24">1981 × 762 × {fire ? 44 : 35} mm</text>
+                <text y="24">1981 × {widthMm} × {fire ? 44 : 35} mm</text>
                 <text y="44">{fire ? 'Fire-rated grade 11 hinges' : 'Ball bearing hinges, 75 mm'}</text>
                 <text y="64">{fire ? 'Fire-rated tubular latch' : 'Tubular latch, 75 mm'}</text>
                 <text y="84" opacity="0.8">
@@ -129,24 +134,50 @@ function DoorPreview({ v }: { v: Values }) {
 }
 
 export default function DoorsCalculator() {
-    const [v, setV] = useState<Values>({ doors: 3, doorType: 'oak', fire: false, newLinings: true });
+    const [v, setV] = useState<Values>({ doors: 3, doorType: 'oak', doorSize: '762', liningWidth: '138', fire: false, newLinings: true });
     const bom = useMemo(() => doorsLinings.compute(v), [v]);
     const set = (k: string, val: Values[string]) => setV((s) => ({ ...s, [k]: val }));
+
+    const typeOptions = doorsLinings.fields.find((f) => f.id === 'doorType');
+    const sizeOptions = doorsLinings.fields.find((f) => f.id === 'doorSize');
+    const liningOptions = doorsLinings.fields.find((f) => f.id === 'liningWidth');
 
     return (
         <div className="grid gap-6 lg:grid-cols-[340px_minmax(0,1fr)] items-start">
             <JobCard title="Job details">
                 <NumberField label="Number of doors" value={Number(v.doors)} onChange={(x) => set('doors', Math.round(x))} min={1} max={12} step={1} />
-                <Segmented
-                    label="Door type"
-                    value={String(v.doorType)}
-                    onChange={(x) => set('doorType', x)}
-                    options={[
-                        { value: 'panel', label: 'Moulded' },
-                        { value: 'oak', label: 'Oak veneer' },
-                        { value: 'primed', label: 'Primed' },
-                    ]}
-                />
+                {typeOptions?.kind === 'choice' && (
+                    <div>
+                        <label htmlFor="door-type" className="form-label text-sm">Door type</label>
+                        <select id="door-type" className="form-select" value={String(v.doorType)} onChange={(e) => set('doorType', e.target.value)}>
+                            {typeOptions.options.map((o) => (
+                                <option key={o.value} value={o.value}>{o.label}</option>
+                            ))}
+                        </select>
+                    </div>
+                )}
+                {sizeOptions?.kind === 'choice' && (
+                    <div>
+                        <label htmlFor="door-size" className="form-label text-sm">Door size</label>
+                        <select id="door-size" className="form-select" value={String(v.doorSize)} onChange={(e) => set('doorSize', e.target.value)}>
+                            {sizeOptions.options.map((o) => (
+                                <option key={o.value} value={o.value}>{o.label}</option>
+                            ))}
+                        </select>
+                        <span className="field-description">All 1981 mm (6'6") high; the width is the door size.</span>
+                    </div>
+                )}
+                {liningOptions?.kind === 'choice' && (
+                    <div>
+                        <label htmlFor="lining-width" className="form-label text-sm">Lining depth</label>
+                        <select id="lining-width" className="form-select" value={String(v.liningWidth)} onChange={(e) => set('liningWidth', e.target.value)} disabled={v.newLinings !== true}>
+                            {liningOptions.options.map((o) => (
+                                <option key={o.value} value={o.value}>{o.label}</option>
+                            ))}
+                        </select>
+                        <span className="field-description">Match the lining depth to the finished wall thickness.</span>
+                    </div>
+                )}
                 <ToggleRow label="FD30 fire doors" hint="Garages, lofts, HMOs. Adds the fire kit" checked={v.fire === true} onChange={(x) => set('fire', x)} />
                 <ToggleRow label="New linings" hint="Off = hanging into existing frames" checked={v.newLinings === true} onChange={(x) => set('newLinings', x)} />
             </JobCard>
