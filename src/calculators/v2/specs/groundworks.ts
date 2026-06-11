@@ -19,7 +19,7 @@ export const concrete: CalcSpec = {
     category: 'Groundworks & drainage',
     icon: 'fa-cubes',
     description:
-        'Volume for slabs or strip footings, mixed on site from ballast and cement, with the ready-mix tipping point flagged.',
+        'Volume for slabs or strip footings, mixed on site from ballast and cement, with the mixer loads counted.',
     fields: [
         { kind: 'number', id: 'width', label: 'Width', unit: 'm', min: 0.1, max: 20, default: 3 },
         { kind: 'number', id: 'length', label: 'Length', unit: 'm', min: 0.1, max: 30, default: 4 },
@@ -106,13 +106,13 @@ export const concrete: CalcSpec = {
                 { label: 'Volume', value: `${volM3.toFixed(2)} m³` },
                 { label: 'Mix', value: c25 ? 'C25 (1:1.5:3)' : 'C20 (1:2:4)' },
                 { label: 'Approx weight', value: `${((ballastKg + cementKg) / 1000).toFixed(1)} t` },
-                { label: 'Ready-mix?', value: volM3 > 2 ? 'Yes, over 2 m³' : 'Site-mix is fine' },
+                { label: 'Mixer loads', value: `~${Math.ceil(wasteVol / 0.06)} (90 L drum)` },
             ],
             sections: [
                 {
                     title: 'Concrete (site-mixed)',
                     lines: [
-                        ...aggregateLines('ballast', 'All-in ballast', ballastKg),
+                        ...aggregateLines('ballast', 'Ballast', ballastKg, 'sharp sand and 20 mm gravel pre-mixed'),
                         { id: 'cement', name: 'Rugby Premium Cement', detail: '25 kg bag', qty: units(cementKg / 25), unit: 'bags' },
                     ],
                 },
@@ -136,7 +136,7 @@ export const concrete: CalcSpec = {
                 'Wellies and gloves, wet concrete burns skin',
             ],
             notes: [
-                `Over ~2 m³, price ready-mix with a pump, ${volM3 > 2 ? 'this job qualifies' : 'this job is comfortably site-mixable'}.`,
+                'Ballast is sharp sand and 20 mm gravel already blended, so the mix is just ballast, cement and water. Big pours go easier with two people: one mixing, one placing.',
                 'Volumes carry 10% for uneven ground and spillage.',
                 rebar === 'a142'
                     ? 'A142 suits paths, shed bases and light slabs. Lap sheets one full square and tie the laps.'
@@ -207,7 +207,7 @@ export const driveway: CalcSpec = {
                         ...(bool(v, 'edging')
                             ? [
                                   { id: 'edging', name: 'Stonemarket Small Pavekerb', detail: '127 × 100 × 125 mm, laid in a concrete haunch', qty: units(perimeter / 0.127), unit: 'kerbs' },
-                                  ...aggregateLines('haunch-ballast', 'All-in ballast (haunching)', perimeter * 0.02 * 2000),
+                                  ...aggregateLines('haunch-ballast', 'Ballast (haunching)', perimeter * 0.02 * 2000, 'sharp sand and 20 mm gravel pre-mixed'),
                                   { id: 'haunch-cement', name: 'Rugby Premium Cement', detail: '25 kg bag', qty: units((perimeter * 0.02 * 300) / 25), unit: 'bags' },
                               ]
                             : []),
