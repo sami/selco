@@ -5,7 +5,7 @@
  * guttering, rendering, cladding.
  */
 
-import { fmtM2, units } from '../types';
+import { aggregateLines, fmtM2, units } from '../types';
 import type { CalcSpec } from './spec-types';
 import { bool, num, str } from './spec-types';
 
@@ -379,7 +379,7 @@ export const rendering: CalcSpec = {
                   { id: 'mono', name: 'Monocouche render (through-colour)', detail: '25 kg bag ≈ 1 m² at 15 mm, two passes', qty: units(area / 1), unit: 'bags' },
               ]
             : [
-                  { id: 'sand', name: 'Plastering sand', detail: 'bulk bag, scratch + top coat at 18 mm total', qty: units((area * 31) / 850), unit: 'bulk bags' },
+                  ...aggregateLines('sand', 'Plastering Sand', area * 31, 'scratch + top coat at 18 mm total'),
                   { id: 'cement', name: 'General-purpose cement', detail: '25 kg bag, 5:1 with plasticiser', qty: units((area * 6.2) / 25), unit: 'bags' },
                   { id: 'plasticiser', name: 'Mortar plasticiser', detail: '5 L', qty: units(area / 100), unit: 'bottles' },
                   { id: 'waterproofer', name: 'Integral mortar waterproofer', detail: '5 L, scratch coat', qty: units(area / 100), unit: 'bottles' },

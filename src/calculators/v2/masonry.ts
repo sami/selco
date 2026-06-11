@@ -19,7 +19,7 @@
  */
 
 import type { BillOfMaterials, BomLine, BomSection } from './types';
-import { fmtM2, units } from './types';
+import { aggregateLines, fmtM2, units } from './types';
 
 export type WallConstruction = 'half-brick' | 'one-brick' | 'block' | 'cavity';
 export type BrickType = 'facing' | 'engineering';
@@ -185,13 +185,7 @@ export function calculateMasonry(input: MasonryInput): BillOfMaterials {
     ];
 
     const mortarLines: BomLine[] = [
-        {
-            id: 'sand',
-            name: 'Building Sand',
-            detail: 'Large Bag (~800 kg)',
-            qty: units(plan.sandKg / 800),
-            unit: 'Large Bags',
-        },
+        ...aggregateLines('sand', 'Building Sand', plan.sandKg),
         {
             id: 'cement',
             name: 'Rugby Premium Cement',

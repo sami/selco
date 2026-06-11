@@ -12,7 +12,7 @@
  */
 
 import type { BillOfMaterials, BomLine } from './types';
-import { units } from './types';
+import { aggregateLines, units } from './types';
 
 export interface FrenchDrainInput {
     /** Drain run in metres. */
@@ -33,7 +33,6 @@ export interface FrenchDrainInput {
 
 export interface FrenchDrainPlan {
     stoneT: number;
-    stoneBags: number;
     /** Geotextile linear metres of trench wrap (lining + top wrap). */
     wrapGirthM: number;
     crates: number;
@@ -49,7 +48,6 @@ export function planFrenchDrain(input: FrenchDrainInput): FrenchDrainPlan {
     const stoneT = stoneVolM3 * 1.6;
     return {
         stoneT,
-        stoneBags: units((stoneT * 1000) / 800),
         wrapGirthM: widthM * 2 + depthM * 2 + 0.3,
         crates: input.soakaway ? Math.max(2, Math.ceil(1 / CRATE_M3 / 2)) : 0,
     };
@@ -67,13 +65,7 @@ export function calculateFrenchDrain(input: FrenchDrainInput): BillOfMaterials {
             qty: units((len * plan.wrapGirthM) / 49),
             unit: 'rolls',
         },
-        {
-            id: 'stone',
-            name: '20 mm Grey Limestone',
-            detail: 'Large Bag (~800 kg), clean stone, never MOT',
-            qty: plan.stoneBags,
-            unit: 'Large Bags',
-        },
+        ...aggregateLines('stone', '20 mm Grey Limestone', plan.stoneT * 1000, 'clean stone, never MOT'),
     ];
 
     if (input.carrierPipe) {
@@ -107,13 +99,9 @@ export function calculateFrenchDrain(input: FrenchDrainInput): BillOfMaterials {
     }
 
     if (input.gravelFinish) {
-        lines.push({
-            id: 'finish',
-            name: '20 mm Golden Gravel',
-            detail: 'Large Bag, decorative flush finish over the wrap',
-            qty: units((len * (input.widthMm / 1000) * CAP_M * 1600) / 800),
-            unit: 'Large Bags',
-        });
+        lines.push(
+            ...aggregateLines('finish', '20 mm Golden Gravel', len * (input.widthMm / 1000) * CAP_M * 1600, 'decorative flush finish over the wrap'),
+        );
     }
 
     return {

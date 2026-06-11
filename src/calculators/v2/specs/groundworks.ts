@@ -5,7 +5,7 @@
  * (French drain graduated to a bespoke calculator with its own visual.)
  */
 
-import { fmtM2, units } from '../types';
+import { aggregateBags, aggregateLines, fmtM2, units } from '../types';
 import type { CalcSpec } from './spec-types';
 import { bool, num, str } from './spec-types';
 
@@ -62,7 +62,7 @@ export const concrete: CalcSpec = {
                 {
                     title: 'Concrete (site-mixed)',
                     lines: [
-                        { id: 'ballast', name: 'All-in ballast', detail: 'Large Bag (~800 kg)', qty: units(ballastKg / 800), unit: 'Large Bags' },
+                        ...aggregateLines('ballast', 'All-in ballast', ballastKg),
                         { id: 'cement', name: 'Rugby Premium Cement', detail: '25 kg bag', qty: units(cementKg / 25), unit: 'bags' },
                     ],
                 },
@@ -156,7 +156,7 @@ export const driveway: CalcSpec = {
                         ...(bool(v, 'edging')
                             ? [
                                   { id: 'edging', name: 'Stonemarket Small Pavekerb', detail: '127 × 100 × 125 mm, laid in a concrete haunch', qty: units(perimeter / 0.127), unit: 'kerbs' },
-                                  { id: 'haunch-ballast', name: 'All-in ballast (haunching)', detail: 'Large Bag', qty: units((perimeter * 0.02 * 2000) / 800), unit: 'Large Bags' },
+                                  ...aggregateLines('haunch-ballast', 'All-in ballast (haunching)', perimeter * 0.02 * 2000),
                                   { id: 'haunch-cement', name: 'Rugby Premium Cement', detail: '25 kg bag', qty: units((perimeter * 0.02 * 300) / 25), unit: 'bags' },
                               ]
                             : []),
@@ -165,8 +165,8 @@ export const driveway: CalcSpec = {
                 {
                     title: 'Build-up',
                     lines: [
-                        { id: 'mot', name: 'MOT Type 1 Roadstone', detail: 'Large Bag, 150 mm compacted for vehicles', qty: units((area * 0.15 * 2200) / 800), unit: 'Large Bags' },
-                        { id: 'sharp-sand', name: 'Concreting Sharp Sand', detail: 'Large Bag, 50 mm screeded laying course', qty: units((area * 0.05 * 1700) / 800), unit: 'Large Bags' },
+                        ...aggregateLines('mot', 'MOT Type 1 Roadstone', area * 0.15 * 2200, '150 mm compacted for vehicles'),
+                        ...aggregateLines('sharp-sand', 'Concreting Sharp Sand', area * 0.05 * 1700, '50 mm screeded laying course'),
                         { id: 'membrane', name: 'Geotextile Fabric GF609', detail: '4.5 × 11.1 m roll under the sub-base', qty: units((area * 1.1) / 49), unit: 'rolls' },
                     ],
                 },
@@ -198,7 +198,7 @@ export const aggregates: CalcSpec = {
     category: 'Garden & outdoors',
     icon: 'fa-mound',
     description:
-        'Decorative gravel, slate chippings or bark by the bulk bag, depth-correct tonnage, membrane included.',
+        'Gravel, slate or bark for borders and paths. Jumbo bags or 35 kg packs, worked out at the right depth, membrane included.',
     fields: [
         { kind: 'number', id: 'width', label: 'Area width', unit: 'm', min: 0.5, max: 30, default: 4 },
         { kind: 'number', id: 'length', label: 'Area length', unit: 'm', min: 0.5, max: 30, default: 6 },
@@ -226,12 +226,12 @@ export const aggregates: CalcSpec = {
         const area = num(v, 'width') * num(v, 'length');
         const mat = str(v, 'material');
         const spec = {
-            gravel: { name: '20 mm Golden Gravel', depthM: 0.05, density: 1600, unit: 'Large Bags', perUnit: 800 },
-            limestone: { name: '20 mm Grey Limestone', depthM: 0.05, density: 1600, unit: 'Large Bags', perUnit: 800 },
-            slate: { name: 'Blue Slate chippings', depthM: 0.04, density: 1400, unit: 'Large Bags', perUnit: 800 },
-            cotswold: { name: 'Cotswold Chippings', depthM: 0.05, density: 1600, unit: 'Large Bags', perUnit: 800 },
-            bark: { name: 'Landscape Bark', depthM: 0.075, density: 280, unit: '100 L bags', perUnit: 28 },
-        }[mat] ?? { name: '20 mm Golden Gravel', depthM: 0.05, density: 1600, unit: 'Large Bags', perUnit: 800 };
+            gravel: { name: '20 mm Golden Gravel', depthM: 0.05, density: 1600 },
+            limestone: { name: '20 mm Grey Limestone', depthM: 0.05, density: 1600 },
+            slate: { name: 'Blue Slate chippings', depthM: 0.04, density: 1400 },
+            cotswold: { name: 'Cotswold Chippings', depthM: 0.05, density: 1600 },
+            bark: { name: 'Landscape Bark', depthM: 0.075, density: 280 },
+        }[mat] ?? { name: '20 mm Golden Gravel', depthM: 0.05, density: 1600 };
 
         const kg = area * spec.depthM * spec.density;
 
@@ -240,13 +240,24 @@ export const aggregates: CalcSpec = {
                 { label: 'Area', value: fmtM2(area) },
                 { label: 'Material', value: spec.name },
                 { label: 'Depth', value: `${Math.round(spec.depthM * 1000)} mm recommended` },
-                { label: 'Weight', value: mat === 'bark' ? `${(area * spec.depthM * 1000).toFixed(0)} L` : `${(kg / 1000).toFixed(1)} t` },
+                {
+                    label: mat === 'bark' ? 'Volume' : 'Bags',
+                    value:
+                        mat === 'bark'
+                            ? `${(area * spec.depthM * 1000).toFixed(0)} L`
+                            : (() => {
+                                  const b = aggregateBags(kg);
+                                  return [b.jumbo ? `${b.jumbo} jumbo` : '', b.packs ? `${b.packs} × 35 kg` : ''].filter(Boolean).join(' + ') || 'none';
+                              })(),
+                },
             ],
             sections: [
                 {
                     title: 'Aggregate',
                     lines: [
-                        { id: 'material', name: spec.name, detail: mat === 'bark' ? '100 L bag' : 'Large Bag (~800 kg)', qty: units(kg / spec.perUnit), unit: spec.unit },
+                        ...(mat === 'bark'
+                            ? [{ id: 'material', name: spec.name, detail: '100 L bag', qty: units(kg / 28), unit: '100 L bags' }]
+                            : aggregateLines('material', spec.name, kg)),
                         ...(bool(v, 'membrane')
                             ? [
                                   { id: 'membrane', name: 'TDP50 weed control fabric', detail: '1 m × 14 m roll, 100 mm laps', qty: units((area * 1.15) / 14), unit: 'rolls' },
@@ -257,7 +268,7 @@ export const aggregates: CalcSpec = {
                 },
             ],
             tools: [
-                'Wheelbarrow and shovel, a bulk bag will not move itself',
+                'Wheelbarrow and shovel, a jumbo bag will not move itself',
                 'Landscaping rake for an even depth',
                 'Sharp knife for the membrane, cut crosses for planting through',
                 'Timber or steel edging to stop migration onto the lawn',
@@ -265,7 +276,7 @@ export const aggregates: CalcSpec = {
                 'Plate compactor only if it is a path base, never for decorative top layers',
             ],
             notes: [
-                'A Large Bag covers roughly 10 m² of gravel at 50 mm, or 14 m² of slate at 40 mm. Bark bags do about 1.3 m² each.',
+                'A jumbo bag (~875 kg) covers roughly 11 m² of gravel at 50 mm, or 15 m² of slate at 40 mm. The 35 kg packs are there for top-ups and small jobs.',
                 'Lay membrane on cleared, levelled ground, it is weed control, not a substitute for prep.',
                 'Bark settles ~20% in the first year; top up annually.',
             ],
