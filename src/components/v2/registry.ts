@@ -164,7 +164,7 @@ const BESPOKE: V2CalculatorMeta[] = [
         name: 'Doors & door linings',
         category: 'Interiors & finishing',
         description:
-            'Door, lining, three hinges, latch, handles. The drawing shows where everything goes, and the fire door kit appears when you need it.',
+            'Door, lining, three hinges, latch, handles. Fire doors get the right kit for where they hang, home or public, and the drawing shows where everything goes.',
         icon: 'fa-door-open',
         kind: 'bespoke',
         preview: 'Door elevation with the ironmongery marked',
