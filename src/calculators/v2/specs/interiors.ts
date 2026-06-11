@@ -19,7 +19,7 @@ export const wallpapering: CalcSpec = {
     category: 'Interiors & finishing',
     icon: 'fa-scroll',
     description:
-        'Rolls, paste and lining paper from your room size — with pattern repeat handled properly, not guessed.',
+        'Rolls, paste and lining paper from your room size, with pattern repeat handled properly, not guessed.',
     fields: [
         { kind: 'number', id: 'perimeter', label: 'Wall run to paper', unit: 'm', min: 1, max: 60, default: 14, hint: 'Add up the width of every wall being papered' },
         { kind: 'number', id: 'height', label: 'Wall height', unit: 'm', min: 2, max: 4, default: 2.4 },
@@ -34,7 +34,7 @@ export const wallpapering: CalcSpec = {
             ],
             default: '0',
         },
-        { kind: 'toggle', id: 'lining', label: 'Cross-line first', hint: 'Lining paper hung horizontally — best finish', default: false },
+        { kind: 'toggle', id: 'lining', label: 'Cross-line first', hint: 'Lining paper hung horizontally, best finish', default: false },
     ],
     compute: (v) => {
         const ROLL_W = 0.53;
@@ -62,7 +62,7 @@ export const wallpapering: CalcSpec = {
                         ...(bool(v, 'lining')
                             ? [{ id: 'lining', name: 'Lining paper, 1400 grade', detail: 'double roll 0.56 × 20 m, hung horizontally', qty: units((num(v, 'perimeter') * num(v, 'height') * 1.1) / 11.2), unit: 'rolls' }]
                             : []),
-                        { id: 'paste', name: 'All-purpose wallpaper paste', detail: 'one box hangs ~4–5 rolls', qty: units((rolls + (bool(v, 'lining') ? 2 : 0)) / 4), unit: 'boxes' },
+                        { id: 'paste', name: 'All-purpose wallpaper paste', detail: 'one box hangs ~4 to 5 rolls', qty: units((rolls + (bool(v, 'lining') ? 2 : 0)) / 4), unit: 'boxes' },
                         { id: 'size', name: 'Wall size / primer sealer', detail: 'seals bare plaster before hanging', qty: 1, unit: 'packs' },
                     ],
                 },
@@ -71,7 +71,7 @@ export const wallpapering: CalcSpec = {
                 'Pasting table, bucket and pasting brush',
                 'Paper-hanging brush and seam roller',
                 'Sharp snap-off knife and decorators scissors',
-                'Plumb bob or laser line — the first drop must be dead vertical',
+                'Plumb bob or laser line, the first drop must be dead vertical',
                 'Clean sponge and bucket for paste on the face',
                 'Steam stripper (hire) if old paper is coming off first',
             ],
@@ -139,7 +139,7 @@ export const skirtingArchitrave: CalcSpec = {
                 {
                     title: 'Timber',
                     lines: [
-                        { id: 'skirting', name: `${material} skirting, ${profile} 119 × 18 mm`, detail: '4.2 m lengths — 10% for mitre waste', qty: units((skirtM * 1.1) / 4.2), unit: 'lengths' },
+                        { id: 'skirting', name: `${material} skirting, ${profile} 119 × 18 mm`, detail: '4.2 m lengths, 10% for mitre waste', qty: units((skirtM * 1.1) / 4.2), unit: 'lengths' },
                         ...(doors > 0
                             ? [{ id: 'architrave', name: `${material} architrave, ${profile} 69 × 18 mm`, detail: 'set = 2 legs + head per door side', qty: doors * 2, unit: 'sets' }]
                             : []),
@@ -211,24 +211,24 @@ export const skirtingArchitrave: CalcSpec = {
                     title: 'Fixing & finishing',
                     lines: [
                         { id: 'adhesive', name: 'High-strength grab adhesive', detail: 'one cartridge per ~8 lm', qty: units(skirtM / 8), unit: 'cartridges' },
-                        { id: 'pins', name: 'Lost-head nails, 40 mm', detail: '500 g pack — mechanical fix on bowed walls', qty: 1, unit: 'packs' },
+                        { id: 'pins', name: 'Lost-head nails, 40 mm', detail: '500 g pack, mechanical fix on bowed walls', qty: 1, unit: 'packs' },
                         { id: 'caulk', name: 'Decorators caulk', detail: 'top edge and mitre gaps', qty: units(skirtM / 12), unit: 'cartridges' },
                         { id: 'filler', name: 'Wood filler (fine surface)', qty: 1, unit: 'tubs' },
                     ],
                 },
             ],
             tools: [
-                'Mitre saw or mitre box — internal corners are scribed, not mitred',
+                'Mitre saw or mitre box, internal corners are scribed, not mitred',
                 'Coping saw for scribing internal joints',
                 'Caulk gun, sealant smoother and a damp rag',
-                'Stud detector — find fixing points through the plasterboard',
+                'Stud detector, find fixing points through the plasterboard',
                 'Pin hammer and nail punch',
-                bool(v, 'mdf') ? 'Fine sandpaper — MDF edges drink paint, prime cut ends' : 'Knotting solution and primer for pine',
+                bool(v, 'mdf') ? 'Fine sandpaper, MDF edges drink paint, prime cut ends' : 'Knotting solution and primer for pine',
             ],
             notes: [
-                'Internal corners: scribe one board over the other — mitres open up as timber moves.',
+                'Internal corners: scribe one board over the other, mitres open up as timber moves.',
                 'Architrave sits with a 6 mm margin off the lining edge all round.',
-                'Deduct only the door widths — short offcuts rarely reuse cleanly.',
+                'Deduct only the door widths, short offcuts rarely reuse cleanly.',
             ],
         };
     },
@@ -244,7 +244,7 @@ export const doorsLinings: CalcSpec = {
     category: 'Interiors & finishing',
     icon: 'fa-door-open',
     description:
-        'Everything per door: lining set, hinges, latch, handles, stops — fire-rated kit handled automatically.',
+        'Everything per door: lining set, hinges, latch, handles, stops, fire-rated kit handled automatically.',
     fields: [
         { kind: 'number', id: 'doors', label: 'Number of doors', min: 1, max: 12, step: 1, default: 3 },
         {
@@ -293,20 +293,20 @@ export const doorsLinings: CalcSpec = {
                                       unit: 'sets',
                                   },
                                   { id: 'packers', name: 'Assorted packers / shims', detail: 'bag of 100', qty: units(n / 4), unit: 'bags' },
-                                  { id: 'foam', name: 'Low-expansion gun foam', detail: 'one can per 2–3 linings', qty: units(n / 2.5), unit: 'cans' },
+                                  { id: 'foam', name: 'Low-expansion gun foam', detail: 'one can per 2 to 3 linings', qty: units(n / 2.5), unit: 'cans' },
                               ]
                             : []),
                     ],
                 },
                 {
-                    title: 'Ironmongery — per door, all counted',
+                    title: 'Ironmongery, per door, all counted',
                     lines: [
                         { id: 'hinges', name: fire ? 'Grade 11 fire-rated ball bearing hinges, 100 mm' : 'Ball bearing hinges, 75 mm', detail: '3 hinges per door', qty: n * 3, unit: 'hinges' },
                         { id: 'latch', name: fire ? 'Fire-rated tubular latch, 75 mm' : 'Tubular latch, 75 mm', qty: n, unit: 'latches' },
                         { id: 'handles', name: 'Lever handles on rose (pair)', qty: n, unit: 'pairs' },
                         ...(fire
                             ? [
-                                  { id: 'strips', name: 'Intumescent strip with smoke seal, 15 × 4 mm', detail: '2.1 m lengths — 3 per door', qty: n * 3, unit: 'lengths' },
+                                  { id: 'strips', name: 'Intumescent strip with smoke seal, 15 × 4 mm', detail: '2.1 m lengths, 3 per door', qty: n * 3, unit: 'lengths' },
                                   { id: 'closers', name: 'Overhead door closer (CE marked)', qty: n, unit: 'closers' },
                               ]
                             : []),
@@ -318,11 +318,11 @@ export const doorsLinings: CalcSpec = {
                 'Door wedges and door lifter for hanging solo',
                 'Sharp 25 mm chisel and mallet for hinge recesses',
                 '13 mm and 25 mm flat bits for latch and spindle holes',
-                'Block plane for easing edges — 2 mm gap all round, 6 mm at floor',
+                'Block plane for easing edges, 2 mm gap all round, 6 mm at floor',
                 'Combination square and marking gauge',
                 str(v, 'doorType') === 'oak'
-                    ? 'Hardwax oil or clear varnish — seal all six faces including top and bottom edges'
-                    : 'Primer and undercoat — seal all six faces including top and bottom edges',
+                    ? 'Hardwax oil or clear varnish, seal all six faces including top and bottom edges'
+                    : 'Primer and undercoat, seal all six faces including top and bottom edges',
             ],
             notes: [
                 'Seal every face of the door including top and bottom edges. Warping is a moisture story.',

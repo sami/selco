@@ -1,7 +1,7 @@
 /**
  * @file src/components/v2/FrenchDrainCalculator.tsx
  *
- * French drain island — trench cross-section showing the geotextile wrap,
+ * French drain island, trench cross-section showing the geotextile wrap,
  * clean stone fill, optional carrier pipe and the surface finish, plus a
  * little long-section showing the fall to the soakaway.
  */

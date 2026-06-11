@@ -6,7 +6,7 @@
  * A `CalcSpec` is a declarative calculator: input fields plus a pure
  * compute function returning the shared `BillOfMaterials`. One generic
  * React island (`SpecCalculator`) renders any spec, and one dynamic Astro
- * route generates a page per spec — so adding a calculator is ~80 lines of
+ * route generates a page per spec, so adding a calculator is ~80 lines of
  * domain knowledge, no new UI code.
  */
 
@@ -75,7 +75,7 @@ export interface CalcSpec {
 }
 
 // ---------------------------------------------------------------------------
-// Typed accessors — keep compute functions terse and safe
+// Typed accessors, keep compute functions terse and safe
 // ---------------------------------------------------------------------------
 
 export function num(v: Values, id: string): number {
@@ -92,7 +92,7 @@ export function bool(v: Values, id: string): boolean {
     return v[id] === true;
 }
 
-/** Default values for a spec's fields — initial island state. */
+/** Default values for a spec's fields, initial island state. */
 export function defaultsFor(spec: CalcSpec): Values {
     return Object.fromEntries(spec.fields.map((f) => [f.id, f.default]));
 }

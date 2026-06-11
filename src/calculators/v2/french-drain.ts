@@ -1,11 +1,11 @@
 /**
  * @file src/calculators/v2/french-drain.ts
  *
- * French drain estimator — mapped to Selco's stocked range.
+ * French drain estimator, mapped to Selco's stocked range.
  *
  * Selco doesn't stock perforated land drain coil, so the build here is the
  * classic stone-filled french drain: trench lined with Geotextile Fabric
- * GF609, filled with 20 mm clean limestone (never MOT — fines blind a
+ * GF609, filled with 20 mm clean limestone (never MOT, fines blind a
  * drain), wrapped over the top and capped. Options add a solid 110 mm
  * carrier pipe to take collected water to an outfall, and Core Water
  * soakaway crates where there's nowhere to discharge.
@@ -63,14 +63,14 @@ export function calculateFrenchDrain(input: FrenchDrainInput): BillOfMaterials {
         {
             id: 'geotextile',
             name: 'Geotextile Fabric GF609',
-            detail: '4.5 × 11.1 m roll — line the trench, wrap over the top',
+            detail: '4.5 × 11.1 m roll, line the trench, wrap over the top',
             qty: units((len * plan.wrapGirthM) / 49),
             unit: 'rolls',
         },
         {
             id: 'stone',
             name: '20 mm Grey Limestone',
-            detail: 'Large Bag (~800 kg) — clean stone, never MOT',
+            detail: 'Large Bag (~800 kg), clean stone, never MOT',
             qty: plan.stoneBags,
             unit: 'Large Bags',
         },
@@ -100,7 +100,7 @@ export function calculateFrenchDrain(input: FrenchDrainInput): BillOfMaterials {
         lines.push({
             id: 'crates',
             name: 'Core Water soakaway crate with membrane',
-            detail: '800 × 500 × 540 mm — wrapped, min 5 m from buildings',
+            detail: '800 × 500 × 540 mm, wrapped, min 5 m from buildings',
             qty: 4,
             unit: 'crates',
         });
@@ -110,7 +110,7 @@ export function calculateFrenchDrain(input: FrenchDrainInput): BillOfMaterials {
         lines.push({
             id: 'finish',
             name: '20 mm Golden Gravel',
-            detail: 'Large Bag — decorative flush finish over the wrap',
+            detail: 'Large Bag, decorative flush finish over the wrap',
             qty: units((len * (input.widthMm / 1000) * CAP_M * 1600) / 800),
             unit: 'Large Bags',
         });

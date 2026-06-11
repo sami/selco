@@ -1,7 +1,7 @@
 /**
  * @file src/components/v2/BoardCoverageCalculator.tsx
  *
- * Board & sheet coverage island — sheet grid over the area with cut sheets
+ * Board & sheet coverage island, sheet grid over the area with cut sheets
  * highlighted, orientation toggle, plus the materials ticket.
  */
 
@@ -85,7 +85,7 @@ function BoardsPreview({ input }: { input: BoardsInput }) {
             </g>
 
             <text x={W / 2} y={H - 12} fill="#fff" fontSize="11" textAnchor="middle" opacity="0.85">
-                {plan.board.label} {plan.board.wMm} × {plan.board.hMm} mm, laid {input.landscape ? 'landscape' : 'portrait'} — stagger joints between rows
+                {plan.board.label} {plan.board.wMm} × {plan.board.hMm} mm, laid {input.landscape ? 'landscape' : 'portrait'}, stagger joints between rows
             </text>
         </svg>
     );
@@ -121,7 +121,7 @@ export default function BoardCoverageCalculator() {
                 />
                 <ToggleRow
                     label="Lay landscape"
-                    hint="Long edge horizontal — fewer joints on low walls"
+                    hint="Long edge horizontal, fewer joints on low walls"
                     checked={input.landscape}
                     onChange={(v) => set('landscape', v)}
                 />

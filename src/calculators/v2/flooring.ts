@@ -1,7 +1,7 @@
 /**
  * @file src/calculators/v2/flooring.ts
  *
- * Hard flooring estimator — v2 rebuild of the v1 flagship.
+ * Hard flooring estimator, v2 rebuild of the v1 flagship.
  *
  * Plans plank rows across the room (with the stagger a fitter would use),
  * then quantifies packs, underlay, beading, thresholds and the expansion
@@ -107,7 +107,7 @@ export function calculateFlooring(input: FlooringInput): BillOfMaterials {
                     {
                         id: 'packs',
                         name: plan.floor.productName,
-                        detail: `${plan.floor.packM2} m² per pack — inc. 8% cutting waste`,
+                        detail: `${plan.floor.packM2} m² per pack, inc. 8% cutting waste`,
                         qty: plan.packs,
                         unit: 'packs',
                     },
@@ -125,7 +125,7 @@ export function calculateFlooring(input: FlooringInput): BillOfMaterials {
                               {
                                   id: 'dpm',
                                   name: 'Polythene vapour barrier (or combi underlay)',
-                                  detail: 'concrete subfloors — laps taped 200 mm',
+                                  detail: 'concrete subfloors, laps taped 200 mm',
                                   qty: units((a * 1.15) / 25),
                                   unit: 'rolls',
                               },
@@ -165,9 +165,9 @@ export function calculateFlooring(input: FlooringInput): BillOfMaterials {
             },
         ],
         tools: [
-            'Mitre saw or fine-tooth handsaw — cut laminate face-up by hand, face-down on a power saw',
+            'Mitre saw or fine-tooth handsaw, cut laminate face-up by hand, face-down on a power saw',
             'Jigsaw for radiator pipes and door frame scribes',
-            'Tapping block and pull bar (in the fitting kit) — never hammer the click joint directly',
+            'Tapping block and pull bar (in the fitting kit), never hammer the click joint directly',
             'Undercut saw or multi-tool to trim door casings so planks slide under',
             'Sharp knife for the underlay and a roll of underlay tape',
             'Decorators caulk to finish the scotia after fitting',
@@ -175,7 +175,7 @@ export function calculateFlooring(input: FlooringInput): BillOfMaterials {
         notes: [
             'Acclimatise packs flat in the room for 48 hours before laying.',
             'Stagger end joints at least 300 mm row to row; never let joints line up.',
-            '10 mm expansion gap at every wall and fixed point — the floor floats, nothing screws through it.',
+            '10 mm expansion gap at every wall and fixed point, the floor floats, nothing screws through it.',
         ],
     };
 }

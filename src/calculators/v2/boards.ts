@@ -1,7 +1,7 @@
 /**
  * @file src/calculators/v2/boards.ts
  *
- * Board & sheet coverage estimator — v2 rebuild of the v1 handy tool.
+ * Board & sheet coverage estimator, v2 rebuild of the v1 handy tool.
  *
  * Lays sheets over a wall/floor/ceiling area as a grid (the way they get
  * fixed), counts whole sheets including cut edges, and adds the fixings
@@ -111,14 +111,14 @@ export function calculateBoards(input: BoardsInput): BillOfMaterials {
                     {
                         id: 'boards',
                         name: b.productName,
-                        detail: `${b.wMm} × ${b.hMm} mm — laid ${input.landscape ? 'landscape' : 'portrait'}`,
+                        detail: `${b.wMm} × ${b.hMm} mm, laid ${input.landscape ? 'landscape' : 'portrait'}`,
                         qty: plan.boards,
                         unit: 'sheets',
                     },
                     {
                         id: 'fixings',
                         name: b.fixing.name,
-                        detail: `${b.fixing.detail} — ~${b.fixing.perBoard} per sheet`,
+                        detail: `${b.fixing.detail}, ~${b.fixing.perBoard} per sheet`,
                         qty: units((plan.boards * b.fixing.perBoard) / b.fixing.perBox),
                         unit: 'boxes',
                     },
@@ -134,7 +134,7 @@ export function calculateBoards(input: BoardsInput): BillOfMaterials {
                               {
                                   id: 'filler',
                                   name: 'Jointing & filling compound (60 min)',
-                                  detail: '10 kg bag — joints and screw heads',
+                                  detail: '10 kg bag, joints and screw heads',
                                   qty: units(plan.areaM2 / 15),
                                   unit: 'bags',
                               },
@@ -156,18 +156,18 @@ export function calculateBoards(input: BoardsInput): BillOfMaterials {
         ],
         tools: [
             isPb ? 'Drywall saw, rasp and a board lifter for ceilings' : 'Circular saw with a guide rail (TCT blade) and trestles',
-            'Tape measure, pencil and a 1.2 m straight edge — measure twice, cut once',
+            'Tape measure, pencil and a 1.2 m straight edge, measure twice, cut once',
             isPb ? 'Drywall screw gun with a depth stop' : 'Combi drill with countersink bit',
             'Stud detector / chalk line to mark the fixing lines',
-            isBacker ? 'Score-and-snap knife — backer board cuts like plasterboard, just harder' : 'Dust mask and eye protection when cutting',
-            'A second pair of hands — full sheets are a two-person lift',
+            isBacker ? 'Score-and-snap knife, backer board cuts like plasterboard, just harder' : 'Dust mask and eye protection when cutting',
+            'A second pair of hands, full sheets are a two-person lift',
         ],
         notes: [
             'Stagger sheet joints row to row; never four corners meeting at one point.',
             isPb
                 ? 'Screws just dimple the paper without tearing it, 150 mm centres at edges.'
-                : 'Leave 2–3 mm expansion gaps between structural sheets.',
-            'The 5% cut allowance suits plain areas — add more around openings and angles.',
+                : 'Leave 2 to 3 mm expansion gaps between structural sheets.',
+            'The 5% cut allowance suits plain areas, add more around openings and angles.',
         ],
     };
 }

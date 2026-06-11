@@ -1,7 +1,7 @@
 /**
  * @file src/calculators/v2/masonry.ts
  *
- * Brick & block wall estimator — mapped to Selco's stocked range.
+ * Brick & block wall estimator, mapped to Selco's stocked range.
  *
  * Wall types use the trade wording:
  *   - half-brick wall (102 mm): single skin in stretcher bond
@@ -133,7 +133,7 @@ export function calculateMasonry(input: MasonryInput): BillOfMaterials {
                   {
                       id: 'bricks',
                       name: '65 mm facing brick (e.g. Tuscan Red, Harvest Buff Multi)',
-                      detail: 'inc. 5% cuts and breakages — pick the face in branch',
+                      detail: 'inc. 5% cuts and breakages, pick the face in branch',
                       qty: plan.bricks,
                       unit: 'bricks',
                   },
@@ -158,14 +158,14 @@ export function calculateMasonry(input: MasonryInput): BillOfMaterials {
                       ? {
                             id: 'blocks',
                             name: '100 mm Thermalite Hi-Strength block, 7.3 N',
-                            detail: '440 × 215 mm aircrete — light, insulating, easy to cut',
+                            detail: '440 × 215 mm aircrete, light, insulating, easy to cut',
                             qty: plan.blocks,
                             unit: 'blocks',
                         }
                       : {
                             id: 'blocks',
                             name: 'Dense concrete block 7N, 100 mm solid',
-                            detail: '440 × 215 mm — load-bearing and garden work',
+                            detail: '440 × 215 mm, load-bearing and garden work',
                             qty: plan.blocks,
                             unit: 'blocks',
                         },
@@ -195,7 +195,7 @@ export function calculateMasonry(input: MasonryInput): BillOfMaterials {
         {
             id: 'cement',
             name: 'Rugby Premium Cement',
-            detail: '25 kg bag — 1:5 with plasticiser',
+            detail: '25 kg bag, 1:5 with plasticiser',
             qty: units(plan.cementBags),
             unit: 'bags',
         },
@@ -241,7 +241,7 @@ export function calculateMasonry(input: MasonryInput): BillOfMaterials {
         openingLines.push({
             id: 'padstones',
             name: 'Supreme concrete padstone, 215 × 140 × 102 mm',
-            detail: 'two per beam — spreads the point load',
+            detail: 'two per beam, spreads the point load',
             qty: beams * 2,
             unit: 'padstones',
         });
@@ -286,7 +286,7 @@ export function calculateMasonry(input: MasonryInput): BillOfMaterials {
                   {
                       id: 'copings',
                       name: 'Supreme once weathered coping stone',
-                      detail: '600 mm — caps the wall against rain',
+                      detail: '600 mm, caps the wall against rain',
                       qty: units(input.lengthM / 0.6),
                       unit: 'copings',
                   },

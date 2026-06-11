@@ -1,11 +1,11 @@
 /**
  * @file src/calculators/v2/fence.ts
  *
- * Garden fencing estimator — mapped to Selco's stocked range.
+ * Garden fencing estimator, mapped to Selco's stocked range.
  *
  * Panels: lap or closeboard, 1829 mm (6 ft) wide, heights 3/4/5/6 ft.
  * Posts: incised treated timber 75 or 100 mm, or Supreme Pro slotted
- * concrete (sold as intermediate, end and corner posts — counted
+ * concrete (sold as intermediate, end and corner posts, counted
  * separately, the way the yard sells them).
  * Setting: Carlton Rapid Set fence post concrete (20 kg), or Powapost
  * drive-in spikes for timber posts where digging isn't an option.
@@ -49,7 +49,7 @@ export interface FencePlan {
 
 const PANEL_W_M = 1.83;
 const BURIAL_M = 0.6;
-/** Postmix per post: 20 kg bags — timber holes ~2, concrete ~3. */
+/** Postmix per post: 20 kg bags, timber holes ~2, concrete ~3. */
 const BAGS_PER_POST: Record<PostType, number> = {
     timber75: 2,
     timber100: 2,
@@ -120,7 +120,7 @@ export function calculateFence(input: FenceInput): BillOfMaterials {
                   id: 'posts',
                   name: `Incised fence post, treated green ${input.postType === 'timber100' ? '100 × 100' : '75 × 75'} mm`,
                   detail: spiked
-                      ? `${plan.postLengthM.toFixed(1)} m — sits in the spike socket`
+                      ? `${plan.postLengthM.toFixed(1)} m, sits in the spike socket`
                       : `${plan.postLengthM.toFixed(1)} m (600 mm in the ground)`,
                   qty: plan.posts,
                   unit: 'posts',
@@ -147,7 +147,7 @@ export function calculateFence(input: FenceInput): BillOfMaterials {
               {
                   id: 'postmix',
                   name: 'Carlton Rapid Set fence post concrete',
-                  detail: '20 kg bag, sets in 5–10 minutes',
+                  detail: '20 kg bag, sets in 5 to 10 minutes',
                   qty: plan.postmixBags,
                   unit: 'bags',
               },
@@ -178,7 +178,7 @@ export function calculateFence(input: FenceInput): BillOfMaterials {
                 : {
                       id: 'gravel-boards',
                       name: 'Treated timber gravel board, 150 × 22 mm',
-                      detail: '6" × 1" — fix to the posts below the panel',
+                      detail: '6" × 1", fix to the posts below the panel',
                       qty: plan.panels,
                       unit: 'boards',
                   },

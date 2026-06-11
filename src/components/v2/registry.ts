@@ -1,7 +1,7 @@
 /**
  * @file src/components/v2/registry.ts
  *
- * Registry for the v2 concept hub — same single-source-of-truth pattern as
+ * Registry for the v2 concept hub, same single-source-of-truth pattern as
  * src/projects/registry.ts, scoped to the /v2/ showcase.
  *
  * Two kinds of calculator:
@@ -34,7 +34,7 @@ const BESPOKE: V2CalculatorMeta[] = [
         name: 'Artificial grass',
         category: 'Garden & outdoors',
         description:
-            'Plans Luxigraze 2 m roll strips for your lawn, picks 4/5/6 m roll lengths to cut waste, and lists tape, membrane, sub-base and infill.',
+            "Lay the lawn right first time. We plan the roll strips, pick roll lengths that waste the least grass and point every seam the same way.",
         icon: 'fa-seedling',
         kind: 'bespoke',
         preview: 'Live roll plan with seams and pile direction',
@@ -44,7 +44,7 @@ const BESPOKE: V2CalculatorMeta[] = [
         name: 'Kitchen planner',
         category: 'Kitchens & bathrooms',
         description:
-            'Packs base units, corner units and appliance slots along your walls, then counts worktops, plinths, legs and handles.',
+            "Sketch your kitchen in seconds. Tell us the walls and we'll fit the units in, worktops, plinths and panels included.",
         icon: 'fa-sink',
         kind: 'bespoke',
         preview: 'Top-down plan view of your unit layout',
@@ -54,7 +54,7 @@ const BESPOKE: V2CalculatorMeta[] = [
         name: 'Paint & decorating',
         category: 'Interiors & finishing',
         description:
-            'Measures walls and ceiling from room sizes, deducts doors and windows, and recommends the right tin combination.',
+            "How many tins, honestly. Room sizes in, doors and windows taken off, the right mix of 5 litre and 2.5 litre tins out.",
         icon: 'fa-paint-roller',
         kind: 'bespoke',
         preview: 'Unwrapped wall elevation with openings',
@@ -64,7 +64,7 @@ const BESPOKE: V2CalculatorMeta[] = [
         name: 'Fencing',
         category: 'Garden & outdoors',
         description:
-            'Panels, posts, post-fix concrete and gravel boards for any run — timber or concrete, with corner posts handled.',
+            "Panels, posts and postmix for any run. Pick lap or closeboard, timber or concrete posts, and we'll count the corners too.",
         icon: 'fa-grip-lines-vertical',
         kind: 'bespoke',
         preview: 'Bay-by-bay elevation with burial depth',
@@ -74,7 +74,7 @@ const BESPOKE: V2CalculatorMeta[] = [
         name: 'Patio & paving',
         category: 'Garden & outdoors',
         description:
-            'Slab grid for three formats plus the full bed: MOT Type 1, sharp sand, cement, primer and jointing compound.',
+            "Slabs, sub-base, bed mix and jointing for a patio that stays flat. Concrete or porcelain, drawn slab by slab.",
         icon: 'fa-border-all',
         kind: 'bespoke',
         preview: 'Slab-by-slab layout, cuts highlighted',
@@ -84,7 +84,7 @@ const BESPOKE: V2CalculatorMeta[] = [
         name: 'Plastering',
         category: 'Walls, ceilings & partitions',
         description:
-            'Bags of Multi-finish plaster or BondingCoat for skim and float-and-set work, with PVA, scrim and beads where needed.',
+            "Bags of plaster without the guesswork. Skim or float and set, with the PVA, scrim and beads that go with it.",
         icon: 'fa-layer-group',
         kind: 'bespoke',
         preview: 'Cross-section of the system build-up',
@@ -94,7 +94,7 @@ const BESPOKE: V2CalculatorMeta[] = [
         name: 'Tiling',
         category: 'Interiors & finishing',
         description:
-            'Tile grid for three formats, with flexible adhesive, grout, spacers, trims and silicone counted.',
+            "Any room, wall or floor. Tiles drawn out from the centre, adhesive and grout matched to the job, tanking for wet zones.",
         icon: 'fa-border-none',
         kind: 'bespoke',
         preview: 'Tile-by-tile layout, cuts highlighted',
@@ -104,7 +104,7 @@ const BESPOKE: V2CalculatorMeta[] = [
         name: 'Hard flooring',
         category: 'Interiors & finishing',
         description:
-            'Laminate, LVT click or engineered wood by the pack — underlay, scotia, thresholds and the expansion kit included.',
+            "Click flooring by the pack: laminate, rigid LVT or engineered oak. Underlay, scotia and thresholds come along for the ride.",
         icon: 'fa-bars',
         kind: 'bespoke',
         preview: 'Plank rows with staggered end joints',
@@ -114,7 +114,7 @@ const BESPOKE: V2CalculatorMeta[] = [
         name: 'Brick & block wall',
         category: 'Building & masonry',
         description:
-            'Bricks or blocks, building sand and cement, wall ties, DPC and copings for skins, solid walls and cavity work.',
+            "From a garden wall to a cavity extension. Bricks or blocks, mortar, lintels over the openings and padstones under the beams.",
         icon: 'fa-trowel-bricks',
         kind: 'bespoke',
         preview: 'Stretcher-bond elevation with DPC line',
@@ -124,7 +124,7 @@ const BESPOKE: V2CalculatorMeta[] = [
         name: 'Decking',
         category: 'Garden & outdoors',
         description:
-            'Boards, joists at 400 mm centres, deck blocks or posts, screws or hidden clips — timber or composite.',
+            "Boards, joists and fixings for a deck that doesn't bounce. Timber or composite, ground level or raised on posts.",
         icon: 'fa-table-list',
         kind: 'bespoke',
         preview: 'Joist grid and board plan with supports',
@@ -134,7 +134,7 @@ const BESPOKE: V2CalculatorMeta[] = [
         name: 'Board & sheet coverage',
         category: 'Handy tools',
         description:
-            'Plasterboard, ply, OSB or backer board over any area — sheets, fixings and joint materials, portrait or landscape.',
+            "How many sheets to cover a wall, floor or ceiling, with the screws and joint kit each board needs.",
         icon: 'fa-clone',
         kind: 'bespoke',
         preview: 'Sheet-by-sheet layout, cuts highlighted',
@@ -144,7 +144,7 @@ const BESPOKE: V2CalculatorMeta[] = [
         name: 'Unit converter',
         category: 'Handy tools',
         description:
-            'Metric and imperial conversions for length, area, volume, weight and temperature — with trade-handy equivalents.',
+            "Feet to metres, gallons to litres, and the handy ones like how many 25 kg bags make a Large Bag.",
         icon: 'fa-right-left',
         kind: 'bespoke',
         preview: 'Live conversions with trade equivalents',
@@ -184,7 +184,7 @@ const BESPOKE: V2CalculatorMeta[] = [
         name: 'Board cutting optimiser',
         category: 'Handy tools',
         description:
-            'Packs your parts onto the fewest sheets, planned for our in-store panel saw — 3 mm kerf, straight cuts, size limits checked.',
+            "Type in the pieces you need and we'll fit them onto the fewest sheets, planned for our in-store panel saw.",
         icon: 'fa-scissors',
         kind: 'bespoke',
         preview: 'In-store cutting plan, drawn to scale',

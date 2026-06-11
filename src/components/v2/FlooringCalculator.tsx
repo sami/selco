@@ -1,7 +1,7 @@
 /**
  * @file src/components/v2/FlooringCalculator.tsx
  *
- * Hard flooring island — draws the plank rows with the staggered end
+ * Hard flooring island, draws the plank rows with the staggered end
  * joints a fitter would lay, plus the materials ticket.
  */
 

@@ -1,7 +1,7 @@
 /**
  * @file src/components/v2/FenceCalculator.tsx
  *
- * Fencing island — elevation view of the run: posts, panels, gravel boards,
+ * Fencing island, elevation view of the run: posts, panels, gravel boards,
  * ground line and post-fix concrete, with the burial depth called out.
  */
 

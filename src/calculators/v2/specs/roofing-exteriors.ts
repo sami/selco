@@ -10,7 +10,7 @@ import type { CalcSpec } from './spec-types';
 import { bool, num, str } from './spec-types';
 
 // ---------------------------------------------------------------------------
-// Pitched roofing — clay plain tiles, natural slate, interlocking concrete
+// Pitched roofing, clay plain tiles, natural slate, interlocking concrete
 // ---------------------------------------------------------------------------
 
 /** Coverage data per covering: pieces/m² and batten metres/m² (at gauge). */
@@ -87,7 +87,7 @@ export const roofPitched: CalcSpec = {
                         {
                             id: 'covering',
                             name: cov.label,
-                            detail: `${cov.detail} — inc. 5% cuts & breakages`,
+                            detail: `${cov.detail}, inc. 5% cuts & breakages`,
                             qty: units(area * cov.perM2 * 1.05),
                             unit: cov.unit,
                         },
@@ -103,7 +103,7 @@ export const roofPitched: CalcSpec = {
                                   {
                                       id: 'ridge-mortar',
                                       name: 'Dry ridge fixing kit',
-                                      detail: 'covers 6 m per kit — BS 5534 compliant',
+                                      detail: 'covers 6 m per kit, BS 5534 compliant',
                                       qty: units(ridgeM / 6),
                                       unit: 'kits',
                                   },
@@ -124,7 +124,7 @@ export const roofPitched: CalcSpec = {
                         {
                             id: 'membrane',
                             name: 'Breather membrane (vapour-permeable)',
-                            detail: '1 m × 50 m roll — 150 mm laps',
+                            detail: '1 m × 50 m roll, 150 mm laps',
                             qty: units((area * 1.15) / 50),
                             unit: 'rolls',
                         },
@@ -148,22 +148,22 @@ export const roofPitched: CalcSpec = {
             tools: [
                 'Roofing square, chalk line and gauge lath for setting out',
                 'Slate cutter & ripper (slate) or angle grinder with diamond blade (tiles)',
-                'Scaffold or tower — working at height regs apply',
+                'Scaffold or tower, working at height regs apply',
                 'Tile lifter bars and a bucket line for loading out',
                 'Lead snips and sealant for flashing details',
                 'Harness and edge protection (hire with the scaffold)',
             ],
             notes: [
-                'Quantities assume a plain rectangular slope — add valleys, hips and abutments separately.',
+                'Quantities assume a plain rectangular slope, add valleys, hips and abutments separately.',
                 'Eaves, verge and undercloak details vary by system; check the manufacturer fixing spec.',
-                'Battens at 5% over — gauge tightens near the eaves and ridge.',
+                'Battens at 5% over, gauge tightens near the eaves and ridge.',
             ],
         };
     },
 };
 
 // ---------------------------------------------------------------------------
-// Flat roofing — GRP / EPDM / torch-on felt
+// Flat roofing, GRP / EPDM / torch-on felt
 // ---------------------------------------------------------------------------
 
 export const roofFlat: CalcSpec = {
@@ -172,7 +172,7 @@ export const roofFlat: CalcSpec = {
     category: 'Roofing & exteriors',
     icon: 'fa-layer-group',
     description:
-        'Three systems in one calculator: GRP fibreglass, EPDM rubber, or torch-on felt — with deck boards, trims and adhesives.',
+        'Three systems in one calculator: GRP fibreglass, EPDM rubber, or torch-on felt, with deck boards, trims and adhesives.',
     fields: [
         { kind: 'number', id: 'width', label: 'Roof width', unit: 'm', min: 1, max: 15, default: 4 },
         { kind: 'number', id: 'length', label: 'Roof length', unit: 'm', min: 1, max: 20, default: 6 },
@@ -192,7 +192,7 @@ export const roofFlat: CalcSpec = {
     rectPreview: (v) => ({
         widthM: num(v, 'width'),
         lengthM: num(v, 'length'),
-        caption: 'Flat roof plan — min 1:80 fall to the outlet',
+        caption: 'Flat roof plan, min 1:80 fall to the outlet',
     }),
     compute: (v) => {
         const area = num(v, 'width') * num(v, 'length');
@@ -205,7 +205,7 @@ export const roofFlat: CalcSpec = {
                       { id: 'resin', name: 'GRP roofing resin', detail: '~1.5 kg/m² laminate coat', qty: units((area * 1.5) / 20), unit: '20 kg tins' },
                       { id: 'topcoat', name: 'GRP roofing topcoat', detail: '~0.5 kg/m²', qty: units((area * 0.5) / 10), unit: '10 kg tins' },
                       { id: 'csm', name: 'Chopped strand matting, 450 g/m²', detail: '1 m wide roll, 50 mm laps', qty: units((area * 1.1) / 45), unit: '45 m² rolls' },
-                      { id: 'catalyst', name: 'GRP catalyst (hardener)', detail: '2% mix ratio — more in cold weather', qty: units(area / 25), unit: '500 g bottles' },
+                      { id: 'catalyst', name: 'GRP catalyst (hardener)', detail: '2% mix ratio, more in cold weather', qty: units(area / 25), unit: '500 g bottles' },
                       { id: 'trims', name: 'GRP edge trim (A170 drip / C100 raised edge)', detail: '3 m lengths', qty: units(perimeter / 3), unit: 'lengths' },
                       { id: 'bandage', name: 'GRP joint bandage / corner matting', detail: '75 mm × 25 m roll', qty: units(perimeter / 25), unit: 'rolls' },
                   ]
@@ -213,7 +213,7 @@ export const roofFlat: CalcSpec = {
                   ? [
                         { id: 'membrane', name: 'EPDM rubber membrane, 1.2 mm', detail: 'one-piece sheet inc. 150 mm upstands', qty: Math.ceil((num(v, 'width') + 0.3) * (num(v, 'length') + 0.3) * 10) / 10, unit: 'm²' },
                         { id: 'deck-adhesive', name: 'EPDM water-based deck adhesive', detail: '~3.5 m²/L on the flat deck', qty: units(area / 3.5 / 5), unit: '5 L tubs' },
-                        { id: 'contact-adhesive', name: 'EPDM contact bonding adhesive', detail: 'upstands and perimeter — ~2 m²/L', qty: units((perimeter * 0.3) / 2), unit: 'litres' },
+                        { id: 'contact-adhesive', name: 'EPDM contact bonding adhesive', detail: 'upstands and perimeter, ~2 m²/L', qty: units((perimeter * 0.3) / 2), unit: 'litres' },
                         { id: 'trims', name: 'EPDM kerb edge & drip trim set', detail: '2.5 m lengths + corners', qty: units(perimeter / 2.5), unit: 'lengths' },
                         { id: 'primer', name: 'EPDM primer & seam tape', detail: 'for any joins and details', qty: 1, unit: 'kits' },
                     ]
@@ -237,7 +237,7 @@ export const roofFlat: CalcSpec = {
                           {
                               title: 'Decking',
                               lines: [
-                                  { id: 'osb', name: 'OSB3 tongue & groove board, 18 mm', detail: '2440 × 590 mm (1.44 m²) — 10% cuts', qty: units((area * 1.1) / 1.44), unit: 'boards' },
+                                  { id: 'osb', name: 'OSB3 tongue & groove board, 18 mm', detail: '2440 × 590 mm (1.44 m²), 10% cuts', qty: units((area * 1.1) / 1.44), unit: 'boards' },
                                   { id: 'deck-screws', name: 'Exterior deck screws, 50 mm', detail: 'box of 200', qty: units((area * 12) / 200), unit: 'boxes' },
                               ],
                           },
@@ -247,16 +247,16 @@ export const roofFlat: CalcSpec = {
             ],
             tools: [
                 system === 'felt'
-                    ? 'Gas torch, regulator and a fire extinguisher on the roof — hot works permit if required'
+                    ? 'Gas torch, regulator and a fire extinguisher on the roof, hot works permit if required'
                     : 'Paddle mixer, rollers and brushes dedicated to the system',
-                system === 'epdm' ? 'Silicone seam roller and scissors — EPDM cuts cold, no flames' : 'Acetone and rags for tool cleaning',
+                system === 'epdm' ? 'Silicone seam roller and scissors, EPDM cuts cold, no flames' : 'Acetone and rags for tool cleaning',
                 'Sharp utility knife and tin snips for trims',
-                'Broom and leaf blower — the deck must be bone dry and dust-free',
+                'Broom and leaf blower, the deck must be bone dry and dust-free',
                 'Bitumen mastic or low-modulus silicone for detail sealing',
-                'Weather app open — none of these systems go down in rain or below 5 °C',
+                'Weather app open, none of these systems go down in rain or below 5 °C',
             ],
             notes: [
-                'Allow a minimum 1:80 fall to the outlet — firrings are excluded; add them if the deck is dead flat.',
+                'Allow a minimum 1:80 fall to the outlet, firrings are excluded; add them if the deck is dead flat.',
                 'GRP figures use a single 600 g laminate equivalent (1 × 450 g CSM); heavy foot traffic needs a second layer.',
                 'Upstands taken at 300 mm girth around the full perimeter.',
             ],
@@ -274,7 +274,7 @@ export const guttering: CalcSpec = {
     category: 'Roofing & exteriors',
     icon: 'fa-water',
     description:
-        'uPVC gutter runs, unions, brackets, outlets and downpipes — counted the way a roofline fitter would.',
+        'uPVC gutter runs, unions, brackets, outlets and downpipes, counted the way a roofline fitter would.',
     fields: [
         { kind: 'number', id: 'run', label: 'Total gutter run', unit: 'm', min: 1, max: 60, default: 12 },
         { kind: 'number', id: 'downpipes', label: 'Downpipes', min: 1, max: 6, step: 1, default: 1 },
@@ -328,17 +328,17 @@ export const guttering: CalcSpec = {
                 },
             ],
             tools: [
-                'Ladder with standoff, or tower — never lean on the gutter',
+                'Ladder with standoff, or tower, never lean on the gutter',
                 'String line and level for the 1:350 fall',
                 'Fine-tooth saw and file for clean pipe cuts',
-                '25 mm wood screws (stainless) for brackets — about 2 per bracket',
+                '25 mm wood screws (stainless) for brackets, about 2 per bracket',
                 'Roof & gutter sealant for stop ends on old systems',
                 'Bucket and gutter scoop if you are clearing the old run first',
             ],
             notes: [
                 'One 4 m length spare is sensible on runs with several cuts.',
                 'Brackets at max 800 mm centres; close up to 600 mm in snow areas.',
-                'Check the drain connection — a shoe discharges over a gully, a connector goes direct.',
+                'Check the drain connection, a shoe discharges over a gully, a connector goes direct.',
             ],
         };
     },
@@ -354,7 +354,7 @@ export const rendering: CalcSpec = {
     category: 'Roofing & exteriors',
     icon: 'fa-brush',
     description:
-        'Traditional sand & cement or through-coloured monocouche — bags, beads and mesh for external walls.',
+        'Traditional sand & cement or through-coloured monocouche, bags, beads and mesh for external walls.',
     fields: [
         { kind: 'number', id: 'area', label: 'Wall area', unit: 'm²', min: 1, max: 500, step: 0.5, default: 40 },
         {
@@ -379,10 +379,10 @@ export const rendering: CalcSpec = {
                   { id: 'mono', name: 'Monocouche render (through-colour)', detail: '25 kg bag ≈ 1 m² at 15 mm, two passes', qty: units(area / 1), unit: 'bags' },
               ]
             : [
-                  { id: 'sand', name: 'Plastering sand', detail: 'bulk bag — scratch + top coat at 18 mm total', qty: units((area * 31) / 850), unit: 'bulk bags' },
-                  { id: 'cement', name: 'General-purpose cement', detail: '25 kg bag — 5:1 with plasticiser', qty: units((area * 6.2) / 25), unit: 'bags' },
+                  { id: 'sand', name: 'Plastering sand', detail: 'bulk bag, scratch + top coat at 18 mm total', qty: units((area * 31) / 850), unit: 'bulk bags' },
+                  { id: 'cement', name: 'General-purpose cement', detail: '25 kg bag, 5:1 with plasticiser', qty: units((area * 6.2) / 25), unit: 'bags' },
                   { id: 'plasticiser', name: 'Mortar plasticiser', detail: '5 L', qty: units(area / 100), unit: 'bottles' },
-                  { id: 'waterproofer', name: 'Integral mortar waterproofer', detail: '5 L — scratch coat', qty: units(area / 100), unit: 'bottles' },
+                  { id: 'waterproofer', name: 'Integral mortar waterproofer', detail: '5 L, scratch coat', qty: units(area / 100), unit: 'bottles' },
               ];
 
         return {
@@ -400,7 +400,7 @@ export const rendering: CalcSpec = {
                         ...(bool(v, 'mesh')
                             ? [{ id: 'mesh', name: 'Alkali-resistant render mesh, 160 g', detail: '1 m × 50 m roll', qty: units((area * 1.1) / 50), unit: 'rolls' }]
                             : []),
-                        { id: 'sbr', name: 'SBR bonding agent', detail: '5 L — key coat on dense or painted backgrounds', qty: units(area / 60), unit: 'bottles' },
+                        { id: 'sbr', name: 'SBR bonding agent', detail: '5 L, key coat on dense or painted backgrounds', qty: units(area / 60), unit: 'bottles' },
                     ],
                 },
             ],
@@ -409,13 +409,13 @@ export const rendering: CalcSpec = {
                 'Serrated straight edge and darby for ruling off',
                 'Scratch comb for keying the first coat',
                 mono ? 'Nail float / scraper for the scraped texture finish' : 'Churn brush for the top coat finish',
-                'Mixer or paddle drill and clean buckets — wash out between mixes',
-                'Masking film and tape — render splash stains glass and PVC',
+                'Mixer or paddle drill and clean buckets, wash out between mixes',
+                'Masking film and tape, render splash stains glass and PVC',
             ],
             notes: [
-                'Do not render in direct hot sun, rain, or below 5 °C — it will craze or wash off.',
+                'Do not render in direct hot sun, rain, or below 5 °C, it will craze or wash off.',
                 'Monocouche goes on in two passes the same day, then scraped at leather-hard.',
-                'Check bellcast bead lines twice — it sets the whole wall visually.',
+                'Check bellcast bead lines twice, it sets the whole wall visually.',
             ],
         };
     },
@@ -469,7 +469,7 @@ export const cladding: CalcSpec = {
                         {
                             id: 'boards',
                             name: cedral ? 'Fibre cement weatherboard, 3.6 m' : 'Treated featheredge board, 150 mm × 4.8 m',
-                            detail: cedral ? '160 mm exposure — inc. 7.5% cuts' : '125 mm cover — inc. 7.5% cuts',
+                            detail: cedral ? '160 mm exposure, inc. 7.5% cuts' : '125 mm cover, inc. 7.5% cuts',
                             qty: units((area * lmPerM2 * 1.075) / boardLen),
                             unit: 'boards',
                         },
@@ -490,13 +490,13 @@ export const cladding: CalcSpec = {
                         ...(bool(v, 'membrane')
                             ? [{ id: 'membrane', name: 'Breather membrane (vapour-permeable)', detail: '1 m × 50 m roll', qty: units((area * 1.15) / 50), unit: 'rolls' }]
                             : []),
-                        { id: 'batten-screws', name: 'Concrete frame screws, 100 mm', detail: 'box of 100 — battens to masonry', qty: units(battenM / 0.6 / 100), unit: 'boxes' },
+                        { id: 'batten-screws', name: 'Concrete frame screws, 100 mm', detail: 'box of 100, battens to masonry', qty: units(battenM / 0.6 / 100), unit: 'boxes' },
                     ],
                 },
             ],
             tools: [
-                cedral ? 'Fibre cement shears or a TCT blade with dust extraction — FFP3 mask essential' : 'Mitre saw and ear defenders',
-                'Laser level or water level for the first course — everything follows it',
+                cedral ? 'Fibre cement shears or a TCT blade with dust extraction, FFP3 mask essential' : 'Mitre saw and ear defenders',
+                'Laser level or water level for the first course, everything follows it',
                 'Cladding gauge / spacer blocks for consistent exposure',
                 'Insect mesh for the ventilation gap top and bottom',
                 'Low-modulus silicone for abutments and penetrations',
@@ -504,8 +504,8 @@ export const cladding: CalcSpec = {
             ],
             notes: [
                 'Keep a 10 mm ventilation gap top and bottom of the cavity, meshed against insects.',
-                'First course sets every line above it — level it twice, fix it once.',
-                'Window and door reveals need trims — count them as extra corner lengths.',
+                'First course sets every line above it, level it twice, fix it once.',
+                'Window and door reveals need trims, count them as extra corner lengths.',
             ],
         };
     },

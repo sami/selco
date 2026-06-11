@@ -19,7 +19,7 @@ export const concrete: CalcSpec = {
     category: 'Groundworks & drainage',
     icon: 'fa-cubes',
     description:
-        'Volume for slabs or strip footings, mixed on site from ballast and cement — with the ready-mix tipping point flagged.',
+        'Volume for slabs or strip footings, mixed on site from ballast and cement, with the ready-mix tipping point flagged.',
     fields: [
         { kind: 'number', id: 'width', label: 'Width', unit: 'm', min: 0.1, max: 20, default: 3 },
         { kind: 'number', id: 'length', label: 'Length', unit: 'm', min: 0.1, max: 30, default: 4 },
@@ -40,7 +40,7 @@ export const concrete: CalcSpec = {
     rectPreview: (v) => ({
         widthM: num(v, 'width'),
         lengthM: num(v, 'length'),
-        caption: `Slab plan — ${Math.round(num(v, 'depth'))} mm deep`,
+        caption: `Slab plan, ${Math.round(num(v, 'depth'))} mm deep`,
     }),
     compute: (v) => {
         const volM3 = num(v, 'width') * num(v, 'length') * (num(v, 'depth') / 1000);
@@ -56,7 +56,7 @@ export const concrete: CalcSpec = {
                 { label: 'Volume', value: `${volM3.toFixed(2)} m³` },
                 { label: 'Mix', value: c25 ? 'C25 (1:1.5:3)' : 'C20 (1:2:4)' },
                 { label: 'Approx weight', value: `${((ballastKg + cementKg) / 1000).toFixed(1)} t` },
-                { label: 'Ready-mix?', value: volM3 > 2 ? 'Yes — over 2 m³' : 'Site-mix is fine' },
+                { label: 'Ready-mix?', value: volM3 > 2 ? 'Yes, over 2 m³' : 'Site-mix is fine' },
             ],
             sections: [
                 {
@@ -70,7 +70,7 @@ export const concrete: CalcSpec = {
                     title: 'Slab build-up',
                     lines: [
                         ...(bool(v, 'dpm')
-                            ? [{ id: 'dpm', name: 'DPM polythene, 1200 gauge', detail: '4 m × 25 m roll — laps 300 mm', qty: units((area * 1.2) / 100), unit: 'rolls' }]
+                            ? [{ id: 'dpm', name: 'DPM polythene, 1200 gauge', detail: '4 m × 25 m roll, laps 300 mm', qty: units((area * 1.2) / 100), unit: 'rolls' }]
                             : []),
                         ...(bool(v, 'mesh')
                             ? [
@@ -83,15 +83,15 @@ export const concrete: CalcSpec = {
                 },
             ],
             tools: [
-                'Powered cement mixer (hire) — hand mixing past 0.5 m³ is a false economy',
+                'Powered cement mixer (hire), hand mixing past 0.5 m³ is a false economy',
                 'Wheelbarrow, shovels and a rake for placing',
                 'Long straight edge / screed bar and a float or power float for big slabs',
                 'String lines, pegs and a level for the formwork',
                 'Polythene sheet to cure under (slow curing = strong slab)',
-                'Wellies and gloves — wet concrete burns skin',
+                'Wellies and gloves, wet concrete burns skin',
             ],
             notes: [
-                `Over ~2 m³, price ready-mix with a pump — ${volM3 > 2 ? 'this job qualifies' : 'this job is comfortably site-mixable'}.`,
+                `Over ~2 m³, price ready-mix with a pump, ${volM3 > 2 ? 'this job qualifies' : 'this job is comfortably site-mixable'}.`,
                 'Volumes carry 10% for uneven ground and spillage.',
                 'Footings below ground rarely need mesh; check with building control for structural work.',
             ],
@@ -148,7 +148,7 @@ export const driveway: CalcSpec = {
                         {
                             id: 'blocks',
                             name: tegula ? 'Tumbled concrete block paving, mixed-size project pack' : 'Concrete block paving, 50 mm',
-                            detail: tegula ? 'pack covers ~9.7 m² — inc. 5% cuts' : '~9.8 m² per pack (488 blocks) — inc. 5% cuts',
+                            detail: tegula ? 'pack covers ~9.7 m², inc. 5% cuts' : '~9.8 m² per pack (488 blocks), inc. 5% cuts',
                             qty: units((area * 1.05) / 9.7),
                             unit: 'packs',
                         },
@@ -165,15 +165,15 @@ export const driveway: CalcSpec = {
                 {
                     title: 'Build-up',
                     lines: [
-                        { id: 'mot', name: 'MOT Type 1 Roadstone', detail: 'Large Bag — 150 mm compacted for vehicles', qty: units((area * 0.15 * 2200) / 800), unit: 'Large Bags' },
-                        { id: 'sharp-sand', name: 'Concreting Sharp Sand', detail: 'Large Bag — 50 mm screeded laying course', qty: units((area * 0.05 * 1700) / 800), unit: 'Large Bags' },
+                        { id: 'mot', name: 'MOT Type 1 Roadstone', detail: 'Large Bag, 150 mm compacted for vehicles', qty: units((area * 0.15 * 2200) / 800), unit: 'Large Bags' },
+                        { id: 'sharp-sand', name: 'Concreting Sharp Sand', detail: 'Large Bag, 50 mm screeded laying course', qty: units((area * 0.05 * 1700) / 800), unit: 'Large Bags' },
                         { id: 'membrane', name: 'Geotextile Fabric GF609', detail: '4.5 × 11.1 m roll under the sub-base', qty: units((area * 1.1) / 49), unit: 'rolls' },
                     ],
                 },
             ],
             tools: [
                 'Wacker plate (hire). Compact MOT in two 75 mm passes, then the laid blocks',
-                'Block splitter (hire) — faster and safer than a grinder for the cuts',
+                'Block splitter (hire), faster and safer than a grinder for the cuts',
                 'Screed rails and bar for the sand bed',
                 'String lines, pegs and a big rubber mallet',
                 'Angle grinder + diamond blade for the awkward cuts the splitter refuses',
@@ -198,7 +198,7 @@ export const aggregates: CalcSpec = {
     category: 'Garden & outdoors',
     icon: 'fa-mound',
     description:
-        'Decorative gravel, slate chippings or bark by the bulk bag — depth-correct tonnage, membrane included.',
+        'Decorative gravel, slate chippings or bark by the bulk bag, depth-correct tonnage, membrane included.',
     fields: [
         { kind: 'number', id: 'width', label: 'Area width', unit: 'm', min: 0.5, max: 30, default: 4 },
         { kind: 'number', id: 'length', label: 'Area length', unit: 'm', min: 0.5, max: 30, default: 6 },
@@ -257,16 +257,16 @@ export const aggregates: CalcSpec = {
                 },
             ],
             tools: [
-                'Wheelbarrow and shovel — a bulk bag will not move itself',
+                'Wheelbarrow and shovel, a bulk bag will not move itself',
                 'Landscaping rake for an even depth',
                 'Sharp knife for the membrane, cut crosses for planting through',
                 'Timber or steel edging to stop migration onto the lawn',
-                'Gloves — slate edges are sharp',
+                'Gloves, slate edges are sharp',
                 'Plate compactor only if it is a path base, never for decorative top layers',
             ],
             notes: [
                 'A Large Bag covers roughly 10 m² of gravel at 50 mm, or 14 m² of slate at 40 mm. Bark bags do about 1.3 m² each.',
-                'Lay membrane on cleared, levelled ground — it is weed control, not a substitute for prep.',
+                'Lay membrane on cleared, levelled ground, it is weed control, not a substitute for prep.',
                 'Bark settles ~20% in the first year; top up annually.',
             ],
         };

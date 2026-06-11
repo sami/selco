@@ -1,7 +1,7 @@
 /**
  * @file src/calculators/v2/decking.ts
  *
- * Decking estimator — v2 rebuild of the v1 flagship.
+ * Decking estimator, v2 rebuild of the v1 flagship.
  *
  * Boards run across the deck width; joists run perpendicular at 400 mm
  * centres on a supported sub-frame. Supports (deck blocks or posts) sit on
@@ -76,7 +76,7 @@ export function calculateDecking(input: DeckingInput): BillOfMaterials {
                         name: input.composite
                             ? 'Hollow composite deck board Rydal Grey, 22 × 135 mm'
                             : 'Grooved treated deck board, 125 × 38 mm',
-                        detail: '3.6 m lengths — inc. 5% cuts',
+                        detail: '3.6 m lengths, inc. 5% cuts',
                         qty: plan.boards,
                         unit: 'boards',
                     },
@@ -87,7 +87,7 @@ export function calculateDecking(input: DeckingInput): BillOfMaterials {
                             : 'Unifix green decking screws, 4 × 60 mm',
                         detail: input.composite
                             ? 'pack of 100 with driver bit'
-                            : 'pack of 1000 — 2 per board/joist crossing',
+                            : 'pack of 1000, 2 per board/joist crossing',
                         qty: units(plan.screws / (input.composite ? 100 : 1000)),
                         unit: 'packs',
                     },
@@ -108,7 +108,7 @@ export function calculateDecking(input: DeckingInput): BillOfMaterials {
                     {
                         id: 'joists',
                         name: 'Sawn treated C16 timber, 100 × 47 mm (4" × 2")',
-                        detail: '3.6 m lengths — joists + ringbeam, 5% over',
+                        detail: '3.6 m lengths, joists + ringbeam, 5% over',
                         qty: plan.joistLengths,
                         unit: 'lengths',
                     },
@@ -124,14 +124,14 @@ export function calculateDecking(input: DeckingInput): BillOfMaterials {
                               {
                                   id: 'posts',
                                   name: 'Incised fence post, treated 100 × 100 mm',
-                                  detail: 'cut down — one per support point',
+                                  detail: 'cut down, one per support point',
                                   qty: units(plan.supports / 2),
                                   unit: 'posts',
                               },
                               {
                                   id: 'postfix',
                                   name: 'Carlton Rapid Set fence post concrete',
-                                  detail: '20 kg bag — two per post',
+                                  detail: '20 kg bag, two per post',
                                   qty: units(plan.supports),
                                   unit: 'bags',
                               },
@@ -157,7 +157,7 @@ export function calculateDecking(input: DeckingInput): BillOfMaterials {
         ],
         tools: [
             'Mitre saw and a combi drill with long driver bits',
-            'String lines, pegs and a 1.2 m level — square the frame with the 3-4-5 rule',
+            'String lines, pegs and a 1.2 m level, square the frame with the 3-4-5 rule',
             'End-grain preserver for every cut on treated timber',
             'Joist hangers and bolts if fixing a ledger to the house (plus DPC strip behind it)',
             'Decking board spacers (6 mm) for even gaps',

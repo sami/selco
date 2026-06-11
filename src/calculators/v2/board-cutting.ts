@@ -1,7 +1,7 @@
 /**
  * @file src/calculators/v2/board-cutting.ts
  *
- * Board cutting optimiser — plans how to cut a list of required parts out
+ * Board cutting optimiser, plans how to cut a list of required parts out
  * of standard sheets using guillotine-friendly shelf packing (first-fit
  * decreasing height), modelled on SELCO's in-store cutting service.
  *
@@ -10,13 +10,13 @@
  *   - min workpiece: 500 × 230 mm (with support fitted) / 500 × 400 without
  *   - max workpiece: 3100 × 1644 mm, max depth 60 mm
  *
- * The cutting plan is purely geometric — it depends on the sheet
- * dimensions, not the material — so boards of the same size share one
+ * The cutting plan is purely geometric, it depends on the sheet
+ * dimensions, not the material, so boards of the same size share one
  * profile. There are two: the standard 2440 × 1220 sheet (ply, MDF, OSB,
  * hardboard…) cut both ways, and the 3000 × 600 worktop cross-cut to
  * length only.
  *
- * Smaller parts still appear in the plan — they're flagged to be cut
+ * Smaller parts still appear in the plan, they're flagged to be cut
  * oversize in store and trimmed at home.
  */
 
@@ -43,7 +43,7 @@ export interface SheetFormat {
     /** Fixed thickness, where the format has one (e.g. worktops). */
     thicknessMm?: number;
     /**
-     * Cross-cuts to length only — no rips along the length (postformed
+     * Cross-cuts to length only, no rips along the length (postformed
      * worktops: a lengthways rip would remove the bullnose edge and is
      * not offered in store). Every part consumes the full sheet width.
      */
@@ -56,14 +56,14 @@ export interface SheetFormat {
 export const SHEET_FORMATS: SheetFormat[] = [
     {
         id: 'sheet',
-        label: 'Standard sheet — 2440 × 1220 (ply, MDF, OSB, hardboard)',
-        productName: 'Sheet material — ply / MDF / OSB / hardboard',
+        label: 'Standard sheet, 2440 × 1220 (ply, MDF, OSB, hardboard)',
+        productName: 'Sheet material, ply / MDF / OSB / hardboard',
         wMm: 1220,
         hMm: 2440,
     },
     {
         id: 'worktop',
-        label: 'Worktop — 3000 × 600 (cross-cuts to length only)',
+        label: 'Worktop, 3000 × 600 (cross-cuts to length only)',
         productName: 'Laminate kitchen worktop',
         wMm: 600,
         hMm: 3000,
@@ -92,9 +92,9 @@ export interface PlacedPart {
     wMm: number;
     hMm: number;
     rotated: boolean;
-    /** Below the in-store saw minimum — cut oversize, trim at home. */
+    /** Below the in-store saw minimum, cut oversize, trim at home. */
     belowMin: boolean;
-    /** Narrower than the full width on a cross-cut-only sheet — the
+    /** Narrower than the full width on a cross-cut-only sheet, the
      *  lengthways trim happens at home, not in store. */
     needsRip: boolean;
     /** "800×600" style label for the preview. */
@@ -304,7 +304,7 @@ export function planCutting(input: CuttingInput): CuttingPlan {
             placed = true;
         }
 
-        // 2. Open a new shelf on an existing sheet — flattest orientation first.
+        // 2. Open a new shelf on an existing sheet, flattest orientation first.
         if (!placed) {
             const byHeight = [...orientations].sort((a, b) => a.h - b.h);
             for (const s of sheets) {
@@ -393,7 +393,7 @@ export function calculateCutting(input: CuttingInput): BillOfMaterials {
                     {
                         id: 'sheets',
                         name: plan.sheet.productName,
-                        detail: `${dims} — cutting plan opposite`,
+                        detail: `${dims}, cutting plan opposite`,
                         qty: units(plan.layouts.length),
                         unit: 'sheets',
                     },
@@ -401,39 +401,39 @@ export function calculateCutting(input: CuttingInput): BillOfMaterials {
             },
         ],
         tools: [
-            'Bring this plan to the counter — sheets bought in store are cut on our vertical panel saw',
+            'Bring this plan to the counter, sheets bought in store are cut on our vertical panel saw',
             'Masking tape and a marker to label each part as it comes off the saw',
             plan.belowMinCount > 0 || plan.needsRipCount > 0
                 ? 'Fine-tooth handsaw or track saw for trimming the flagged parts at home'
                 : 'Fine sandpaper or a block plane to ease any cut edges',
-            'Tape measure — check the first cut against your list before the rest run',
+            'Tape measure, check the first cut against your list before the rest run',
             'A van or roof bars sized for your longest part, not the original sheet',
-            'Offcut pile kept flat — the optimiser already counted them as spare',
+            'Offcut pile kept flat, the optimiser already counted them as spare',
         ],
         notes: [
-            `In-store cutting service: straight cuts on the vertical panel saw with a ${PANEL_SAW.kerfMm} mm blade kerf — allowed for in this plan.`,
+            `In-store cutting service: straight cuts on the vertical panel saw with a ${PANEL_SAW.kerfMm} mm blade kerf, allowed for in this plan.`,
             ...(plan.sheet.crossCutOnly
                 ? [
-                      'Worktops are cross-cut to length only — we cannot rip along the length (the postformed front edge would be lost). Every piece comes off at the full 600 mm width.',
+                      'Worktops are cross-cut to length only, we cannot rip along the length (the postformed front edge would be lost). Every piece comes off at the full 600 mm width.',
                   ]
                 : []),
             ...(plan.needsRipCount > 0
                 ? [
-                      `⚠ ${plan.needsRipCount} piece${plan.needsRipCount === 1 ? ' is' : 's are'} narrower than the full width — cut to length in store, then rip to width at home with a track saw and a fine blade (mask the cut line to stop laminate chipping).`,
+                      `⚠ ${plan.needsRipCount} piece${plan.needsRipCount === 1 ? ' is' : 's are'} narrower than the full width, cut to length in store, then rip to width at home with a track saw and a fine blade (mask the cut line to stop laminate chipping).`,
                   ]
                 : []),
             `Saw limits: ${PANEL_SAW.minLMm} × ${PANEL_SAW.minHFittedMm} mm minimum workpiece (${PANEL_SAW.minLMm} × ${PANEL_SAW.minHMm} mm without the support fitted), ${PANEL_SAW.maxLMm} × ${PANEL_SAW.maxHMm} mm maximum, ${PANEL_SAW.maxDepthMm} mm maximum depth.`,
             ...(plan.belowMinCount > 0
                 ? [
-                      `⚠ ${plan.belowMinCount} part${plan.belowMinCount === 1 ? '' : 's'} (marked ⚠ in the plan) below the ${PANEL_SAW.minLMm} × ${PANEL_SAW.minHFittedMm} mm saw minimum — have them cut oversize in store and trim at home.`,
+                      `⚠ ${plan.belowMinCount} part${plan.belowMinCount === 1 ? '' : 's'} (marked ⚠ in the plan) below the ${PANEL_SAW.minLMm} × ${PANEL_SAW.minHFittedMm} mm saw minimum, have them cut oversize in store and trim at home.`,
                   ]
                 : []),
             ...(plan.sheet.crossCutOnly
                 ? []
                 : [
                       input.allowRotation
-                          ? 'Parts may be rotated 90° — turn rotation off if grain or face pattern direction matters.'
-                          : 'Rotation is off — parts keep their orientation for grain or face direction.',
+                          ? 'Parts may be rotated 90°, turn rotation off if grain or face pattern direction matters.'
+                          : 'Rotation is off, parts keep their orientation for grain or face direction.',
                   ]),
             ...(plan.unplaceable.length
                 ? [

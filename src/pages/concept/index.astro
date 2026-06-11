@@ -10,11 +10,9 @@ const breadcrumbs = [
   { label: 'Project Planner' },
 ];
 
-const title = 'Project Hub ';
+const title = 'Project Planner';
 const description =
-  'Concept showcase: a new generation of trade materials calculators — live previews, named products, and counter-ready lists for every job.';
-
-const calculatorCount = V2_CALCULATORS.length;
+  "Tell us the size of the job and we'll write your materials list. Sizes, quantities and the bits everyone forgets, ready for the counter.";
 
 const grouped = V2_CATEGORY_ORDER.map((category) => ({
   category,
@@ -23,22 +21,21 @@ const grouped = V2_CATEGORY_ORDER.map((category) => ({
 
 const pillars = [
   {
-    icon: 'fa-bolt',
-    title: 'Answers as you type',
-    body: 'No submit button, no waiting. Every measurement updates the plan and the materials list instantly.',
+    icon: 'fa-pencil',
+    title: 'Type a size, watch it plan',
+    body: "Put your measurements in and the job draws itself: roll strips, brick courses, plank rows. You'll see what the numbers mean, not take our word for it.",
   },
   {
-    icon: 'fa-drafting-compass',
-    title: 'See the job, not just numbers',
-    body: 'Calculators draw the job — roll strips, slab grids, unit layouts — so customers trust the quantities.',
+    icon: 'fa-receipt',
+    title: 'A list you can hand over',
+    body: "Every tool ends with a materials list in plain English. Copy it, text it to your other half, or read it out at the trade counter.",
   },
   {
     icon: 'fa-toolbox',
-    title: 'Never caught short',
-    body: 'Every list ends with the tools and consumables the job needs — the hinges, the silicone, the FFP3 mask.',
+    title: 'The bits everyone forgets',
+    body: "Hinges with the doors. Silicone with the tiles. A fresh blade for the grass. Each list finishes with a checklist so Saturday doesn't end with a second trip.",
   },
 ];
-
 ---
 
 <SelcoLayout
@@ -66,27 +63,26 @@ const pillars = [
         <span
           class="inline-flex items-center gap-2 rounded-full bg-brand-yellow text-brand-navy px-3 py-1 text-[0.7rem] font-extrabold uppercase tracking-[0.15em] mb-5"
         >
-          <i class="fas fa-flask" aria-hidden="true"></i>
-          Concept showcase · v2
+          <i class="fas fa-ruler-combined" aria-hidden="true"></i>
+          Project Planner
         </span>
         <h1
           class="text-3xl md:text-5xl font-extrabold uppercase tracking-tight leading-[1.05] mb-4"
           style="font-family: 'Arial Black', sans-serif; letter-spacing: -1px;"
         >
-          {calculatorCount} trades.<br />
-          <span class="text-brand-yellow">One counter-ready list</span> each.
+          Measure twice.<br />
+          <span class="text-brand-yellow">Order once.</span>
         </h1>
         <p class="text-base md:text-lg text-white/85 leading-relaxed mb-8 max-w-xl">
-          {description} Built for builders and DIYers planning real jobs — and built to
-          show where the calculators can go next.
+          {description}
         </p>
         <div class="flex flex-wrap gap-3">
           <a href={`${base}concept/artificial-grass/`} class="btn-accent">
-            Try artificial grass
+            Plan a lawn
             <i class="fas fa-arrow-right text-sm" aria-hidden="true"></i>
           </a>
-          <a href={`${base}concept/roof-pitched/`} class="btn-ghost !text-white !border-white hover:!bg-white/10">
-            Price up a roof
+          <a href={`${base}concept/kitchen-planner/`} class="btn-ghost !text-white !border-white hover:!bg-white/10">
+            Plan a kitchen
           </a>
         </div>
       </div>
@@ -109,16 +105,13 @@ const pillars = [
 
     {/* Calculator catalogue, grouped by trade */}
     <section class="mb-14">
-      <div class="flex items-end justify-between gap-4 mb-8 flex-wrap">
-        <div>
-          <h2 class="text-2xl md:text-3xl font-bold text-text-main mb-1">
-            The full catalogue — {calculatorCount} calculators
-          </h2>
-          <p class="text-text-muted text-base m-0">
-            Organised the way the yard is: by trade. Quantities and named products — pricing
-            comes when the catalogue is mapped.
-          </p>
-        </div>
+      <div class="mb-8">
+        <h2 class="text-2xl md:text-3xl font-bold text-text-main mb-1">
+          Pick your job
+        </h2>
+        <p class="text-text-muted text-base m-0">
+          Sorted the way the yard is, by trade. Every list uses products we stock.
+        </p>
       </div>
 
       <div class="space-y-10">
@@ -133,9 +126,6 @@ const pillars = [
                 class="h-0.5 flex-1"
                 style="background: repeating-linear-gradient(-45deg, #ffd407 0 8px, transparent 8px 16px);"
               ></span>
-              <span class="text-xs font-bold text-text-muted whitespace-nowrap">
-                {group.calculators.length} tools
-              </span>
             </div>
             <div class="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
               {group.calculators.map((calc) => (
@@ -163,7 +153,7 @@ const pillars = [
                       class={`fas ${calc.kind === 'bespoke' ? 'fa-drafting-compass' : 'fa-list-check'}`}
                       aria-hidden="true"
                     ></i>
-                    {calc.kind === 'bespoke' ? calc.preview : 'Materials + tools checklist'}
+                    {calc.kind === 'bespoke' ? calc.preview : 'Materials list + tool checklist'}
                   </span>
                 </a>
               ))}
@@ -173,30 +163,31 @@ const pillars = [
       </div>
     </section>
 
-    {/* Director pitch strip */}
+    {/* How it works */}
     <section class="rounded-2xl border-2 border-primary-nav bg-gradient-to-br from-primary-nav/5 to-transparent p-6 md:p-8 mb-6">
-      <h2 class="text-xl md:text-2xl font-bold text-text-main mb-4">Why this matters for SELCO</h2>
+      <h2 class="text-xl md:text-2xl font-bold text-text-main mb-4">From tape measure to trade counter</h2>
       <div class="grid gap-5 md:grid-cols-3 text-sm text-text-muted leading-relaxed">
         <p class="m-0">
-          <strong class="text-text-main block mb-1">Customers buy with confidence.</strong>
-          A visible plan and a complete list means fewer under-orders, fewer second trips, and
-          fewer returns at the counter.
+          <strong class="text-text-main block mb-1">1. Measure up</strong>
+          A tape measure and two minutes. The planner takes it from there, waste
+          allowances and all.
         </p>
         <p class="m-0">
-          <strong class="text-text-main block mb-1">Every estimate cross-sells.</strong>
-          Lists don't stop at the headline product — they add the primer, the silicone, the
-          fixings and the consumables customers forget until halfway through the job.
+          <strong class="text-text-main block mb-1">2. Check the drawing</strong>
+          The plan redraws live, so if something looks wrong on screen you've caught
+          it before it went wrong in the garden.
         </p>
         <p class="m-0">
-          <strong class="text-text-main block mb-1">Ready for the catalogue.</strong>
-          Every line is a named product slot. Map them to live SKUs and pricing, and each list
-          becomes a basket.
+          <strong class="text-text-main block mb-1">3. Bring us the list</strong>
+          Copy it from any planner and bring it to your branch, or order through
+          Click &amp; Deliver. The tick-off checklist covers the tools.
         </p>
       </div>
       <p class="text-xs text-text-muted mt-6 mb-0 pt-4 border-t border-border-default">
         <i class="fas fa-circle-info mr-1" aria-hidden="true"></i>
-        Concept demonstration: quantities are estimates and product names are representative of
-        stocked ranges — final mapping to live SKUs and pricing is the next phase.
+        Quantities are estimates based on standard practice. Check coverage and your
+        own site conditions before ordering, and have structural work checked by
+        someone qualified.
       </p>
     </section>
   </main>

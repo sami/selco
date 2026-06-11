@@ -1,7 +1,7 @@
 /**
  * @file src/components/v2/DoorsCalculator.tsx
  *
- * Doors & linings island — a door elevation with the ironmongery marked
+ * Doors & linings island, a door elevation with the ironmongery marked
  * where it actually goes: three hinges, latch at 990 mm, and the fire kit
  * (intumescent strips, closer) highlighted when FD30 is on. The bit people
  * get wrong is the hardware, so the drawing makes it explicit.

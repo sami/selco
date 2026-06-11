@@ -1,7 +1,7 @@
 /**
  * @file src/components/v2/KitchenPlanner.tsx
  *
- * Kitchen planner island — packs cabinets along the chosen layout and draws
+ * Kitchen planner island, packs cabinets along the chosen layout and draws
  * a top-down plan view: wall A across the top, wall B down the right, wall C
  * along the bottom (matching the engine's corner-allocation order).
  */
@@ -152,7 +152,7 @@ function KitchenPreview({ input }: { input: KitchenInput }) {
             {/* wall dimension labels */}
             <g fill={YELLOW} fontSize="13" fontWeight="700">
                 <text x={x0 + (wallAMm * scale) / 2} y={y0 - 12} textAnchor="middle">
-                    Wall A — {(wallAMm / 1000).toFixed(1)} m
+                    Wall A, {(wallAMm / 1000).toFixed(1)} m
                 </text>
                 {input.shape !== 'galley' && (
                     <text
@@ -161,7 +161,7 @@ function KitchenPreview({ input }: { input: KitchenInput }) {
                         textAnchor="middle"
                         transform={`rotate(90 ${x0 + wallAMm * scale + 14} ${y0 + (wallBMm * scale) / 2})`}
                     >
-                        Wall B — {(wallBMm / 1000).toFixed(1)} m
+                        Wall B, {(wallBMm / 1000).toFixed(1)} m
                     </text>
                 )}
                 {input.shape === 'u-shape' && (
@@ -170,7 +170,7 @@ function KitchenPreview({ input }: { input: KitchenInput }) {
                         y={y0 + wallBMm * scale + 20}
                         textAnchor="middle"
                     >
-                        Wall C — {input.wallCM.toFixed(1)} m
+                        Wall C, {input.wallCM.toFixed(1)} m
                     </text>
                 )}
             </g>

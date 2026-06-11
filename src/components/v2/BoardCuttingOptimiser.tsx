@@ -1,7 +1,7 @@
 /**
  * @file src/components/v2/BoardCuttingOptimiser.tsx
  *
- * Board cutting optimiser island — a dynamic parts list on the left, and
+ * Board cutting optimiser island, a dynamic parts list on the left, and
  * the actual sheet-by-sheet cutting plan drawn on the blueprint: every
  * part placed, labelled and shaded, waste left dark.
  */
@@ -104,7 +104,7 @@ function CuttingPreview({ input }: { input: CuttingInput }) {
                             </g>
                         ))}
                         <text x={x0 + sheetW / 2} y={y0 + sheetH + fontL * 1.8} fill={YELLOW} fontSize={fontL} fontWeight="700" textAnchor="middle">
-                            Sheet {si + 1} — {Math.round(layout.utilisation * 100)}% used
+                            Sheet {si + 1}, {Math.round(layout.utilisation * 100)}% used
                         </text>
                     </g>
                 );
@@ -173,13 +173,13 @@ export default function BoardCuttingOptimiser() {
                     <span>
                         {sheet.crossCutOnly ? (
                             <>
-                                <strong>Cross-cuts to length only</strong> — worktops are cut
+                                <strong>Cross-cuts to length only</strong>, worktops are cut
                                 across the width in store ({PANEL_SAW.kerfMm} mm kerf). No
                                 lengthways rips: narrower pieces are trimmed at home.
                             </>
                         ) : (
                             <>
-                                <strong>Cut in store</strong> on our vertical panel saw —
+                                <strong>Cut in store</strong> on our vertical panel saw ,
                                 straight cuts, {PANEL_SAW.kerfMm} mm kerf, min part{' '}
                                 {PANEL_SAW.minLMm} × {PANEL_SAW.minHFittedMm} mm.
                             </>

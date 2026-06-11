@@ -1,7 +1,7 @@
 /**
  * @file src/components/v2/TilingCalculator.tsx
  *
- * Tiling island — draws the tile grid as set out from the centre, with cut
+ * Tiling island, draws the tile grid as set out from the centre, with cut
  * tiles at the edges highlighted, plus the materials ticket.
  */
 
@@ -126,8 +126,8 @@ export default function TilingCalculator() {
                     value={String(input.wastePct) as '10' | '15'}
                     onChange={(v) => set('wastePct', Number(v))}
                     options={[
-                        { value: '10', label: '10% — grid' },
-                        { value: '15', label: '15% — pattern' },
+                        { value: '10', label: '10%, grid' },
+                        { value: '15', label: '15%, pattern' },
                     ]}
                 />
                 <ToggleRow

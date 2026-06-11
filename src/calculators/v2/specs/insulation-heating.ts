@@ -23,13 +23,13 @@ export const loftInsulation: CalcSpec = {
     fields: [
         { kind: 'number', id: 'width', label: 'Loft width', unit: 'm', min: 1, max: 20, default: 6 },
         { kind: 'number', id: 'length', label: 'Loft length', unit: 'm', min: 1, max: 25, default: 8 },
-        { kind: 'toggle', id: 'topup', label: 'Top-up only', hint: 'Existing 100 mm is sound — just add the cross-layer', default: false },
+        { kind: 'toggle', id: 'topup', label: 'Top-up only', hint: 'Existing 100 mm is sound, just add the cross-layer', default: false },
         { kind: 'toggle', id: 'boarding', label: 'Storage boarding', hint: 'Raised loft legs + P5 chipboard over a walkway', default: false },
     ],
     rectPreview: (v) => ({
         widthM: num(v, 'width'),
         lengthM: num(v, 'length'),
-        caption: 'Loft plan — keep the eaves ventilation clear',
+        caption: 'Loft plan, keep the eaves ventilation clear',
     }),
     compute: (v) => {
         const area = num(v, 'width') * num(v, 'length');
@@ -46,9 +46,9 @@ export const loftInsulation: CalcSpec = {
                     title: 'Insulation',
                     lines: [
                         ...(!bool(v, 'topup')
-                            ? [{ id: 'base', name: 'Loft insulation roll, 100 mm', detail: 'covers 13.89 m² per roll — between joists', qty: units(area / 13.89), unit: 'rolls' }]
+                            ? [{ id: 'base', name: 'Loft insulation roll, 100 mm', detail: 'covers 13.89 m² per roll, between joists', qty: units(area / 13.89), unit: 'rolls' }]
                             : []),
-                        { id: 'top', name: 'Loft insulation roll, 170 mm', detail: 'covers 8.34 m² per roll — cross-laid over joists', qty: units(area / 8.34), unit: 'rolls' },
+                        { id: 'top', name: 'Loft insulation roll, 170 mm', detail: 'covers 8.34 m² per roll, cross-laid over joists', qty: units(area / 8.34), unit: 'rolls' },
                     ],
                 },
                 ...(bool(v, 'boarding')
@@ -56,7 +56,7 @@ export const loftInsulation: CalcSpec = {
                           {
                               title: 'Storage area',
                               lines: [
-                                  { id: 'legs', name: 'Loft storage stilts / legs', detail: 'pack of 12 — keeps boards off the insulation', qty: units(boardedArea / 1.5), unit: 'packs' },
+                                  { id: 'legs', name: 'Loft storage stilts / legs', detail: 'pack of 12, keeps boards off the insulation', qty: units(boardedArea / 1.5), unit: 'packs' },
                                   { id: 'boards', name: 'P5 T&G loft board, 18 mm', detail: '1220 × 320 mm (0.39 m²)', qty: units(boardedArea / 0.39), unit: 'boards' },
                                   { id: 'screws', name: 'Wood screws, 4 × 40 mm', detail: 'box of 200', qty: 1, unit: 'boxes' },
                               ],
@@ -65,17 +65,17 @@ export const loftInsulation: CalcSpec = {
                     : []),
             ],
             tools: [
-                'FFP3 mask, gloves, long sleeves and eye protection — mineral wool itches',
+                'FFP3 mask, gloves, long sleeves and eye protection, mineral wool itches',
                 'Crawl boards to span the joists while you work',
                 'Long-bladed insulation knife or old wood saw',
-                'Head torch — loft lighting never reaches the eaves',
+                'Head torch, loft lighting never reaches the eaves',
                 'Loft cap / downlight covers for any spotlights below',
                 'Expanding gap foam for sealing around the hatch and pipes',
             ],
             notes: [
-                'Never block the eaves — leave a 50 mm ventilation path or fit eaves trays.',
+                'Never block the eaves, leave a 50 mm ventilation path or fit eaves trays.',
                 'Cables run on top of insulation, not buried under it.',
-                'Insulate and draught-strip the hatch — it is the biggest single leak.',
+                'Insulate and draught-strip the hatch, it is the biggest single leak.',
             ],
         };
     },
@@ -122,24 +122,24 @@ export const acousticInsulation: CalcSpec = {
                 {
                     title: 'Insulation',
                     lines: [
-                        { id: 'slabs', name: `Acoustic mineral wool slab, ${depth} mm`, detail: `600 × 1200 mm slabs — ${packM2} m² per pack`, qty: units(area / packM2), unit: 'packs' },
+                        { id: 'slabs', name: `Acoustic mineral wool slab, ${depth} mm`, detail: `600 × 1200 mm slabs, ${packM2} m² per pack`, qty: units(area / packM2), unit: 'packs' },
                         ...(bool(v, 'soundbloc')
-                            ? [{ id: 'boards', name: 'Acoustic plasterboard, 12.5 mm', detail: '1200 × 2400 mm — inc. 10% cuts', qty: units((area * 1.1) / 2.88), unit: 'boards' }]
+                            ? [{ id: 'boards', name: 'Acoustic plasterboard, 12.5 mm', detail: '1200 × 2400 mm, inc. 10% cuts', qty: units((area * 1.1) / 2.88), unit: 'boards' }]
                             : []),
-                        { id: 'sealant', name: 'Acoustic sealant', detail: 'perimeter joints — flanking kills sound ratings', qty: units(area / 15) + 1, unit: 'cartridges' },
+                        { id: 'sealant', name: 'Acoustic sealant', detail: 'perimeter joints, flanking kills sound ratings', qty: units(area / 15) + 1, unit: 'cartridges' },
                     ],
                 },
             ],
             tools: [
-                'Insulation saw or long-bladed knife — cut slabs 5–10 mm oversize for a friction fit',
+                'Insulation saw or long-bladed knife, cut slabs 5 to 10 mm oversize for a friction fit',
                 'FFP3 mask, gloves and goggles',
-                'Tape measure and straight edge — clean cuts pack tighter',
+                'Tape measure and straight edge, clean cuts pack tighter',
                 'Pad saw for socket boxes (use acoustic putty pads behind them)',
                 'Caulk gun for the acoustic sealant',
                 'Torch for joist bays and stud cavities',
             ],
             notes: [
-                'Sound flanks around insulation through gaps — seal every perimeter and socket.',
+                'Sound flanks around insulation through gaps, seal every perimeter and socket.',
                 'Friction-fit slabs need no fixings in walls; floors may need netting below.',
                 'Mass + absorption + sealing together beat any one of them doubled.',
             ],
@@ -187,24 +187,24 @@ export const cavityInsulation: CalcSpec = {
                 {
                     title: 'Insulation',
                     lines: [
-                        { id: 'batts', name: `Full-fill cavity slab, ${t} mm`, detail: `455 × 1200 mm — ${packM2} m² per pack`, qty: units(area / packM2), unit: 'packs' },
-                        { id: 'clips', name: 'Insulation retaining clips', detail: 'one per wall tie — ties at 2.5/m²', qty: units((area * 2.5) / 50), unit: 'packs of 50' },
-                        { id: 'cavity-closer', name: 'Cavity closers, 2.4 m', detail: 'reveals at openings — count your openings', qty: 0, unit: 'lengths' },
+                        { id: 'batts', name: `Full-fill cavity slab, ${t} mm`, detail: `455 × 1200 mm, ${packM2} m² per pack`, qty: units(area / packM2), unit: 'packs' },
+                        { id: 'clips', name: 'Insulation retaining clips', detail: 'one per wall tie, ties at 2.5/m²', qty: units((area * 2.5) / 50), unit: 'packs of 50' },
+                        { id: 'cavity-closer', name: 'Cavity closers, 2.4 m', detail: 'reveals at openings, count your openings', qty: 0, unit: 'lengths' },
                     ],
                 },
             ],
             tools: [
                 'Long insulation knife and a board to cut on',
-                'Brick trowel — keep batt tops clean of mortar droppings',
+                'Brick trowel, keep batt tops clean of mortar droppings',
                 'Cavity battens / boards to protect batts as the wall rises',
                 'Gloves and FFP3 mask',
-                'String line — batts sit flush, not bulging the cavity',
+                'String line, batts sit flush, not bulging the cavity',
                 'Expanding foam for awkward closures at eaves',
             ],
             notes: [
-                'Batts go in as the work rises — never poked down from above.',
+                'Batts go in as the work rises, never poked down from above.',
                 'Stagger vertical joints and butt batts tight; gaps are cold bridges.',
-                'Cavity closer quantity left at zero — count one length per reveal side and head.',
+                'Cavity closer quantity left at zero, count one length per reveal side and head.',
             ],
         };
     },
@@ -220,7 +220,7 @@ export const externalInsulation: CalcSpec = {
     category: 'Insulation & heating',
     icon: 'fa-house-circle-check',
     description:
-        'EPS boards, basecoat, mesh, fixings and a silicone render finish — the full EWI build-up per m².',
+        'EPS boards, basecoat, mesh, fixings and a silicone render finish, the full EWI build-up per m².',
     fields: [
         { kind: 'number', id: 'area', label: 'Wall area', unit: 'm²', min: 1, max: 400, step: 0.5, default: 60 },
         {
@@ -234,7 +234,7 @@ export const externalInsulation: CalcSpec = {
             ],
             default: '90',
         },
-        { kind: 'number', id: 'beads', label: 'Corner / starter beads', min: 0, max: 40, step: 1, default: 8, hint: '2.5 m lengths — corners, starter track, reveals' },
+        { kind: 'number', id: 'beads', label: 'Corner / starter beads', min: 0, max: 40, step: 1, default: 8, hint: '2.5 m lengths, corners, starter track, reveals' },
     ],
     compute: (v) => {
         const area = num(v, 'area');
@@ -259,22 +259,22 @@ export const externalInsulation: CalcSpec = {
                     lines: [
                         { id: 'basecoat', name: 'EWI basecoat (mesh coat)', detail: '25 kg bag ≈ 4 m² at 6 mm with mesh', qty: units(area / 4), unit: 'bags' },
                         { id: 'mesh', name: 'Alkali-resistant mesh, 160 g', detail: '1 m × 50 m roll, 100 mm laps', qty: units((area * 1.1) / 50), unit: 'rolls' },
-                        { id: 'primer', name: 'Render primer (keyed)', detail: '~7 kg covers 25–30 m²', qty: units(area / 25), unit: 'tubs' },
+                        { id: 'primer', name: 'Render primer (keyed)', detail: '~7 kg covers 25 to 30 m²', qty: units(area / 25), unit: 'tubs' },
                         { id: 'topcoat', name: 'Silicone render topcoat, 1.5 mm grain', detail: '25 kg tub ≈ 10 m²', qty: units(area / 10), unit: 'tubs' },
                         { id: 'beads', name: 'EWI corner / starter / bellcast beads', detail: '2.5 m lengths', qty: Math.round(num(v, 'beads')), unit: 'lengths' },
                     ],
                 },
             ],
             tools: [
-                'Long rasp / sanding float — EPS must be flat before the basecoat',
+                'Long rasp / sanding float, EPS must be flat before the basecoat',
                 'SDS drill for hammer fixings',
                 'Notched trowel, spatula and a plastic float for the topcoat texture',
-                'Scaffold — EWI is a two-storey job almost everywhere',
+                'Scaffold, EWI is a two-storey job almost everywhere',
                 'String line and level for the starter track (it sets the whole wall)',
                 'Low-modulus silicone for sealing to windows, sills and soffits',
             ],
             notes: [
-                'The starter track must be dead level — check it before any board goes on.',
+                'The starter track must be dead level, check it before any board goes on.',
                 'Mesh laps 100 mm and beds into wet basecoat, never dry-fixed.',
                 'Check eaves overhang and sill projections cover the new wall thickness.',
             ],
@@ -347,7 +347,7 @@ export const radiatorBtu: CalcSpec = {
                     lines: radiators.map((r) => ({
                         id: `rad-${r.len}`,
                         name: `Type 22 (K2) double-panel radiator, 600 × ${r.len} mm`,
-                        detail: 'double panel, double convector — ΔT50 rated',
+                        detail: 'double panel, double convector, ΔT50 rated',
                         qty: r.count,
                         unit: 'radiators',
                     })),
@@ -365,15 +365,15 @@ export const radiatorBtu: CalcSpec = {
                 },
             ],
             tools: [
-                'Pipe slice / cutter and deburrer — clean cuts seal first time',
+                'Pipe slice / cutter and deburrer, clean cuts seal first time',
                 'Blow torch, solder and flux (or push-fit fittings to stay flame-free)',
                 'Radiator spanner and adjustable grips',
-                'Spirit level — radiators read level or slightly towards the bleed end',
+                'Spirit level, radiators read level or slightly towards the bleed end',
                 'Drain hose, radiator bleed key and a dust sheet under every joint',
                 'Pipe detector before drilling any wall fixings',
             ],
             notes: [
-                'Rule-of-thumb sizing (BS-style room factors) — a full heat-loss calc beats it for extensions and old solid-wall rooms.',
+                'Rule-of-thumb sizing (BS-style room factors), a full heat-loss calc beats it for extensions and old solid-wall rooms.',
                 'ΔT50 outputs assume a boiler flow around 75 °C; heat pumps run cooler and need bigger emitters.',
                 'Two smaller radiators heat a long room more evenly than one large one.',
             ],
@@ -425,7 +425,7 @@ export const underfloorHeating: CalcSpec = {
                     lines: [
                         { id: 'pipe', name: 'UFH barrier pipe (PB), 16 mm', detail: '100 m coils', qty: loops, unit: 'coils' },
                         { id: 'manifold', name: `UFH manifold, ${loops}-port`, detail: 'inc. flow meters & blending valve', qty: 1, unit: 'manifolds' },
-                        { id: 'staples', name: 'Pipe staples (insulation fix)', detail: 'box of 300 — every 400 mm, closer on bends', qty: units((pipeM / 0.4) / 300), unit: 'boxes' },
+                        { id: 'staples', name: 'Pipe staples (insulation fix)', detail: 'box of 300, every 400 mm, closer on bends', qty: units((pipeM / 0.4) / 300), unit: 'boxes' },
                         { id: 'edge', name: 'Perimeter edge insulation strip', detail: '25 m roll with skirt', qty: units(num(v, 'perimeter') / 25), unit: 'rolls' },
                         { id: 'stat', name: 'Programmable room thermostat + wiring centre', qty: 1, unit: 'kits' },
                     ],
@@ -435,23 +435,23 @@ export const underfloorHeating: CalcSpec = {
                           {
                               title: 'Screed',
                               lines: [
-                                  { id: 'additive', name: 'Screed plasticiser / fibre additive', detail: 'dose per m³ — see bag rate', qty: units((area * 0.065) / 5) || 1, unit: 'bottles' },
+                                  { id: 'additive', name: 'Screed plasticiser / fibre additive', detail: 'dose per m³, see bag rate', qty: units((area * 0.065) / 5) || 1, unit: 'bottles' },
                               ],
                           },
                       ]
                     : []),
             ],
             tools: [
-                'Pipe decoiler (hire) — fighting a 100 m coil alone is a two-person job at best',
+                'Pipe decoiler (hire), fighting a 100 m coil alone is a two-person job at best',
                 'Pipe cutter for clean tail ends at the manifold',
-                'Pressure test kit — test at 6 bar BEFORE and DURING the screed pour',
+                'Pressure test kit, test at 6 bar BEFORE and DURING the screed pour',
                 'Tape measure and marker for the loop layout (serpentine from the cold wall)',
-                'Photographs — shoot the whole layout before it disappears under screed',
+                'Photographs, shoot the whole layout before it disappears under screed',
                 'Manifold spanner set and PTFE',
             ],
             notes: [
                 'Keep every loop under 100 m including tails, and balance loop lengths within ~10%.',
-                'Leave the pipe pressurised while the screed goes down — a nicked pipe shows instantly.',
+                'Leave the pipe pressurised while the screed goes down, a nicked pipe shows instantly.',
                 'Screed cures ~1 day/mm before the slow UFH commissioning ramp starts.',
             ],
         };
