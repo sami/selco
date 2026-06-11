@@ -1,21 +1,21 @@
 ---
 import SelcoLayout from '../../../layouts/SelcoLayout.astro';
-import BoardCuttingOptimiser from '../../../components/v2/BoardCuttingOptimiser';
-import { getV2CalculatorBySlug } from '../../../components/v2/registry';
+import KitchenPlanner from '../../../components/v2/KitchenPlanner';
+import { V2_CALCULATORS } from '../../../components/v2/registry';
 
 const BASE_URL = import.meta.env.BASE_URL;
 const base = BASE_URL.endsWith('/') ? BASE_URL : `${BASE_URL}/`;
-const meta = getV2CalculatorBySlug('board-cutting')!;
+const meta = V2_CALCULATORS.find((c) => c.slug === 'kitchen-planner')!;
 
 const breadcrumbs = [
   { label: 'Home', href: base },
-  { label: 'Concept Hub v2', href: `${base}v2/` },
+  { label: 'Project Planner', href: `${base}concept/` },
   { label: meta.name },
 ];
 ---
 
 <SelcoLayout
-  title={`${meta.name} — v2 concept`}
+  title={`${meta.name} | Project Planner`}
   description={meta.description}
   breadcrumbs={breadcrumbs}
   pageTitle={meta.name}
@@ -25,11 +25,11 @@ const breadcrumbs = [
       {meta.description}
     </p>
 
-    <BoardCuttingOptimiser client:load />
+    <KitchenPlanner client:load />
 
     <p class="mt-10 text-sm text-text-muted">
-      <a href={`${base}v2/`} class="font-bold text-primary-nav hover:underline">
-        ← All v2 concept calculators
+      <a href={`${base}concept/`} class="font-bold text-primary-nav hover:underline">
+        ← All planning tools
       </a>
     </p>
   </main>

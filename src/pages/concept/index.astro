@@ -7,10 +7,10 @@ const base = BASE_URL.endsWith('/') ? BASE_URL : `${BASE_URL}/`;
 
 const breadcrumbs = [
   { label: 'Home', href: base },
-  { label: 'Concept Hub v2' },
+  { label: 'Project Planner' },
 ];
 
-const title = 'Project Hub — v2 concept';
+const title = 'Project Hub ';
 const description =
   'Concept showcase: a new generation of trade materials calculators — live previews, named products, and counter-ready lists for every job.';
 
@@ -81,11 +81,11 @@ const pillars = [
           show where the calculators can go next.
         </p>
         <div class="flex flex-wrap gap-3">
-          <a href={`${base}v2/artificial-grass/`} class="btn-accent">
+          <a href={`${base}concept/artificial-grass/`} class="btn-accent">
             Try artificial grass
             <i class="fas fa-arrow-right text-sm" aria-hidden="true"></i>
           </a>
-          <a href={`${base}v2/roof-pitched/`} class="btn-ghost !text-white !border-white hover:!bg-white/10">
+          <a href={`${base}concept/roof-pitched/`} class="btn-ghost !text-white !border-white hover:!bg-white/10">
             Price up a roof
           </a>
         </div>
@@ -140,7 +140,7 @@ const pillars = [
             <div class="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
               {group.calculators.map((calc) => (
                 <a
-                  href={`${base}v2/${calc.slug}/`}
+                  href={`${base}concept/${calc.slug}/`}
                   class="group card card-hover relative overflow-hidden flex flex-col"
                 >
                   <div

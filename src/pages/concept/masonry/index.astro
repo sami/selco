@@ -9,13 +9,13 @@ const meta = getV2CalculatorBySlug('masonry')!;
 
 const breadcrumbs = [
   { label: 'Home', href: base },
-  { label: 'Concept Hub v2', href: `${base}v2/` },
+  { label: 'Project Planner', href: `${base}concept/` },
   { label: meta.name },
 ];
 ---
 
 <SelcoLayout
-  title={`${meta.name} — v2 concept`}
+  title={`${meta.name} | Project Planner`}
   description={meta.description}
   breadcrumbs={breadcrumbs}
   pageTitle={meta.name}
@@ -28,8 +28,8 @@ const breadcrumbs = [
     <MasonryCalculator client:load />
 
     <p class="mt-10 text-sm text-text-muted">
-      <a href={`${base}v2/`} class="font-bold text-primary-nav hover:underline">
-        ← All v2 concept calculators
+      <a href={`${base}concept/`} class="font-bold text-primary-nav hover:underline">
+        ← All planning tools
       </a>
     </p>
   </main>
