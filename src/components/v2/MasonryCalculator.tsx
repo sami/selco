@@ -173,6 +173,7 @@ export default function MasonryCalculator() {
         heightM: 2.4,
         construction: 'cavity',
         outerLeaf: 'brick',
+        outerBlockThicknessMm: 100,
         brickType: 'facing',
         blockType: 'thermalite',
         blockThicknessMm: 100,
@@ -214,15 +215,28 @@ export default function MasonryCalculator() {
                     ]}
                 />
                 {input.construction === 'cavity' && (
-                    <Segmented<OuterLeaf>
-                        label="Outer leaf"
-                        value={input.outerLeaf}
-                        onChange={(v) => set('outerLeaf', v)}
-                        options={[
-                            { value: 'brick', label: 'Facing brick' },
-                            { value: 'block', label: 'Block (render)' },
-                        ]}
-                    />
+                    <>
+                        <Segmented<OuterLeaf>
+                            label="Outer leaf"
+                            value={input.outerLeaf}
+                            onChange={(v) => set('outerLeaf', v)}
+                            options={[
+                                { value: 'brick', label: 'Facing brick' },
+                                { value: 'block', label: 'Block (render)' },
+                            ]}
+                        />
+                        {input.outerLeaf === 'block' && (
+                            <Segmented
+                                label="Outer block thickness"
+                                value={String(input.outerBlockThicknessMm)}
+                                onChange={(v) => set('outerBlockThicknessMm', Number(v))}
+                                options={[
+                                    { value: '100', label: '100 mm' },
+                                    { value: '140', label: '140 mm' },
+                                ]}
+                            />
+                        )}
+                    </>
                 )}
                 {hasBricks && !(input.construction === 'cavity' && input.outerLeaf === 'block') && (
                     <Segmented<BrickType>
