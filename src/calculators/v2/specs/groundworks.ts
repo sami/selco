@@ -198,7 +198,7 @@ export const aggregates: CalcSpec = {
     category: 'Garden & outdoors',
     icon: 'fa-mound',
     description:
-        'Gravel, slate or bark for borders and paths. Jumbo bags or 35 kg packs, worked out at the right depth, membrane included.',
+        'Gravel, slate or bark for borders and paths. Jumbo bags or 35 kg large bags, worked out at the right depth, membrane included.',
     fields: [
         { kind: 'number', id: 'width', label: 'Area width', unit: 'm', min: 0.5, max: 30, default: 4 },
         { kind: 'number', id: 'length', label: 'Area length', unit: 'm', min: 0.5, max: 30, default: 6 },
@@ -247,7 +247,7 @@ export const aggregates: CalcSpec = {
                             ? `${(area * spec.depthM * 1000).toFixed(0)} L`
                             : (() => {
                                   const b = aggregateBags(kg);
-                                  return [b.jumbo ? `${b.jumbo} jumbo` : '', b.packs ? `${b.packs} × 35 kg` : ''].filter(Boolean).join(' + ') || 'none';
+                                  return [b.jumbo ? `${b.jumbo} jumbo` : '', b.largeBags ? `${b.largeBags} × 35 kg` : ''].filter(Boolean).join(' + ') || 'none';
                               })(),
                 },
             ],
@@ -276,7 +276,7 @@ export const aggregates: CalcSpec = {
                 'Plate compactor only if it is a path base, never for decorative top layers',
             ],
             notes: [
-                'A jumbo bag (~875 kg) covers roughly 11 m² of gravel at 50 mm, or 15 m² of slate at 40 mm. The 35 kg packs are there for top-ups and small jobs.',
+                'A jumbo bag (~875 kg) covers roughly 11 m² of gravel at 50 mm, or 15 m² of slate at 40 mm. The 35 kg large bags are there for top-ups and small jobs.',
                 'Lay membrane on cleared, levelled ground, it is weed control, not a substitute for prep.',
                 'Bark settles ~20% in the first year; top up annually.',
             ],

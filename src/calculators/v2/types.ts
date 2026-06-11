@@ -52,35 +52,35 @@ export function bomLineCount(bom: BillOfMaterials): number {
 
 
 /** Selco loose-aggregate bag sizes: sands, MOT and gravels come either as
- *  35 kg large packs or ~875 kg jumbo bags. */
+ *  35 kg large bags or ~875 kg jumbo bags. */
 export const JUMBO_BAG_KG = 875;
-export const LARGE_PACK_KG = 35;
+export const LARGE_BAG_KG = 35;
 
 /**
  * Split an aggregate requirement into jumbo bags topped up with 35 kg
- * packs. Past ten packs the maths (and your back) say take the next
- * jumbo bag instead.
+ * large bags. Past ten of them the maths (and your back) say take the
+ * next jumbo bag instead.
  */
-export function aggregateBags(kgNeeded: number): { jumbo: number; packs: number } {
-    if (kgNeeded <= 0) return { jumbo: 0, packs: 0 };
+export function aggregateBags(kgNeeded: number): { jumbo: number; largeBags: number } {
+    if (kgNeeded <= 0) return { jumbo: 0, largeBags: 0 };
     let jumbo = Math.floor(kgNeeded / JUMBO_BAG_KG);
     const remKg = kgNeeded - jumbo * JUMBO_BAG_KG;
-    let packs = Math.ceil(remKg / LARGE_PACK_KG);
-    if (packs > 10) {
+    let largeBags = Math.ceil(remKg / LARGE_BAG_KG);
+    if (largeBags > 10) {
         jumbo += 1;
-        packs = 0;
+        largeBags = 0;
     }
-    return { jumbo, packs };
+    return { jumbo, largeBags };
 }
 
-/** BoM lines for an aggregate: a jumbo-bag line, a 35 kg pack line, or both. */
+/** BoM lines for an aggregate: a jumbo-bag line, a 35 kg large-bag line, or both. */
 export function aggregateLines(
     id: string,
     name: string,
     kgNeeded: number,
     detail?: string,
 ): BomLine[] {
-    const { jumbo, packs } = aggregateBags(kgNeeded);
+    const { jumbo, largeBags } = aggregateBags(kgNeeded);
     const lines: BomLine[] = [];
     if (jumbo > 0) {
         lines.push({
@@ -91,13 +91,13 @@ export function aggregateLines(
             unit: 'Jumbo Bags',
         });
     }
-    if (packs > 0) {
+    if (largeBags > 0) {
         lines.push({
-            id: `${id}-pack`,
+            id: `${id}-large`,
             name,
-            detail: jumbo > 0 ? '35 kg large pack, tops up the jumbo bags' : detail ? `35 kg large pack, ${detail}` : '35 kg large pack',
-            qty: packs,
-            unit: 'packs',
+            detail: jumbo > 0 ? '35 kg large bag, tops up the jumbo bags' : detail ? `35 kg large bag, ${detail}` : '35 kg large bag',
+            qty: largeBags,
+            unit: 'large bags',
         });
     }
     return lines;
