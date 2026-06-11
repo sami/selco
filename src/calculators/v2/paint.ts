@@ -197,7 +197,7 @@ export function calculatePaint(input: PaintInput): BillOfMaterials {
         notes: [
             `Coverage taken at ${COVERAGE_M2_PER_L} m² per litre per coat.`,
             input.barePlaster
-                ? 'Bare plaster: allow a watered-down mist coat first — usage upped by 20%.'
+                ? 'Bare plaster: allow a watered-down mist coat first, usage upped by 20%.'
                 : 'Assumes previously painted, sound surfaces.',
             'Standard openings deducted: doors 1.6 m², windows 1.4 m².',
         ],

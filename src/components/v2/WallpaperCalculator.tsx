@@ -1,7 +1,7 @@
 /**
  * @file src/components/v2/WallpaperCalculator.tsx
  *
- * Wallpapering island — draws the wall as a row of numbered drops so the
+ * Wallpapering island, draws the wall as a row of numbered drops so the
  * pattern-repeat maths stops being abstract: you can see where every roll
  * goes and how much each drop wastes to the repeat.
  */

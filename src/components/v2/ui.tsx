@@ -183,7 +183,7 @@ export function BlueprintPanel({
                     {title}
                 </h2>
                 <span className="text-[0.65rem] font-bold uppercase tracking-wider text-text-muted">
-                    Live preview — updates as you type
+                    Live preview, updates as you type
                 </span>
             </div>
             <div className="relative bg-brand-navy p-4 sm:p-6">

@@ -1,7 +1,7 @@
 /**
  * @file src/components/v2/PaintCalculator.tsx
  *
- * Paint & decorating island — draws the room's walls "unwrapped" into one
+ * Paint & decorating island, draws the room's walls "unwrapped" into one
  * elevation strip with doors and windows marked, so the deduction logic is
  * visible at a glance.
  */
@@ -148,7 +148,7 @@ function PaintPreview({ input }: { input: PaintInput }) {
 
             {/* footer note */}
             <text x={W / 2} y={H - 12} fill="#fff" fontSize="11" textAnchor="middle" opacity="0.8">
-                Room unwrapped — {totalM.toFixed(1)} m of wall, openings deducted from paint area
+                Room unwrapped, {totalM.toFixed(1)} m of wall, openings deducted from paint area
             </text>
         </svg>
     );

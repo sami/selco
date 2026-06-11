@@ -1,7 +1,7 @@
 /**
  * @file src/components/v2/UnitConverterV2.tsx
  *
- * Unit converter island — v2 rebuild of the v1 handy tool in the counter
+ * Unit converter island, v2 rebuild of the v1 handy tool in the counter
  * ticket style: pick a category and a from-unit, type a value, and every
  * other unit converts live. Ends with trade-handy equivalents instead of
  * a tools list.
@@ -90,7 +90,7 @@ const HANDY: Record<string, string[]> = {
     area: ['A bulk bag of gravel covers ~10 m² at 50 mm deep.', 'One 2400 × 1200 plasterboard covers 2.88 m².'],
     volume: ['A bulk bag holds roughly 0.5 m³ of aggregate.', '1 m³ of concrete needs ~2.2 t of ballast + cement.'],
     weight: ['A bulk bag is ~850 kg; 34 × 25 kg bags make one.', 'A 25 kg bag of plaster mixes with ~11.5 L of water.'],
-    temp: ['Don\'t lay bricks or render below 5 °C.', 'Plaster sets fastest on hot days — mix smaller batches.'],
+    temp: ['Don\'t lay bricks or render below 5 °C.', 'Plaster sets fastest on hot days, mix smaller batches.'],
 };
 
 function convert(catId: string, value: number, from: Unit, to: Unit): number {
@@ -102,7 +102,7 @@ function convert(catId: string, value: number, from: Unit, to: Unit): number {
 }
 
 function fmt(n: number, dp: number): string {
-    if (!Number.isFinite(n)) return '—';
+    if (!Number.isFinite(n)) return ',';
     const abs = Math.abs(n);
     if (abs !== 0 && (abs >= 1e7 || abs < 0.0001)) return n.toExponential(3);
     return n.toLocaleString('en-GB', { maximumFractionDigits: abs < 1 ? Math.max(dp, 4) : dp });

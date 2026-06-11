@@ -1,10 +1,10 @@
 /**
  * @file src/calculators/v2/artificial-grass.ts
  *
- * Artificial grass (astro turf) estimator — mapped to Selco's stocked range.
+ * Artificial grass (astro turf) estimator, mapped to Selco's stocked range.
  *
  * Selco sells Luxigraze 30 Premium artificial grass as 2 m-wide Midi rolls
- * in fixed 4 m / 5 m / 6 m lengths (covering 8 / 10 / 12 m²) — not cut to
+ * in fixed 4 m / 5 m / 6 m lengths (covering 8 / 10 / 12 m²), not cut to
  * length off a wide roll. So the engine plans 2 m strips running one way
  * (pile direction is constant), then chooses the roll LENGTHS that cover
  * each strip with the least waste. It tries both lawn orientations and
@@ -179,7 +179,7 @@ export function calculateGrass(input: GrassInput): BillOfMaterials {
                   {
                       id: 'membrane-big',
                       name: 'Plantex Professional weed control fabric',
-                      detail: '2 m × 25 m roll (50 m²) — laid under the grass',
+                      detail: '2 m × 25 m roll (50 m²), laid under the grass',
                       qty: membraneRolls.big,
                       unit: 'rolls',
                   },
@@ -190,7 +190,7 @@ export function calculateGrass(input: GrassInput): BillOfMaterials {
                   {
                       id: 'membrane-small',
                       name: 'TDP50 weed control fabric',
-                      detail: '1 m × 14 m roll — laid under the grass',
+                      detail: '1 m × 14 m roll, laid under the grass',
                       qty: membraneRolls.small,
                       unit: 'rolls',
                   },
@@ -199,7 +199,7 @@ export function calculateGrass(input: GrassInput): BillOfMaterials {
         {
             id: 'pins',
             name: 'Luxigraze artificial grass fixing pins',
-            detail: 'pack of 10 — pinned ~400 mm around edges and seams',
+            detail: 'pack of 10, pinned ~400 mm around edges and seams',
             qty: units((perimeterM / 0.4 + plan.seamLengthM / 0.5) / 10),
             unit: 'packs',
         },
@@ -210,14 +210,14 @@ export function calculateGrass(input: GrassInput): BillOfMaterials {
             {
                 id: 'tape',
                 name: 'Luxigraze artificial grass jointing tape',
-                detail: '20 m roll — under every seam',
+                detail: '20 m roll, under every seam',
                 qty: units(plan.seamLengthM / 20),
                 unit: 'rolls',
             },
             {
                 id: 'adhesive',
                 name: 'Luxigraze artificial grass adhesive',
-                detail: '310 ml cartridge — covers ~5 m of taped seam',
+                detail: '310 ml cartridge, covers ~5 m of taped seam',
                 qty: units(plan.seamLengthM / 5),
                 unit: 'cartridges',
             },
@@ -239,14 +239,14 @@ export function calculateGrass(input: GrassInput): BillOfMaterials {
               {
                   id: 'mot',
                   name: 'MOT Type 1 Roadstone',
-                  detail: 'Large Bag (~800 kg) — 50 mm compacted',
+                  detail: 'Large Bag (~800 kg), 50 mm compacted',
                   qty: units((lawnM2 * 0.05 * 2200) / 850),
                   unit: 'bulk bags',
               },
               {
                   id: 'sharp-sand',
                   name: 'Concreting Sharp Sand',
-                  detail: 'Large Bag (~800 kg) — 25 mm laying course',
+                  detail: 'Large Bag (~800 kg), 25 mm laying course',
                   qty: units((lawnM2 * 0.025 * 1700) / 850),
                   unit: 'bulk bags',
               },
@@ -275,7 +275,7 @@ export function calculateGrass(input: GrassInput): BillOfMaterials {
         facts: [
             { label: 'Lawn area', value: fmtM2(lawnM2) },
             { label: 'Roll plan', value: `${plan.strips.length} strips ${orientation}` },
-            { label: 'Rolls', value: rollSummary || '—' },
+            { label: 'Rolls', value: rollSummary || 'none' },
             { label: 'Seams', value: totalSeams === 0 ? 'none' : `${totalSeams} (${plan.seamLengthM.toFixed(1)} m)` },
         ],
         sections: [
@@ -285,19 +285,19 @@ export function calculateGrass(input: GrassInput): BillOfMaterials {
             ...(finishLines.length ? [{ title: 'Finishing', lines: finishLines }] : []),
         ],
         tools: [
-            'Sharp utility knife + spare blades — one fresh blade per 10 m of cut',
+            'Sharp utility knife + spare blades, one fresh blade per 10 m of cut',
             'Turf cutter and wacker plate (hire) for the dig and compaction',
             'Landscaping rake and screed bar for the sand bed',
-            'Stiff broom — brush the pile upright and work in the infill',
-            'General-purpose silicone — seal any edging upstands',
+            'Stiff broom, brush the pile upright and work in the infill',
+            'General-purpose silicone, seal any edging upstands',
             'Tape measure, string line and marking paint',
         ],
         notes: [
-            'Grass comes in 2 m-wide rolls — lay every strip with the pile leaning the same way, towards the main viewpoint.',
+            'Grass comes in 2 m-wide rolls, lay every strip with the pile leaning the same way, towards the main viewpoint.',
             'Roll lengths chosen automatically to minimise waste, then seams; whole rolls are quoted, so trim the surplus on site.',
             input.includeGroundworks
                 ? 'Build-up: 50 mm compacted MOT Type 1 + 25 mm sharp sand. Excavate ~75 mm.'
-                : 'Groundworks excluded — assumes an existing prepared base.',
+                : 'Groundworks excluded, assumes an existing prepared base.',
         ],
     };
 }

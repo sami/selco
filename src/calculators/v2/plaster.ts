@@ -37,7 +37,7 @@ export function calculatePlaster(input: PlasterInput): BillOfMaterials {
         lines.push({
             id: 'bonding',
             name: 'Bonding coat plaster',
-            detail: `25 kg bag — ~${BONDING_M2_PER_BAG} m² at 11 mm`,
+            detail: `25 kg bag, ~${BONDING_M2_PER_BAG} m² at 11 mm`,
             qty: units(a / BONDING_M2_PER_BAG),
             unit: 'bags',
         });
@@ -46,7 +46,7 @@ export function calculatePlaster(input: PlasterInput): BillOfMaterials {
     lines.push({
         id: 'multi-finish',
         name: 'Multi-finish plaster',
-        detail: `25 kg bag — ~${SKIM_M2_PER_BAG} m² at 2 mm, 2 coats`,
+        detail: `25 kg bag, ~${SKIM_M2_PER_BAG} m² at 2 mm, 2 coats`,
         qty: units(a / SKIM_M2_PER_BAG),
         unit: 'bags',
     });
@@ -55,7 +55,7 @@ export function calculatePlaster(input: PlasterInput): BillOfMaterials {
         lines.push({
             id: 'pva',
             name: 'PVA bonding agent',
-            detail: '5 L — diluted 4:1 then 3:1',
+            detail: '5 L, diluted 4:1 then 3:1',
             qty: units(a / 50),
             unit: 'bottles',
         });
@@ -100,13 +100,13 @@ export function calculatePlaster(input: PlasterInput): BillOfMaterials {
             'Speedskim or feather edge for flattening',
             'Water brush for the final trowel-up',
             'Tin snips for cutting beads',
-            'Dust sheets — skimming is messier than it sounds',
+            'Dust sheets, skimming is messier than it sounds',
         ],
         notes: [
-            'Plaster has a shelf life — check bag dates at the counter; stale plaster sets fast.',
+            'Plaster has a shelf life, check bag dates at the counter; stale plaster sets fast.',
             input.job === 'float-set'
                 ? 'Bonding coat scratched up before setting; skim follows once firm.'
-                : 'Skim assumes a flat, sound background — fill chases and cracks first.',
+                : 'Skim assumes a flat, sound background, fill chases and cracks first.',
             'A 25 kg bag mixes with roughly 11.5 L of clean water.',
         ],
     };

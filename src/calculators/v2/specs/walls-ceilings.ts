@@ -55,7 +55,7 @@ export const drylining: CalcSpec = {
                 {
                     title: 'Boards & adhesive',
                     lines: [
-                        { id: 'boards', name: boardName, detail: '1200 × 2400 mm — inc. 10% cuts', qty: units((area * 1.1) / BOARD_M2), unit: 'boards' },
+                        { id: 'boards', name: boardName, detail: '1200 × 2400 mm, inc. 10% cuts', qty: units((area * 1.1) / BOARD_M2), unit: 'boards' },
                         { id: 'adhesive', name: 'Drywall (dot & dab) adhesive', detail: '25 kg bag ≈ 3 m² of dabs', qty: units(area / 3), unit: 'bags' },
                     ],
                 },
@@ -68,22 +68,22 @@ export const drylining: CalcSpec = {
                           ]
                         : [
                               { id: 'tape', name: 'Paper joint tape', detail: '150 m roll', qty: units(area / 60), unit: 'rolls' },
-                              { id: 'jointing', name: 'Jointing & filling compound (60 min)', detail: '10 kg bag — two-coat joints', qty: units(area / 15), unit: 'bags' },
+                              { id: 'jointing', name: 'Jointing & filling compound (60 min)', detail: '10 kg bag, two-coat joints', qty: units(area / 15), unit: 'bags' },
                               { id: 'primer', name: 'Drywall sealer / primer', detail: '10 L', qty: units(area / 80), unit: 'tubs' },
                           ],
                 },
             ],
             tools: [
                 'Drywall saw, rasp and a board lifter for ceiling-height sheets',
-                'Straight edge and 2 m level — dabs let you plumb the wall, use it',
-                'Mixing paddle and two buckets (adhesive goes off fast — small mixes)',
+                'Straight edge and 2 m level, dabs let you plumb the wall, use it',
+                'Mixing paddle and two buckets (adhesive goes off fast, small mixes)',
                 'Taping knives (100/200 mm) if taping & jointing',
                 'Foam gun cleaner and gap foam for reveals',
                 'Acoustic sealant along floor and ceiling junctions',
             ],
             notes: [
                 'Dabs in vertical rows at 600 mm centres plus a continuous band at floor and ceiling.',
-                'Boards stop ~10 mm clear of the floor — sealed, not resting in damp.',
+                'Boards stop ~10 mm clear of the floor, sealed, not resting in damp.',
                 'Moisture board in any room with a shower or external door.',
             ],
         };
@@ -126,7 +126,7 @@ export const metalStud: CalcSpec = {
                     title: 'Framing',
                     lines: [
                         { id: 'studs', name: 'Metal C-stud, 70 mm', detail: `${h <= 3 ? '3.0' : '3.6'} m lengths`, qty: studs, unit: 'studs' },
-                        { id: 'track', name: 'Metal floor & ceiling track, 72 mm', detail: '3.0 m lengths — head and base', qty: units((len * 2) / 3), unit: 'lengths' },
+                        { id: 'track', name: 'Metal floor & ceiling track, 72 mm', detail: '3.0 m lengths, head and base', qty: units((len * 2) / 3), unit: 'lengths' },
                         ...(doors > 0
                             ? [{ id: 'timber', name: 'CLS timber, 63 × 38 mm', detail: 'door head formers and fixing grounds', qty: doors * 2, unit: 'lengths' }]
                             : []),
@@ -135,24 +135,24 @@ export const metalStud: CalcSpec = {
                 {
                     title: 'Boarding & insulation',
                     lines: [
-                        { id: 'boards', name: bool(v, 'acoustic') ? 'Acoustic plasterboard, 12.5 mm' : 'Plasterboard, 12.5 mm', detail: '1200 × 2400 mm — both faces, 10% cuts', qty: boards, unit: 'boards' },
+                        { id: 'boards', name: bool(v, 'acoustic') ? 'Acoustic plasterboard, 12.5 mm' : 'Plasterboard, 12.5 mm', detail: '1200 × 2400 mm, both faces, 10% cuts', qty: boards, unit: 'boards' },
                         { id: 'insulation', name: bool(v, 'acoustic') ? 'Acoustic mineral wool slab, 50 mm' : 'Acoustic partition roll (APR)', detail: bool(v, 'acoustic') ? 'pack covers 8.64 m²' : 'roll covers 11.25 m²', qty: units(area / (bool(v, 'acoustic') ? 8.64 : 11.25)), unit: bool(v, 'acoustic') ? 'packs' : 'rolls' },
-                        { id: 'screws', name: 'Drywall screws, 25 mm (fine thread)', detail: 'box of 1000 — ~15 per m² per face', qty: units((area * 30) / 1000), unit: 'boxes' },
+                        { id: 'screws', name: 'Drywall screws, 25 mm (fine thread)', detail: 'box of 1000, ~15 per m² per face', qty: units((area * 30) / 1000), unit: 'boxes' },
                         { id: 'scrim', name: 'Scrim tape + jointing compound', detail: 'joint finishing kit', qty: units(area / 25), unit: 'kits' },
                     ],
                 },
             ],
             tools: [
-                'Tin snips and a crimper for the metal frame — no screws needed stud-to-track',
+                'Tin snips and a crimper for the metal frame, no screws needed stud-to-track',
                 'Laser level or chalk line for the track lines, floor then ceiling',
                 'Drywall screw gun with depth stop (dimpled, not torn, paper)',
-                'Acoustic sealant for the head, base and abutments — it is half the sound rating',
+                'Acoustic sealant for the head, base and abutments, it is half the sound rating',
                 'Pad saw for socket cut-outs',
                 'Door lining and packers if a door is going in',
             ],
             notes: [
                 'Double studs at door openings and noggin the head with CLS timber.',
-                'Stagger board joints between faces — never two joints on the same stud line.',
+                'Stagger board joints between faces, never two joints on the same stud line.',
                 'Drop sockets and services in before the second face goes on.',
             ],
         };
@@ -169,7 +169,7 @@ export const mfCeiling: CalcSpec = {
     category: 'Walls, ceilings & partitions',
     icon: 'fa-grip',
     description:
-        'British Gypsum Casoline MF — channels, hangers and boards for a flat suspended plasterboard ceiling.',
+        'British Gypsum Casoline MF, channels, hangers and boards for a flat suspended plasterboard ceiling.',
     fields: [
         { kind: 'number', id: 'width', label: 'Room width', unit: 'm', min: 1, max: 20, default: 4 },
         { kind: 'number', id: 'length', label: 'Room length', unit: 'm', min: 1, max: 20, default: 5 },
@@ -212,9 +212,9 @@ export const mfCeiling: CalcSpec = {
                 {
                     title: 'Boarding',
                     lines: [
-                        { id: 'boards', name: 'Plasterboard, 12.5 mm', detail: '1200 × 2400 mm — inc. 10% cuts', qty: units((area * 1.1) / BOARD_M2), unit: 'boards' },
+                        { id: 'boards', name: 'Plasterboard, 12.5 mm', detail: '1200 × 2400 mm, inc. 10% cuts', qty: units((area * 1.1) / BOARD_M2), unit: 'boards' },
                         { id: 'screws', name: 'Drywall screws, 25 mm (fine thread)', detail: 'box of 1000', qty: units((area * 18) / 1000), unit: 'boxes' },
-                        { id: 'wafer', name: 'Wafer-head jack-point screws, 13 mm', detail: 'box of 500 — metal-to-metal', qty: 1, unit: 'boxes' },
+                        { id: 'wafer', name: 'Wafer-head jack-point screws, 13 mm', detail: 'box of 500, metal-to-metal', qty: 1, unit: 'boxes' },
                         ...(bool(v, 'insulation')
                             ? [{ id: 'quilt', name: 'Acoustic insulation roll, 100 mm', detail: 'laid loose over the grid', qty: units(area / 11.25), unit: 'rolls' }]
                             : []),
@@ -223,12 +223,12 @@ export const mfCeiling: CalcSpec = {
                 },
             ],
             tools: [
-                'Laser level — set the perimeter channel line first, everything hangs off it',
+                'Laser level, set the perimeter channel line first, everything hangs off it',
                 'Tin snips and a rivet gun or wafer-head screws for the grid',
                 'Drywall screw gun and a board lifter (boards go up flat, arms give out)',
-                'Podium steps or low tower — overhead work all day',
+                'Podium steps or low tower, overhead work all day',
                 'Chalk line for marking MF5 centres on the boards',
-                'Eye protection — cutting channel overhead rains swarf',
+                'Eye protection, cutting channel overhead rains swarf',
             ],
             notes: [
                 'Minimum void depth ~150 mm for the standard hanger arrangement.',
@@ -267,7 +267,7 @@ export const suspendedCeiling: CalcSpec = {
     rectPreview: (v) => ({
         widthM: num(v, 'width'),
         lengthM: num(v, 'length'),
-        caption: '600 × 600 grid — centre the layout, cut tiles at edges',
+        caption: '600 × 600 grid, centre the layout, cut tiles at edges',
     }),
     compute: (v) => {
         const w = num(v, 'width');
@@ -305,17 +305,17 @@ export const suspendedCeiling: CalcSpec = {
                 },
             ],
             tools: [
-                'Laser level — strike the wall-angle line around the room first',
+                'Laser level, strike the wall-angle line around the room first',
                 'Tin snips and a sharp knife (mineral tiles cut face-up)',
                 'String lines to keep the grid square as you build out',
                 'Steps or podium and a helper for the long runners',
                 'Fixings to suit the soffit: shot-fire, screw + plug, or beam clamps',
-                'White gloves — mineral tiles mark easily during fitting',
+                'White gloves, mineral tiles mark easily during fitting',
             ],
             notes: [
-                'Centre the grid so the cut tiles at opposite edges match — never start tight to one wall.',
+                'Centre the grid so the cut tiles at opposite edges match, never start tight to one wall.',
                 'Minimum 100 mm void for tile lift-and-tilt access; more over light fittings.',
-                'Order a few spare tiles — they double as access panels forever after.',
+                'Order a few spare tiles, they double as access panels forever after.',
             ],
         };
     },

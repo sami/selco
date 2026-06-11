@@ -1,7 +1,7 @@
 /**
  * @file src/components/v2/PlasterCalculator.tsx
  *
- * Plastering island — cross-section diagram of the chosen system's build-up
+ * Plastering island, cross-section diagram of the chosen system's build-up
  * (background → bonding → skim) with layer thicknesses called out.
  */
 
@@ -75,7 +75,7 @@ function PlasterPreview({ input }: { input: PlasterInput }) {
             aria-label="Plaster system cross-section"
         >
             <text x={W / 2} y={40} fill="#fff" fontSize="13" fontWeight="700" textAnchor="middle" opacity="0.9">
-                System build-up — wall cross-section (not to scale)
+                System build-up, wall cross-section (not to scale)
             </text>
 
             {layers.map((l) => {

@@ -1,7 +1,7 @@
 /**
  * @file src/components/v2/MaterialsTicket.tsx
  *
- * The "counter ticket" — renders any v2 BillOfMaterials as a trade-counter
+ * The "counter ticket", renders any v2 BillOfMaterials as a trade-counter
  * style materials list: quantities of named products, a tick-off tools and
  * consumables checklist, and a copy-to-clipboard action so the list can be
  * pasted into a text or email.
@@ -57,7 +57,7 @@ export default function MaterialsTicket({ bom }: { bom: BillOfMaterials }) {
             setCopied(true);
             setTimeout(() => setCopied(false), 2000);
         } catch {
-            // Clipboard unavailable (permissions / non-secure context) — no-op.
+            // Clipboard unavailable (permissions / non-secure context), no-op.
         }
     };
 
@@ -127,7 +127,7 @@ export default function MaterialsTicket({ bom }: { bom: BillOfMaterials }) {
                 <div className="px-5 py-4 bg-brand-navy">
                     <h3 className="flex items-center gap-2 text-[0.7rem] font-bold uppercase tracking-[0.15em] text-brand-yellow mb-2">
                         <i className="fas fa-toolbox" aria-hidden="true"></i>
-                        Tools &amp; consumables — don't get caught short
+                        Tools &amp; consumables, don't get caught short
                     </h3>
                     <ul className="m-0 p-0 list-none space-y-1">
                         {bom.tools.map((t) => {
@@ -192,7 +192,7 @@ export default function MaterialsTicket({ bom }: { bom: BillOfMaterials }) {
                             aria-hidden="true"
                             className="absolute left-0 top-1 w-2 h-2 rounded-sm bg-brand-navy"
                         />
-                        Quantities are estimates — verify product coverage and site
+                        Quantities are estimates, verify product coverage and site
                         conditions before ordering.
                     </li>
                 </ul>

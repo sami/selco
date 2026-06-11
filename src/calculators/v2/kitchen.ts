@@ -1,7 +1,7 @@
 /**
  * @file src/calculators/v2/kitchen.ts
  *
- * Kitchen layout planner — concept engine.
+ * Kitchen layout planner, concept engine.
  *
  * Takes a layout shape (galley / L-shape / U-shape) and wall lengths, packs
  * standard-width carcasses along each run, then counts worktops, plinths and
@@ -182,7 +182,7 @@ export function planKitchen(input: KitchenInput): KitchenPlan {
         .reduce((sum, p) => sum + p.widthMm, 0);
 
     // Wall units roughly mirror the base run, minus cooker (extractor) and
-    // fridge (tall) slots — approximated as 70 % of base run at 600 mm each.
+    // fridge (tall) slots, approximated as 70 % of base run at 600 mm each.
     const wallUnitCount = input.includeWallUnits
         ? Math.round((worktopMm * 0.7) / SLOT_MM)
         : 0;
@@ -205,7 +205,7 @@ export function calculateKitchen(input: KitchenInput): BillOfMaterials {
                   {
                       id: 'corner',
                       name: 'Rapide+ L-corner base unit, 935 mm',
-                      detail: `16 mm MFC carcase, legs included — ${styleNote}`,
+                      detail: `16 mm MFC carcase, legs included, ${styleNote}`,
                       qty: corners.length,
                       unit: 'units',
                   },
@@ -214,7 +214,7 @@ export function calculateKitchen(input: KitchenInput): BillOfMaterials {
         {
             id: 'sink-base',
             name: 'Rapide+ sink base unit, 600 mm',
-            detail: `legs included — ${styleNote}`,
+            detail: `legs included, ${styleNote}`,
             qty: 1,
             unit: 'units',
         },
@@ -223,7 +223,7 @@ export function calculateKitchen(input: KitchenInput): BillOfMaterials {
         ).map((w) => ({
             id: `base-${w}`,
             name: `Rapide+ base unit, ${w} mm`,
-            detail: `legs included — ${styleNote}`,
+            detail: `legs included, ${styleNote}`,
             qty: baseUnits.filter((u) => u.widthMm === w).length,
             unit: 'units',
         })),
@@ -278,7 +278,7 @@ export function calculateKitchen(input: KitchenInput): BillOfMaterials {
         {
             id: 'worktop-bolts',
             name: 'Worktop connecting bolts',
-            detail: 'pack of 3 — one pack per joint',
+            detail: 'pack of 3, one pack per joint',
             qty: Math.max(0, worktopLengths - 1),
             unit: 'packs',
         },

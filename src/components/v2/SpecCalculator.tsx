@@ -132,7 +132,7 @@ export default function SpecCalculator({ slug }: { slug: string }) {
     if (!spec || !bom) {
         return (
             <p className="text-sm text-text-muted">
-                Calculator not found — head back to the v2 hub.
+                Calculator not found, head back to the v2 hub.
             </p>
         );
     }

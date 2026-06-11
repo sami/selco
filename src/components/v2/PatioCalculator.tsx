@@ -1,7 +1,7 @@
 /**
  * @file src/components/v2/PatioCalculator.tsx
  *
- * Patio island — top-down slab grid showing full slabs vs cut edge pieces,
+ * Patio island, top-down slab grid showing full slabs vs cut edge pieces,
  * so the waste percentage has a visible meaning.
  */
 
@@ -132,8 +132,8 @@ export default function PatioCalculator() {
                     value={String(input.wastePct) as '5' | '10'}
                     onChange={(v) => set('wastePct', Number(v))}
                     options={[
-                        { value: '5', label: '5% — simple' },
-                        { value: '10', label: '10% — lots of cuts' },
+                        { value: '5', label: '5%, simple' },
+                        { value: '10', label: '10%, lots of cuts' },
                     ]}
                 />
                 <ToggleRow

@@ -1,7 +1,7 @@
 /**
  * @file src/calculators/v2/tiling.ts
  *
- * Tiling estimator — v2 rebuild of the v1 flagship.
+ * Tiling estimator, v2 rebuild of the v1 flagship.
  *
  * Plans the tile grid for the area (like a setter would chalk it out),
  * then quantifies adhesive, grout, spacers, trim and silicone. Grout usage
@@ -30,7 +30,7 @@ export interface TilingInput {
     heightM: number;
     tileId: string;
     surface: 'wall' | 'floor';
-    /** Cutting waste percentage — 10 straight, 15 diagonal/brick-bond. */
+    /** Cutting waste percentage, 10 straight, 15 diagonal/brick-bond. */
     wastePct: number;
     includeTrim: boolean;
     /** Wet-zone tanking behind showers and baths. */

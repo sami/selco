@@ -3,8 +3,8 @@
  *
  * Shared types for the v2 concept calculators.
  *
- * Every v2 engine returns a `BillOfMaterials` — product line items named
- * after ranges SELCO stocks, plus a tools-and-consumables checklist — so
+ * Every v2 engine returns a `BillOfMaterials`, product line items named
+ * after ranges SELCO stocks, plus a tools-and-consumables checklist, so
  * the shared MaterialsTicket component can render any calculator's output
  * without per-calculator wiring.
  *
@@ -37,7 +37,7 @@ export interface BillOfMaterials {
     /** Headline facts shown above the ticket, e.g. "Lawn area 24.0 m²". */
     facts: Array<{ label: string; value: string }>;
     /**
-     * Tools and consumables worth having for the job — own, buy or hire.
+     * Tools and consumables worth having for the job, own, buy or hire.
      * Rendered as a tick-off checklist, not quantified order lines.
      */
     tools: string[];

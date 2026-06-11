@@ -1,7 +1,7 @@
 /**
  * @file src/components/v2/MasonryCalculator.tsx
  *
- * Brick & block wall island — stretcher-bond elevation with openings and
+ * Brick & block wall island, stretcher-bond elevation with openings and
  * their lintels drawn in, engineering-brick courses below DPC, air bricks
  * along the base and copings on top.
  */

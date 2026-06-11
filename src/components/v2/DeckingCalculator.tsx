@@ -1,7 +1,7 @@
 /**
  * @file src/components/v2/DeckingCalculator.tsx
  *
- * Decking island — plan view showing the joist grid (dashed, beneath) and
+ * Decking island, plan view showing the joist grid (dashed, beneath) and
  * the board rows over the top, with supports marked.
  */
 

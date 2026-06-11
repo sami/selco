@@ -1,7 +1,7 @@
 /**
  * @file src/components/v2/GrassCalculator.tsx
  *
- * Artificial grass island — live inputs, a plan-view SVG showing the 2 m
+ * Artificial grass island, live inputs, a plan-view SVG showing the 2 m
  * roll strips, the side seams between them and the cross seams where rolls
  * join end-to-end, plus the materials ticket.
  */
@@ -184,7 +184,7 @@ export default function GrassCalculator() {
                 />
                 <ToggleRow
                     label="Kiln-dried sand infill"
-                    hint="~5 kg/m² — keeps pile upright"
+                    hint="~5 kg/m², keeps pile upright"
                     checked={input.includeInfill}
                     onChange={(v) => set('includeInfill', v)}
                 />

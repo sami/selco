@@ -66,7 +66,7 @@ export interface PatioInput {
     widthM: number;
     lengthM: number;
     slabId: string;
-    /** Cutting waste percentage (5–10 typical). */
+    /** Cutting waste percentage (5 to 10 typical). */
     wastePct: number;
     includeSubBase: boolean;
     includeEdging: boolean;
@@ -109,21 +109,21 @@ export function calculatePatio(input: PatioInput): BillOfMaterials {
         {
             id: 'slabs',
             name: plan.slab.productName,
-            detail: `${plan.slab.detail} — ${plan.cols} × ${plan.rows} grid + ${input.wastePct}% cuts`,
+            detail: `${plan.slab.detail}, ${plan.cols} × ${plan.rows} grid + ${input.wastePct}% cuts`,
             qty: plan.slabs,
             unit: 'slabs',
         },
         {
             id: 'sharp-sand',
             name: 'Concreting Sharp Sand',
-            detail: 'Large Bag (~800 kg) — 30 mm full mortar bed',
+            detail: 'Large Bag (~800 kg), 30 mm full mortar bed',
             qty: units((sandT * 1000) / 800),
             unit: 'Large Bags',
         },
         {
             id: 'cement',
             name: 'Rugby Premium Cement',
-            detail: '25 kg bag — 5:1 bed mix',
+            detail: '25 kg bag, 5:1 bed mix',
             qty: cementBags,
             unit: 'bags',
         },
@@ -138,8 +138,8 @@ export function calculatePatio(input: PatioInput): BillOfMaterials {
             id: 'primer',
             name: 'Pavetuf priming slurry',
             detail: plan.slab.porcelain
-                ? '17 kg tub — essential under porcelain'
-                : '17 kg tub — bonds slab to bed',
+                ? '17 kg tub, essential under porcelain'
+                : '17 kg tub, bonds slab to bed',
             qty: units(a / 17),
             unit: 'tubs',
         },
@@ -149,7 +149,7 @@ export function calculatePatio(input: PatioInput): BillOfMaterials {
         lines.splice(1, 0, {
             id: 'mot',
             name: 'MOT Type 1 Roadstone',
-            detail: 'Large Bag (~800 kg) — 100 mm compacted',
+            detail: 'Large Bag (~800 kg), 100 mm compacted',
             qty: units((a * SUBBASE_M * 2200) / 800),
             unit: 'Large Bags',
         });
@@ -180,14 +180,14 @@ export function calculatePatio(input: PatioInput): BillOfMaterials {
             'Angle grinder + diamond blade for cuts (with dust suppression)',
             'String line, pegs and a long straight edge for falls',
             'Soft brush for the jointing compound',
-            'Knee pads and gloves — slabs are heavier than they look',
+            'Knee pads and gloves, slabs are heavier than they look',
         ],
         notes: [
             ...(plan.slab.porcelain
                 ? ['Porcelain must be primed slab-by-slab with the slurry and cut with a diamond blade. Worth every minute.']
                 : []),
             'Build-up: 100 mm compacted MOT Type 1, 30 mm full mortar bed (5:1), 10 mm joints.',
-            'Fall of 1:80 away from the house assumed — adjust dig depth accordingly.',
+            'Fall of 1:80 away from the house assumed, adjust dig depth accordingly.',
             'Excavation roughly 175 mm below finished level; allow for muck-away.',
         ],
     };
