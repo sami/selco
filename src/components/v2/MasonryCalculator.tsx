@@ -54,18 +54,17 @@ function MasonryPreview({ input }: { input: MasonryInput }) {
     const dpcCoursesPx = input.dpcCourses ? 2 * 0.075 * scale : 0;
     const dpcY = y0 + wh - dpcCoursesPx;
 
-    // Openings spaced evenly, sills at ~1/3 height (or doors to the ground).
-    const openings = Math.round(input.openings);
-    const openWpx = (input.openingWidthMm / 1000) * scale;
+    // Openings spaced evenly, each drawn at its own width.
+    const openings = input.openings.filter((o) => o.widthMm > 0);
     const openHpx = Math.min(1.2 * scale, wh * 0.6);
-    const slot = ww / (openings + 1);
+    const slot = ww / (openings.length + 1);
 
     return (
         <svg
             viewBox={`0 0 ${W} ${H}`}
             className="w-full h-auto"
             role="img"
-            aria-label={`Wall elevation: ${plan.spec.label} with ${openings} openings`}
+            aria-label={`Wall elevation: ${plan.spec.label} with ${openings.length} openings`}
         >
             <defs>
                 <pattern id="bond" width={unitW} height={unitH * 2} patternUnits="userSpaceOnUse">
@@ -90,13 +89,14 @@ function MasonryPreview({ input }: { input: MasonryInput }) {
                 <rect x={x0} y={dpcY} width={ww} height={dpcCoursesPx} fill="url(#eng-bond)" stroke="#fff" strokeWidth="1" />
             )}
 
-            {/* openings + lintels */}
-            {Array.from({ length: openings }).map((_, i) => {
+            {/* openings + lintels, each at its own width */}
+            {openings.map((o, i) => {
+                const openWpx = (o.widthMm / 1000) * scale;
                 const cx = x0 + slot * (i + 1);
                 const ox = cx - openWpx / 2;
                 const oy = y0 + wh * 0.18;
                 return (
-                    <g key={i}>
+                    <g key={o.id}>
                         <rect x={ox} y={oy} width={openWpx} height={openHpx} fill="#04204b" stroke="#fff" strokeWidth="1.5" />
                         {/* lintel */}
                         <rect
@@ -109,7 +109,7 @@ function MasonryPreview({ input }: { input: MasonryInput }) {
                             strokeWidth="1"
                         />
                         <text x={cx} y={oy - 16} fill={YELLOW} fontSize="10" fontWeight="700" textAnchor="middle">
-                            lintel {plan.lintelLengthMm} mm
+                            {plan.openingLintels[i]} mm
                         </text>
                     </g>
                 );
@@ -177,8 +177,7 @@ export default function MasonryCalculator() {
         brickType: 'facing',
         blockType: 'thermalite',
         blockThicknessMm: 100,
-        openings: 1,
-        openingWidthMm: 1200,
+        openings: [{ id: 'o1', widthMm: 1200 }],
         lintelType: 'steel',
         beams: 0,
         joinsExisting: 1,
@@ -280,32 +279,70 @@ export default function MasonryCalculator() {
                         />
                     </>
                 )}
-                <div className="grid grid-cols-2 gap-3">
-                    <NumberField label="Openings" value={input.openings} onChange={(v) => set('openings', Math.round(v))} min={0} max={4} step={1} hint="Doors / windows" />
-                    <NumberField label="Steel beams" value={input.beams} onChange={(v) => set('beams', Math.round(v))} min={0} max={4} step={1} hint="Padstones under each" />
+                <div>
+                    <span className="form-label text-sm">Openings (doors / windows)</span>
+                    <ul className="m-0 p-0 list-none space-y-2">
+                        {input.openings.map((o, i) => (
+                            <li key={o.id} className="flex items-center gap-2">
+                                <div className="relative flex-1">
+                                    <input
+                                        type="number"
+                                        aria-label={`Opening ${i + 1} width in millimetres`}
+                                        className="form-input !h-10 pr-12"
+                                        value={o.widthMm || ''}
+                                        min={450}
+                                        max={2700}
+                                        step={50}
+                                        onChange={(e) => {
+                                            const w = Math.min(2700, Math.max(0, Math.round(parseFloat(e.target.value) || 0)));
+                                            setInput((s) => ({
+                                                ...s,
+                                                openings: s.openings.map((x) => (x.id === o.id ? { ...x, widthMm: w } : x)),
+                                            }));
+                                        }}
+                                    />
+                                    <span className="absolute right-3 top-1/2 -translate-y-1/2 text-sm font-semibold text-text-muted pointer-events-none">
+                                        mm
+                                    </span>
+                                </div>
+                                <button
+                                    type="button"
+                                    aria-label={`Remove opening ${i + 1}`}
+                                    onClick={() => setInput((s) => ({ ...s, openings: s.openings.filter((x) => x.id !== o.id) }))}
+                                    className="h-10 w-9 rounded-md border border-border-default text-text-muted hover:text-destructive hover:border-destructive transition-colors cursor-pointer"
+                                >
+                                    ×
+                                </button>
+                            </li>
+                        ))}
+                    </ul>
+                    {input.openings.length < 4 && (
+                        <button
+                            type="button"
+                            onClick={() =>
+                                setInput((s) => ({
+                                    ...s,
+                                    openings: [...s.openings, { id: `o${Date.now() % 100000}`, widthMm: 900 }],
+                                }))
+                            }
+                            className="btn-ghost w-full mt-2 !min-h-[38px] text-sm"
+                        >
+                            + Add an opening
+                        </button>
+                    )}
+                    <span className="field-description">Each opening gets its own stocked lintel with 150 mm bearings</span>
                 </div>
-                {input.openings > 0 && (
-                    <>
-                        <NumberField
-                            label="Opening width"
-                            value={input.openingWidthMm}
-                            onChange={(v) => set('openingWidthMm', Math.round(v))}
-                            unit="mm"
-                            min={450}
-                            max={2700}
-                            step={50}
-                            hint="Lintel picks the next stocked length with 150 mm bearings"
-                        />
-                        <Segmented<LintelType>
-                            label="Lintels"
-                            value={input.lintelType}
-                            onChange={(v) => set('lintelType', v)}
-                            options={[
-                                { value: 'concrete', label: 'Concrete' },
-                                { value: 'steel', label: 'Steel' },
-                            ]}
-                        />
-                    </>
+                <NumberField label="Steel beams" value={input.beams} onChange={(v) => set('beams', Math.round(v))} min={0} max={4} step={1} hint="Padstones under each" />
+                {input.openings.length > 0 && (
+                    <Segmented<LintelType>
+                        label="Lintels"
+                        value={input.lintelType}
+                        onChange={(v) => set('lintelType', v)}
+                        options={[
+                            { value: 'concrete', label: 'Concrete' },
+                            { value: 'steel', label: 'Steel' },
+                        ]}
+                    />
                 )}
                 <NumberField
                     label="Joins an existing wall"
