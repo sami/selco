@@ -6,7 +6,14 @@
  */
 
 import { useMemo, useState } from 'react';
-import { calculateFlooring, FLOOR_TYPES, planFlooring, type FlooringInput } from '../../calculators/v2/flooring';
+import {
+    calculateFlooring,
+    FLOOR_TYPES,
+    planFlooring,
+    resolveFloor,
+    UNDERLAYS,
+    type FlooringInput,
+} from '../../calculators/v2/flooring';
 import { BlueprintPanel, JobCard, NumberField, Segmented, ToggleRow } from './ui';
 import MaterialsTicket from './MaterialsTicket';
 
@@ -70,8 +77,10 @@ function FlooringPreview({ input }: { input: FlooringInput }) {
             ))}
 
             <rect x={x0} y={y0} width={rw} height={rh} fill="none" stroke="#fff" strokeWidth="2.5" />
-            {/* expansion gap callout */}
-            <rect x={x0 - 5} y={y0 - 5} width={rw + 10} height={rh + 10} fill="none" stroke={YELLOW} strokeWidth="1.2" strokeDasharray="6 5" />
+            {/* expansion gap callout, only for floors that float at the perimeter */}
+            {plan.needsExpansionGap && (
+                <rect x={x0 - 5} y={y0 - 5} width={rw + 10} height={rh + 10} fill="none" stroke={YELLOW} strokeWidth="1.2" strokeDasharray="6 5" />
+            )}
 
             <g fill={YELLOW} fontSize="13" fontWeight="700">
                 <text x={x0 + rw / 2} y={y0 - 24} textAnchor="middle">
@@ -83,7 +92,9 @@ function FlooringPreview({ input }: { input: FlooringInput }) {
             </g>
 
             <text x={W / 2} y={H - 12} fill="#fff" fontSize="11" textAnchor="middle" opacity="0.85">
-                Dashed line = 10 mm expansion gap all round · end joints staggered ⅓ plank
+                {plan.needsExpansionGap
+                    ? 'Dashed line = 10 mm expansion gap all round · end joints staggered ⅓ plank'
+                    : 'Bonded down, no expansion gap · end joints staggered ⅓ plank'}
             </text>
         </svg>
     );
@@ -94,6 +105,8 @@ export default function FlooringCalculator() {
         widthM: 3.5,
         lengthM: 4.5,
         floorId: 'laminate8',
+        underlay: 'foam',
+        fixing: 'floating',
         concreteSubfloor: false,
         doorways: 1,
     });
@@ -102,6 +115,9 @@ export default function FlooringCalculator() {
     const set = <K extends keyof FlooringInput>(k: K, v: FlooringInput[K]) =>
         setInput((s) => ({ ...s, [k]: v }));
 
+    const floor = resolveFloor(input.floorId);
+    const glued = input.fixing === 'glued' && floor.canGlue;
+
     return (
         <div className="grid gap-6 lg:grid-cols-[340px_minmax(0,1fr)] items-start">
             <JobCard title="Job details">
@@ -109,12 +125,55 @@ export default function FlooringCalculator() {
                     <NumberField label="Room width" value={input.widthM} onChange={(v) => set('widthM', v)} unit="m" min={0.5} max={15} />
                     <NumberField label="Room length" value={input.lengthM} onChange={(v) => set('lengthM', v)} unit="m" min={0.5} max={20} />
                 </div>
-                <Segmented
-                    label="Floor type"
-                    value={input.floorId}
-                    onChange={(v) => set('floorId', v)}
-                    options={FLOOR_TYPES.map((f) => ({ value: f.id, label: f.label }))}
-                />
+                <div>
+                    <label htmlFor="floor-type" className="form-label text-sm">
+                        Floor type
+                    </label>
+                    <select id="floor-type" className="form-select" value={input.floorId} onChange={(e) => set('floorId', e.target.value)}>
+                        {FLOOR_TYPES.map((f) => (
+                            <option key={f.id} value={f.id}>
+                                {f.label}
+                            </option>
+                        ))}
+                    </select>
+                    <span className="field-description">
+                        Thickness sets the threshold height and door undercut, not how much floor you buy.
+                    </span>
+                </div>
+                {floor.canGlue ? (
+                    <Segmented
+                        label="Fixing method"
+                        value={input.fixing}
+                        onChange={(v) => set('fixing', v)}
+                        options={[
+                            { value: 'floating', label: 'Floating (click)' },
+                            { value: 'glued', label: 'Glue down' },
+                        ]}
+                    />
+                ) : (
+                    <p className="field-description">This floor is click-fit (floating) only — it isn’t glued down.</p>
+                )}
+                <div>
+                    <label htmlFor="underlay" className="form-label text-sm">
+                        Underlay
+                    </label>
+                    <select
+                        id="underlay"
+                        className="form-select"
+                        value={glued ? 'none' : input.underlay}
+                        onChange={(e) => set('underlay', e.target.value as FlooringInput['underlay'])}
+                        disabled={glued}
+                    >
+                        {UNDERLAYS.map((u) => (
+                            <option key={u.id} value={u.id}>
+                                {u.label}
+                            </option>
+                        ))}
+                    </select>
+                    <span className="field-description">
+                        {glued ? 'Glued floors bond straight down — no underlay.' : UNDERLAYS.find((u) => u.id === input.underlay)?.note}
+                    </span>
+                </div>
                 <NumberField
                     label="Doorways"
                     value={input.doorways}
@@ -126,7 +185,7 @@ export default function FlooringCalculator() {
                 />
                 <ToggleRow
                     label="Concrete subfloor"
-                    hint="Adds a vapour barrier under the underlay"
+                    hint="Prompts the vapour-barrier underlay"
                     checked={input.concreteSubfloor}
                     onChange={(v) => set('concreteSubfloor', v)}
                 />
