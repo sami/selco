@@ -238,15 +238,35 @@ export const skirtingArchitrave: CalcSpec = {
 // Doors & linings
 // ---------------------------------------------------------------------------
 
+// Lining range as stocked: softwood packs, primed MDF sets, and the
+// Firecheck BWF-certified packs that fire doors must hang in.
+const LININGS: Record<string, { name: string; size: string; widthMm: number; detail: string }> = {
+    sw115: { name: 'Softwood door lining pack', size: '32 × 115 mm', widthMm: 115, detail: 'inc. loose stops, suits 100 mm stud walls' },
+    sw138: { name: 'Softwood door lining pack', size: '32 × 138 mm', widthMm: 138, detail: 'inc. loose stops, suits timber stud and blockwork' },
+    mdf108: { name: 'Primed MDF door lining set', size: '25 × 108 mm', widthMm: 108, detail: 'inc. loose stops, ready for top coat' },
+    mdf132: { name: 'Primed MDF door lining set', size: '25 × 132 mm', widthMm: 132, detail: 'inc. loose stops, ready for top coat' },
+};
+
 export const doorsLinings: CalcSpec = {
     slug: 'doors-linings',
     name: 'Doors & door linings',
     category: 'Interiors & finishing',
     icon: 'fa-door-open',
     description:
-        'Everything per door: lining set, hinges, latch, handles, stops, fire-rated kit handled automatically.',
+        'Everything per door: lining set, hinges, latch, handles, stops. Fire doors get the right kit for where they hang, home or public.',
     fields: [
         { kind: 'number', id: 'doors', label: 'Number of doors', min: 1, max: 12, step: 1, default: 3 },
+        {
+            kind: 'choice',
+            id: 'doorUse',
+            label: 'What are the doors for?',
+            options: [
+                { value: 'standard', label: 'Standard internal' },
+                { value: 'fd30', label: 'FD30 fire door, internal' },
+                { value: 'exit', label: 'Fire exit / public building' },
+            ],
+            default: 'standard',
+        },
         {
             kind: 'choice',
             id: 'doorType',
@@ -274,34 +294,47 @@ export const doorsLinings: CalcSpec = {
         },
         {
             kind: 'choice',
-            id: 'liningWidth',
-            label: 'Lining depth (to suit the wall)',
+            id: 'lining',
+            label: 'Lining (to suit the wall build-up)',
             options: [
-                { value: '115', label: '32 × 115 mm — metal stud / thinner walls' },
-                { value: '138', label: '32 × 138 mm — timber stud / blockwork' },
+                { value: 'sw115', label: 'Softwood 32 × 115 mm — 100 mm stud walls' },
+                { value: 'sw138', label: 'Softwood 32 × 138 mm — timber stud / blockwork' },
+                { value: 'mdf108', label: 'Primed MDF 25 × 108 mm — thinner walls, paint finish' },
+                { value: 'mdf132', label: 'Primed MDF 25 × 132 mm — standard walls, paint finish' },
             ],
-            default: '138',
+            default: 'sw138',
         },
-        { kind: 'toggle', id: 'fire', label: 'FD30 fire doors', hint: 'Adds intumescent strips, fire hinges & closers', default: false },
+        { kind: 'toggle', id: 'closers', label: 'Add self-closers', hint: 'FD30 doors in flats, HMOs and rented homes need them', default: false },
         { kind: 'toggle', id: 'newLinings', label: 'New linings', hint: 'Off = hanging into existing frames', default: true },
     ],
     compute: (v) => {
         const n = Math.round(num(v, 'doors'));
-        const fire = bool(v, 'fire');
+        const use = str(v, 'doorUse') || 'standard';
+        const fire = use !== 'standard';
+        const exit = use === 'exit';
+        const closers = exit || (fire && bool(v, 'closers'));
         const doorName = {
             panel: 'Moulded panel door (Premdor / LPD range)',
             oak: 'Oak veneer door (e.g. Belize, Shaker 4-panel)',
             primed: 'White primed door (e.g. Amsterdam, Arnhem)',
         }[str(v, 'doorType')] ?? 'Oak veneer door';
         const widthMm = Number(str(v, 'doorSize')) || 762;
-        const liningWidthMm = Number(str(v, 'liningWidth')) || 138;
-        const liningThicknessMm = fire ? 38 : 32;
+
+        // Fire doors must hang in a certified lining: swap whatever was picked
+        // for the Firecheck pack at the nearest stocked width.
+        const picked = LININGS[str(v, 'lining')] ?? LININGS.sw138;
+        const fireWidthMm = picked.widthMm <= 115 ? 115 : 138;
+        const lining = fire
+            ? { name: 'Firecheck BWF-certified door lining', size: `38 × ${fireWidthMm} mm`, detail: 'fire-rated pack inc. loose stops' }
+            : { name: picked.name, size: picked.size, detail: picked.detail };
+
+        const specLabel = exit ? 'FD30S fire exit / public' : fire ? 'FD30 fire-rated' : 'Standard internal';
 
         return {
             facts: [
                 { label: 'Doors', value: `${n}` },
                 { label: 'Size', value: `1981 × ${widthMm} × ${fire ? 44 : 35} mm` },
-                { label: 'Spec', value: fire ? 'FD30 fire-rated' : 'Standard internal' },
+                { label: 'Spec', value: specLabel },
                 { label: 'Hinges', value: `${n * 3} (1.5 pairs each)` },
             ],
             sections: [
@@ -311,13 +344,7 @@ export const doorsLinings: CalcSpec = {
                         { id: 'doors', name: `${doorName}${fire ? ' FD30' : ''}`, detail: `1981 × ${widthMm} × ${fire ? 44 : 35} mm`, qty: n, unit: 'doors' },
                         ...(bool(v, 'newLinings')
                             ? [
-                                  {
-                                      id: 'linings',
-                                      name: `${fire ? 'Firecheck BWF door lining' : 'Door lining pack'}, ${liningThicknessMm} × ${liningWidthMm} mm`,
-                                      detail: 'inc. loose stops',
-                                      qty: n,
-                                      unit: 'sets',
-                                  },
+                                  { id: 'linings', name: `${lining.name}, ${lining.size}`, detail: lining.detail, qty: n, unit: 'sets' },
                                   { id: 'packers', name: 'Assorted packers / shims', detail: 'bag of 100', qty: units(n / 4), unit: 'bags' },
                                   { id: 'foam', name: 'Low-expansion gun foam', detail: 'one can per 2 to 3 linings', qty: units(n / 2.5), unit: 'cans' },
                               ]
@@ -327,14 +354,37 @@ export const doorsLinings: CalcSpec = {
                 {
                     title: 'Ironmongery, per door, all counted',
                     lines: [
-                        { id: 'hinges', name: fire ? 'Grade 11 fire-rated ball bearing hinges, 100 mm' : 'Ball bearing hinges, 75 mm', detail: '3 hinges per door', qty: n * 3, unit: 'hinges' },
-                        { id: 'latch', name: fire ? 'Fire-rated tubular latch, 75 mm' : 'Tubular latch, 75 mm', qty: n, unit: 'latches' },
-                        { id: 'handles', name: 'Lever handles on rose (pair)', qty: n, unit: 'pairs' },
+                        {
+                            id: 'hinges',
+                            name: fire ? 'Fire-rated ball bearing hinges, grade 11, 100 mm' : 'Ball bearing hinges, 75 mm',
+                            detail: '3 hinges per door',
+                            qty: n * 3,
+                            unit: 'hinges',
+                        },
+                        ...(exit
+                            ? [
+                                  { id: 'panic', name: 'Panic exit bar, push bar to open', detail: 'EN 1125, replaces the latch and handles on escape doors', qty: n, unit: 'bars' },
+                              ]
+                            : [
+                                  { id: 'latch', name: fire ? 'Fire-rated tubular latch, 75 mm' : 'Tubular latch, 75 mm', qty: n, unit: 'latches' },
+                                  { id: 'handles', name: 'Lever handles on rose (pair)', qty: n, unit: 'pairs' },
+                              ]),
                         ...(fire
                             ? [
-                                  { id: 'strips', name: 'Intumescent strip with smoke seal, 15 × 4 mm', detail: '2.1 m lengths, 3 per door', qty: n * 3, unit: 'lengths' },
-                                  { id: 'closers', name: 'Overhead door closer (CE marked)', qty: n, unit: 'closers' },
+                                  {
+                                      id: 'strips',
+                                      name: exit ? 'Intumescent strip with FD30S smoke seal, 15 × 4 mm' : 'Intumescent strip with smoke seal, 15 × 4 mm',
+                                      detail: '2.1 m lengths, 3 per door',
+                                      qty: n * 3,
+                                      unit: 'lengths',
+                                  },
                               ]
+                            : []),
+                        ...(closers
+                            ? [{ id: 'closers', name: 'Overhead door closer, CE marked', detail: exit ? 'EN 1154, mandatory on public fire doors' : 'adjustable closing force', qty: n, unit: 'closers' }]
+                            : []),
+                        ...(exit
+                            ? [{ id: 'signage', name: 'Fire door signage discs', detail: '"Fire door keep shut", one each face', qty: n * 2, unit: 'signs' }]
                             : []),
                         { id: 'screws', name: 'Woodscrew trade pack, 4 × 30 mm', detail: 'hinges and keeps', qty: units(n / 6) || 1, unit: 'boxes' },
                     ],
@@ -346,15 +396,30 @@ export const doorsLinings: CalcSpec = {
                 '13 mm and 25 mm flat bits for latch and spindle holes',
                 'Block plane for easing edges, 2 mm gap all round, 6 mm at floor',
                 'Combination square and marking gauge',
+                ...(fire ? ['Router with 15 mm cutter for the intumescent strip grooves'] : []),
                 str(v, 'doorType') === 'oak'
                     ? 'Hardwax oil or clear varnish, seal all six faces including top and bottom edges'
                     : 'Primer and undercoat, seal all six faces including top and bottom edges',
             ],
             notes: [
                 'Seal every face of the door including top and bottom edges. Warping is a moisture story.',
-                'FD30 doors must not be trimmed past the manufacturer limit, usually 3 to 6 mm per edge.',
-                'Heavier fire doors need their own hinges. Never reuse 75 mm standard hinges.',
-                'At home, FD30 doors are required to garages and on some loft conversions and three-storey layouts. Rented HMOs and public buildings step up to self-closers and often FD30S smoke seals or FD60. When in doubt, ask building control before you buy.',
+                ...(fire
+                    ? [
+                          'FD30 doors must not be trimmed past the manufacturer limit, usually 3 to 6 mm per edge.',
+                          'Fire doors only earn their rating in a certified lining with the strips fitted. The calculator swaps your lining for the Firecheck pack automatically.',
+                          'Max 3 mm gap at sides and top, max 4 mm at the floor. Bigger gaps fail the rating.',
+                      ]
+                    : ['Hardwood external frames are stocked too (1981 × 762, 1981 × 838 and 2032 × 813 mm) if a door opens outside.']),
+                ...(use === 'fd30'
+                    ? ['At home, FD30 doors are needed to integral garages and on most loft conversions and three-storey layouts. Lever handles are fine. Flats, HMOs and rentals also need self-closers, tick the toggle above.']
+                    : []),
+                ...(exit
+                    ? [
+                          'Escape doors open in the direction of escape and the panic bar must work with one push, no key, no knowledge.',
+                          'If the door needs opening from outside as well, add an outside access device to match the panic bar.',
+                          'Public fire doors need closers, FD30S smoke seals and signage on both faces. Building control or your fire risk assessment has the final say.',
+                      ]
+                    : []),
             ],
         };
     },
