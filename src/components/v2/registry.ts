@@ -150,6 +150,26 @@ const BESPOKE: V2CalculatorMeta[] = [
         preview: 'Live conversions with trade equivalents',
     },
     {
+        slug: 'wallpapering',
+        name: 'Wallpapering',
+        category: 'Interiors & finishing',
+        description:
+            'See every drop before you paste a thing. Rolls, paste and lining paper worked out with the pattern repeat done properly.',
+        icon: 'fa-scroll',
+        kind: 'bespoke',
+        preview: 'Drop-by-drop wall plan',
+    },
+    {
+        slug: 'doors-linings',
+        name: 'Doors & door linings',
+        category: 'Interiors & finishing',
+        description:
+            'Door, lining, three hinges, latch, handles. The drawing shows where everything goes, and the fire door kit appears when you need it.',
+        icon: 'fa-door-open',
+        kind: 'bespoke',
+        preview: 'Door elevation with the ironmongery marked',
+    },
+    {
         slug: 'french-drain',
         name: 'French drain',
         category: 'Groundworks & drainage',

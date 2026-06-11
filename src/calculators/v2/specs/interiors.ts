@@ -1,7 +1,8 @@
 /**
  * @file src/calculators/v2/specs/interiors.ts
  *
- * Specs: wallpapering, skirting & architrave, doors & linings, bathroom.
+ * Specs: wallpapering, skirting & architrave, doors & linings.
+ * (Bathroom tiling merged into the main tiling calculator.)
  */
 
 import { fmtM2, units } from '../types';
@@ -57,12 +58,12 @@ export const wallpapering: CalcSpec = {
                 {
                     title: 'Paper & paste',
                     lines: [
-                        { id: 'paper', name: 'Wallpaper', detail: `0.53 × 10.05 m roll — same batch number throughout`, qty: rolls, unit: 'rolls' },
+                        { id: 'paper', name: 'Wallpaper (e.g. Anaglypta vinyl range)', detail: `530 mm × 10 m roll, same batch number throughout`, qty: rolls, unit: 'rolls' },
                         ...(bool(v, 'lining')
                             ? [{ id: 'lining', name: 'Lining paper, 1400 grade', detail: 'double roll 0.56 × 20 m, hung horizontally', qty: units((num(v, 'perimeter') * num(v, 'height') * 1.1) / 11.2), unit: 'rolls' }]
                             : []),
                         { id: 'paste', name: 'All-purpose wallpaper paste', detail: 'one box hangs ~4–5 rolls', qty: units((rolls + (bool(v, 'lining') ? 2 : 0)) / 4), unit: 'boxes' },
-                        { id: 'size', name: 'Wall size / primer-sealer', detail: 'seals bare plaster before hanging', qty: 1, unit: 'packs' },
+                        { id: 'size', name: 'Wall size / primer sealer', detail: 'seals bare plaster before hanging', qty: 1, unit: 'packs' },
                     ],
                 },
             ],
@@ -75,9 +76,9 @@ export const wallpapering: CalcSpec = {
                 'Steam stripper (hire) if old paper is coming off first',
             ],
             notes: [
-                'Add one spare roll on patterned papers — and keep the batch number.',
-                'Pattern repeat rounds every drop up to a whole repeat: a 64 cm repeat on 2.4 m walls wastes ~14% by design.',
-                'Free-match papers are the budget-friendly choice for first-time hangers.',
+                'Add one spare roll on patterned papers, and keep the batch number.',
+                'Pattern repeat rounds every drop up to a whole repeat. A 64 cm repeat on 2.4 m walls wastes about 14% by design.',
+                'Free-match papers are the friendly choice for first-time hangers.',
             ],
         };
     },
@@ -88,12 +89,12 @@ export const wallpapering: CalcSpec = {
 // ---------------------------------------------------------------------------
 
 export const skirtingArchitrave: CalcSpec = {
-    slug: 'skirting-architrave',
-    name: 'Skirting & architrave',
+    slug: 'finishing-touches',
+    name: 'Skirting, architrave & coving',
     category: 'Interiors & finishing',
     icon: 'fa-ruler-combined',
     description:
-        'Skirting lengths, architrave sets per door, plus the grab adhesive, caulk and pins everyone forgets.',
+        'The trims that finish a room: skirting by the metre, architrave per door, coving overhead and a panelling kit if you fancy one.',
     fields: [
         { kind: 'number', id: 'perimeter', label: 'Room perimeter', unit: 'm', min: 1, max: 60, default: 16 },
         { kind: 'number', id: 'doors', label: 'Door openings', min: 0, max: 8, step: 1, default: 1 },
@@ -108,7 +109,19 @@ export const skirtingArchitrave: CalcSpec = {
             ],
             default: 'torus',
         },
-        { kind: 'toggle', id: 'mdf', label: 'Primed MDF', hint: 'Off = pine — knots need priming', default: true },
+        { kind: 'toggle', id: 'mdf', label: 'Primed MDF', hint: 'Off = pine, knots need priming first', default: true },
+        {
+            kind: 'choice',
+            id: 'coving',
+            label: 'Coving',
+            options: [
+                { value: 'none', label: 'None' },
+                { value: 'plaster', label: 'Plaster 90' },
+                { value: 'supercove', label: 'SuperCove 127' },
+            ],
+            default: 'none',
+        },
+        { kind: 'toggle', id: 'panelling', label: 'Panelled feature wall', hint: 'Shaker MDF wall panelling kit', default: false },
     ],
     compute: (v) => {
         const doors = Math.round(num(v, 'doors'));
@@ -132,6 +145,68 @@ export const skirtingArchitrave: CalcSpec = {
                             : []),
                     ],
                 },
+                ...(str(v, 'coving') !== 'none'
+                    ? [
+                          {
+                              title: 'Coving',
+                              lines: [
+                                  str(v, 'coving') === 'plaster'
+                                      ? {
+                                            id: 'coving',
+                                            name: 'Siniat plaster cove, 90 mm × 3 m',
+                                            detail: 'gypsum, paints beautifully',
+                                            qty: units((num(v, 'perimeter') * 1.05) / 3),
+                                            unit: 'lengths',
+                                        }
+                                      : {
+                                            id: 'coving',
+                                            name: 'SuperCove polyurethane coving, 127 mm × 3 m',
+                                            detail: 'pack of 6, light and crack-resistant',
+                                            qty: units((num(v, 'perimeter') * 1.05) / 18),
+                                            unit: 'packs',
+                                        },
+                                  str(v, 'coving') === 'plaster'
+                                      ? {
+                                            id: 'coving-adhesive',
+                                            name: 'Siniat cove adhesive, 5 kg',
+                                            detail: 'about 15 m per bag',
+                                            qty: units(num(v, 'perimeter') / 15),
+                                            unit: 'bags',
+                                        }
+                                      : {
+                                            id: 'coving-adhesive',
+                                            name: 'SuperCove coving adhesive, 310 ml',
+                                            detail: 'about 8 m per cartridge',
+                                            qty: units(num(v, 'perimeter') / 8),
+                                            unit: 'cartridges',
+                                        },
+                              ],
+                          },
+                      ]
+                    : []),
+                ...(bool(v, 'panelling')
+                    ? [
+                          {
+                              title: 'Feature wall',
+                              lines: [
+                                  {
+                                      id: 'panelling-kit',
+                                      name: 'Shaker MDF wall panelling kit',
+                                      detail: '6 pre-cut strips, one kit per feature wall',
+                                      qty: 1,
+                                      unit: 'kits',
+                                  },
+                                  {
+                                      id: 'panelling-adhesive',
+                                      name: 'High-strength grab adhesive',
+                                      detail: 'one cartridge per kit',
+                                      qty: 1,
+                                      unit: 'cartridges',
+                                  },
+                              ],
+                          },
+                      ]
+                    : []),
                 {
                     title: 'Fixing & finishing',
                     lines: [
@@ -189,7 +264,11 @@ export const doorsLinings: CalcSpec = {
     compute: (v) => {
         const n = Math.round(num(v, 'doors'));
         const fire = bool(v, 'fire');
-        const doorName = { panel: 'Moulded 6-panel door', oak: 'Oak veneer 5-panel door', primed: 'Primed flush door' }[str(v, 'doorType')] ?? 'Oak veneer door';
+        const doorName = {
+            panel: 'Moulded panel door (Premdor / LPD range)',
+            oak: 'Oak veneer door (e.g. Belize, Shaker 4-panel)',
+            primed: 'White primed door (e.g. Amsterdam, Arnhem)',
+        }[str(v, 'doorType')] ?? 'Oak veneer door';
 
         return {
             facts: [
@@ -204,7 +283,15 @@ export const doorsLinings: CalcSpec = {
                         { id: 'doors', name: `${doorName}${fire ? ' FD30' : ''}`, detail: `1981 × 762 × ${fire ? 44 : 35} mm`, qty: n, unit: 'doors' },
                         ...(bool(v, 'newLinings')
                             ? [
-                                  { id: 'linings', name: `Door lining set, 32 × ${fire ? 138 : 115} mm${fire ? ' FD30' : ''}`, detail: 'inc. loose stops', qty: n, unit: 'sets' },
+                                  {
+                                      id: 'linings',
+                                      name: fire
+                                          ? 'Firecheck BWF door lining, 38 × 138 mm'
+                                          : 'Door lining pack, 32 × 138 mm',
+                                      detail: 'inc. loose stops',
+                                      qty: n,
+                                      unit: 'sets',
+                                  },
                                   { id: 'packers', name: 'Assorted packers / shims', detail: 'bag of 100', qty: units(n / 4), unit: 'bags' },
                                   { id: 'foam', name: 'Low-expansion gun foam', detail: 'one can per 2–3 linings', qty: units(n / 2.5), unit: 'cans' },
                               ]
@@ -238,82 +325,13 @@ export const doorsLinings: CalcSpec = {
                     : 'Primer and undercoat — seal all six faces including top and bottom edges',
             ],
             notes: [
-                'Seal every face of the door including top and bottom edges — warping is a moisture story.',
-                'FD30 doors must not be trimmed beyond the manufacturer limit (usually 3–6 mm per edge).',
-                'Heavier fire doors need their hinges — never reuse 75 mm standard hinges.',
+                'Seal every face of the door including top and bottom edges. Warping is a moisture story.',
+                'FD30 doors must not be trimmed past the manufacturer limit, usually 3 to 6 mm per edge.',
+                'Heavier fire doors need their own hinges. Never reuse 75 mm standard hinges.',
+                'At home, FD30 doors are required to garages and on some loft conversions and three-storey layouts. Rented HMOs and public buildings step up to self-closers and often FD30S smoke seals or FD60. When in doubt, ask building control before you buy.',
             ],
         };
     },
 };
 
-// ---------------------------------------------------------------------------
-// Bathroom walls & floor
-// ---------------------------------------------------------------------------
-
-export const bathroom: CalcSpec = {
-    slug: 'bathroom',
-    name: 'Bathroom walls & floor',
-    category: 'Kitchens & bathrooms',
-    icon: 'fa-bath',
-    description:
-        'Backer board, tanking, tile adhesive, grout, trims and silicone for a full bathroom refit — wet zones done right.',
-    fields: [
-        { kind: 'number', id: 'wallArea', label: 'Wall area to tile', unit: 'm²', min: 1, max: 60, step: 0.5, default: 18 },
-        { kind: 'number', id: 'floorArea', label: 'Floor area to tile', unit: 'm²', min: 0, max: 20, step: 0.5, default: 4 },
-        { kind: 'toggle', id: 'tanking', label: 'Tank the shower zone', hint: 'Waterproof membrane kit behind shower tiling', default: true },
-        { kind: 'toggle', id: 'backer', label: 'Cement backer board', hint: 'In wet zones instead of plasterboard', default: true },
-    ],
-    compute: (v) => {
-        const wall = num(v, 'wallArea');
-        const floor = num(v, 'floorArea');
-        const total = wall + floor;
-
-        return {
-            facts: [
-                { label: 'Wall tiling', value: fmtM2(wall) },
-                { label: 'Floor tiling', value: fmtM2(floor) },
-                { label: 'Wet zone', value: bool(v, 'tanking') ? 'Tanked' : 'Not tanked' },
-            ],
-            sections: [
-                {
-                    title: 'Substrate & waterproofing',
-                    lines: [
-                        ...(bool(v, 'backer')
-                            ? [{ id: 'backer', name: 'Cement backer board, 12 mm', detail: '1200 × 800 mm (0.96 m²) — wet walls', qty: units(Math.min(wall, 6) / 0.96), unit: 'boards' },
-                               { id: 'backer-screws', name: 'Backer board screws & alkaline-resistant tape', detail: 'kit per ~6 boards', qty: 1, unit: 'kits' }]
-                            : []),
-                        ...(bool(v, 'tanking')
-                            ? [{ id: 'tanking', name: 'Shower tanking (waterproofing) kit', detail: 'covers ~4.5 m² inc. corner tape', qty: units(Math.min(wall, 9) / 4.5), unit: 'kits' }]
-                            : []),
-                        { id: 'primer', name: 'Acrylic tile primer', detail: 'porous backgrounds before adhesive', qty: 1, unit: 'bottles' },
-                    ],
-                },
-                {
-                    title: 'Tiling consumables',
-                    lines: [
-                        { id: 'adhesive', name: 'Rapid-set flexible tile adhesive (white)', detail: '20 kg bag ≈ 4 m² with a 10 mm trowel', qty: units(total / 4), unit: 'bags' },
-                        { id: 'grout', name: 'Flexible wall & floor grout', detail: '5 kg bag ≈ 8–10 m² (tile-size dependent)', qty: units(total / 8), unit: 'bags' },
-                        { id: 'spacers', name: 'Tile spacers, 2 mm', detail: 'bag of 500', qty: units(total / 12), unit: 'bags' },
-                        { id: 'trim', name: 'Chrome / PVC tile trim, 2.44 m', detail: 'external edges and niches', qty: units(Math.sqrt(wall) * 1.5 / 2.44) + 2, unit: 'lengths' },
-                        { id: 'silicone', name: 'Mould-resistant sanitary silicone', detail: 'every internal corner, tray and worktop joint', qty: units(total / 10) + 1, unit: 'cartridges' },
-                    ],
-                },
-            ],
-            tools: [
-                'Manual tile cutter + tile saw for cut-outs around pipes',
-                'Notched trowel (10 mm walls, 12 mm floors) and grout float',
-                'Tile levelling clips for large-format tiles',
-                'Laser level — set out from a level datum, never the bath edge',
-                'Sealant gun, masking tape and smoothing tool for the silicone day',
-                'Sponges, buckets and a grout profiling tool',
-            ],
-            notes: [
-                'Plasterboard holds ~32 kg/m² tiled; cement board holds ~50 kg/m² — check your tile weight.',
-                'Tank at minimum the shower enclosure plus 300 mm beyond it.',
-                'Silicone joints, not grout, at every change of plane — they move, grout cracks.',
-            ],
-        };
-    },
-};
-
-export const INTERIOR_SPECS: CalcSpec[] = [wallpapering, skirtingArchitrave, doorsLinings, bathroom];
+export const INTERIOR_SPECS: CalcSpec[] = [skirtingArchitrave];

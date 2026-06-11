@@ -93,7 +93,7 @@ export default function FlooringCalculator() {
     const [input, setInput] = useState<FlooringInput>({
         widthM: 3.5,
         lengthM: 4.5,
-        floorId: 'laminate',
+        floorId: 'laminate8',
         concreteSubfloor: false,
         doorways: 1,
     });
@@ -111,12 +111,9 @@ export default function FlooringCalculator() {
                 </div>
                 <Segmented
                     label="Floor type"
-                    value={input.floorId as 'laminate' | 'lvt' | 'engineered'}
+                    value={input.floorId}
                     onChange={(v) => set('floorId', v)}
-                    options={FLOOR_TYPES.map((f) => ({
-                        value: f.id as 'laminate' | 'lvt' | 'engineered',
-                        label: f.label,
-                    }))}
+                    options={FLOOR_TYPES.map((f) => ({ value: f.id, label: f.label }))}
                 />
                 <NumberField
                     label="Doorways"
