@@ -6,7 +6,7 @@
  */
 
 import { useMemo, useState } from 'react';
-import { calculateTiling, planTiling, TILE_FORMATS, type TilingInput } from '../../calculators/v2/tiling';
+import { calculateTiling, planTiling, TILE_FORMATS, TILE_SPACERS, type TilingInput } from '../../calculators/v2/tiling';
 import { BlueprintPanel, JobCard, NumberField, Segmented, ToggleRow } from './ui';
 import MaterialsTicket from './MaterialsTicket';
 
@@ -87,7 +87,10 @@ export default function TilingCalculator() {
         widthM: 3,
         heightM: 2.4,
         tileId: '300x600',
+        customWMm: 300,
+        customHMm: 300,
         surface: 'wall',
+        jointMm: 2,
         wastePct: 10,
         includeTrim: true,
         tanking: false,
@@ -115,12 +118,50 @@ export default function TilingCalculator() {
                         { value: 'floor', label: 'Floor' },
                     ]}
                 />
-                <Segmented
-                    label="Tile format"
-                    value={input.tileId}
-                    onChange={(v) => set('tileId', v)}
-                    options={TILE_FORMATS.map((t) => ({ value: t.id, label: t.label }))}
-                />
+                <div>
+                    <label htmlFor="tile-format" className="form-label text-sm">
+                        Tile format
+                    </label>
+                    <select
+                        id="tile-format"
+                        className="form-select"
+                        value={input.tileId}
+                        onChange={(e) => set('tileId', e.target.value)}
+                    >
+                        {TILE_FORMATS.map((t) => (
+                            <option key={t.id} value={t.id}>
+                                {t.label} mm
+                            </option>
+                        ))}
+                        <option value="custom">Custom size…</option>
+                    </select>
+                </div>
+                {input.tileId === 'custom' && (
+                    <div className="grid grid-cols-2 gap-3">
+                        <NumberField label="Tile width" value={input.customWMm} onChange={(v) => set('customWMm', Math.round(v))} unit="mm" min={20} max={1200} step={5} />
+                        <NumberField label="Tile height" value={input.customHMm} onChange={(v) => set('customHMm', Math.round(v))} unit="mm" min={20} max={1200} step={5} />
+                    </div>
+                )}
+                <div>
+                    <label htmlFor="spacer-size" className="form-label text-sm">
+                        Spacer size
+                    </label>
+                    <select
+                        id="spacer-size"
+                        className="form-select"
+                        value={input.jointMm}
+                        onChange={(e) => set('jointMm', Number(e.target.value))}
+                    >
+                        {TILE_SPACERS.map((mm) => (
+                            <option key={mm} value={mm}>
+                                {mm} mm joint
+                            </option>
+                        ))}
+                    </select>
+                    <span className="field-description">
+                        Sets the grout joint. 2 mm is typical on walls, 3 mm on floors.
+                    </span>
+                </div>
                 <Segmented
                     label="Cutting waste"
                     value={String(input.wastePct) as '10' | '15'}
