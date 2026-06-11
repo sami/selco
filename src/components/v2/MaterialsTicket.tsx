@@ -30,7 +30,12 @@ function ticketAsText(bom: BillOfMaterials): string {
         for (const t of bom.tools) lines.push(`[ ] ${t}`);
         lines.push('');
     }
-    lines.push('Quantities are estimates — verify coverage and site conditions before ordering.');
+    if (bom.notes.length) {
+        lines.push('-- NOTES --');
+        for (const n of bom.notes) lines.push(`- ${n}`);
+        lines.push('');
+    }
+    lines.push('Quantities are estimates. Check coverage and site conditions before ordering.');
     return lines.join('\n');
 }
 
