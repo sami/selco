@@ -34,7 +34,7 @@ const BESPOKE: V2CalculatorMeta[] = [
         name: 'Artificial grass',
         category: 'Garden & outdoors',
         description:
-            'Plans the actual roll strips for your lawn, picks 2 m or 4 m rolls to cut waste, and lists tape, membrane, sub-base and infill.',
+            'Plans Luxigraze 2 m roll strips for your lawn, picks 4/5/6 m roll lengths to cut waste, and lists tape, membrane, sub-base and infill.',
         icon: 'fa-seedling',
         kind: 'bespoke',
         preview: 'Live roll plan with seams and pile direction',

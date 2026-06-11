@@ -1,117 +1,148 @@
 /**
  * @file src/calculators/v2/artificial-grass.ts
  *
- * Artificial grass (astro turf) estimator.
+ * Artificial grass (astro turf) estimator — mapped to Selco's stocked range.
  *
- * Grass is sold off 2 m and 4 m wide rolls, cut to length. Strips must all
- * run the same way (pile direction), so the engine plans strip layout in
- * both orientations and both roll widths, then recommends the plan with the
- * least bought-but-wasted grass.
+ * Selco sells Luxigraze 30 Premium artificial grass as 2 m-wide Midi rolls
+ * in fixed 4 m / 5 m / 6 m lengths (covering 8 / 10 / 12 m²) — not cut to
+ * length off a wide roll. So the engine plans 2 m strips running one way
+ * (pile direction is constant), then chooses the roll LENGTHS that cover
+ * each strip with the least waste. It tries both lawn orientations and
+ * keeps whichever buys the least grass, then the fewest seams.
  *
- * Build-up assumed (typical domestic install on soil):
- *   - excavate ~75 mm
- *   - 50 mm MOT Type 1 sub-base, compacted
- *   - 25 mm sharp sand laying course
- *   - weed membrane
- *   - grass, jointed with tape + adhesive, pinned at edges
- *   - optional kiln-dried sand infill (~5 kg/m²)
+ * Accessories follow the real SKUs: jointing tape (20 m roll), grass
+ * adhesive (310 ml), fixing pins (pack of 10), Plantex weed membrane
+ * (2 m × 25 m), and optional CORE EDGE lawn edging (5 m pack).
  */
 
 import type { BillOfMaterials, BomLine } from './types';
 import { fmtM2, units } from './types';
+
+/** Luxigraze Midi roll lengths Selco stocks, 2 m wide. */
+const ROLL_LENGTHS_M = [4, 5, 6] as const;
+const ROLL_WIDTH_M = 2;
 
 export interface GrassInput {
     /** Lawn width in metres. */
     widthM: number;
     /** Lawn length in metres. */
     lengthM: number;
-    /** Roll width preference. 'auto' compares 2 m and 4 m plans. */
-    rollWidth: 2 | 4 | 'auto';
     /** Include MOT Type 1 + sharp sand groundworks. */
     includeGroundworks: boolean;
     /** Include kiln-dried sand infill. */
     includeInfill: boolean;
+    /** Include CORE EDGE perimeter lawn edging. */
+    includeEdging: boolean;
 }
 
-/** One planned strip of grass as cut from the roll. */
+/** One planned 2 m strip, made up of one or more whole rolls end-to-end. */
 export interface GrassStrip {
     /** Offset across the lawn, metres. */
     offsetM: number;
-    /** Strip width as laid (may be a part-roll edge strip), metres. */
+    /** Strip width as laid (2 m, or a part-strip at the last edge). */
     widthM: number;
-    /** Strip length as laid, metres. */
+    /** Strip length as laid (the lawn's "along" dimension), metres. */
     lengthM: number;
+    /** Roll lengths (4/5/6 m) making up this strip, in order. */
+    rolls: number[];
 }
 
 export interface GrassPlan {
-    rollWidthM: 2 | 4;
     /** True when strips run along the lawn's length dimension. */
     stripsRunAlongLength: boolean;
     strips: GrassStrip[];
-    /** Number of seams between strips. */
-    joints: number;
+    /** Seams between adjacent strips (run the strip length). */
+    sideSeams: number;
+    /** Seams where rolls join end-to-end within a strip (2 m long each). */
+    crossSeams: number;
     /** Total linear metres of seam. */
-    jointLengthM: number;
-    /** Grass bought, m² (whole strip widths off the roll). */
+    seamLengthM: number;
+    /** Count of each roll length bought. */
+    rollCounts: { len4: number; len5: number; len6: number };
+    /** Grass bought, m² (whole 2 m × length rolls). */
     boughtM2: number;
     /** Lawn area actually covered, m². */
     lawnM2: number;
-    /** Bought minus used, m². */
+    /** Bought minus covered, m². */
     wasteM2: number;
 }
 
-const CUT_ALLOWANCE_M = 0.1; // trim allowance per strip end
+/**
+ * Choose the roll lengths (from {4,5,6}) that cover a strip of length L with
+ * the least total grass, then the fewest rolls. Every value in [4n, 6n] is
+ * reachable with n rolls, so the optimum is the smallest n with 6n ≥ L and
+ * a buy of max(4n, ⌈L⌉) metres, decomposed back into 4/5/6 m rolls.
+ */
+export function rollsForLength(lengthM: number): number[] {
+    const need = Math.max(1, Math.ceil(lengthM - 1e-9));
+    const n = Math.max(1, Math.ceil(need / ROLL_LENGTHS_M[ROLL_LENGTHS_M.length - 1]));
+    const target = Math.max(4 * n, need); // total metres to buy
+    const rolls = new Array(n).fill(4);
+    let extra = target - 4 * n; // metres to add by upgrading 4 m rolls
+    for (let i = 0; i < n && extra >= 2; i++) {
+        rolls[i] = 6;
+        extra -= 2;
+    }
+    if (extra === 1) {
+        const i = rolls.indexOf(4);
+        rolls[i >= 0 ? i : 0] = 5;
+    }
+    return rolls;
+}
 
-/** Plan strips for one roll width / orientation combination. */
+/** Plan strips + rolls for one lawn orientation. */
 function planOrientation(
     acrossM: number,
     alongM: number,
-    rollWidthM: 2 | 4,
     stripsRunAlongLength: boolean,
 ): GrassPlan {
-    const stripCount = Math.max(1, Math.ceil(acrossM / rollWidthM));
+    const stripCount = Math.max(1, Math.ceil(acrossM / ROLL_WIDTH_M));
     const strips: GrassStrip[] = [];
+    let crossSeams = 0;
+    const rollCounts = { len4: 0, len5: 0, len6: 0 };
+    let boughtM2 = 0;
+
     for (let i = 0; i < stripCount; i++) {
-        const remaining = acrossM - i * rollWidthM;
+        const remaining = acrossM - i * ROLL_WIDTH_M;
+        const rolls = rollsForLength(alongM);
+        crossSeams += rolls.length - 1;
+        for (const r of rolls) {
+            if (r === 4) rollCounts.len4++;
+            else if (r === 5) rollCounts.len5++;
+            else rollCounts.len6++;
+            boughtM2 += ROLL_WIDTH_M * r;
+        }
         strips.push({
-            offsetM: i * rollWidthM,
-            widthM: Math.min(rollWidthM, remaining),
+            offsetM: i * ROLL_WIDTH_M,
+            widthM: Math.min(ROLL_WIDTH_M, remaining),
             lengthM: alongM,
+            rolls,
         });
     }
-    const boughtM2 = stripCount * rollWidthM * (alongM + CUT_ALLOWANCE_M);
+
+    const sideSeams = stripCount - 1;
     const lawnM2 = acrossM * alongM;
     return {
-        rollWidthM,
         stripsRunAlongLength,
         strips,
-        joints: stripCount - 1,
-        jointLengthM: (stripCount - 1) * alongM,
+        sideSeams,
+        crossSeams,
+        seamLengthM: sideSeams * alongM + crossSeams * ROLL_WIDTH_M,
+        rollCounts,
         boughtM2,
         lawnM2,
         wasteM2: boughtM2 - lawnM2,
     };
 }
 
-/** Compare candidate plans and pick the least wasteful. */
+/** Compare both orientations and pick the least-waste, then least-seam plan. */
 export function planGrass(input: GrassInput): GrassPlan {
-    const { widthM, lengthM } = input;
-    const rollWidths: Array<2 | 4> =
-        input.rollWidth === 'auto' ? [2, 4] : [input.rollWidth];
-
-    const candidates: GrassPlan[] = [];
-    for (const rw of rollWidths) {
-        // strips running along the length (laid across the width)
-        candidates.push(planOrientation(widthM, lengthM, rw, true));
-        // strips running along the width (laid across the length)
-        candidates.push(planOrientation(lengthM, widthM, rw, false));
-    }
-    // Least waste wins; fewer joints breaks ties (joints are the failure
-    // point of cheap installs, so they matter more than pennies of grass).
-    candidates.sort(
-        (a, b) => a.wasteM2 - b.wasteM2 || a.joints - b.joints,
-    );
-    return candidates[0];
+    const a = planOrientation(input.widthM, input.lengthM, true);
+    const b = planOrientation(input.lengthM, input.widthM, false);
+    const aSeams = a.sideSeams + a.crossSeams;
+    const bSeams = b.sideSeams + b.crossSeams;
+    if (a.boughtM2 !== b.boughtM2) return a.boughtM2 < b.boughtM2 ? a : b;
+    return aSeams <= bSeams ? a : b;
 }
 
 export function calculateGrass(input: GrassInput): BillOfMaterials {
@@ -119,47 +150,64 @@ export function calculateGrass(input: GrassInput): BillOfMaterials {
     const lawnM2 = plan.lawnM2;
     const perimeterM = 2 * (input.widthM + input.lengthM);
 
-    const grassLines: BomLine[] = [
-        {
-            id: 'grass',
-            name: 'Artificial grass, 30 mm pile',
-            detail: `${plan.rollWidthM} m roll — ${plan.strips.length} strip${plan.strips.length === 1 ? '' : 's'} cut to length`,
-            qty: Math.ceil(plan.boughtM2 * 10) / 10,
-            unit: 'm²',
-        },
+    // Grass rolls, one BoM line per stocked size that's used.
+    const ROLL_META: Array<{ key: 'len6' | 'len5' | 'len4'; len: number; cover: number }> = [
+        { key: 'len6', len: 6, cover: 12 },
+        { key: 'len5', len: 5, cover: 10 },
+        { key: 'len4', len: 4, cover: 8 },
+    ];
+    const rollLines: BomLine[] = ROLL_META.filter((m) => plan.rollCounts[m.key] > 0).map((m) => ({
+        id: `grass-${m.len}`,
+        name: 'Luxigraze 30 Premium artificial grass',
+        detail: `2 m × ${m.len} m Midi roll (covers ${m.cover} m²), 30 mm pile`,
+        qty: plan.rollCounts[m.key],
+        unit: 'rolls',
+    }));
+
+    const fixingLines: BomLine[] = [
         {
             id: 'membrane',
-            name: 'Weed control membrane',
-            detail: '1 m × 15 m roll',
-            qty: units((lawnM2 * 1.1) / 15),
+            name: 'Plantex Professional weed control fabric',
+            detail: '2 m × 25 m roll (50 m²) — laid under the grass',
+            qty: units((lawnM2 * 1.1) / 50),
             unit: 'rolls',
         },
         {
             id: 'pins',
-            name: 'Galvanised turf fixing U-pins',
-            detail: 'pack of 50 — one per 0.5 m of edge',
-            qty: units(perimeterM / 0.5 / 50),
+            name: 'Luxigraze artificial grass fixing pins',
+            detail: 'pack of 10 — pinned ~400 mm around edges and seams',
+            qty: units((perimeterM / 0.4 + plan.seamLengthM / 0.5) / 10),
             unit: 'packs',
         },
     ];
 
-    if (plan.joints > 0) {
-        grassLines.push(
+    if (plan.sideSeams + plan.crossSeams > 0) {
+        fixingLines.push(
             {
                 id: 'tape',
-                name: 'Self-adhesive grass joining tape',
-                detail: '150 mm × 10 m roll',
-                qty: units(plan.jointLengthM / 10),
+                name: 'Luxigraze artificial grass jointing tape',
+                detail: '20 m roll — under every seam',
+                qty: units(plan.seamLengthM / 20),
                 unit: 'rolls',
             },
             {
                 id: 'adhesive',
-                name: 'Artificial grass seam adhesive',
-                detail: '310 ml cartridge — covers ~3 m of seam',
-                qty: units(plan.jointLengthM / 3),
-                unit: 'tubes',
+                name: 'Luxigraze artificial grass adhesive',
+                detail: '310 ml cartridge — covers ~5 m of taped seam',
+                qty: units(plan.seamLengthM / 5),
+                unit: 'cartridges',
             },
         );
+    }
+
+    if (input.includeEdging) {
+        fixingLines.push({
+            id: 'edging',
+            name: 'CORE EDGE 65 mm Black premium lawn edging',
+            detail: 'pack of 5 (5 linear metres)',
+            qty: units(perimeterM / 5),
+            unit: 'packs',
+        });
     }
 
     const groundLines: BomLine[] = input.includeGroundworks
@@ -168,15 +216,13 @@ export function calculateGrass(input: GrassInput): BillOfMaterials {
                   id: 'mot',
                   name: 'MOT Type 1 sub-base',
                   detail: 'bulk bag (~850 kg) — 50 mm compacted',
-                  // 50 mm at ~2.2 t/m³ compacted ≈ 110 kg per m²
                   qty: units((lawnM2 * 0.05 * 2200) / 850),
                   unit: 'bulk bags',
               },
               {
                   id: 'sharp-sand',
                   name: 'Sharp sand',
-                  detail: 'bulk bag (~850 kg) — 25 mm bed',
-                  // 25 mm at ~1.7 t/m³ ≈ 42.5 kg per m²
+                  detail: 'bulk bag (~850 kg) — 25 mm laying course',
                   qty: units((lawnM2 * 0.025 * 1700) / 850),
                   unit: 'bulk bags',
               },
@@ -187,7 +233,7 @@ export function calculateGrass(input: GrassInput): BillOfMaterials {
         ? [
               {
                   id: 'infill',
-                  name: 'Kiln-dried paving sand (infill)',
+                  name: 'Kiln-dried sand infill',
                   detail: '25 kg bag — ~5 kg per m²',
                   qty: units((lawnM2 * 5) / 25),
                   unit: 'bags',
@@ -195,19 +241,22 @@ export function calculateGrass(input: GrassInput): BillOfMaterials {
           ]
         : [];
 
-    const orientation = plan.stripsRunAlongLength
-        ? 'along the length'
-        : 'across the width';
+    const orientation = plan.stripsRunAlongLength ? 'along the length' : 'across the width';
+    const totalSeams = plan.sideSeams + plan.crossSeams;
+    const rollSummary = ROLL_META.filter((m) => plan.rollCounts[m.key] > 0)
+        .map((m) => `${plan.rollCounts[m.key]} × ${m.len} m`)
+        .join(' + ');
 
     return {
         facts: [
             { label: 'Lawn area', value: fmtM2(lawnM2) },
-            { label: 'Roll plan', value: `${plan.strips.length} × ${plan.rollWidthM} m strips, ${orientation}` },
-            { label: 'Seams', value: plan.joints === 0 ? 'none — single piece' : `${plan.joints} (${plan.jointLengthM.toFixed(1)} m)` },
-            { label: 'Off-cut waste', value: fmtM2(plan.wasteM2) },
+            { label: 'Roll plan', value: `${plan.strips.length} strips ${orientation}` },
+            { label: 'Rolls', value: rollSummary || '—' },
+            { label: 'Seams', value: totalSeams === 0 ? 'none' : `${totalSeams} (${plan.seamLengthM.toFixed(1)} m)` },
         ],
         sections: [
-            { title: 'Grass & fixing', lines: grassLines },
+            { title: 'Grass', lines: rollLines },
+            { title: 'Membrane, pins & seams', lines: fixingLines },
             ...(groundLines.length ? [{ title: 'Groundworks', lines: groundLines }] : []),
             ...(finishLines.length ? [{ title: 'Finishing', lines: finishLines }] : []),
         ],
@@ -220,8 +269,8 @@ export function calculateGrass(input: GrassInput): BillOfMaterials {
             'Tape measure, string line and marking paint',
         ],
         notes: [
-            'All strips laid with pile leaning the same way — towards the main viewpoint.',
-            'Roll plan chosen automatically to minimise off-cut waste, then seams.',
+            'Grass comes in 2 m-wide rolls — lay every strip with the pile leaning the same way, towards the main viewpoint.',
+            'Roll lengths chosen automatically to minimise waste, then seams; whole rolls are quoted, so trim the surplus on site.',
             input.includeGroundworks
                 ? 'Build-up: 50 mm compacted MOT Type 1 + 25 mm sharp sand. Excavate ~75 mm.'
                 : 'Groundworks excluded — assumes an existing prepared base.',
