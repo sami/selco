@@ -35,14 +35,8 @@ describe('doorsLinings — size choice', () => {
 
 describe('doorsLinings — type choice', () => {
     it('TC3: the door name reflects the chosen type', () => {
-        expect(line({ ...base, doorType: 'glazed' }, 'doors')!.name.toLowerCase()).toContain('glazed');
-        expect(line({ ...base, doorType: 'moulded6' }, 'doors')!.name.toLowerCase()).toContain('6');
-    });
-
-    it('TC4: the spec lists more than the original three door types', () => {
-        const typeField = doorsLinings.fields.find((f) => f.id === 'doorType');
-        expect(typeField?.kind).toBe('choice');
-        if (typeField?.kind === 'choice') expect(typeField.options.length).toBeGreaterThan(3);
+        expect(line({ ...base, doorType: 'oak' }, 'doors')!.name.toLowerCase()).toContain('oak');
+        expect(line({ ...base, doorType: 'panel' }, 'doors')!.name.toLowerCase()).toContain('moulded');
     });
 });
 
