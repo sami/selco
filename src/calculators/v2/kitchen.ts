@@ -34,6 +34,16 @@
 
 import type { BillOfMaterials, BomLine } from './types';
 import { units } from './types';
+import {
+    CARCASS,
+    CORNER,
+    DRAWER_FRONTS,
+    END_PANELS,
+    TALL_UNITS,
+    BUILT_UNDER_OVEN,
+    fmtSize,
+    fmtSplit,
+} from './kitchen-dimensions';
 
 export type KitchenShape = 'galley' | 'l-shape' | 'u-shape';
 export type DoorStyle = 'handled' | 'handleless';
@@ -431,8 +441,8 @@ export function calculateKitchen(input: KitchenInput): BillOfMaterials {
         ...(corners
             ? [
                   input.cornerType === 'l935'
-                      ? { id: 'corner', name: '935 mm corner base unit, L-shape', detail: 'sold as two packs, order both', qty: corners, unit: 'units (2 packs each)' }
-                      : { id: 'corner', name: '1000 mm corner base unit', detail: 'blanks the corner with a single door', qty: corners, unit: 'units' },
+                      ? { id: 'corner', name: '935 mm corner base unit, L-shape', detail: `${CORNER.l935.footprintMm} × ${CORNER.l935.footprintMm} mm footprint, ${fmtSplit(CORNER.l935.fasciaSplit)} fascia; sold as two packs, order both. ${CORNER.l935.note[0].toUpperCase()}${CORNER.l935.note.slice(1)}.`, qty: corners, unit: 'units (2 packs each)' }
+                      : { id: 'corner', name: '1000 mm corner base unit', detail: `${CORNER.c1000.doorFaceMm} mm door face + ${CORNER.c1000.blankingPanelMm} mm blanking panel; blanks the corner with a single door`, qty: corners, unit: 'units' },
               ]
             : []),
         // The sink zone's under-units.
@@ -465,25 +475,31 @@ export function calculateKitchen(input: KitchenInput): BillOfMaterials {
             : []),
         ...[300, 400, 500, 600, 1000]
             .filter((w) => count('base', w) > 0)
-            .map((w) => ({ id: `base-${w}`, name: `${w} mm base unit`, qty: count('base', w), unit: 'units' })),
+            .map((w) => ({
+                id: `base-${w}`,
+                name: `${w} mm base unit`,
+                detail: `${CARCASS.base.doorFrontMm} mm door over a ${CARCASS.base.plinthMm} mm plinth, ${CARCASS.base.toWorktopMm} mm to the worktop, ${CARCASS.base.depthMm} mm deep`,
+                qty: count('base', w),
+                unit: 'units',
+            })),
         ...[500, 600, 800]
             .filter((w) => count('drawers', w) > 0)
             .map((w) =>
                 w === 800
-                    ? { id: 'drawers-800', name: '800 mm three drawer unit', detail: 'sold as two packs, order both', qty: count('drawers', 800), unit: 'units (2 packs)' }
-                    : { id: `drawers-${w}`, name: w === 500 ? '500 mm four drawer unit' : '600 mm three drawer unit', qty: count('drawers', w), unit: 'units' },
+                    ? { id: 'drawers-800', name: '800 mm three drawer unit', detail: `fronts ${fmtSplit(DRAWER_FRONTS[800])}; sold as two packs, order both`, qty: count('drawers', 800), unit: 'units (2 packs)' }
+                    : { id: `drawers-${w}`, name: w === 500 ? '500 mm four drawer unit' : '600 mm three drawer unit', detail: `fronts ${fmtSplit(DRAWER_FRONTS[w])}`, qty: count('drawers', w), unit: 'units' },
             ),
         ...(count('wine') ? [{ id: 'wine', name: '150 mm wine rack unit', qty: count('wine'), unit: 'units' }] : []),
         ...(count('pullout') ? [{ id: 'pullout', name: '150 mm pull-out base unit', qty: count('pullout'), unit: 'units' }] : []),
         ...(count('cooker') && input.ovenHousing
             ? [
-                  { id: 'oven-housing', name: '600 mm built-under oven housing unit', qty: count('cooker'), unit: 'units' },
+                  { id: 'oven-housing', name: '600 mm built-under oven housing unit', detail: `${BUILT_UNDER_OVEN.topDrawerMm} mm drawer over the oven aperture`, qty: count('cooker'), unit: 'units' },
                   { id: 'oven-doors', name: 'Oven housing fascia door pack', detail: 'top and bottom doors around the oven aperture', qty: count('cooker'), unit: 'packs' },
               ]
             : []),
         ...(larders
             ? [
-                  { id: 'larder', name: '600 mm larder & appliance cabinet', qty: larders, unit: 'units' },
+                  { id: 'larder', name: '600 mm larder & appliance cabinet', detail: `${TALL_UNITS.larder600.widthMm} mm wide, ${CARCASS.tall.overallMm} mm tall (${CARCASS.tall.fasciaMm} mm fascia + ${CARCASS.tall.plinthMm} mm plinth), ${CARCASS.tall.depthMm} mm deep; doors ${fmtSplit(TALL_UNITS.larder600.doorsMm)}`, qty: larders, unit: 'units' },
                   { id: 'larder-doors', name: 'Larder fascia door pack', detail: 'a tall and a top door, sizes differ by unit, the pack matches yours', qty: larders, unit: 'packs' },
                   { id: 'larder-fittings', name: 'Larder unit fitting pack', qty: larders, unit: 'packs' },
                   { id: 'larder-hinges', name: 'Larder unit hinges, pack of 5', qty: larders, unit: 'packs' },
@@ -491,28 +507,28 @@ export function calculateKitchen(input: KitchenInput): BillOfMaterials {
             : []),
         ...(fridges && input.fridgeType === 'integrated'
             ? [
-                  { id: 'fridge-housing', name: '600 mm built-in 50/50 fridge freezer housing', qty: fridges, unit: 'units' },
+                  { id: 'fridge-housing', name: '600 mm built-in 50/50 fridge freezer housing', detail: `fascia split ${fmtSplit(TALL_UNITS.fridge5050.splitMm)} (50:50); 70:30 housings split ${fmtSplit(TALL_UNITS.fridge7030.splitMm)}`, qty: fridges, unit: 'units' },
                   { id: 'fridge-doors', name: 'Fridge housing fascia door pair (50/50 split)', detail: '70/30 housings take a different pair, match yours in branch', qty: fridges, unit: 'pairs' },
               ]
             : []),
-        ...(plan.wallUnitCount ? [{ id: 'wall-units', name: '600 mm wall unit', qty: plan.wallUnitCount, unit: 'units' }] : []),
-        ...(plan.wallCornerCount ? [{ id: 'wall-corner', name: '635 mm corner wall unit', qty: plan.wallCornerCount, unit: 'units' }] : []),
+        ...(plan.wallUnitCount ? [{ id: 'wall-units', name: '600 mm wall unit', detail: `${CARCASS.wall.heightMm} mm high, ${CARCASS.wall.depthMm} mm deep`, qty: plan.wallUnitCount, unit: 'units' }] : []),
+        ...(plan.wallCornerCount ? [{ id: 'wall-corner', name: '635 mm corner wall unit', detail: `${CORNER.wall635.footprintMm} × ${CORNER.wall635.footprintMm} mm; the conventional 600 corner wall unit is ${fmtSplit(CORNER.wall600.fasciaSplit)} fascia with a ${CORNER.wall600.returnMm} mm return`, qty: plan.wallCornerCount, unit: 'units' }] : []),
     ];
 
     const panelLines: BomLine[] = [
         ...(fasciaDoors
             ? [{ id: 'fascia-doors', name: 'Appliance fascia door, 600 mm', detail: 'one per integrated appliance, matches the range', qty: fasciaDoors, unit: 'doors' }]
             : []),
-        { id: 'base-clads', name: 'Base unit clad panel', detail: 'one per exposed run end', qty: 2, unit: 'panels' },
+        { id: 'base-clads', name: 'Base unit clad panel', detail: `${fmtSize(END_PANELS.base)}, 18 mm plant-on decor; one per exposed run end`, qty: 2, unit: 'panels' },
         ...(plan.wallUnitCount
-            ? [{ id: 'wall-clads', name: 'Wall unit clad panel', detail: 'one per exposed run end', qty: 2, unit: 'panels' }]
+            ? [{ id: 'wall-clads', name: 'Wall unit clad panel', detail: `${fmtSize(END_PANELS.wall)}, 18 mm plant-on decor; one per exposed run end`, qty: 2, unit: 'panels' }]
             : []),
         ...(plan.tallEndPanels
             ? [
                   {
                       id: 'tall-clads',
                       name: 'Tall clad panel',
-                      detail: 'every tall side not against a wall or another tall unit',
+                      detail: `${fmtSize(END_PANELS.tall)}, 18 mm plant-on decor; every tall side not against a wall or another tall unit`,
                       qty: plan.tallEndPanels,
                       unit: 'panels',
                   },
