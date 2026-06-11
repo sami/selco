@@ -101,7 +101,7 @@ export default function PatioCalculator() {
     const [input, setInput] = useState<PatioInput>({
         widthM: 4,
         lengthM: 5,
-        slabId: '600',
+        slabId: 'concrete600',
         wastePct: 5,
         includeSubBase: true,
         includeEdging: false,
@@ -120,11 +120,11 @@ export default function PatioCalculator() {
                 </div>
                 <Segmented
                     label="Slab format"
-                    value={input.slabId as '450' | '600' | '900x600'}
+                    value={input.slabId}
                     onChange={(v) => set('slabId', v)}
                     options={SLAB_FORMATS.map((s) => ({
-                        value: s.id as '450' | '600' | '900x600',
-                        label: s.label.replace(' mm', ''),
+                        value: s.id,
+                        label: s.label,
                     }))}
                 />
                 <Segmented

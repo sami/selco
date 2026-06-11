@@ -38,6 +38,7 @@ function FencePreview({ input }: { input: FenceInput }) {
     const topY = groundY - (input.heightM + gravelM) * scale;
 
     const postColor = input.postType === 'concrete' ? CONCRETE : TIMBER_DARK;
+    const spiked = plan.spikes > 0;
 
     return (
         <svg
@@ -65,12 +66,21 @@ function FencePreview({ input }: { input: FenceInput }) {
                 const px = x0 + i * (panelWPx + postWPx);
                 return (
                     <g key={i}>
-                        {/* post + post-fix concrete */}
-                        <rect x={px} y={topY} width={postWPx} height={(input.heightM + gravelM + burialM) * scale} fill={postColor} stroke="#04204b" strokeWidth="0.5" />
-                        <path
-                            d={`M ${px - 7} ${groundY + burialM * scale} L ${px + postWPx + 7} ${groundY + burialM * scale} L ${px + postWPx + 4} ${groundY + 4} L ${px - 4} ${groundY + 4} Z`}
-                            fill="rgba(255,255,255,0.25)"
-                        />
+                        {/* post, set in postmix or on a drive-in spike */}
+                        <rect x={px} y={topY} width={postWPx} height={(input.heightM + gravelM + (spiked ? 0 : burialM)) * scale} fill={postColor} stroke="#04204b" strokeWidth="0.5" />
+                        {spiked ? (
+                            <path
+                                d={`M ${px + postWPx / 2 - 4} ${groundY} L ${px + postWPx / 2 + 4} ${groundY} L ${px + postWPx / 2} ${groundY + burialM * scale} Z`}
+                                fill={CONCRETE}
+                                stroke="#04204b"
+                                strokeWidth="0.5"
+                            />
+                        ) : (
+                            <path
+                                d={`M ${px - 7} ${groundY + burialM * scale} L ${px + postWPx + 7} ${groundY + burialM * scale} L ${px + postWPx + 4} ${groundY + 4} L ${px - 4} ${groundY + 4} Z`}
+                                fill="rgba(255,255,255,0.25)"
+                            />
+                        )}
                         {/* gravel board */}
                         {input.includeGravelBoards && (
                             <rect
@@ -101,7 +111,7 @@ function FencePreview({ input }: { input: FenceInput }) {
                 x={x0 + shownPanels * (panelWPx + postWPx)}
                 y={topY}
                 width={postWPx}
-                height={(input.heightM + gravelM + burialM) * scale}
+                height={(input.heightM + gravelM + (spiked ? 0 : burialM)) * scale}
                 fill={postColor}
                 stroke="#04204b"
                 strokeWidth="0.5"
@@ -126,9 +136,7 @@ function FencePreview({ input }: { input: FenceInput }) {
             </g>
 
             <text x={W / 2} y={H - 10} fill="#fff" fontSize="11" textAnchor="middle" opacity="0.8">
-                {truncated
-                    ? `Showing ${shownPanels} of ${plan.panels} bays — every post set in post-fix concrete`
-                    : `${plan.panels} bays at 1.83 m — every post set in post-fix concrete`}
+                {`${truncated ? `Showing ${shownPanels} of ${plan.panels}` : plan.panels} bays at 1.83 m, every post ${spiked ? 'on a drive-in spike' : 'set in postmix'}`}
             </text>
         </svg>
     );
@@ -137,8 +145,10 @@ function FencePreview({ input }: { input: FenceInput }) {
 export default function FenceCalculator() {
     const [input, setInput] = useState<FenceInput>({
         runM: 12,
-        heightM: 1.8,
+        heightM: 1.829,
+        panelStyle: 'lap',
         postType: 'concrete',
+        useSpikes: false,
         includeGravelBoards: true,
         corners: 0,
     });
@@ -152,13 +162,23 @@ export default function FenceCalculator() {
             <JobCard title="Job details">
                 <NumberField label="Fence run" value={input.runM} onChange={(v) => set('runM', v)} unit="m" min={1.83} max={100} />
                 <Segmented
+                    label="Panel style"
+                    value={input.panelStyle}
+                    onChange={(v) => set('panelStyle', v)}
+                    options={[
+                        { value: 'lap', label: 'Lap' },
+                        { value: 'closeboard', label: 'Closeboard' },
+                    ]}
+                />
+                <Segmented
                     label="Fence height"
-                    value={String(input.heightM) as '1.2' | '1.5' | '1.8'}
+                    value={String(input.heightM)}
                     onChange={(v) => set('heightM', Number(v))}
                     options={[
-                        { value: '1.2', label: '4 ft' },
-                        { value: '1.5', label: '5 ft' },
-                        { value: '1.8', label: '6 ft' },
+                        { value: '0.914', label: '3 ft' },
+                        { value: '1.22', label: '4 ft' },
+                        { value: '1.525', label: '5 ft' },
+                        { value: '1.829', label: '6 ft' },
                     ]}
                 />
                 <Segmented<PostType>
@@ -167,9 +187,18 @@ export default function FenceCalculator() {
                     onChange={(v) => set('postType', v)}
                     options={[
                         { value: 'concrete', label: 'Concrete' },
-                        { value: 'timber', label: 'Timber' },
+                        { value: 'timber75', label: 'Timber 3"' },
+                        { value: 'timber100', label: 'Timber 4"' },
                     ]}
                 />
+                {input.postType !== 'concrete' && (
+                    <ToggleRow
+                        label="Powapost drive-in spikes"
+                        hint="No digging or postmix. Firm ground only"
+                        checked={input.useSpikes}
+                        onChange={(v) => set('useSpikes', v)}
+                    />
+                )}
                 <NumberField label="Corners in the run" value={input.corners} onChange={(v) => set('corners', Math.round(v))} min={0} max={6} step={1} hint="Each 90° turn needs an extra post" />
                 <ToggleRow
                     label="Gravel boards"

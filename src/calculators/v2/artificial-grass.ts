@@ -164,14 +164,38 @@ export function calculateGrass(input: GrassInput): BillOfMaterials {
         unit: 'rolls',
     }));
 
+    // Membrane: Selco stocks two roll sizes; pick the cheaper-area mix.
+    const membraneNeed = lawnM2 * 1.1;
+    const big = Math.floor(membraneNeed / 50);
+    const rem = membraneNeed - big * 50;
+    const smalls = rem > 0 ? Math.ceil(rem / 14) : 0;
+    // Three small rolls cost more area than one big one; consolidate.
+    const membraneRolls =
+        smalls >= 3 ? { big: big + 1, small: 0 } : { big, small: smalls };
+
     const fixingLines: BomLine[] = [
-        {
-            id: 'membrane',
-            name: 'Plantex Professional weed control fabric',
-            detail: '2 m × 25 m roll (50 m²) — laid under the grass',
-            qty: units((lawnM2 * 1.1) / 50),
-            unit: 'rolls',
-        },
+        ...(membraneRolls.big > 0
+            ? [
+                  {
+                      id: 'membrane-big',
+                      name: 'Plantex Professional weed control fabric',
+                      detail: '2 m × 25 m roll (50 m²) — laid under the grass',
+                      qty: membraneRolls.big,
+                      unit: 'rolls',
+                  },
+              ]
+            : []),
+        ...(membraneRolls.small > 0
+            ? [
+                  {
+                      id: 'membrane-small',
+                      name: 'TDP50 weed control fabric',
+                      detail: '1 m × 14 m roll — laid under the grass',
+                      qty: membraneRolls.small,
+                      unit: 'rolls',
+                  },
+              ]
+            : []),
         {
             id: 'pins',
             name: 'Luxigraze artificial grass fixing pins',
@@ -214,15 +238,15 @@ export function calculateGrass(input: GrassInput): BillOfMaterials {
         ? [
               {
                   id: 'mot',
-                  name: 'MOT Type 1 sub-base',
-                  detail: 'bulk bag (~850 kg) — 50 mm compacted',
+                  name: 'MOT Type 1 Roadstone',
+                  detail: 'Large Bag (~800 kg) — 50 mm compacted',
                   qty: units((lawnM2 * 0.05 * 2200) / 850),
                   unit: 'bulk bags',
               },
               {
                   id: 'sharp-sand',
-                  name: 'Sharp sand',
-                  detail: 'bulk bag (~850 kg) — 25 mm laying course',
+                  name: 'Concreting Sharp Sand',
+                  detail: 'Large Bag (~800 kg) — 25 mm laying course',
                   qty: units((lawnM2 * 0.025 * 1700) / 850),
                   unit: 'bulk bags',
               },
@@ -233,9 +257,9 @@ export function calculateGrass(input: GrassInput): BillOfMaterials {
         ? [
               {
                   id: 'infill',
-                  name: 'Kiln-dried sand infill',
-                  detail: '25 kg bag — ~5 kg per m²',
-                  qty: units((lawnM2 * 5) / 25),
+                  name: 'Kiln Dried Sand 20 kg',
+                  detail: '~5 kg per m² brushed into the pile',
+                  qty: units((lawnM2 * 5) / 20),
                   unit: 'bags',
               },
           ]

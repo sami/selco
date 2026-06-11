@@ -1,8 +1,8 @@
 /**
  * @file src/calculators/v2/specs/groundworks.ts
  *
- * Specs: concrete & footings, block-paved driveway, french drain,
- * landscape aggregates.
+ * Specs: concrete & footings, block-paved driveway, landscape aggregates.
+ * (French drain graduated to a bespoke calculator with its own visual.)
  */
 
 import { fmtM2, units } from '../types';
@@ -62,8 +62,8 @@ export const concrete: CalcSpec = {
                 {
                     title: 'Concrete (site-mixed)',
                     lines: [
-                        { id: 'ballast', name: 'All-in ballast', detail: 'bulk bag (~850 kg)', qty: units(ballastKg / 850), unit: 'bulk bags' },
-                        { id: 'cement', name: 'General-purpose cement', detail: '25 kg bag', qty: units(cementKg / 25), unit: 'bags' },
+                        { id: 'ballast', name: 'All-in ballast', detail: 'Large Bag (~800 kg)', qty: units(ballastKg / 800), unit: 'Large Bags' },
+                        { id: 'cement', name: 'Rugby Premium Cement', detail: '25 kg bag', qty: units(cementKg / 25), unit: 'bags' },
                     ],
                 },
                 {
@@ -74,7 +74,7 @@ export const concrete: CalcSpec = {
                             : []),
                         ...(bool(v, 'mesh')
                             ? [
-                                  { id: 'mesh', name: 'A142 reinforcement mesh', detail: '4.8 × 2.4 m sheet (11.52 m²)', qty: units((area * 1.15) / 11.52), unit: 'sheets' },
+                                  { id: 'mesh', name: 'A142 reinforcement mesh', detail: '3.6 × 2 m sheet (7.2 m²)', qty: units((area * 1.15) / 7.2), unit: 'sheets' },
                                   { id: 'spacers', name: 'Mesh spacers / chairs, 50 mm', detail: 'bag of 50', qty: units(area / 10) || 1, unit: 'bags' },
                               ]
                             : []),
@@ -152,12 +152,12 @@ export const driveway: CalcSpec = {
                             qty: units((area * 1.05) / 9.7),
                             unit: 'packs',
                         },
-                        { id: 'kiln-sand', name: 'Kiln-dried paving sand', detail: '25 kg bag ≈ 15 m² of joints', qty: units(area / 15), unit: 'bags' },
+                        { id: 'kiln-sand', name: 'Kiln Dried Sand 20 kg', detail: 'brushed into the joints, ~12 m² per bag', qty: units(area / 12), unit: 'bags' },
                         ...(bool(v, 'edging')
                             ? [
-                                  { id: 'edging', name: 'Concrete block paving kerb, 200 × 100', detail: 'laid on edge in concrete haunch', qty: units(perimeter / 0.2), unit: 'kerbs' },
-                                  { id: 'haunch-ballast', name: 'All-in ballast (haunching)', detail: 'bulk bag', qty: units((perimeter * 0.02 * 2000) / 850), unit: 'bulk bags' },
-                                  { id: 'haunch-cement', name: 'General-purpose cement', detail: '25 kg bag', qty: units((perimeter * 0.02 * 300) / 25), unit: 'bags' },
+                                  { id: 'edging', name: 'Stonemarket Small Pavekerb', detail: '127 × 100 × 125 mm, laid in a concrete haunch', qty: units(perimeter / 0.127), unit: 'kerbs' },
+                                  { id: 'haunch-ballast', name: 'All-in ballast (haunching)', detail: 'Large Bag', qty: units((perimeter * 0.02 * 2000) / 800), unit: 'Large Bags' },
+                                  { id: 'haunch-cement', name: 'Rugby Premium Cement', detail: '25 kg bag', qty: units((perimeter * 0.02 * 300) / 25), unit: 'bags' },
                               ]
                             : []),
                     ],
@@ -165,14 +165,14 @@ export const driveway: CalcSpec = {
                 {
                     title: 'Build-up',
                     lines: [
-                        { id: 'mot', name: 'MOT Type 1 sub-base', detail: 'bulk bag — 150 mm compacted (vehicles)', qty: units((area * 0.15 * 2200) / 850), unit: 'bulk bags' },
-                        { id: 'sharp-sand', name: 'Sharp sand (laying course)', detail: 'bulk bag — 50 mm screeded', qty: units((area * 0.05 * 1700) / 850), unit: 'bulk bags' },
-                        { id: 'membrane', name: 'Geotextile separation membrane', detail: '2.25 × 20 m roll under the sub-base', qty: units((area * 1.1) / 45), unit: 'rolls' },
+                        { id: 'mot', name: 'MOT Type 1 Roadstone', detail: 'Large Bag — 150 mm compacted for vehicles', qty: units((area * 0.15 * 2200) / 800), unit: 'Large Bags' },
+                        { id: 'sharp-sand', name: 'Concreting Sharp Sand', detail: 'Large Bag — 50 mm screeded laying course', qty: units((area * 0.05 * 1700) / 800), unit: 'Large Bags' },
+                        { id: 'membrane', name: 'Geotextile Fabric GF609', detail: '4.5 × 11.1 m roll under the sub-base', qty: units((area * 1.1) / 49), unit: 'rolls' },
                     ],
                 },
             ],
             tools: [
-                'Wacker plate (hire) — compact MOT in two 75 mm passes, then the laid blocks',
+                'Wacker plate (hire). Compact MOT in two 75 mm passes, then the laid blocks',
                 'Block splitter (hire) — faster and safer than a grinder for the cuts',
                 'Screed rails and bar for the sand bed',
                 'String lines, pegs and a big rubber mallet',
@@ -183,77 +183,6 @@ export const driveway: CalcSpec = {
                 'Fall ~1:60 away from the house; driveways draining to the road may need planning rules checked (SUDS).',
                 'Herringbone at 45° is the strongest bond under turning wheels.',
                 'Compact the blocks with a mat-faced plate, then top up kiln sand again after a week.',
-            ],
-        };
-    },
-};
-
-// ---------------------------------------------------------------------------
-// French drain
-// ---------------------------------------------------------------------------
-
-export const frenchDrain: CalcSpec = {
-    slug: 'french-drain',
-    name: 'French drain',
-    category: 'Groundworks & drainage',
-    icon: 'fa-arrow-down-up-across-line',
-    description:
-        'Perforated pipe, geotextile sock and clean stone to move standing water away — with the gravel tonnage done for you.',
-    fields: [
-        { kind: 'number', id: 'length', label: 'Drain run', unit: 'm', min: 1, max: 60, default: 10 },
-        {
-            kind: 'choice',
-            id: 'width',
-            label: 'Trench width',
-            options: [
-                { value: '300', label: '300 mm' },
-                { value: '450', label: '450 mm' },
-            ],
-            default: '300',
-        },
-        { kind: 'number', id: 'depth', label: 'Trench depth', unit: 'mm', min: 300, max: 1200, step: 50, default: 600 },
-        { kind: 'toggle', id: 'catchpit', label: 'Catch pit / soakaway crates', hint: 'Where the run terminates', default: false },
-    ],
-    compute: (v) => {
-        const len = num(v, 'length');
-        const widthM = Number(str(v, 'width')) / 1000;
-        const depthM = num(v, 'depth') / 1000;
-        // Stone fills the trench minus ~150 mm topsoil cap and the pipe volume.
-        const stoneVolM3 = Math.max(0, len * widthM * (depthM - 0.15) - len * 0.008);
-        const stoneT = stoneVolM3 * 1.6;
-
-        return {
-            facts: [
-                { label: 'Run', value: `${len.toFixed(1)} m` },
-                { label: 'Trench', value: `${str(v, 'width')} × ${Math.round(num(v, 'depth'))} mm` },
-                { label: 'Stone needed', value: `${stoneT.toFixed(1)} t` },
-                { label: 'Fall', value: '1:100 minimum to the outfall' },
-            ],
-            sections: [
-                {
-                    title: 'Drainage',
-                    lines: [
-                        { id: 'pipe', name: 'Perforated land drain coil, 100 mm', detail: '25 m coil', qty: units(len / 25), unit: 'coils' },
-                        { id: 'geotextile', name: 'Geotextile membrane (non-woven)', detail: '2.25 × 20 m roll — line trench, wrap the top', qty: units((len * (widthM + 2 * depthM + 0.3)) / 45), unit: 'rolls' },
-                        { id: 'stone', name: '20 mm clean limestone / gravel', detail: 'bulk bag (~850 kg) — NOT MOT (fines clog drains)', qty: units((stoneT * 1000) / 850), unit: 'bulk bags' },
-                        ...(bool(v, 'catchpit')
-                            ? [{ id: 'crates', name: 'Soakaway crates, 1 m³ + silt trap', detail: 'wrapped in geotextile at the outfall', qty: 1, unit: 'sets' }]
-                            : []),
-                    ],
-                },
-            ],
-            tools: [
-                'Trenching spade and mattock — or a micro digger (hire) past 10 m',
-                'Wheelbarrow and boards to protect the lawn route',
-                'Line level or laser for the 1:100 fall',
-                'Utility scanner / CAT before digging — services love garden edges',
-                'Heavy-duty gloves — clean stone is sharp by design',
-                'Pipe sock (filter mesh) if the ground is silty clay',
-            ],
-            notes: [
-                'Use clean stone only — MOT Type 1 fines blind the drain within a season.',
-                'Perforations face DOWN on modern guidance (water rises into the pipe).',
-                'Cap with 150 mm of topsoil and turf, or finish with decorative gravel flush.',
             ],
         };
     },
@@ -278,9 +207,11 @@ export const aggregates: CalcSpec = {
             id: 'material',
             label: 'Material',
             options: [
-                { value: 'gravel', label: '20 mm gravel' },
-                { value: 'slate', label: 'Slate 40 mm' },
-                { value: 'bark', label: 'Bark mulch' },
+                { value: 'gravel', label: 'Golden gravel' },
+                { value: 'limestone', label: 'Limestone' },
+                { value: 'slate', label: 'Blue slate' },
+                { value: 'cotswold', label: 'Cotswold' },
+                { value: 'bark', label: 'Bark' },
             ],
             default: 'gravel',
         },
@@ -295,10 +226,12 @@ export const aggregates: CalcSpec = {
         const area = num(v, 'width') * num(v, 'length');
         const mat = str(v, 'material');
         const spec = {
-            gravel: { name: 'Golden gravel, 20 mm', depthM: 0.05, density: 1600, unit: 'bulk bags', perUnit: 850 },
-            slate: { name: 'Blue slate chippings, 40 mm', depthM: 0.04, density: 1400, unit: 'bulk bags', perUnit: 850 },
-            bark: { name: 'Ornamental bark mulch', depthM: 0.075, density: 280, unit: '100 L bags', perUnit: 28 },
-        }[mat] ?? { name: 'Golden gravel, 20 mm', depthM: 0.05, density: 1600, unit: 'bulk bags', perUnit: 850 };
+            gravel: { name: '20 mm Golden Gravel', depthM: 0.05, density: 1600, unit: 'Large Bags', perUnit: 800 },
+            limestone: { name: '20 mm Grey Limestone', depthM: 0.05, density: 1600, unit: 'Large Bags', perUnit: 800 },
+            slate: { name: 'Blue Slate chippings', depthM: 0.04, density: 1400, unit: 'Large Bags', perUnit: 800 },
+            cotswold: { name: 'Cotswold Chippings', depthM: 0.05, density: 1600, unit: 'Large Bags', perUnit: 800 },
+            bark: { name: 'Landscape Bark', depthM: 0.075, density: 280, unit: '100 L bags', perUnit: 28 },
+        }[mat] ?? { name: '20 mm Golden Gravel', depthM: 0.05, density: 1600, unit: 'Large Bags', perUnit: 800 };
 
         const kg = area * spec.depthM * spec.density;
 
@@ -313,11 +246,11 @@ export const aggregates: CalcSpec = {
                 {
                     title: 'Aggregate',
                     lines: [
-                        { id: 'material', name: spec.name, detail: mat === 'bark' ? '100 L bag' : 'bulk bag (~850 kg)', qty: units(kg / spec.perUnit), unit: spec.unit },
+                        { id: 'material', name: spec.name, detail: mat === 'bark' ? '100 L bag' : 'Large Bag (~800 kg)', qty: units(kg / spec.perUnit), unit: spec.unit },
                         ...(bool(v, 'membrane')
                             ? [
-                                  { id: 'membrane', name: 'Weed control membrane', detail: '1 m × 15 m roll, 100 mm laps', qty: units((area * 1.15) / 15), unit: 'rolls' },
-                                  { id: 'pins', name: 'Membrane fixing pegs', detail: 'pack of 50', qty: units(area / 2 / 50) || 1, unit: 'packs' },
+                                  { id: 'membrane', name: 'TDP50 weed control fabric', detail: '1 m × 14 m roll, 100 mm laps', qty: units((area * 1.15) / 14), unit: 'rolls' },
+                                  { id: 'pins', name: 'Luxigraze artificial grass fixing pins', detail: 'pack of 10, doubles as membrane pegs', qty: units(area / 2 / 10) || 1, unit: 'packs' },
                               ]
                             : []),
                     ],
@@ -332,7 +265,7 @@ export const aggregates: CalcSpec = {
                 'Plate compactor only if it is a path base, never for decorative top layers',
             ],
             notes: [
-                'Bulk bag coverage at recommended depth: gravel ~10 m², slate ~12 m², bark bags ~1.3 m² each.',
+                'A Large Bag covers roughly 10 m² of gravel at 50 mm, or 14 m² of slate at 40 mm. Bark bags do about 1.3 m² each.',
                 'Lay membrane on cleared, levelled ground — it is weed control, not a substitute for prep.',
                 'Bark settles ~20% in the first year; top up annually.',
             ],
@@ -340,4 +273,4 @@ export const aggregates: CalcSpec = {
     },
 };
 
-export const GROUNDWORKS_SPECS: CalcSpec[] = [concrete, driveway, frenchDrain, aggregates];
+export const GROUNDWORKS_SPECS: CalcSpec[] = [concrete, driveway, aggregates];
