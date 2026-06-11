@@ -14,6 +14,7 @@ import {
     defaultLayout,
     PALETTE,
     planKitchen,
+    SINK_COMBOS,
     wallsFor,
     type CornerUnitType,
     type FridgeType,
@@ -235,7 +236,7 @@ export default function KitchenPlanner() {
         wallBM: 3.0,
         wallCM: 2.4,
         cornerType: 'l935' as CornerUnitType,
-        sinkUnder: 'dw' as SinkUnder,
+        sinkUnder: 'dw500' as SinkUnder,
         fridgeType: 'freestanding' as FridgeType,
         ovenHousing: true,
         includeWallUnits: true,
@@ -342,17 +343,26 @@ export default function KitchenPlanner() {
                         ]}
                     />
                 )}
-                <Segmented<SinkUnder>
-                    label="Under the sink (1000 zone)"
-                    value={setup.sinkUnder}
-                    onChange={(v) => setS('sinkUnder', v)}
-                    options={[
-                        { value: 'base1000', label: '1000 base' },
-                        { value: 'twin500', label: '2× 500' },
-                        { value: 'dw', label: 'D/W under' },
-                        { value: 'wm', label: 'W/M under' },
-                    ]}
-                />
+                <div>
+                    <label htmlFor="sink-under" className="form-label text-sm">
+                        Under the sink
+                    </label>
+                    <select
+                        id="sink-under"
+                        className="form-select"
+                        value={setup.sinkUnder}
+                        onChange={(e) => setS('sinkUnder', e.target.value as SinkUnder)}
+                    >
+                        {SINK_COMBOS.map((c) => (
+                            <option key={c.id} value={c.id}>
+                                {c.label} — zone {c.widthMm} mm
+                            </option>
+                        ))}
+                    </select>
+                    <span className="field-description">
+                        The bowl needs at least 500 mm of base under it. The sink zone grows with your choice.
+                    </span>
+                </div>
                 <Segmented<FridgeType>
                     label="Fridge freezer"
                     value={setup.fridgeType}
