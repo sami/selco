@@ -181,6 +181,8 @@ function KitchenPreview({ input }: { input: KitchenInput }) {
 export default function KitchenPlanner() {
     const [input, setInput] = useState<KitchenInput>({
         shape: 'l-shape',
+        doorStyle: 'handled',
+        includeCornice: true,
         wallAM: 3.6,
         wallBM: 2.7,
         wallCM: 2.4,
@@ -267,11 +269,26 @@ export default function KitchenPlanner() {
                         onChange={(v) => setAppliance('fridgeFreezer', v)}
                     />
                 </div>
+                <Segmented
+                    label="Door style"
+                    value={input.doorStyle}
+                    onChange={(v) => set('doorStyle', v)}
+                    options={[
+                        { value: 'handled', label: 'With handles' },
+                        { value: 'handleless', label: 'Handleless' },
+                    ]}
+                />
                 <ToggleRow
                     label="Wall units"
                     hint="Uppers over ~70% of the run"
                     checked={input.includeWallUnits}
                     onChange={(v) => set('includeWallUnits', v)}
+                />
+                <ToggleRow
+                    label="Cornice & pelmet"
+                    hint="Trims over and under the wall units"
+                    checked={input.includeCornice}
+                    onChange={(v) => set('includeCornice', v)}
                 />
             </JobCard>
 

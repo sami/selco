@@ -20,8 +20,15 @@ import { units } from './types';
 
 export type KitchenShape = 'galley' | 'l-shape' | 'u-shape';
 
+export type DoorStyle = 'handled' | 'handleless';
+
 export interface KitchenInput {
     shape: KitchenShape;
+    /** Rapide+ ranges: handled doors include handles; handleless ranges
+     *  take a rail/fascia trim along the unit run instead. */
+    doorStyle: DoorStyle;
+    /** Cornice over and pelmet under the wall units. */
+    includeCornice: boolean;
     /** Wall run lengths in metres. Galley uses A; L uses A+B; U uses A+B+C. */
     wallAM: number;
     wallBM: number;
@@ -67,7 +74,7 @@ export interface KitchenPlan {
 }
 
 const BASE_WIDTHS_MM = [1000, 800, 600, 500, 400, 300];
-const CORNER_MM = 900;
+const CORNER_MM = 935; // Gower Rapide+ L-corner unit
 const SLOT_MM = 600;
 const DEPTH_MM = 600;
 
@@ -83,7 +90,7 @@ function packWall(
     let remaining = lengthMm - startOffsetMm;
 
     const labels: Record<string, string> = {
-        sink: 'Sink base 1000',
+        sink: 'Sink base 600',
         cooker: 'Cooker 600',
         dishwasher: 'D/W 600',
         'washing-machine': 'W/M 600',
@@ -91,7 +98,7 @@ function packWall(
     };
 
     for (const kind of fixedSlots) {
-        const w = kind === 'sink' ? 1000 : SLOT_MM;
+        const w = SLOT_MM; // sink base and appliance slots are all 600 mm
         if (remaining < w) break;
         placed.push({ wall, offsetMm: cursor, widthMm: w, kind, label: labels[kind] });
         cursor += w;
@@ -152,7 +159,7 @@ export function planKitchen(input: KitchenInput): KitchenPlan {
                 offsetMm: 0,
                 widthMm: CORNER_MM,
                 kind: 'corner',
-                label: 'Corner 900',
+                label: 'Corner 935',
             });
             start = CORNER_MM;
         }
@@ -190,13 +197,15 @@ export function calculateKitchen(input: KitchenInput): BillOfMaterials {
     const corners = plan.placed.filter((p) => p.kind === 'corner');
     const totalRunMm = plan.walls.reduce((s, w) => s + w.lengthMm, 0);
 
+    const styleNote =
+        input.doorStyle === 'handleless' ? 'handleless range' : 'handles included';
     const cabinetLines: BomLine[] = [
         ...(corners.length
             ? [
                   {
                       id: 'corner',
-                      name: 'Corner base unit, 900 mm',
-                      detail: 'inc. carousel hardware',
+                      name: 'Rapide+ L-corner base unit, 935 mm',
+                      detail: `16 mm MFC carcase, legs included — ${styleNote}`,
                       qty: corners.length,
                       unit: 'units',
                   },
@@ -204,7 +213,8 @@ export function calculateKitchen(input: KitchenInput): BillOfMaterials {
             : []),
         {
             id: 'sink-base',
-            name: 'Sink base unit, 1000 mm',
+            name: 'Rapide+ sink base unit, 600 mm',
+            detail: `legs included — ${styleNote}`,
             qty: 1,
             unit: 'units',
         },
@@ -212,7 +222,8 @@ export function calculateKitchen(input: KitchenInput): BillOfMaterials {
             baseUnits.some((u) => u.widthMm === w),
         ).map((w) => ({
             id: `base-${w}`,
-            name: `Base unit, ${w} mm`,
+            name: `Rapide+ base unit, ${w} mm`,
+            detail: `legs included — ${styleNote}`,
             qty: baseUnits.filter((u) => u.widthMm === w).length,
             unit: 'units',
         })),
@@ -220,9 +231,28 @@ export function calculateKitchen(input: KitchenInput): BillOfMaterials {
             ? [
                   {
                       id: 'wall-units',
-                      name: 'Wall unit, 600 mm',
+                      name: 'Rapide+ wall unit, 600 mm',
+                      detail: styleNote,
                       qty: plan.wallUnitCount,
                       unit: 'units',
+                  },
+              ]
+            : []),
+        {
+            id: 'base-end-panels',
+            name: 'Base unit end panel',
+            detail: 'one per exposed run end',
+            qty: 2,
+            unit: 'panels',
+        },
+        ...(plan.wallUnitCount
+            ? [
+                  {
+                      id: 'wall-end-panels',
+                      name: 'Wall unit end panel',
+                      detail: 'one per exposed run end',
+                      qty: 2,
+                      unit: 'panels',
                   },
               ]
             : []),
@@ -252,20 +282,35 @@ export function calculateKitchen(input: KitchenInput): BillOfMaterials {
             qty: Math.max(0, worktopLengths - 1),
             unit: 'packs',
         },
-        {
-            id: 'legs',
-            name: 'Adjustable cabinet legs',
-            detail: 'pack of 4',
-            qty: plan.baseUnitCount,
-            unit: 'packs',
-        },
-        {
-            id: 'handles',
-            name: 'Door / drawer handles',
-            detail: 'brushed steel bar',
-            qty: plan.baseUnitCount + plan.wallUnitCount,
-            unit: 'handles',
-        },
+        ...(input.doorStyle === 'handleless'
+            ? [
+                  {
+                      id: 'rail',
+                      name: 'Handleless rail / fascia trim',
+                      detail: 'runs along the top of the base doors',
+                      qty: units(plan.worktopMm / 2400),
+                      unit: 'lengths',
+                  },
+              ]
+            : []),
+        ...(input.includeCornice && plan.wallUnitCount
+            ? [
+                  {
+                      id: 'cornice',
+                      name: 'Cornice, 3 m',
+                      detail: 'tops the wall units',
+                      qty: units((plan.wallUnitCount * 600 * 1.2) / 3000),
+                      unit: 'lengths',
+                  },
+                  {
+                      id: 'pelmet',
+                      name: 'Pelmet / light rail, 3 m',
+                      detail: 'under the wall units, hides strip lights',
+                      qty: units((plan.wallUnitCount * 600 * 1.2) / 3000),
+                      unit: 'lengths',
+                  },
+              ]
+            : []),
     ];
 
     return {
@@ -290,9 +335,18 @@ export function calculateKitchen(input: KitchenInput): BillOfMaterials {
             'PTFE tape and flexible tap connectors for the plumbing reconnect',
         ],
         notes: [
-            'Layout packed automatically: corners first, sink and appliance slots, then widest base units, finished with a filler strip.',
-            'Doors, end panels and appliances themselves are excluded from this concept estimate.',
-            'Wall unit count approximated at 70% of the base run.',
+            ...plan.walls.map((w) => {
+                const unitsOnWall = plan.placed
+                    .filter((p) => p.wall === w.id)
+                    .map((p) => p.label)
+                    .join(', ');
+                return `Wall ${w.id} (${(w.lengthMm / 1000).toFixed(1)} m): ${unitsOnWall}.`;
+            }),
+            'Rapide+ units arrive flat-packed with legs and (on handled ranges) handles in the box. Plinths, panels and trims are separate, which is why they are on the list.',
+            input.doorStyle === 'handleless'
+                ? 'Handleless ranges use a rail trim instead of handles, so the doors stay clean-faced.'
+                : 'Pick your door range in branch: Verona, Paris, Capri or Lisbon.',
+            'Appliances themselves are not included. Wall unit count is taken at 70% of the base run.',
         ],
     };
 }
