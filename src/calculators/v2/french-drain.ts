@@ -5,7 +5,7 @@
  *
  * Selco doesn't stock perforated land drain coil, so the build here is the
  * classic stone-filled french drain: trench lined with Geotextile Fabric
- * GF609, filled with 20 mm clean limestone (never MOT, fines blind a
+ * GF609, filled with clean 20 mm gravel (never MOT, fines blind a
  * drain), wrapped over the top and capped. Options add a solid 110 mm
  * carrier pipe to take collected water to an outfall, and Core Water
  * soakaway crates where there's nowhere to discharge.
@@ -65,7 +65,7 @@ export function calculateFrenchDrain(input: FrenchDrainInput): BillOfMaterials {
             qty: units((len * plan.wrapGirthM) / 49),
             unit: 'rolls',
         },
-        ...aggregateLines('stone', '20 mm Grey Limestone', plan.stoneT * 1000, 'clean stone, never MOT'),
+        ...aggregateLines('stone', '20 mm Golden Gravel', plan.stoneT * 1000, 'clean 20 mm gravel, never MOT'),
     ];
 
     if (input.carrierPipe) {
@@ -121,7 +121,7 @@ export function calculateFrenchDrain(input: FrenchDrainInput): BillOfMaterials {
             'Skip or grab lorry for the spoil, a trench makes more than you think',
         ],
         notes: [
-            'Clean stone only. MOT Type 1 has fines that blind a drain within a season.',
+            'Clean 20 mm gravel only. MOT Type 1 has fines that blind a drain within a season, and 10 mm packs too tight to let the water move.',
             'Wrap the geotextile right over the top of the stone before capping, that is what keeps silt out.',
             input.soakaway
                 ? 'Soakaway crates sit wrapped in geotextile, at least 5 m from any building. Check ground soaks well first (a full bucket should drain in an hour).'
