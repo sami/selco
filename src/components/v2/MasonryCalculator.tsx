@@ -9,10 +9,11 @@
 import { useMemo, useState } from 'react';
 import {
     calculateMasonry,
-    CONSTRUCTIONS,
     planMasonry,
     type BlockType,
     type BrickType,
+    type CopingStyle,
+    type LintelType,
     type MasonryInput,
     type WallConstruction,
 } from '../../calculators/v2/masonry';
@@ -170,12 +171,17 @@ export default function MasonryCalculator() {
         construction: 'cavity',
         brickType: 'facing',
         blockType: 'thermalite',
+        blockThicknessMm: 100,
         openings: 1,
         openingWidthMm: 1200,
+        lintelType: 'steel',
         beams: 0,
+        joinsExisting: 1,
         dpcCourses: true,
+        cavityInsulation: true,
         airBricks: false,
         includeCopings: false,
+        copingStyle: 'twice',
     });
 
     const bom = useMemo(() => calculateMasonry(input), [input]);
@@ -215,32 +221,72 @@ export default function MasonryCalculator() {
                     />
                 )}
                 {hasBlocks && (
-                    <Segmented<BlockType>
-                        label="Block"
-                        value={input.blockType}
-                        onChange={(v) => set('blockType', v)}
-                        options={[
-                            { value: 'dense', label: 'Dense 7N' },
-                            { value: 'thermalite', label: 'Thermalite' },
-                        ]}
-                    />
+                    <>
+                        <Segmented<BlockType>
+                            label="Block"
+                            value={input.blockType}
+                            onChange={(v) =>
+                                setInput((s) => ({ ...s, blockType: v, blockThicknessMm: 100 }))
+                            }
+                            options={[
+                                { value: 'dense', label: 'Dense 7N' },
+                                { value: 'thermalite', label: 'Thermalite' },
+                            ]}
+                        />
+                        <Segmented
+                            label="Block thickness"
+                            value={String(input.blockThicknessMm)}
+                            onChange={(v) => set('blockThicknessMm', Number(v))}
+                            options={
+                                input.blockType === 'dense'
+                                    ? [
+                                          { value: '100', label: '100 mm' },
+                                          { value: '140', label: '140 mm' },
+                                      ]
+                                    : [
+                                          { value: '100', label: '100 mm' },
+                                          { value: '215', label: '215 party wall' },
+                                      ]
+                            }
+                        />
+                    </>
                 )}
                 <div className="grid grid-cols-2 gap-3">
                     <NumberField label="Openings" value={input.openings} onChange={(v) => set('openings', Math.round(v))} min={0} max={4} step={1} hint="Doors / windows" />
                     <NumberField label="Steel beams" value={input.beams} onChange={(v) => set('beams', Math.round(v))} min={0} max={4} step={1} hint="Padstones under each" />
                 </div>
                 {input.openings > 0 && (
-                    <Segmented
-                        label="Opening width"
-                        value={String(input.openingWidthMm)}
-                        onChange={(v) => set('openingWidthMm', Number(v))}
-                        options={[
-                            { value: '900', label: 'Door 900' },
-                            { value: '1200', label: 'Window 1200' },
-                            { value: '1800', label: 'Wide 1800' },
-                        ]}
-                    />
+                    <>
+                        <NumberField
+                            label="Opening width"
+                            value={input.openingWidthMm}
+                            onChange={(v) => set('openingWidthMm', Math.round(v))}
+                            unit="mm"
+                            min={450}
+                            max={2700}
+                            step={50}
+                            hint="Lintel picks the next stocked length with 150 mm bearings"
+                        />
+                        <Segmented<LintelType>
+                            label="Lintels"
+                            value={input.lintelType}
+                            onChange={(v) => set('lintelType', v)}
+                            options={[
+                                { value: 'concrete', label: 'Concrete' },
+                                { value: 'steel', label: 'Steel' },
+                            ]}
+                        />
+                    </>
                 )}
+                <NumberField
+                    label="Joins an existing wall"
+                    value={input.joinsExisting}
+                    onChange={(v) => set('joinsExisting', Math.round(v))}
+                    min={0}
+                    max={2}
+                    step={1}
+                    hint="Wall starter kits per junction"
+                />
                 <ToggleRow
                     label="Engineering bricks below DPC"
                     hint="Two dense courses + the DPC itself"
@@ -253,12 +299,31 @@ export default function MasonryCalculator() {
                     checked={input.airBricks}
                     onChange={(v) => set('airBricks', v)}
                 />
+                {input.construction === 'cavity' && (
+                    <ToggleRow
+                        label="Cavity insulation"
+                        hint="Full-fill batts built in as the wall rises"
+                        checked={input.cavityInsulation}
+                        onChange={(v) => set('cavityInsulation', v)}
+                    />
+                )}
                 <ToggleRow
                     label="Copings"
                     hint="Caps a freestanding garden wall"
                     checked={input.includeCopings}
                     onChange={(v) => set('includeCopings', v)}
                 />
+                {input.includeCopings && (
+                    <Segmented<CopingStyle>
+                        label="Coping style"
+                        value={input.copingStyle}
+                        onChange={(v) => set('copingStyle', v)}
+                        options={[
+                            { value: 'once', label: 'Once weathered' },
+                            { value: 'twice', label: 'Twice weathered' },
+                        ]}
+                    />
+                )}
             </JobCard>
 
             <div className="space-y-6">
