@@ -1,18 +1,22 @@
 /**
  * @file src/components/v2/KitchenPlanner.tsx
  *
- * Kitchen planner island, packs cabinets along the chosen layout and draws
- * a top-down plan view: wall A across the top, wall B down the right, wall C
- * along the bottom (matching the engine's corner-allocation order).
+ * Kitchen planner island. Packs units along the walls under the design
+ * rules (sink/cooker separation, dishwasher by the sink, talls at the run
+ * end) and draws the plan with the work triangle overlaid: sink, cooker
+ * and fridge joined up, leg lengths labelled, verdict in the corner.
  */
 
 import { useMemo, useState } from 'react';
 import {
     calculateKitchen,
     planKitchen,
+    type CornerUnitType,
+    type FridgeType,
     type KitchenInput,
     type KitchenShape,
     type PlacedUnit,
+    type UnitKind,
 } from '../../calculators/v2/kitchen';
 import { BlueprintPanel, JobCard, NumberField, Segmented, ToggleRow } from './ui';
 import MaterialsTicket from './MaterialsTicket';
@@ -30,15 +34,8 @@ function unitRect(
         return { x: u.offsetMm, y: 0, w: u.widthMm, h: DEPTH, vertical: false };
     }
     if (u.wall === 'B') {
-        return {
-            x: wallAMm - DEPTH,
-            y: u.offsetMm,
-            w: DEPTH,
-            h: u.widthMm,
-            vertical: true,
-        };
+        return { x: wallAMm - DEPTH, y: u.offsetMm, w: DEPTH, h: u.widthMm, vertical: true };
     }
-    // Wall C runs right→left along the bottom, starting from wall B's end.
     return {
         x: wallAMm - u.offsetMm - u.widthMm,
         y: wallBMm - DEPTH,
@@ -48,17 +45,21 @@ function unitRect(
     };
 }
 
-const KIND_STYLE: Record<
-    PlacedUnit['kind'],
-    { fill: string; stroke: string; dash?: string }
-> = {
+/** Plan-view centre of a unit, mm. */
+function unitCentre(u: PlacedUnit, wallAMm: number, wallBMm: number): { x: number; y: number } {
+    const r = unitRect(u, wallAMm, wallBMm);
+    return { x: r.x + r.w / 2, y: r.y + r.h / 2 };
+}
+
+const KIND_STYLE: Record<UnitKind, { fill: string; stroke: string; dash?: string }> = {
     base: { fill: 'rgba(255,255,255,0.14)', stroke: '#fff' },
     corner: { fill: 'rgba(255,212,7,0.22)', stroke: YELLOW },
     sink: { fill: 'rgba(255,212,7,0.85)', stroke: YELLOW },
     cooker: { fill: 'rgba(255,255,255,0.32)', stroke: '#fff' },
     dishwasher: { fill: 'rgba(255,255,255,0.32)', stroke: '#fff' },
     'washing-machine': { fill: 'rgba(255,255,255,0.32)', stroke: '#fff' },
-    fridge: { fill: 'rgba(255,255,255,0.32)', stroke: '#fff' },
+    fridge: { fill: 'rgba(255,255,255,0.45)', stroke: '#fff' },
+    larder: { fill: 'rgba(255,255,255,0.45)', stroke: '#fff' },
     filler: { fill: 'none', stroke: 'rgba(255,255,255,0.6)', dash: '4 4' },
 };
 
@@ -75,12 +76,22 @@ function KitchenPreview({ input }: { input: KitchenInput }) {
     const x0 = (W - wallAMm * scale) / 2;
     const y0 = (H - heightMm * scale) / 2;
 
+    // Work triangle vertices in px.
+    const tri = ['sink', 'cooker', 'fridge']
+        .map((k) => plan.placed.find((p) => p.kind === (k as UnitKind)))
+        .filter((u): u is PlacedUnit => !!u)
+        .map((u) => {
+            const c = unitCentre(u, wallAMm, wallBMm);
+            return { kind: u.kind, x: x0 + c.x * scale, y: y0 + c.y * scale };
+        });
+    const showTriangle = tri.length === 3 && plan.triangle;
+
     return (
         <svg
             viewBox={`0 0 ${W} ${H}`}
             className="w-full h-auto"
             role="img"
-            aria-label={`Kitchen plan with ${plan.baseUnitCount} base units`}
+            aria-label={`Kitchen plan with ${plan.baseUnitCount} base units and the work triangle marked`}
         >
             {/* placed units */}
             {plan.placed.map((u, i) => {
@@ -98,7 +109,7 @@ function KitchenPreview({ input }: { input: KitchenInput }) {
                             height={r.h * scale}
                             fill={style.fill}
                             stroke={style.stroke}
-                            strokeWidth="1.4"
+                            strokeWidth={u.tall ? 2.2 : 1.4}
                             strokeDasharray={style.dash}
                             rx="2"
                         />
@@ -117,9 +128,7 @@ function KitchenPreview({ input }: { input: KitchenInput }) {
                                 fontWeight="600"
                                 textAnchor="middle"
                                 dominantBaseline="middle"
-                                transform={
-                                    r.vertical ? `rotate(-90 ${cx} ${cy})` : undefined
-                                }
+                                transform={r.vertical ? `rotate(-90 ${cx} ${cy})` : undefined}
                             >
                                 {u.label}
                             </text>
@@ -128,16 +137,48 @@ function KitchenPreview({ input }: { input: KitchenInput }) {
                 );
             })}
 
+            {/* work triangle */}
+            {showTriangle && (
+                <g>
+                    {tri.map((p, i) => {
+                        const q = tri[(i + 1) % 3];
+                        const mx = (p.x + q.x) / 2;
+                        const my = (p.y + q.y) / 2;
+                        const leg = plan.triangle!.legs[i];
+                        return (
+                            <g key={i}>
+                                <line x1={p.x} y1={p.y} x2={q.x} y2={q.y} stroke={YELLOW} strokeWidth="2" strokeDasharray="7 5" opacity="0.9" />
+                                <text
+                                    x={mx}
+                                    y={my - 6}
+                                    fill={YELLOW}
+                                    fontSize="11"
+                                    fontWeight="700"
+                                    textAnchor="middle"
+                                    style={{ paintOrder: 'stroke', stroke: '#04204b', strokeWidth: 4 }}
+                                >
+                                    {leg.lengthM.toFixed(1)} m
+                                </text>
+                            </g>
+                        );
+                    })}
+                    {tri.map((p) => (
+                        <circle key={p.kind} cx={p.x} cy={p.y} r="5" fill={YELLOW} stroke="#04204b" strokeWidth="1.5" />
+                    ))}
+                    {/* verdict badge */}
+                    <g transform={`translate(${W - 16}, 22)`}>
+                        <text textAnchor="end" fill={plan.triangle!.ok ? '#7ee2a0' : YELLOW} fontSize="12" fontWeight="700">
+                            {plan.triangle!.ok ? '✓' : '⚠'} work triangle {plan.triangle!.totalM.toFixed(1)} m
+                        </text>
+                    </g>
+                </g>
+            )}
+
             {/* wall lines */}
             <g stroke="#fff" strokeWidth="3" strokeLinecap="square">
                 <line x1={x0} y1={y0} x2={x0 + wallAMm * scale} y2={y0} />
                 {input.shape !== 'galley' && (
-                    <line
-                        x1={x0 + wallAMm * scale}
-                        y1={y0}
-                        x2={x0 + wallAMm * scale}
-                        y2={y0 + wallBMm * scale}
-                    />
+                    <line x1={x0 + wallAMm * scale} y1={y0} x2={x0 + wallAMm * scale} y2={y0 + wallBMm * scale} />
                 )}
                 {input.shape === 'u-shape' && (
                     <line
@@ -165,11 +206,7 @@ function KitchenPreview({ input }: { input: KitchenInput }) {
                     </text>
                 )}
                 {input.shape === 'u-shape' && (
-                    <text
-                        x={x0 + (wallAMm - (input.wallCM * 1000) / 2) * scale}
-                        y={y0 + wallBMm * scale + 20}
-                        textAnchor="middle"
-                    >
+                    <text x={x0 + (wallAMm - (input.wallCM * 1000) / 2) * scale} y={y0 + wallBMm * scale + 20} textAnchor="middle">
                         Wall C, {input.wallCM.toFixed(1)} m
                     </text>
                 )}
@@ -181,25 +218,23 @@ function KitchenPreview({ input }: { input: KitchenInput }) {
 export default function KitchenPlanner() {
     const [input, setInput] = useState<KitchenInput>({
         shape: 'l-shape',
-        doorStyle: 'handled',
-        includeCornice: true,
+        doorStyle: 'handleless',
         wallAM: 3.6,
-        wallBM: 2.7,
+        wallBM: 3.0,
         wallCM: 2.4,
-        appliances: {
-            cooker: true,
-            dishwasher: true,
-            washingMachine: false,
-            fridgeFreezer: true,
-        },
+        cornerType: 'l935',
+        ovenHousing: true,
+        dishwasher: true,
+        washingMachine: false,
+        fridge: 'freestanding',
+        larder: false,
         includeWallUnits: true,
+        includeCornice: true,
     });
 
     const bom = useMemo(() => calculateKitchen(input), [input]);
     const set = <K extends keyof KitchenInput>(k: K, v: KitchenInput[K]) =>
         setInput((s) => ({ ...s, [k]: v }));
-    const setAppliance = (k: keyof KitchenInput['appliances'], v: boolean) =>
-        setInput((s) => ({ ...s, appliances: { ...s.appliances, [k]: v } }));
 
     return (
         <div className="grid gap-6 lg:grid-cols-[340px_minmax(0,1fr)] items-start">
@@ -214,61 +249,13 @@ export default function KitchenPlanner() {
                         { value: 'u-shape', label: 'U-shape' },
                     ]}
                 />
-                <NumberField
-                    label="Wall A length"
-                    value={input.wallAM}
-                    onChange={(v) => set('wallAM', v)}
-                    unit="m"
-                    min={1.2}
-                    max={8}
-                />
+                <NumberField label="Wall A length" value={input.wallAM} onChange={(v) => set('wallAM', v)} unit="m" min={1.2} max={8} />
                 {input.shape !== 'galley' && (
-                    <NumberField
-                        label="Wall B length"
-                        value={input.wallBM}
-                        onChange={(v) => set('wallBM', v)}
-                        unit="m"
-                        min={1.2}
-                        max={8}
-                    />
+                    <NumberField label="Wall B length" value={input.wallBM} onChange={(v) => set('wallBM', v)} unit="m" min={1.2} max={8} />
                 )}
                 {input.shape === 'u-shape' && (
-                    <NumberField
-                        label="Wall C length"
-                        value={input.wallCM}
-                        onChange={(v) => set('wallCM', v)}
-                        unit="m"
-                        min={1.2}
-                        max={8}
-                    />
+                    <NumberField label="Wall C length" value={input.wallCM} onChange={(v) => set('wallCM', v)} unit="m" min={1.2} max={8} />
                 )}
-                <div className="space-y-2">
-                    <span className="form-label text-sm">Appliance slots</span>
-                    <ToggleRow
-                        label="Cooker"
-                        hint="600 mm gap"
-                        checked={input.appliances.cooker}
-                        onChange={(v) => setAppliance('cooker', v)}
-                    />
-                    <ToggleRow
-                        label="Dishwasher"
-                        hint="600 mm integrated"
-                        checked={input.appliances.dishwasher}
-                        onChange={(v) => setAppliance('dishwasher', v)}
-                    />
-                    <ToggleRow
-                        label="Washing machine"
-                        hint="600 mm integrated"
-                        checked={input.appliances.washingMachine}
-                        onChange={(v) => setAppliance('washingMachine', v)}
-                    />
-                    <ToggleRow
-                        label="Fridge freezer"
-                        hint="600 mm tall unit"
-                        checked={input.appliances.fridgeFreezer}
-                        onChange={(v) => setAppliance('fridgeFreezer', v)}
-                    />
-                </div>
                 <Segmented
                     label="Door style"
                     value={input.doorStyle}
@@ -278,18 +265,38 @@ export default function KitchenPlanner() {
                         { value: 'handleless', label: 'Handleless' },
                     ]}
                 />
-                <ToggleRow
-                    label="Wall units"
-                    hint="Uppers over ~70% of the run"
-                    checked={input.includeWallUnits}
-                    onChange={(v) => set('includeWallUnits', v)}
+                {input.shape !== 'galley' && (
+                    <Segmented<CornerUnitType>
+                        label="Corner unit"
+                        value={input.cornerType}
+                        onChange={(v) => set('cornerType', v)}
+                        options={[
+                            { value: 'l935', label: '935 L-shape' },
+                            { value: 'c1000', label: '1000 corner' },
+                        ]}
+                    />
+                )}
+                <Segmented<FridgeType>
+                    label="Fridge freezer"
+                    value={input.fridge}
+                    onChange={(v) => set('fridge', v)}
+                    options={[
+                        { value: 'freestanding', label: 'Freestanding' },
+                        { value: 'integrated', label: 'Integrated' },
+                        { value: 'none', label: 'None' },
+                    ]}
                 />
-                <ToggleRow
-                    label="Cornice & pelmet"
-                    hint="Trims over and under the wall units"
-                    checked={input.includeCornice}
-                    onChange={(v) => set('includeCornice', v)}
-                />
+                <div className="space-y-2">
+                    <span className="form-label text-sm">In the plan</span>
+                    <ToggleRow label="Built-under oven housing" hint="Otherwise a freestanding cooker gap" checked={input.ovenHousing} onChange={(v) => set('ovenHousing', v)} />
+                    <ToggleRow label="Dishwasher" hint="Goes beside the sink, fascia door included" checked={input.dishwasher} onChange={(v) => set('dishwasher', v)} />
+                    <ToggleRow label="Washing machine" hint="Integrated, fascia door included" checked={input.washingMachine} onChange={(v) => set('washingMachine', v)} />
+                    <ToggleRow label="Larder cabinet" hint="Tall storage at the end of the run" checked={input.larder} onChange={(v) => set('larder', v)} />
+                </div>
+                <ToggleRow label="Wall units" hint="Uppers over ~70% of the run" checked={input.includeWallUnits} onChange={(v) => set('includeWallUnits', v)} />
+                {input.includeWallUnits && (
+                    <ToggleRow label="Cornice & pelmet" hint="One 2.7 m profile does both jobs" checked={input.includeCornice} onChange={(v) => set('includeCornice', v)} />
+                )}
             </JobCard>
 
             <div className="space-y-6">
