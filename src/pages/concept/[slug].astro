@@ -18,13 +18,13 @@ const base = BASE_URL.endsWith('/') ? BASE_URL : `${BASE_URL}/`;
 
 const breadcrumbs = [
   { label: 'Home', href: base },
-  { label: 'Concept Hub v2', href: `${base}v2/` },
+  { label: 'Project Planner', href: `${base}concept/` },
   { label: name },
 ];
 ---
 
 <SelcoLayout
-  title={`${name} — v2 concept`}
+  title={`${name} | Project Planner`}
   description={description}
   breadcrumbs={breadcrumbs}
   pageTitle={name}
@@ -40,8 +40,8 @@ const breadcrumbs = [
     <SpecCalculator slug={slug} client:load />
 
     <p class="mt-10 text-sm text-text-muted">
-      <a href={`${base}v2/`} class="font-bold text-primary-nav hover:underline">
-        ← All v2 concept calculators
+      <a href={`${base}concept/`} class="font-bold text-primary-nav hover:underline">
+        ← All planning tools
       </a>
     </p>
   </main>
