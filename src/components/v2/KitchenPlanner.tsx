@@ -12,6 +12,7 @@ import {
     calculateKitchen,
     planKitchen,
     type CornerUnitType,
+    type DrawerChoice,
     type FridgeType,
     type KitchenInput,
     type KitchenShape,
@@ -60,6 +61,9 @@ const KIND_STYLE: Record<UnitKind, { fill: string; stroke: string; dash?: string
     'washing-machine': { fill: 'rgba(255,255,255,0.32)', stroke: '#fff' },
     fridge: { fill: 'rgba(255,255,255,0.45)', stroke: '#fff' },
     larder: { fill: 'rgba(255,255,255,0.45)', stroke: '#fff' },
+    drawers: { fill: 'rgba(255,212,7,0.28)', stroke: '#fff' },
+    wine: { fill: 'rgba(255,255,255,0.22)', stroke: '#fff' },
+    pullout: { fill: 'rgba(255,255,255,0.22)', stroke: '#fff' },
     filler: { fill: 'none', stroke: 'rgba(255,255,255,0.6)', dash: '4 4' },
 };
 
@@ -228,6 +232,9 @@ export default function KitchenPlanner() {
         washingMachine: false,
         fridge: 'freestanding',
         larder: false,
+        drawers: 'd500',
+        wineRack: false,
+        pullOut: false,
         includeWallUnits: true,
         includeCornice: true,
     });
@@ -292,7 +299,20 @@ export default function KitchenPlanner() {
                     <ToggleRow label="Dishwasher" hint="Goes beside the sink, fascia door included" checked={input.dishwasher} onChange={(v) => set('dishwasher', v)} />
                     <ToggleRow label="Washing machine" hint="Integrated, fascia door included" checked={input.washingMachine} onChange={(v) => set('washingMachine', v)} />
                     <ToggleRow label="Larder cabinet" hint="Tall storage at the end of the run" checked={input.larder} onChange={(v) => set('larder', v)} />
+                    <ToggleRow label="Wine rack" hint="300 mm, slots into the run" checked={input.wineRack} onChange={(v) => set('wineRack', v)} />
+                    <ToggleRow label="Pull-out unit" hint="300 mm, oils and spices by the cooker" checked={input.pullOut} onChange={(v) => set('pullOut', v)} />
                 </div>
+                <Segmented<DrawerChoice>
+                    label="Drawer unit"
+                    value={input.drawers}
+                    onChange={(v) => set('drawers', v)}
+                    options={[
+                        { value: 'none', label: 'None' },
+                        { value: 'd500', label: '500 ×4' },
+                        { value: 'd600', label: '600 ×3' },
+                        { value: 'd800', label: '800 ×3' },
+                    ]}
+                />
                 <ToggleRow label="Wall units" hint="Uppers over ~70% of the run" checked={input.includeWallUnits} onChange={(v) => set('includeWallUnits', v)} />
                 {input.includeWallUnits && (
                     <ToggleRow label="Cornice & pelmet" hint="One 2.7 m profile does both jobs" checked={input.includeCornice} onChange={(v) => set('includeCornice', v)} />
