@@ -180,10 +180,23 @@ export default function DoorsCalculator() {
     const bom = useMemo(() => doorsLinings.compute(v), [v]);
     const set = (k: string, val: Values[string]) => setV((s) => ({ ...s, [k]: val }));
 
+    // Fire doors only hang in Firecheck, so changing the use re-picks the
+    // lining at the same width family rather than leaving a stale choice.
+    const setUse = (x: string) =>
+        setV((s) => {
+            const toFire = x !== 'standard';
+            const narrow = ['sw115', 'mdf108', 'fc115'].includes(String(s.lining));
+            return { ...s, doorUse: x, lining: toFire ? (narrow ? 'fc115' : 'fc138') : narrow ? 'sw115' : 'sw138' };
+        });
+
     const use = String(v.doorUse);
     const fire = use !== 'standard';
     const sizeOptions = doorsLinings.fields.find((f) => f.id === 'doorSize');
-    const liningOptions = doorsLinings.fields.find((f) => f.id === 'lining');
+    const liningField = doorsLinings.fields.find((f) => f.id === 'lining');
+    const liningOptions =
+        liningField?.kind === 'choice'
+            ? liningField.options.filter((o) => (fire ? o.value.startsWith('fc') : !o.value.startsWith('fc')))
+            : [];
 
     return (
         <div className="grid gap-6 lg:grid-cols-[340px_minmax(0,1fr)] items-start">
@@ -193,7 +206,7 @@ export default function DoorsCalculator() {
                     <Segmented
                         label="What are the doors for?"
                         value={use}
-                        onChange={(x) => set('doorUse', x)}
+                        onChange={setUse}
                         options={[
                             { value: 'standard', label: 'Standard' },
                             { value: 'fd30', label: 'FD30 internal' },
@@ -229,17 +242,17 @@ export default function DoorsCalculator() {
                         <span className="field-description">All 1981 mm (6'6") high; the width is the door size.</span>
                     </div>
                 )}
-                {liningOptions?.kind === 'choice' && (
+                {liningOptions.length > 0 && (
                     <div>
                         <label htmlFor="lining" className="form-label text-sm">Lining</label>
                         <select id="lining" className="form-select" value={String(v.lining)} onChange={(e) => set('lining', e.target.value)} disabled={v.newLinings !== true}>
-                            {liningOptions.options.map((o) => (
+                            {liningOptions.map((o) => (
                                 <option key={o.value} value={o.value}>{o.label}</option>
                             ))}
                         </select>
                         <span className="field-description">
                             {fire
-                                ? 'Fire doors swap to a Firecheck 38 mm pack at the nearest width automatically.'
+                                ? 'Fire doors only hang in a Firecheck BWF-certified pack. Pick the width to suit the wall.'
                                 : 'Match the lining depth to the finished wall thickness.'}
                         </span>
                     </div>
@@ -247,7 +260,12 @@ export default function DoorsCalculator() {
                 {use === 'fd30' && (
                     <ToggleRow label="Add self-closers" hint="Needed in flats, HMOs and rented homes" checked={v.closers === true} onChange={(x) => set('closers', x)} />
                 )}
-                <ToggleRow label="New linings" hint="Off = hanging into existing frames" checked={v.newLinings === true} onChange={(x) => set('newLinings', x)} />
+                <ToggleRow
+                    label="New linings"
+                    hint={fire && v.newLinings !== true ? 'The existing lining must be fire-rated or the FD30 rating is lost' : 'Off = hanging into existing frames'}
+                    checked={v.newLinings === true}
+                    onChange={(x) => set('newLinings', x)}
+                />
             </JobCard>
 
             <div className="space-y-6">

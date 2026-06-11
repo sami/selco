@@ -54,9 +54,31 @@ describe('doorsLinings — lining choice', () => {
         expect(mdf.name).toContain('25 × 132');
     });
 
-    it('TC5b: fire doors snap the lining to the nearest Firecheck width', () => {
+    it('TC5b: fire doors snap a non-rated lining to the nearest Firecheck width', () => {
         expect(line({ ...base, doorUse: 'fd30', lining: 'mdf108' }, 'linings')!.name).toContain('115');
         expect(line({ ...base, doorUse: 'fd30', lining: 'mdf132' }, 'linings')!.name).toContain('138');
+    });
+
+    it('TC5c: the Firecheck packs are pickable in their own right', () => {
+        const fc = line({ ...base, doorUse: 'fd30', lining: 'fc115' }, 'linings')!;
+        expect(fc.name.toLowerCase()).toContain('firecheck');
+        expect(fc.name).toContain('38 × 115');
+    });
+
+    it('TC5d: a fire door never ships with a softwood or MDF lining, whatever was picked', () => {
+        for (const lining of ['sw115', 'sw138', 'mdf108', 'mdf132', 'fc115', 'fc138']) {
+            for (const doorUse of ['fd30', 'exit']) {
+                expect(line({ ...base, doorUse, lining }, 'linings')!.name.toLowerCase()).toContain('firecheck');
+            }
+        }
+    });
+
+    it('TC5e: fire doors into existing frames warn that the lining must be fire-rated', () => {
+        const notes = compute({ ...base, doorUse: 'fd30', newLinings: false }).notes.join(' ');
+        expect(notes.toLowerCase()).toContain('existing');
+        expect(notes.toLowerCase()).toContain('fire lining');
+        const standardNotes = compute({ ...base, newLinings: false }).notes.join(' ');
+        expect(standardNotes.toLowerCase()).not.toContain('fire lining');
     });
 
     it('TC6: no lining line when hanging into existing frames', () => {

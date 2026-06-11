@@ -240,11 +240,13 @@ export const skirtingArchitrave: CalcSpec = {
 
 // Lining range as stocked: softwood packs, primed MDF sets, and the
 // Firecheck BWF-certified packs that fire doors must hang in.
-const LININGS: Record<string, { name: string; size: string; widthMm: number; detail: string }> = {
-    sw115: { name: 'Softwood door lining pack', size: '32 × 115 mm', widthMm: 115, detail: 'inc. loose stops, suits 100 mm stud walls' },
-    sw138: { name: 'Softwood door lining pack', size: '32 × 138 mm', widthMm: 138, detail: 'inc. loose stops, suits timber stud and blockwork' },
-    mdf108: { name: 'Primed MDF door lining set', size: '25 × 108 mm', widthMm: 108, detail: 'inc. loose stops, ready for top coat' },
-    mdf132: { name: 'Primed MDF door lining set', size: '25 × 132 mm', widthMm: 132, detail: 'inc. loose stops, ready for top coat' },
+const LININGS: Record<string, { name: string; size: string; widthMm: number; detail: string; fireRated: boolean }> = {
+    sw115: { name: 'Softwood door lining pack', size: '32 × 115 mm', widthMm: 115, detail: 'inc. loose stops, suits 100 mm stud walls', fireRated: false },
+    sw138: { name: 'Softwood door lining pack', size: '32 × 138 mm', widthMm: 138, detail: 'inc. loose stops, suits timber stud and blockwork', fireRated: false },
+    mdf108: { name: 'Primed MDF door lining set', size: '25 × 108 mm', widthMm: 108, detail: 'inc. loose stops, ready for top coat', fireRated: false },
+    mdf132: { name: 'Primed MDF door lining set', size: '25 × 132 mm', widthMm: 132, detail: 'inc. loose stops, ready for top coat', fireRated: false },
+    fc115: { name: 'Firecheck BWF-certified door lining', size: '38 × 115 mm', widthMm: 115, detail: 'fire-rated pack inc. loose stops', fireRated: true },
+    fc138: { name: 'Firecheck BWF-certified door lining', size: '38 × 138 mm', widthMm: 138, detail: 'fire-rated pack inc. loose stops', fireRated: true },
 };
 
 export const doorsLinings: CalcSpec = {
@@ -301,6 +303,8 @@ export const doorsLinings: CalcSpec = {
                 { value: 'sw138', label: 'Softwood 32 × 138 mm — timber stud / blockwork' },
                 { value: 'mdf108', label: 'Primed MDF 25 × 108 mm — thinner walls, paint finish' },
                 { value: 'mdf132', label: 'Primed MDF 25 × 132 mm — standard walls, paint finish' },
+                { value: 'fc115', label: 'Firecheck 38 × 115 mm — fire doors, thinner walls' },
+                { value: 'fc138', label: 'Firecheck 38 × 138 mm — fire doors, standard walls' },
             ],
             default: 'sw138',
         },
@@ -320,13 +324,11 @@ export const doorsLinings: CalcSpec = {
         }[str(v, 'doorType')] ?? 'Oak veneer door';
         const widthMm = Number(str(v, 'doorSize')) || 762;
 
-        // Fire doors must hang in a certified lining: swap whatever was picked
-        // for the Firecheck pack at the nearest stocked width.
+        // Fire doors must hang in a certified lining, no exceptions. If the
+        // picked lining is not fire-rated, snap to the Firecheck pack at the
+        // nearest stocked width.
         const picked = LININGS[str(v, 'lining')] ?? LININGS.sw138;
-        const fireWidthMm = picked.widthMm <= 115 ? 115 : 138;
-        const lining = fire
-            ? { name: 'Firecheck BWF-certified door lining', size: `38 × ${fireWidthMm} mm`, detail: 'fire-rated pack inc. loose stops' }
-            : { name: picked.name, size: picked.size, detail: picked.detail };
+        const lining = fire && !picked.fireRated ? (picked.widthMm <= 115 ? LININGS.fc115 : LININGS.fc138) : picked;
 
         const specLabel = exit ? 'FD30S fire exit / public' : fire ? 'FD30 fire-rated' : 'Standard internal';
 
@@ -406,10 +408,15 @@ export const doorsLinings: CalcSpec = {
                 ...(fire
                     ? [
                           'FD30 doors must not be trimmed past the manufacturer limit, usually 3 to 6 mm per edge.',
-                          'Fire doors only earn their rating in a certified lining with the strips fitted. The calculator swaps your lining for the Firecheck pack automatically.',
+                          'Fire doors only earn their rating in a certified lining with the strips fitted. Only the Firecheck packs qualify, the calculator will not pair a fire door with a softwood or MDF lining.',
                           'Max 3 mm gap at sides and top, max 4 mm at the floor. Bigger gaps fail the rating.',
                       ]
                     : ['Hardwood external frames are stocked too (1981 × 762, 1981 × 838 and 2032 × 813 mm) if a door opens outside.']),
+                ...(fire && !bool(v, 'newLinings')
+                    ? [
+                          'Hanging into existing frames: the rating only survives if the existing lining is a certified fire lining in sound condition, at least 30 mm thick, with intumescent strips fitted. A standard softwood or MDF lining does not qualify, allow for new Firecheck linings if in doubt.',
+                      ]
+                    : []),
                 ...(use === 'fd30'
                     ? ['At home, FD30 doors are needed to integral garages and on most loft conversions and three-storey layouts. Lever handles are fine. Flats, HMOs and rentals also need self-closers, tick the toggle above.']
                     : []),
