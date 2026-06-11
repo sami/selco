@@ -18,18 +18,29 @@ export interface TileFormat {
     hMm: number;
 }
 
+/** Preset formats from Selco's tile range. 'custom' is handled separately. */
 export const TILE_FORMATS: TileFormat[] = [
     { id: 'metro', label: 'Metro 200×100', wMm: 200, hMm: 100 },
+    { id: '150x150', label: '150×150', wMm: 150, hMm: 150 },
     { id: '250x500', label: 'Wall 500×250', wMm: 500, hMm: 250 },
+    { id: 'eltham', label: 'Eltham 550×333', wMm: 550, hMm: 333 },
     { id: '300x600', label: '600×300', wMm: 600, hMm: 300 },
     { id: '600x600', label: '600×600', wMm: 600, hMm: 600 },
 ];
+
+/** Spacer (joint) sizes Selco stocks, mm. */
+export const TILE_SPACERS = [1, 2, 3, 4, 5] as const;
 
 export interface TilingInput {
     widthM: number;
     heightM: number;
     tileId: string;
+    /** Custom tile size, mm, used when tileId === 'custom'. */
+    customWMm: number;
+    customHMm: number;
     surface: 'wall' | 'floor';
+    /** Spacer / grout joint width, mm. */
+    jointMm: number;
     /** Cutting waste percentage, 10 straight, 15 diagonal/brick-bond. */
     wastePct: number;
     includeTrim: boolean;
@@ -52,9 +63,19 @@ export interface TilingPlan {
     jointLm: number;
 }
 
+/** Resolve the tile format: a preset by id, or a custom size from the input. */
+export function resolveTile(input: TilingInput): TileFormat {
+    if (input.tileId === 'custom') {
+        const wMm = Math.max(1, Math.round(input.customWMm || 0));
+        const hMm = Math.max(1, Math.round(input.customHMm || 0));
+        return { id: 'custom', label: `${wMm}×${hMm}`, wMm, hMm };
+    }
+    return TILE_FORMATS.find((t) => t.id === input.tileId) ?? TILE_FORMATS[2];
+}
+
 export function planTiling(input: TilingInput): TilingPlan {
-    const tile = TILE_FORMATS.find((t) => t.id === input.tileId) ?? TILE_FORMATS[1];
-    const jointMm = input.surface === 'wall' ? 2 : 3;
+    const tile = resolveTile(input);
+    const jointMm = Math.max(1, input.jointMm || (input.surface === 'wall' ? 2 : 3));
     const moduleW = (tile.wMm + jointMm) / 1000;
     const moduleH = (tile.hMm + jointMm) / 1000;
     const cols = Math.max(1, Math.ceil(input.widthM / moduleW));
@@ -171,10 +192,10 @@ export function calculateTiling(input: TilingInput): BillOfMaterials {
                     },
                     {
                         id: 'spacers',
-                        name: `Tile spacers, ${plan.jointMm} mm`,
-                        detail: 'bag of 500',
-                        qty: units((plan.cols * plan.rows * 4) / 500),
-                        unit: 'bags',
+                        name: `Long-leg tile spacers, ${plan.jointMm} mm`,
+                        detail: 'pack of 250',
+                        qty: units((plan.cols * plan.rows * 4) / 250),
+                        unit: 'packs',
                     },
                 ],
             },
@@ -222,7 +243,7 @@ export function calculateTiling(input: TilingInput): BillOfMaterials {
             'Centre the layout so the cuts at both ends match. Never start with a full tile tight in a corner.',
             input.tanking
                 ? 'Tank the shower enclosure plus 300 mm beyond it. Plasterboard holds ~32 kg/m² of tile, cement board ~50 kg/m².'
-                : `${plan.jointMm} mm joints assumed for ${wall ? 'walls' : 'floors'}.`,
+                : `${plan.jointMm} mm spacers chosen${plan.tile.id === 'custom' ? `, custom ${plan.tile.label} mm tile` : ''}.`,
             'Buy all your tiles in one go and check the batch numbers match.',
         ],
     };
