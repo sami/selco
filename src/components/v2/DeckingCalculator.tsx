@@ -6,8 +6,14 @@
  */
 
 import { useMemo, useState } from 'react';
-import { calculateDecking, planDecking, type DeckingInput } from '../../calculators/v2/decking';
-import { BlueprintPanel, JobCard, NumberField, ToggleRow, Segmented } from './ui';
+import {
+    calculateDecking,
+    DECK_BOARDS,
+    deckBoard,
+    planDecking,
+    type DeckingInput,
+} from '../../calculators/v2/decking';
+import { BlueprintPanel, JobCard, NumberField, ToggleRow } from './ui';
 import MaterialsTicket from './MaterialsTicket';
 
 const YELLOW = '#ffd407';
@@ -26,8 +32,9 @@ function DeckingPreview({ input }: { input: DeckingInput }) {
     const x0 = (W - dw) / 2;
     const y0 = (H - dh) / 2;
 
-    const boardFill = input.composite ? COMPOSITE : TIMBER;
-    const rowH = 0.15 * scale;
+    const board = deckBoard(input.boardId);
+    const boardFill = board.material === 'composite' ? COMPOSITE : TIMBER;
+    const rowH = (board.widthMm / 1000) * scale;
     const joistSpacing = 0.4 * scale;
     const supportSpacing = 1.2 * scale;
 
@@ -104,13 +111,23 @@ export default function DeckingCalculator() {
     const [input, setInput] = useState<DeckingInput>({
         widthM: 3.6,
         lengthM: 4.8,
-        composite: false,
+        boardId: 'grooved-125-38',
+        boardLengthM: 3.6,
         raised: false,
     });
 
     const bom = useMemo(() => calculateDecking(input), [input]);
     const set = <K extends keyof DeckingInput>(k: K, v: DeckingInput[K]) =>
         setInput((s) => ({ ...s, [k]: v }));
+
+    const board = deckBoard(input.boardId);
+    // When the board changes, snap the length to one this board is stocked
+    // in (keep the current length if it still applies).
+    const pickBoard = (id: string) => {
+        const next = deckBoard(id);
+        const lengthM = next.lengthsM.includes(input.boardLengthM) ? input.boardLengthM : next.lengthsM[0];
+        setInput((s) => ({ ...s, boardId: id, boardLengthM: lengthM }));
+    };
 
     return (
         <div className="grid gap-6 lg:grid-cols-[340px_minmax(0,1fr)] items-start">
@@ -119,15 +136,54 @@ export default function DeckingCalculator() {
                     <NumberField label="Deck width" value={input.widthM} onChange={(v) => set('widthM', v)} unit="m" min={1} max={12} />
                     <NumberField label="Deck length" value={input.lengthM} onChange={(v) => set('lengthM', v)} unit="m" min={1} max={15} />
                 </div>
-                <Segmented
-                    label="Board material"
-                    value={input.composite ? 'composite' : 'timber'}
-                    onChange={(v) => set('composite', v === 'composite')}
-                    options={[
-                        { value: 'timber', label: 'Treated timber' },
-                        { value: 'composite', label: 'Composite' },
-                    ]}
-                />
+                <div>
+                    <label htmlFor="deck-board" className="form-label text-sm">
+                        Decking board
+                    </label>
+                    <select
+                        id="deck-board"
+                        className="form-select"
+                        value={input.boardId}
+                        onChange={(e) => pickBoard(e.target.value)}
+                    >
+                        <optgroup label="Softwood">
+                            {DECK_BOARDS.filter((b) => b.material === 'timber').map((b) => (
+                                <option key={b.id} value={b.id}>
+                                    {b.name}
+                                </option>
+                            ))}
+                        </optgroup>
+                        <optgroup label="Composite">
+                            {DECK_BOARDS.filter((b) => b.material === 'composite').map((b) => (
+                                <option key={b.id} value={b.id}>
+                                    {b.name}
+                                </option>
+                            ))}
+                        </optgroup>
+                    </select>
+                </div>
+                <div>
+                    <label htmlFor="deck-length" className="form-label text-sm">
+                        Board length
+                    </label>
+                    <select
+                        id="deck-length"
+                        className="form-select"
+                        value={input.boardLengthM}
+                        onChange={(e) => set('boardLengthM', Number(e.target.value))}
+                        disabled={board.lengthsM.length === 1}
+                    >
+                        {board.lengthsM.map((l) => (
+                            <option key={l} value={l}>
+                                {l.toFixed(1)} m
+                            </option>
+                        ))}
+                    </select>
+                    <span className="field-description">
+                        {board.widthMm} × {board.thicknessMm} mm{board.hollow ? ', hollow' : ''}. Stocked in{' '}
+                        {board.lengthsM.length} {board.lengthsM.length === 1 ? 'length' : 'lengths'}.
+                    </span>
+                </div>
                 <ToggleRow
                     label="Raised deck"
                     hint="Posts in post-fix concrete instead of deck blocks"
