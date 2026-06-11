@@ -34,7 +34,18 @@ export const concrete: CalcSpec = {
             ],
             default: 'c20',
         },
-        { kind: 'toggle', id: 'mesh', label: 'A142 mesh reinforcement', hint: 'Slabs taking vehicles or point loads', default: false },
+        {
+            kind: 'choice',
+            id: 'reinforcement',
+            label: 'Reinforcement',
+            options: [
+                { value: 'none', label: 'None' },
+                { value: 'a142', label: 'A142 mesh' },
+                { value: 'a393', label: 'A393 mesh' },
+                { value: 'bars', label: '12 mm bars' },
+            ],
+            default: 'none',
+        },
         { kind: 'toggle', id: 'dpm', label: 'DPM under slab', hint: '1200-gauge polythene membrane', default: true },
     ],
     rectPreview: (v) => ({
@@ -50,6 +61,45 @@ export const concrete: CalcSpec = {
         const cementKg = wasteVol * (c25 ? 340 : 300);
         const ballastKg = wasteVol * 1850;
         const area = num(v, 'width') * num(v, 'length');
+
+        // Reinforcement. Mesh laps one square (~200 mm), call it 15% over.
+        const rebar = str(v, 'reinforcement');
+        const meshNeedM2 = area * 1.15;
+        // A142 comes in two sheet sizes: fill with 3.6 x 2 m (7.2 m²),
+        // top up with 2.45 x 1.25 m (3.06 m²); three top-ups beat a big sheet.
+        let a142Big = Math.floor(meshNeedM2 / 7.2);
+        let a142Small = Math.ceil(Math.max(0, meshNeedM2 - a142Big * 7.2) / 3.06);
+        if (a142Small >= 3) {
+            a142Big += 1;
+            a142Small = 0;
+        }
+        if (rebar === 'a142' && a142Big + a142Small === 0) a142Small = 1;
+        // Bars: 3 No. 12 mm along the long dimension, typical domestic
+        // strip footing, with 500 mm laps (~10% over). Sold in 6 m lengths.
+        const longSideM = Math.max(num(v, 'width'), num(v, 'length'));
+        const barLengths = units((longSideM * 3 * 1.1) / 6);
+
+        const reinforcementLines =
+            rebar === 'a142'
+                ? [
+                      ...(a142Big > 0
+                          ? [{ id: 'mesh-big', name: 'A142 reinforcement mesh', detail: '3.6 × 2 m sheet (7.2 m²)', qty: a142Big, unit: 'sheets' }]
+                          : []),
+                      ...(a142Small > 0
+                          ? [{ id: 'mesh-small', name: 'A142 reinforcement mesh', detail: '2.45 × 1.25 m sheet, the handy size', qty: a142Small, unit: 'sheets' }]
+                          : []),
+                  ]
+                : rebar === 'a393'
+                  ? [{ id: 'mesh-a393', name: 'A393 reinforcement mesh', detail: '4.8 × 2.4 m sheet (11.52 m²), the heavy one', qty: units(meshNeedM2 / 11.52), unit: 'sheets' }]
+                  : rebar === 'bars'
+                    ? [{ id: 'rebar', name: '12 mm reinforcing bar, 6 m', detail: '3 bars along the run with 500 mm laps', qty: barLengths, unit: 'lengths' }]
+                    : [];
+        if (reinforcementLines.length) {
+            reinforcementLines.push(
+                { id: 'spacers', name: 'Mesh spacer supports, 40/50 mm', detail: 'pack of 200, keeps steel mid-slab', qty: 1, unit: 'packs' },
+                { id: 'tying-wire', name: 'Concrete tying wire', detail: '10 kg roll, ties laps and bar junctions', qty: 1, unit: 'rolls' },
+            );
+        }
 
         return {
             facts: [
@@ -72,12 +122,7 @@ export const concrete: CalcSpec = {
                         ...(bool(v, 'dpm')
                             ? [{ id: 'dpm', name: 'DPM polythene, 1200 gauge', detail: '4 m × 25 m roll, laps 300 mm', qty: units((area * 1.2) / 100), unit: 'rolls' }]
                             : []),
-                        ...(bool(v, 'mesh')
-                            ? [
-                                  { id: 'mesh', name: 'A142 reinforcement mesh', detail: '3.6 × 2 m sheet (7.2 m²)', qty: units((area * 1.15) / 7.2), unit: 'sheets' },
-                                  { id: 'spacers', name: 'Mesh spacers / chairs, 50 mm', detail: 'bag of 50', qty: units(area / 10) || 1, unit: 'bags' },
-                              ]
-                            : []),
+                        ...reinforcementLines,
                         { id: 'timber', name: 'Sawn timber for formwork, 100 × 22 mm', detail: '4.8 m lengths around the perimeter', qty: units((2 * (num(v, 'width') + num(v, 'length'))) / 4.8), unit: 'lengths' },
                     ],
                 },
@@ -93,7 +138,13 @@ export const concrete: CalcSpec = {
             notes: [
                 `Over ~2 m³, price ready-mix with a pump, ${volM3 > 2 ? 'this job qualifies' : 'this job is comfortably site-mixable'}.`,
                 'Volumes carry 10% for uneven ground and spillage.',
-                'Footings below ground rarely need mesh; check with building control for structural work.',
+                rebar === 'a142'
+                    ? 'A142 suits paths, shed bases and light slabs. Lap sheets one full square and tie the laps.'
+                    : rebar === 'a393'
+                      ? 'A393 is the heavy mesh for driveways and structural slabs. Two people to carry a sheet, no exceptions.'
+                      : rebar === 'bars'
+                        ? '3 No. 12 mm bars is a typical domestic strip footing. If an engineer has specified the steel, their drawing wins.'
+                        : 'Plain concrete is fine for most garden slabs. Add mesh once vehicles or point loads get involved, and check structural work with building control.',
             ],
         };
     },
