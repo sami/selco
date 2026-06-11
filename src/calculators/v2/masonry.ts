@@ -36,6 +36,8 @@ export interface MasonryInput {
     construction: WallConstruction;
     /** Cavity walls: facing brick outer, or dense block ready for render. */
     outerLeaf: OuterLeaf;
+    /** Render-ready outer leaf thickness: 100 or 140 mm dense block. */
+    outerBlockThicknessMm: number;
     brickType: BrickType;
     /** Inner leaf (cavity) or the wall itself (block wall). */
     blockType: BlockType;
@@ -140,9 +142,10 @@ export function planMasonry(input: MasonryInput): MasonryPlan {
     // (the 2.1 kg base rate is for a 100 mm block).
     const blockSandFactor = input.blockThicknessMm / 100;
     const totalBrickish = bricks + engineeringBricks;
-    const denseBlockKg = (outerBlocks + denseDpcBlocks) * 2.1;
+    const outerFactor = input.outerBlockThicknessMm / 100;
+    const denseBlockKg = outerBlocks * 2.1 * outerFactor + denseDpcBlocks * 2.1;
     const sandKg = totalBrickish * 0.85 + blocks * 2.1 * blockSandFactor + denseBlockKg;
-    const cementBags = totalBrickish * 0.01 + blocks * 0.025 * blockSandFactor + (outerBlocks + denseDpcBlocks) * 0.025;
+    const cementBags = totalBrickish * 0.01 + blocks * 0.025 * blockSandFactor + outerBlocks * 0.025 * outerFactor + denseDpcBlocks * 0.025;
 
     const neededMm = input.openingWidthMm + 300;
     const lintelLengthMm = LINTEL_LENGTHS.find((l) => l >= neededMm) ?? 3000;
@@ -235,7 +238,7 @@ export function calculateMasonry(input: MasonryInput): BillOfMaterials {
             ? [
                   {
                       id: 'outer-blocks',
-                      name: 'Concrete Block Dense 7N, 100 mm solid (outer leaf)',
+                      name: `Concrete Block Dense 7N, ${input.outerBlockThicknessMm} mm solid (outer leaf)`,
                       detail: '440 × 215 mm, the render-ready outer skin',
                       qty: plan.outerBlocks,
                       unit: 'blocks',
