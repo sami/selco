@@ -16,7 +16,7 @@
  */
 
 import type { BillOfMaterials, BomLine } from './types';
-import { fmtM2, units } from './types';
+import { aggregateLines, fmtM2, units } from './types';
 
 /** Luxigraze Midi roll lengths Selco stocks, 2 m wide. */
 const ROLL_LENGTHS_M = [4, 5, 6] as const;
@@ -236,20 +236,8 @@ export function calculateGrass(input: GrassInput): BillOfMaterials {
 
     const groundLines: BomLine[] = input.includeGroundworks
         ? [
-              {
-                  id: 'mot',
-                  name: 'MOT Type 1 Roadstone',
-                  detail: 'Large Bag (~800 kg), 50 mm compacted',
-                  qty: units((lawnM2 * 0.05 * 2200) / 850),
-                  unit: 'bulk bags',
-              },
-              {
-                  id: 'sharp-sand',
-                  name: 'Concreting Sharp Sand',
-                  detail: 'Large Bag (~800 kg), 25 mm laying course',
-                  qty: units((lawnM2 * 0.025 * 1700) / 850),
-                  unit: 'bulk bags',
-              },
+              ...aggregateLines('mot', 'MOT Type 1 Roadstone', lawnM2 * 0.05 * 2200, '50 mm compacted'),
+              ...aggregateLines('sharp-sand', 'Concreting Sharp Sand', lawnM2 * 0.025 * 1700, '25 mm laying course'),
           ]
         : [];
 

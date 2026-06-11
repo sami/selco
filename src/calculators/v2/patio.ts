@@ -11,7 +11,7 @@
  */
 
 import type { BillOfMaterials, BomLine } from './types';
-import { fmtM2, units } from './types';
+import { aggregateLines, fmtM2, units } from './types';
 
 export interface SlabFormat {
     id: string;
@@ -113,13 +113,7 @@ export function calculatePatio(input: PatioInput): BillOfMaterials {
             qty: plan.slabs,
             unit: 'slabs',
         },
-        {
-            id: 'sharp-sand',
-            name: 'Concreting Sharp Sand',
-            detail: 'Large Bag (~800 kg), 30 mm full mortar bed',
-            qty: units((sandT * 1000) / 800),
-            unit: 'Large Bags',
-        },
+        ...aggregateLines('sharp-sand', 'Concreting Sharp Sand', sandT * 1000, '30 mm full mortar bed'),
         {
             id: 'cement',
             name: 'Rugby Premium Cement',
@@ -146,13 +140,7 @@ export function calculatePatio(input: PatioInput): BillOfMaterials {
     ];
 
     if (input.includeSubBase) {
-        lines.splice(1, 0, {
-            id: 'mot',
-            name: 'MOT Type 1 Roadstone',
-            detail: 'Large Bag (~800 kg), 100 mm compacted',
-            qty: units((a * SUBBASE_M * 2200) / 800),
-            unit: 'Large Bags',
-        });
+        lines.splice(1, 0, ...aggregateLines('mot', 'MOT Type 1 Roadstone', a * SUBBASE_M * 2200, '100 mm compacted'));
     }
 
     if (input.includeEdging) {
