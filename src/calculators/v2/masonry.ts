@@ -6,16 +6,16 @@
  * Wall types use the trade wording:
  *   - half-brick wall (102 mm): single skin in stretcher bond
  *   - one-brick wall (215 mm): solid wall, two skins bonded together
- *   - 100 mm block wall: internal, garden or inner-leaf work
- *   - cavity wall: facing brick outer leaf + 100 mm block inner leaf,
- *     tied at 2.5 ties/m²
+ *   - block wall: dense 7N (100 or 140 mm) or Thermalite (100 mm, or
+ *     215 mm party wall)
+ *   - cavity wall: facing brick outer leaf + block inner leaf, tied at
+ *     2.5 ties/m², with full-fill cavity batts as standard
  *
- * Bricks: facing (65 mm) or Class B engineering. Blocks: dense 7N or
- * Thermalite Hi-Strength 7.3N aircrete. Openings drive prestressed
- * concrete or steel cavity lintels with 150 mm bearings, plus cavity
- * trays on cavity work. Below-DPC courses can switch to engineering
- * brick, air bricks ventilate suspended floors, padstones go under any
- * steel beam bearings, and copings cap freestanding garden walls.
+ * The details that catch people out are all here: wall starter kits when
+ * the new wall tees into an existing one, dense blocks below DPC when the
+ * wall above is Thermalite (aircrete stays out of the wet), lintels in
+ * steel or concrete at stocked lengths, cavity trays and weep vents
+ * counted individually, and copings once or twice weathered as preferred.
  */
 
 import type { BillOfMaterials, BomLine, BomSection } from './types';
@@ -24,7 +24,8 @@ import { aggregateLines, fmtM2, units } from './types';
 export type WallConstruction = 'half-brick' | 'one-brick' | 'block' | 'cavity';
 export type BrickType = 'facing' | 'engineering';
 export type BlockType = 'dense' | 'thermalite';
-export type OpeningSize = '900' | '1200' | '1800';
+export type LintelType = 'concrete' | 'steel';
+export type CopingStyle = 'once' | 'twice';
 
 export interface MasonryInput {
     lengthM: number;
@@ -32,17 +33,24 @@ export interface MasonryInput {
     construction: WallConstruction;
     brickType: BrickType;
     blockType: BlockType;
-    /** Door/window openings in the wall. */
+    /** Dense: 100 or 140. Thermalite: 100, or 215 party wall. */
+    blockThicknessMm: number;
+    /** Door/window openings in the wall, all at this width. */
     openings: number;
     openingWidthMm: number;
+    lintelType: LintelType;
     /** Steel beams bearing on the wall (2 padstones each). */
     beams: number;
-    /** Two courses of Class B engineering brick below DPC + DPC roll. */
+    /** Ends that tee into an existing wall (wall starter kits). */
+    joinsExisting: number;
+    /** Below-DPC courses in engineering brick / dense block + DPC roll. */
     dpcCourses: boolean;
+    /** Full-fill cavity batts between the leaves (cavity walls). */
+    cavityInsulation: boolean;
     /** Air bricks at the base for suspended floor ventilation. */
     airBricks: boolean;
-    /** Copings for a freestanding garden wall. */
     includeCopings: boolean;
+    copingStyle: CopingStyle;
 }
 
 interface ConstructionSpec {
@@ -50,13 +58,15 @@ interface ConstructionSpec {
     bricksPerM2: number;
     blocksPerM2: number;
     tiesPerM2: number;
+    /** Masonry leaves at a junction (wall starters per join). */
+    leaves: number;
 }
 
 export const CONSTRUCTIONS: Record<WallConstruction, ConstructionSpec> = {
-    'half-brick': { label: 'Half-brick wall (102 mm)', bricksPerM2: 60, blocksPerM2: 0, tiesPerM2: 0 },
-    'one-brick': { label: 'One-brick wall (215 mm)', bricksPerM2: 120, blocksPerM2: 0, tiesPerM2: 0 },
-    block: { label: '100 mm block wall', bricksPerM2: 0, blocksPerM2: 10, tiesPerM2: 0 },
-    cavity: { label: 'Cavity wall (brick + block)', bricksPerM2: 60, blocksPerM2: 10, tiesPerM2: 2.5 },
+    'half-brick': { label: 'Half-brick wall (102 mm)', bricksPerM2: 60, blocksPerM2: 0, tiesPerM2: 0, leaves: 1 },
+    'one-brick': { label: 'One-brick wall (215 mm)', bricksPerM2: 120, blocksPerM2: 0, tiesPerM2: 0, leaves: 1 },
+    block: { label: 'Block wall', bricksPerM2: 0, blocksPerM2: 10, tiesPerM2: 0, leaves: 1 },
+    cavity: { label: 'Cavity wall (brick + block)', bricksPerM2: 60, blocksPerM2: 10, tiesPerM2: 2.5, leaves: 2 },
 };
 
 /** Supreme prestressed lintel stocked lengths, mm. */
@@ -64,16 +74,22 @@ const LINTEL_LENGTHS = [600, 900, 1050, 1200, 1350, 1500, 1800, 2100, 2400, 2700
 
 export interface MasonryPlan {
     areaM2: number;
-    /** Face area after opening deductions. */
     netAreaM2: number;
     spec: ConstructionSpec;
     bricks: number;
     engineeringBricks: number;
     blocks: number;
+    /** Dense blocks below DPC when the wall above is Thermalite. */
+    denseDpcBlocks: number;
     ties: number;
     sandKg: number;
     cementBags: number;
     lintelLengthMm: number;
+    /** Cavity trays and weep vents, counted individually. */
+    cavityTrays: number;
+    weepVents: number;
+    /** Wall starter kits across all junctions. */
+    starterKits: number;
     airBrickCount: number;
 }
 
@@ -81,16 +97,18 @@ export function planMasonry(input: MasonryInput): MasonryPlan {
     const spec = CONSTRUCTIONS[input.construction];
     const area = input.lengthM * input.heightM;
     const openings = Math.round(input.openings);
-    // Standard head heights: take each opening as width x 1.2 m of face.
     const openingArea = openings * (input.openingWidthMm / 1000) * Math.min(1.2, input.heightM * 0.6);
     const netArea = Math.max(0, area - openingArea);
 
     let bricks = units(netArea * spec.bricksPerM2 * 1.05);
     let engineeringBricks = 0;
+    const hasBlocks = spec.blocksPerM2 > 0;
+    const thermalite = input.blockType === 'thermalite' && hasBlocks;
+
     if (input.dpcCourses && spec.bricksPerM2 > 0) {
-        // Two courses below DPC: ~13.3 bricks per metre per course per skin.
-        const skins = input.construction === 'one-brick' ? 2 : 1;
-        engineeringBricks = units(input.lengthM * 13.4 * 2 * skins);
+        // Two courses below DPC, ~13.4 bricks per metre per course per skin.
+        const brickSkins = input.construction === 'one-brick' ? 2 : 1;
+        engineeringBricks = units(input.lengthM * 13.4 * 2 * brickSkins);
     }
     if (input.brickType === 'engineering') {
         engineeringBricks += bricks;
@@ -98,13 +116,30 @@ export function planMasonry(input: MasonryInput): MasonryPlan {
     }
 
     const blocks = units(netArea * spec.blocksPerM2 * 1.05);
-    const totalBrickish = bricks + engineeringBricks;
-    const sandKg = totalBrickish * 0.85 + blocks * 2.1;
-    const cementBags = totalBrickish * 0.01 + blocks * 0.025;
+    // Aircrete stays out of the ground: one course of dense block below
+    // DPC under a Thermalite leaf (440 mm long blocks).
+    const denseDpcBlocks =
+        input.dpcCourses && thermalite ? units(input.lengthM / 0.44) : 0;
 
-    // Lintel: stocked length >= opening + 2 x 150 mm bearing.
+    // Mortar: bricks at ~0.85 kg sand each; blocks scale with thickness
+    // (the 2.1 kg base rate is for a 100 mm block).
+    const blockSandFactor = input.blockThicknessMm / 100;
+    const totalBrickish = bricks + engineeringBricks;
+    const sandKg = totalBrickish * 0.85 + (blocks + denseDpcBlocks) * 2.1 * blockSandFactor;
+    const cementBags = totalBrickish * 0.01 + (blocks + denseDpcBlocks) * 0.025 * blockSandFactor;
+
     const neededMm = input.openingWidthMm + 300;
     const lintelLengthMm = LINTEL_LENGTHS.find((l) => l >= neededMm) ?? 3000;
+
+    // Cavity trays interlock in ~450 mm units over each lintel; weep vents
+    // at max 450 mm centres, never fewer than two per opening.
+    const cavity = input.construction === 'cavity';
+    const traysPerOpening = Math.ceil(lintelLengthMm / 450);
+    const weepsPerOpening = Math.max(2, Math.ceil(input.openingWidthMm / 450));
+
+    // Wall starters: one kit per leaf per junction, per 2.4 m of height.
+    const starterKits =
+        Math.round(input.joinsExisting) * spec.leaves * Math.max(1, Math.ceil(input.heightM / 2.4));
 
     return {
         areaM2: area,
@@ -113,10 +148,14 @@ export function planMasonry(input: MasonryInput): MasonryPlan {
         bricks,
         engineeringBricks,
         blocks,
+        denseDpcBlocks,
         ties: units(netArea * spec.tiesPerM2),
         sandKg,
         cementBags,
         lintelLengthMm,
+        cavityTrays: cavity ? traysPerOpening * openings : 0,
+        weepVents: cavity ? weepsPerOpening * openings : 0,
+        starterKits,
         airBrickCount: input.airBricks ? Math.max(2, Math.ceil(input.lengthM / 1.5)) : 0,
     };
 }
@@ -126,6 +165,27 @@ export function calculateMasonry(input: MasonryInput): BillOfMaterials {
     const cavity = input.construction === 'cavity';
     const openings = Math.round(input.openings);
     const beams = Math.round(input.beams);
+    const hasBlocks = plan.blocks > 0;
+    const thermalite = input.blockType === 'thermalite';
+    const t = input.blockThicknessMm;
+
+    const blockLine: BomLine | null = hasBlocks
+        ? thermalite
+            ? {
+                  id: 'blocks',
+                  name: t >= 215 ? 'Thermalite Party Wall block, 215 mm' : '100 mm Thermalite Hi-Strength block, 7.3 N',
+                  detail: t >= 215 ? '440 × 215 mm aircrete, sound-tested for separating walls' : '440 × 215 mm aircrete, light, insulating, easy to cut',
+                  qty: plan.blocks,
+                  unit: 'blocks',
+              }
+            : {
+                  id: 'blocks',
+                  name: `Concrete Block Dense 7N, ${t} mm solid`,
+                  detail: '440 × 215 mm, load-bearing and below-ground work',
+                  qty: plan.blocks,
+                  unit: 'blocks',
+              }
+        : null;
 
     const masonryLines: BomLine[] = [
         ...(plan.bricks > 0
@@ -144,31 +204,25 @@ export function calculateMasonry(input: MasonryInput): BillOfMaterials {
                   {
                       id: 'eng-bricks',
                       name: '65 mm Class B engineering brick',
-                      detail: input.dpcCourses && input.brickType === 'facing'
-                          ? 'two courses below DPC, dense and frost-proof'
-                          : 'dense, low absorption, high strength',
+                      detail:
+                          input.dpcCourses && input.brickType === 'facing'
+                              ? 'two courses below DPC, dense and frost-proof'
+                              : 'dense, low absorption, high strength',
                       qty: plan.engineeringBricks,
                       unit: 'bricks',
                   },
               ]
             : []),
-        ...(plan.blocks > 0
+        ...(blockLine ? [blockLine] : []),
+        ...(plan.denseDpcBlocks > 0
             ? [
-                  input.blockType === 'thermalite'
-                      ? {
-                            id: 'blocks',
-                            name: '100 mm Thermalite Hi-Strength block, 7.3 N',
-                            detail: '440 × 215 mm aircrete, light, insulating, easy to cut',
-                            qty: plan.blocks,
-                            unit: 'blocks',
-                        }
-                      : {
-                            id: 'blocks',
-                            name: 'Dense concrete block 7N, 100 mm solid',
-                            detail: '440 × 215 mm, load-bearing and garden work',
-                            qty: plan.blocks,
-                            unit: 'blocks',
-                        },
+                  {
+                      id: 'dpc-blocks',
+                      name: `Concrete Block Dense 7N, ${Math.min(t, 140)} mm solid`,
+                      detail: 'one course below DPC, aircrete stays out of the wet',
+                      qty: plan.denseDpcBlocks,
+                      unit: 'blocks',
+                  },
               ]
             : []),
         ...(plan.ties > 0
@@ -179,6 +233,35 @@ export function calculateMasonry(input: MasonryInput): BillOfMaterials {
                       detail: '2.5/m² at 900 × 450 mm staggered centres',
                       qty: plan.ties,
                       unit: 'ties',
+                  },
+              ]
+            : []),
+        ...(cavity && input.cavityInsulation
+            ? [
+                  {
+                      id: 'cavity-batts',
+                      name: 'Full-fill cavity wall batt, 100 mm',
+                      detail: 'pack covers ~6.5 m², built in as the wall rises',
+                      qty: units(plan.netAreaM2 / 6.5),
+                      unit: 'packs',
+                  },
+                  {
+                      id: 'retaining-discs',
+                      name: 'Insulation retaining discs',
+                      detail: 'one clips onto every wall tie',
+                      qty: plan.ties,
+                      unit: 'discs',
+                  },
+              ]
+            : []),
+        ...(plan.starterKits > 0
+            ? [
+                  {
+                      id: 'wall-starters',
+                      name: 'Stainless wall starter kit, 2.4 m',
+                      detail: 'ties the new wall into the existing one, kit per leaf with ties and fixings',
+                      qty: plan.starterKits,
+                      unit: 'kits',
                   },
               ]
             : []),
@@ -204,31 +287,51 @@ export function calculateMasonry(input: MasonryInput): BillOfMaterials {
 
     const openingLines: BomLine[] = [];
     if (openings > 0) {
+        const lintelWidth = Math.min(t || 100, 140);
         openingLines.push(
-            cavity
-                ? {
-                      id: 'lintels',
-                      name: `Steel cavity lintel L1/S100, ${plan.lintelLengthMm} mm`,
-                      detail: `one per opening, 150 mm bearing each end`,
-                      qty: openings,
-                      unit: 'lintels',
-                  }
+            input.lintelType === 'steel'
+                ? cavity
+                    ? {
+                          id: 'lintels',
+                          name: `Steel cavity lintel L1/S100, ${plan.lintelLengthMm} mm`,
+                          detail: 'one per opening, 150 mm bearing each end',
+                          qty: openings,
+                          unit: 'lintels',
+                      }
+                    : {
+                          id: 'lintels',
+                          name: `Single leaf steel lintel, ${plan.lintelLengthMm} mm`,
+                          detail: 'one per opening per leaf, 150 mm bearing each end',
+                          qty: input.construction === 'one-brick' ? openings * 2 : openings,
+                          unit: 'lintels',
+                      }
                 : {
                       id: 'lintels',
-                      name: `Supreme prestressed concrete lintel, 100 mm × ${plan.lintelLengthMm} mm`,
-                      detail: `one per opening, 150 mm bearing each end`,
-                      qty: input.construction === 'one-brick' ? openings * 2 : openings,
+                      name: `Supreme prestressed concrete lintel, ${input.construction === 'one-brick' ? 215 : lintelWidth} mm × ${plan.lintelLengthMm} mm`,
+                      detail: cavity
+                          ? 'one per leaf per opening, 150 mm bearing each end'
+                          : 'one per opening, 150 mm bearing each end',
+                      qty: cavity ? openings * 2 : openings,
                       unit: 'lintels',
                   },
         );
-        if (cavity) {
-            openingLines.push({
-                id: 'cavity-trays',
-                name: 'Type E cavity tray + weep vents',
-                detail: 'over every opening in a cavity wall',
-                qty: openings,
-                unit: 'sets',
-            });
+        if (plan.cavityTrays > 0) {
+            openingLines.push(
+                {
+                    id: 'cavity-trays',
+                    name: 'Type E cavity tray',
+                    detail: 'interlocking units over every opening',
+                    qty: plan.cavityTrays,
+                    unit: 'trays',
+                },
+                {
+                    id: 'weep-vents',
+                    name: 'Weep vents',
+                    detail: 'max 450 mm apart, never fewer than two per opening',
+                    qty: plan.weepVents,
+                    unit: 'vents',
+                },
+            );
         }
     }
     if (beams > 0) {
@@ -248,7 +351,7 @@ export function calculateMasonry(input: MasonryInput): BillOfMaterials {
                       id: 'dpc',
                       name: 'DPC roll, 112 mm × 20 m',
                       detail: 'bedded 150 mm above ground level',
-                      qty: units(input.lengthM / 20) * (input.construction === 'cavity' || input.construction === 'one-brick' ? 2 : 1),
+                      qty: units(input.lengthM / 20) * (cavity || input.construction === 'one-brick' ? 2 : 1),
                       unit: 'rolls',
                   },
               ]
@@ -279,8 +382,11 @@ export function calculateMasonry(input: MasonryInput): BillOfMaterials {
             ? [
                   {
                       id: 'copings',
-                      name: 'Supreme once weathered coping stone',
-                      detail: '600 mm, caps the wall against rain',
+                      name: `Supreme ${input.copingStyle === 'twice' ? 'twice' : 'once'} weathered coping stone`,
+                      detail:
+                          input.copingStyle === 'twice'
+                              ? '600 mm, sheds rain both ways, the freestanding wall choice'
+                              : '600 mm, sheds rain one way, suits walls against a building',
                       qty: units(input.lengthM / 0.6),
                       unit: 'copings',
                   },
@@ -298,18 +404,24 @@ export function calculateMasonry(input: MasonryInput): BillOfMaterials {
     return {
         facts: [
             { label: 'Wall face', value: fmtM2(plan.netAreaM2) + (openings ? ' net' : '') },
-            { label: 'Construction', value: plan.spec.label },
+            {
+                label: 'Construction',
+                value:
+                    input.construction === 'block'
+                        ? `${t} mm ${thermalite ? 'Thermalite' : 'dense'} block wall`
+                        : plan.spec.label,
+            },
             ...(plan.bricks + plan.engineeringBricks > 0
                 ? [{ label: 'Bricks', value: `${plan.bricks + plan.engineeringBricks}` }]
                 : []),
-            ...(plan.blocks > 0 ? [{ label: 'Blocks', value: `${plan.blocks}` }] : []),
+            ...(plan.blocks > 0 ? [{ label: 'Blocks', value: `${plan.blocks + plan.denseDpcBlocks}` }] : []),
         ],
         sections,
         tools: [
             'Brick trowel, pointing trowel and a jointer for the bucket-handle finish',
             'String line, pins and corner blocks. Courses run to the line, not the eye',
             'Spirit levels: 1.2 m for the wall, boat level for single bricks',
-            'Cement mixer (hire) past about 250 bricks a day',
+            'Powered cement mixer (hire) past about 250 bricks a day',
             'Bolster, lump hammer and a brick gauge or storey rod',
             'Spot boards, a shovel and a sheet to cover fresh work from rain and frost',
         ],
@@ -318,6 +430,12 @@ export function calculateMasonry(input: MasonryInput): BillOfMaterials {
             cavity
                 ? 'Cavity walls are Building Regs territory: insulation, trays, weeps and ties all get inspected. This list is your starting point, not your sign-off.'
                 : 'Freestanding walls over about 1.2 m, or any wall holding ground back, need proper design. Ask before you build.',
+            ...(thermalite && hasBlocks
+                ? ['Thermalite cuts with a hand saw and takes fixings well, but keep it above the DPC. Dense block handles the wet ground below.']
+                : []),
+            ...(plan.starterKits > 0
+                ? ['Wall starter kits screw to the existing wall plumb, then every course hooks a tie in. Far cleaner than toothing out.']
+                : []),
             'No laying below 3 °C and falling. Cover fresh work against rain and frost.',
             'Walls over 6 m long need a movement joint.',
         ],
