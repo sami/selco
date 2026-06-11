@@ -9,6 +9,7 @@
 import { useMemo, useState } from 'react';
 import {
     calculateMasonry,
+    PADSTONES,
     planMasonry,
     type BlockType,
     type BrickType,
@@ -177,9 +178,11 @@ export default function MasonryCalculator() {
         brickType: 'facing',
         blockType: 'thermalite',
         blockThicknessMm: 100,
+        cavityWidthMm: 100,
         openings: [{ id: 'o1', widthMm: 1200 }],
         lintelType: 'steel',
         beams: 0,
+        padstoneId: '01',
         joinsExisting: 1,
         dpcCourses: true,
         cavityInsulation: true,
@@ -215,6 +218,17 @@ export default function MasonryCalculator() {
                 />
                 {input.construction === 'cavity' && (
                     <>
+                        <Segmented
+                            label="Cavity width"
+                            value={String(input.cavityWidthMm)}
+                            onChange={(v) => set('cavityWidthMm', Number(v))}
+                            options={[
+                                { value: '50', label: '50' },
+                                { value: '75', label: '75' },
+                                { value: '100', label: '100' },
+                                { value: '150', label: '150' },
+                            ]}
+                        />
                         <Segmented<OuterLeaf>
                             label="Outer leaf"
                             value={input.outerLeaf}
@@ -259,6 +273,7 @@ export default function MasonryCalculator() {
                             options={[
                                 { value: 'dense', label: 'Dense 7N' },
                                 { value: 'thermalite', label: 'Thermalite' },
+                                { value: 'mixed', label: 'Dense + Therm.' },
                             ]}
                         />
                         <Segmented
@@ -271,10 +286,12 @@ export default function MasonryCalculator() {
                                           { value: '100', label: '100 mm' },
                                           { value: '140', label: '140 mm' },
                                       ]
-                                    : [
-                                          { value: '100', label: '100 mm' },
-                                          { value: '215', label: '215 party wall' },
-                                      ]
+                                    : input.blockType === 'mixed'
+                                      ? [{ value: '100', label: '100 mm' }]
+                                      : [
+                                            { value: '100', label: '100 mm' },
+                                            { value: '215', label: '215 party wall' },
+                                        ]
                             }
                         />
                     </>
@@ -333,6 +350,26 @@ export default function MasonryCalculator() {
                     <span className="field-description">Each opening gets its own stocked lintel with 150 mm bearings</span>
                 </div>
                 <NumberField label="Steel beams" value={input.beams} onChange={(v) => set('beams', Math.round(v))} min={0} max={4} step={1} hint="Padstones under each" />
+                {input.beams > 0 && (
+                    <div>
+                        <label htmlFor="padstone" className="form-label text-sm">
+                            Padstone size
+                        </label>
+                        <select
+                            id="padstone"
+                            className="form-select"
+                            value={input.padstoneId}
+                            onChange={(e) => set('padstoneId', e.target.value)}
+                        >
+                            {PADSTONES.map((pd) => (
+                                <option key={pd.id} value={pd.id}>
+                                    Padstone {pd.id} — {pd.label}
+                                </option>
+                            ))}
+                        </select>
+                        <span className="field-description">Sized by your engineer to the beam load</span>
+                    </div>
+                )}
                 {input.openings.length > 0 && (
                     <Segmented<LintelType>
                         label="Lintels"
