@@ -85,7 +85,7 @@ export function calculatePaint(input: PaintInput): BillOfMaterials {
         if (tins.five)
             lines.push({
                 id: 'wall-5l',
-                name: 'Vinyl matt emulsion — walls',
+                name: 'Leyland Trade vinyl matt emulsion (walls)',
                 detail: '5 L tin, 12 m²/L per coat',
                 qty: tins.five,
                 unit: 'tins',
@@ -93,7 +93,7 @@ export function calculatePaint(input: PaintInput): BillOfMaterials {
         if (tins.twoFive)
             lines.push({
                 id: 'wall-2.5l',
-                name: 'Vinyl matt emulsion — walls',
+                name: 'Leyland Trade vinyl matt emulsion (walls)',
                 detail: '2.5 L tin',
                 qty: tins.twoFive,
                 unit: 'tins',
@@ -105,7 +105,7 @@ export function calculatePaint(input: PaintInput): BillOfMaterials {
         if (tins.five)
             lines.push({
                 id: 'ceiling-5l',
-                name: 'Contract matt emulsion — ceiling white',
+                name: 'Leyland Trade contract matt, brilliant white (ceiling)',
                 detail: '5 L tin',
                 qty: tins.five,
                 unit: 'tins',
@@ -113,7 +113,7 @@ export function calculatePaint(input: PaintInput): BillOfMaterials {
         if (tins.twoFive)
             lines.push({
                 id: 'ceiling-2.5l',
-                name: 'Contract matt emulsion — ceiling white',
+                name: 'Leyland Trade contract matt, brilliant white (ceiling)',
                 detail: '2.5 L tin',
                 qty: tins.twoFive,
                 unit: 'tins',
@@ -127,14 +127,14 @@ export function calculatePaint(input: PaintInput): BillOfMaterials {
         lines.push(
             {
                 id: 'undercoat',
-                name: 'Trade wood undercoat',
+                name: 'Dulux Trade wood undercoat',
                 detail: '750 ml tin',
                 qty: units(woodLitres / 0.75),
                 unit: 'tins',
             },
             {
                 id: 'gloss',
-                name: 'Trade gloss / satinwood',
+                name: 'Dulux Trade gloss or satinwood',
                 detail: '750 ml tin',
                 qty: units(woodLitres / 0.75),
                 unit: 'tins',

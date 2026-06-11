@@ -21,25 +21,32 @@ export interface FloorType {
 
 export const FLOOR_TYPES: FloorType[] = [
     {
-        id: 'laminate',
-        label: 'Laminate',
+        id: 'laminate8',
+        label: 'Laminate 8mm',
         plankMm: { w: 192, l: 1285 },
-        packM2: 1.97,
-        productName: '8 mm AC4 laminate flooring',
+        packM2: 2.26,
+        productName: 'Krono 8 mm laminate (e.g. Rockford or Harlech Oak)',
+    },
+    {
+        id: 'laminate12',
+        label: 'Laminate 12mm',
+        plankMm: { w: 192, l: 1285 },
+        packM2: 1.51,
+        productName: 'Krono Eurohome 12 mm laminate (e.g. Dartmoor Oak)',
     },
     {
         id: 'lvt',
-        label: 'LVT click',
+        label: 'LVT / SPC',
         plankMm: { w: 180, l: 1220 },
-        packM2: 2.2,
-        productName: 'LVT click plank',
+        packM2: 2.17,
+        productName: 'SPC rigid vinyl click plank (e.g. Farmhouse Oak)',
     },
     {
         id: 'engineered',
         label: 'Eng. wood',
         plankMm: { w: 190, l: 1900 },
         packM2: 2.17,
-        productName: 'Engineered oak 14 mm click plank',
+        productName: 'Engineered oak click plank',
     },
 ];
 
@@ -107,11 +114,11 @@ export function calculateFlooring(input: FlooringInput): BillOfMaterials {
                     {
                         id: 'underlay',
                         name: lvt
-                            ? 'LVT-specific underlay (high density)'
-                            : 'Fibreboard / foam combi underlay',
-                        detail: '15 m² per pack/roll',
-                        qty: units((a * 1.05) / 15),
-                        unit: lvt ? 'packs' : 'rolls',
+                            ? 'Timbertech Elite acoustic underlay (LVT-rated)'
+                            : 'Vapour barrier foam underlay',
+                        detail: lvt ? '10 m² per roll' : '15 m² per roll, built-in DPM',
+                        qty: units((a * 1.05) / (lvt ? 10 : 15)),
+                        unit: 'rolls',
                     },
                     ...(input.concreteSubfloor && !lvt
                         ? [

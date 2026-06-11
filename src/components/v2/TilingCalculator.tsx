@@ -90,6 +90,9 @@ export default function TilingCalculator() {
         surface: 'wall',
         wastePct: 10,
         includeTrim: true,
+        tanking: false,
+        backerBoard: false,
+        levelling: false,
     });
 
     const bom = useMemo(() => calculateTiling(input), [input]);
@@ -114,12 +117,9 @@ export default function TilingCalculator() {
                 />
                 <Segmented
                     label="Tile format"
-                    value={input.tileId as 'metro' | '300x600' | '600x600'}
+                    value={input.tileId}
                     onChange={(v) => set('tileId', v)}
-                    options={TILE_FORMATS.map((t) => ({
-                        value: t.id as 'metro' | '300x600' | '600x600',
-                        label: t.label.replace(' metro', ''),
-                    }))}
+                    options={TILE_FORMATS.map((t) => ({ value: t.id, label: t.label }))}
                 />
                 <Segmented
                     label="Cutting waste"
@@ -136,6 +136,26 @@ export default function TilingCalculator() {
                     checked={input.includeTrim}
                     onChange={(v) => set('includeTrim', v)}
                 />
+                <ToggleRow
+                    label="Tank the wet zone"
+                    hint="Waterproof matting behind showers and baths"
+                    checked={input.tanking}
+                    onChange={(v) => set('tanking', v)}
+                />
+                <ToggleRow
+                    label="Cement backer board"
+                    hint="The solid base for wet or heavy tiling"
+                    checked={input.backerBoard}
+                    onChange={(v) => set('backerBoard', v)}
+                />
+                {input.surface === 'floor' && (
+                    <ToggleRow
+                        label="Level the floor first"
+                        hint="Self-levelling compound before tiling"
+                        checked={input.levelling}
+                        onChange={(v) => set('levelling', v)}
+                    />
+                )}
             </JobCard>
 
             <div className="space-y-6">

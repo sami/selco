@@ -19,9 +19,10 @@ export interface TileFormat {
 }
 
 export const TILE_FORMATS: TileFormat[] = [
-    { id: 'metro', label: '200 × 100 metro', wMm: 200, hMm: 100 },
-    { id: '300x600', label: '600 × 300', wMm: 600, hMm: 300 },
-    { id: '600x600', label: '600 × 600', wMm: 600, hMm: 600 },
+    { id: 'metro', label: 'Metro 200×100', wMm: 200, hMm: 100 },
+    { id: '250x500', label: 'Wall 500×250', wMm: 500, hMm: 250 },
+    { id: '300x600', label: '600×300', wMm: 600, hMm: 300 },
+    { id: '600x600', label: '600×600', wMm: 600, hMm: 600 },
 ];
 
 export interface TilingInput {
@@ -32,6 +33,12 @@ export interface TilingInput {
     /** Cutting waste percentage — 10 straight, 15 diagonal/brick-bond. */
     wastePct: number;
     includeTrim: boolean;
+    /** Wet-zone tanking behind showers and baths. */
+    tanking: boolean;
+    /** Cement backer board instead of tiling straight onto the wall/floor. */
+    backerBoard: boolean;
+    /** Self-levelling compound first (floors). */
+    levelling: boolean;
 }
 
 export interface TilingPlan {
@@ -85,12 +92,63 @@ export function calculateTiling(input: TilingInput): BillOfMaterials {
             { label: 'Total tiles', value: `${plan.tiles} inc. ${input.wastePct}% cuts` },
         ],
         sections: [
+            ...(input.backerBoard || input.tanking || input.levelling
+                ? [
+                      {
+                          title: 'Getting the surface right',
+                          lines: [
+                              ...(input.levelling && !wall
+                                  ? [
+                                        {
+                                            id: 'slc',
+                                            name: 'Dunlop LX-40 levelling compound',
+                                            detail: '20 kg bag, roughly 4 m² at 3 mm',
+                                            qty: units(a / 4),
+                                            unit: 'bags',
+                                        },
+                                    ]
+                                  : []),
+                              ...(input.backerBoard
+                                  ? [
+                                        {
+                                            id: 'backer',
+                                            name: 'Hardie Backer tile backerboard, 12 mm',
+                                            detail: '1200 × 800 mm (0.96 m²)',
+                                            qty: units(Math.min(a, 8) / 0.96),
+                                            unit: 'boards',
+                                        },
+                                    ]
+                                  : []),
+                              ...(input.tanking
+                                  ? [
+                                        {
+                                            id: 'tanking',
+                                            name: 'Tile Rite waterproof wall matting',
+                                            detail: 'covers 5 m², the shower zone plus 300 mm beyond',
+                                            qty: units(Math.min(a, 10) / 5),
+                                            unit: 'kits',
+                                        },
+                                        {
+                                            id: 'corners',
+                                            name: 'Tile Rite pre-formed fabric corners',
+                                            detail: 'internal corners of the wet zone',
+                                            qty: 4,
+                                            unit: 'corners',
+                                        },
+                                    ]
+                                  : []),
+                          ],
+                      },
+                  ]
+                : []),
             {
                 title: 'Tiles & fixing',
                 lines: [
                     {
                         id: 'tiles',
-                        name: `Ceramic ${wall ? 'wall' : 'porcelain floor'} tile, ${plan.tile.label} mm`,
+                        name: wall
+                            ? `Ceramic wall tile, ${plan.tile.label} mm (e.g. Carrara, Metro ranges)`
+                            : `Porcelain floor tile, ${plan.tile.label} mm (e.g. Highbury, Regency ranges)`,
                         detail: `${plan.cols} × ${plan.rows} grid + ${input.wastePct}% cuts`,
                         qty: plan.tiles,
                         unit: 'tiles',
@@ -98,17 +156,17 @@ export function calculateTiling(input: TilingInput): BillOfMaterials {
                     {
                         id: 'adhesive',
                         name: wall
-                            ? 'White wall tile adhesive (powder)'
-                            : 'Rapid-set flexible floor tile adhesive',
-                        detail: `20 kg bag ≈ ${adhesiveM2PerBag} m² at a ${wall ? 6 : 10} mm bed`,
+                            ? 'Dunlop CX-24 Essential tile adhesive, white'
+                            : 'Dunlop CX-03 fast set adhesive, grey',
+                        detail: `20 kg bag, about ${adhesiveM2PerBag} m² at a ${wall ? 6 : 10} mm bed`,
                         qty: units(a / adhesiveM2PerBag),
                         unit: 'bags',
                     },
                     {
                         id: 'grout',
-                        name: 'Flexible wall & floor grout',
-                        detail: `5 kg bag — ${plan.jointMm} mm joints on this format`,
-                        qty: units(groutKg / 5),
+                        name: 'Dunlop GX-500 flexible floor & wall grout',
+                        detail: `10 kg bag, ${plan.jointMm} mm joints on this format`,
+                        qty: units(groutKg / 10),
                         unit: 'bags',
                     },
                     {
@@ -125,8 +183,8 @@ export function calculateTiling(input: TilingInput): BillOfMaterials {
                 lines: [
                     {
                         id: 'primer',
-                        name: 'Acrylic tile primer',
-                        detail: 'porous backgrounds before adhesive',
+                        name: 'Dunlop multi-purpose primer',
+                        detail: '1 kg, seals porous surfaces before the adhesive',
                         qty: units(a / 40),
                         unit: 'bottles',
                     },
@@ -134,8 +192,8 @@ export function calculateTiling(input: TilingInput): BillOfMaterials {
                         ? [
                               {
                                   id: 'trim',
-                                  name: 'Tile trim (chrome / PVC), 2.44 m',
-                                  detail: 'external edges — match tile depth',
+                                  name: 'Tile trim, 2.44 m (chrome or PVC)',
+                                  detail: 'external edges, match your tile depth',
                                   qty: units((input.widthM + input.heightM * 2) / 2.44),
                                   unit: 'lengths',
                               },
@@ -144,7 +202,7 @@ export function calculateTiling(input: TilingInput): BillOfMaterials {
                     {
                         id: 'silicone',
                         name: 'Mould-resistant sanitary silicone',
-                        detail: 'internal corners and junctions — never grout them',
+                        detail: 'every internal corner and junction, never grout them',
                         qty: units(a / 10) + 1,
                         unit: 'cartridges',
                     },
@@ -152,17 +210,20 @@ export function calculateTiling(input: TilingInput): BillOfMaterials {
             },
         ],
         tools: [
-            'Manual tile cutter sized over your tile diagonal — plus a tile saw for cut-outs',
+            'Manual tile cutter bigger than your tile diagonal, plus a tile saw for cut-outs',
             `Notched trowel (${wall ? '6' : '10'} mm) and a grout float`,
-            'Tile levelling clip system for formats over 300 mm',
-            'Laser level — set out from a level datum batten, never the floor or bath edge',
+            'Tile levelling clips for formats over 300 mm',
+            'Laser level. Set out from a level batten, never the floor or bath edge',
             'Mixing paddle, two buckets and plenty of clean sponges',
-            'Grout profiling tool and masking tape for the silicone day',
+            'Grout profiling tool and masking tape for the silicone',
         ],
         notes: [
-            'Centre the layout so cuts at opposite ends match — never start with a full tile tight in a corner.',
-            `${plan.jointMm} mm joints assumed (${wall ? 'walls' : 'floors'}); rectified porcelain can go tighter.`,
-            'Order all tiles at once and check batch/shade numbers match.',
+            'Works for any room: bathroom, kitchen splashback, hallway floor. Tick the tanking option for shower zones.',
+            'Centre the layout so the cuts at both ends match. Never start with a full tile tight in a corner.',
+            input.tanking
+                ? 'Tank the shower enclosure plus 300 mm beyond it. Plasterboard holds ~32 kg/m² of tile, cement board ~50 kg/m².'
+                : `${plan.jointMm} mm joints assumed for ${wall ? 'walls' : 'floors'}.`,
+            'Buy all your tiles in one go and check the batch numbers match.',
         ],
     };
 }
