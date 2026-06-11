@@ -32,6 +32,7 @@ export type KitchenShape = 'galley' | 'l-shape' | 'u-shape';
 export type DoorStyle = 'handled' | 'handleless';
 export type CornerUnitType = 'l935' | 'c1000';
 export type FridgeType = 'none' | 'freestanding' | 'integrated';
+export type DrawerChoice = 'none' | 'd500' | 'd600' | 'd800';
 
 export interface KitchenInput {
     shape: KitchenShape;
@@ -46,6 +47,12 @@ export interface KitchenInput {
     washingMachine: boolean;
     fridge: FridgeType;
     larder: boolean;
+    /** Drawer stack beside the cooker: 500 four-drawer, 600 or 800 three-drawer. */
+    drawers: DrawerChoice;
+    /** 300 mm wine rack unit. */
+    wineRack: boolean;
+    /** 300 mm pull-out base unit, lives by the cooking zone. */
+    pullOut: boolean;
     includeWallUnits: boolean;
     includeCornice: boolean;
 }
@@ -59,6 +66,9 @@ export type UnitKind =
     | 'washing-machine'
     | 'fridge'
     | 'larder'
+    | 'drawers'
+    | 'wine'
+    | 'pullout'
     | 'filler';
 
 export interface PlacedUnit {
@@ -112,7 +122,11 @@ const LABELS: Record<string, string> = {
     'washing-machine': 'W/M 600',
     fridge: 'Fridge 600',
     larder: 'Larder 600',
+    wine: 'Wine 300',
+    pullout: 'Pull-out 300',
 };
+
+const DRAWER_WIDTH_MM: Record<DrawerChoice, number> = { none: 0, d500: 500, d600: 600, d800: 800 };
 
 /** 2D centre of a unit along its wall, mm (A top, B right, C bottom). */
 function centreOf(u: PlacedUnit, wallAMm: number, wallBMm: number): { x: number; y: number } {
@@ -134,15 +148,23 @@ export function planKitchen(input: KitchenInput): KitchenPlan {
     // Wall A: sink, dishwasher beside it, washing machine after that.
     // Cooker: wall B when there is one, otherwise wall A with a 600 unit
     // forced between it and the sink. Talls: end of the last wall.
-    const slotsByWall: Record<'A' | 'B' | 'C', UnitKind[]> = { A: [], B: [], C: [] };
+    type Slot = { kind: UnitKind; w: number };
+    const slotsByWall: Record<'A' | 'B' | 'C', Slot[]> = { A: [], B: [], C: [] };
     // Talls open wall A (by the door), then the wet run: sink, dishwasher.
-    if (input.fridge !== 'none') slotsByWall.A.push('fridge');
-    if (input.larder) slotsByWall.A.push('larder');
-    slotsByWall.A.push('sink');
-    if (input.dishwasher) slotsByWall.A.push('dishwasher');
-    if (input.washingMachine) slotsByWall.A.push('washing-machine');
+    if (input.fridge !== 'none') slotsByWall.A.push({ kind: 'fridge', w: SLOT_MM });
+    if (input.larder) slotsByWall.A.push({ kind: 'larder', w: SLOT_MM });
+    slotsByWall.A.push({ kind: 'sink', w: SLOT_MM });
+    if (input.dishwasher) slotsByWall.A.push({ kind: 'dishwasher', w: SLOT_MM });
+    if (input.washingMachine) slotsByWall.A.push({ kind: 'washing-machine', w: SLOT_MM });
     const cookerWall: 'A' | 'B' = wallDefs.length > 1 ? 'B' : 'A';
-    slotsByWall[cookerWall].push('cooker');
+    slotsByWall[cookerWall].push({ kind: 'cooker', w: SLOT_MM });
+    // The cooking zone: drawers (pans) and the pull-out (oils) flank the
+    // cooker; the wine rack takes any 300 slot at the end of the run.
+    if (input.drawers !== 'none')
+        slotsByWall[cookerWall].push({ kind: 'drawers', w: DRAWER_WIDTH_MM[input.drawers] });
+    if (input.pullOut) slotsByWall[cookerWall].push({ kind: 'pullout', w: 300 });
+    if (input.wineRack)
+        slotsByWall[wallDefs[wallDefs.length - 1].id].push({ kind: 'wine', w: 300 });
 
     const placed: PlacedUnit[] = [];
     const warnings: string[] = [];
@@ -167,7 +189,7 @@ export function planKitchen(input: KitchenInput): KitchenPlan {
         const queue = [...slotsByWall[w.id]];
         let placedSinceSink = -1; // mm of run placed since the sink went in
         let lastWasTall = false;
-        for (const kind of queue) {
+        for (const { kind, w: slotW } of queue) {
             // Rule: a landing counter between a tall unit and the sink.
             if (kind === 'sink' && lastWasTall && remaining >= SLOT_MM * 2) {
                 placed.push({ wall: w.id, offsetMm: cursor, widthMm: SLOT_MM, kind: 'base', tall: false, label: 'Base 600' });
@@ -185,24 +207,24 @@ export function planKitchen(input: KitchenInput): KitchenPlan {
                     warnings.push('Not enough run to keep 600 mm of worktop between the sink and the cooker. Stretch the wall or move the cooker.');
                 }
             }
-            if (remaining < SLOT_MM) {
-                warnings.push(`No room left on wall ${w.id} for the ${kind.replace('-', ' ')}. It needs another 600 mm.`);
+            if (remaining < slotW) {
+                warnings.push(`No room left on wall ${w.id} for the ${kind.replace('-', ' ')}. It needs another ${slotW} mm.`);
                 continue;
             }
             const isTall = kind === 'larder' || (kind === 'fridge' && input.fridge === 'integrated');
             placed.push({
                 wall: w.id,
                 offsetMm: cursor,
-                widthMm: SLOT_MM,
+                widthMm: slotW,
                 kind,
                 tall: isTall || kind === 'fridge',
-                label: LABELS[kind],
+                label: kind === 'drawers' ? `Drawers ${slotW}` : LABELS[kind],
             });
-            cursor += SLOT_MM;
-            remaining -= SLOT_MM;
+            cursor += slotW;
+            remaining -= slotW;
             lastWasTall = kind === 'fridge' || kind === 'larder';
             if (kind === 'sink') placedSinceSink = 0;
-            else if (placedSinceSink >= 0) placedSinceSink += SLOT_MM;
+            else if (placedSinceSink >= 0) placedSinceSink += slotW;
         }
 
         // Fill with the widest stocked base units.
@@ -268,7 +290,7 @@ export function planKitchen(input: KitchenInput): KitchenPlan {
         }
     }
 
-    const baseUnitCount = placed.filter((p) => ['base', 'sink', 'corner'].includes(p.kind)).length;
+    const baseUnitCount = placed.filter((p) => ['base', 'sink', 'corner', 'drawers', 'wine', 'pullout'].includes(p.kind)).length;
     const worktopMm = placed.filter((p) => !p.tall && p.kind !== 'fridge').reduce((s, p) => s + p.widthMm, 0);
     const wallCornerCount = input.includeWallUnits ? wallDefs.length - 1 : 0;
     const wallRunMm = input.includeWallUnits ? Math.round(worktopMm * 0.7) : 0;
@@ -330,6 +352,21 @@ export function calculateKitchen(input: KitchenInput): BillOfMaterials {
         })),
         ...(input.ovenHousing
             ? [{ id: 'oven-housing', name: '600 mm built-under oven housing unit', qty: 1, unit: 'units' }]
+            : []),
+        ...(input.drawers !== 'none'
+            ? [
+                  input.drawers === 'd500'
+                      ? { id: 'drawers', name: '500 mm four drawer unit', detail: 'pan storage beside the cooker', qty: 1, unit: 'units' }
+                      : input.drawers === 'd600'
+                        ? { id: 'drawers', name: '600 mm three drawer unit', detail: 'pan storage beside the cooker', qty: 1, unit: 'units' }
+                        : { id: 'drawers', name: '800 mm three drawer unit', detail: 'sold as two packs, order both', qty: 1, unit: 'units (2 packs)' },
+              ]
+            : []),
+        ...(input.wineRack
+            ? [{ id: 'wine', name: '300 mm wine rack unit', qty: 1, unit: 'units' }]
+            : []),
+        ...(input.pullOut
+            ? [{ id: 'pullout', name: '300 mm pull-out base unit', detail: 'oils and spices by the cooking zone', qty: 1, unit: 'units' }]
             : []),
         ...(input.larder
             ? [
