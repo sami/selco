@@ -3,11 +3,12 @@
  *
  * Paint & decorating estimator.
  *
- * Walls and ceiling are measured from room dimensions; standard openings
- * (doors ~1.6 m², windows ~1.4 m²) are deducted from the wall area. Paint
- * coverage is taken at 12 m² per litre per coat for emulsion on a sealed
- * surface, with tins recommended as a 5 L / 2.5 L mix that minimises
- * leftover paint.
+ * Walls and ceiling are measured from room dimensions. Doors and windows
+ * are not deducted: you still cut in around them and paint the reveals, so
+ * the wall area is taken in full and the small opening area is left as
+ * useful headroom against waste. Paint coverage is taken at 12 m² per litre
+ * per coat for emulsion on a sealed surface, with tins recommended as a
+ * 5 L / 2.5 L mix that minimises leftover paint.
  */
 
 import type { BillOfMaterials, BomLine } from './types';
@@ -17,8 +18,6 @@ export interface PaintInput {
     lengthM: number;
     widthM: number;
     heightM: number;
-    doors: number;
-    windows: number;
     coats: number;
     paintWalls: boolean;
     paintCeiling: boolean;
@@ -31,30 +30,24 @@ export interface PaintInput {
 export interface PaintAreas {
     wallM2: number;
     ceilingM2: number;
-    deductionsM2: number;
     /** Litres needed per surface, after coats multiplier. */
     wallLitres: number;
     ceilingLitres: number;
 }
 
-const DOOR_M2 = 1.6;
-const WINDOW_M2 = 1.4;
 const COVERAGE_M2_PER_L = 12;
 /** Bare plaster soaks up roughly 20 % more paint, plus the mist coat. */
 const BARE_PLASTER_FACTOR = 1.2;
 
 export function paintAreas(input: PaintInput): PaintAreas {
     const perimeter = 2 * (input.lengthM + input.widthM);
-    const grossWall = perimeter * input.heightM;
-    const deductions = input.doors * DOOR_M2 + input.windows * WINDOW_M2;
-    const wallM2 = Math.max(0, grossWall - deductions);
+    const wallM2 = perimeter * input.heightM;
     const ceilingM2 = input.lengthM * input.widthM;
     const soak = input.barePlaster ? BARE_PLASTER_FACTOR : 1;
 
     return {
         wallM2,
         ceilingM2,
-        deductionsM2: deductions,
         wallLitres: input.paintWalls
             ? ((wallM2 * input.coats) / COVERAGE_M2_PER_L) * soak
             : 0,
@@ -121,9 +114,12 @@ export function calculatePaint(input: PaintInput): BillOfMaterials {
     }
 
     if (input.paintWoodwork) {
-        // Rough rule: 0.75 L of gloss + undercoat covers a door + frame +
-        // skirting share, so a small room needs one tin of each.
-        const woodLitres = input.doors * 0.5 + 0.25;
+        // Woodwork (skirting + architraves) runs roughly with the room
+        // perimeter. Take a ~150 mm skirting band plus a frame allowance,
+        // glossed over the chosen number of coats at ~14 m²/L.
+        const perimeter = 2 * (input.lengthM + input.widthM);
+        const woodAreaM2 = perimeter * 0.15 + 1.5; // skirting band + one frame's worth
+        const woodLitres = (woodAreaM2 * Math.max(2, input.coats)) / 14;
         lines.push(
             {
                 id: 'undercoat',
@@ -179,7 +175,6 @@ export function calculatePaint(input: PaintInput): BillOfMaterials {
         facts: [
             { label: 'Wall area', value: fmtM2(areas.wallM2) },
             { label: 'Ceiling area', value: fmtM2(areas.ceilingM2) },
-            { label: 'Openings deducted', value: fmtM2(areas.deductionsM2) },
             { label: 'Paint needed', value: `${totalLitres.toFixed(1)} L (${input.coats} coats)` },
         ],
         sections: [
@@ -199,7 +194,7 @@ export function calculatePaint(input: PaintInput): BillOfMaterials {
             input.barePlaster
                 ? 'Bare plaster: allow a watered-down mist coat first, usage upped by 20%.'
                 : 'Assumes previously painted, sound surfaces.',
-            'Standard openings deducted: doors 1.6 m², windows 1.4 m².',
+            'Walls measured in full: doors and windows are not deducted, since you still cut in around them and paint the reveals.',
         ],
     };
 }
