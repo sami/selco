@@ -20,7 +20,7 @@ export interface DeckingInput {
     raised: boolean;
 }
 
-const BOARD_W_M = 0.144;
+const BOARD_W_M = 0.125; // grooved treated board 125 x 38
 const BOARD_GAP_M = 0.006;
 const BOARD_LEN_M = 3.6;
 const JOIST_CENTRES_M = 0.4;
@@ -74,8 +74,8 @@ export function calculateDecking(input: DeckingInput): BillOfMaterials {
                     {
                         id: 'boards',
                         name: input.composite
-                            ? 'Composite deck board, 146 × 25 mm'
-                            : 'UC4 treated softwood deck board, 144 × 28 mm',
+                            ? 'Hollow composite deck board Rydal Grey, 22 × 135 mm'
+                            : 'Grooved treated deck board, 125 × 38 mm',
                         detail: '3.6 m lengths — inc. 5% cuts',
                         qty: plan.boards,
                         unit: 'boards',
@@ -83,17 +83,21 @@ export function calculateDecking(input: DeckingInput): BillOfMaterials {
                     {
                         id: 'screws',
                         name: input.composite
-                            ? 'Composite hidden fixing clips'
-                            : 'Green-coated decking screws, 64 mm',
-                        detail: input.composite ? 'pack of 100 inc. screws' : 'box of 200 — 2 per board/joist crossing',
-                        qty: units(plan.screws / (input.composite ? 100 : 200)),
-                        unit: input.composite ? 'packs' : 'boxes',
+                            ? 'Composite deck hidden fixing clips'
+                            : 'Unifix green decking screws, 4 × 60 mm',
+                        detail: input.composite
+                            ? 'pack of 100 with driver bit'
+                            : 'pack of 1000 — 2 per board/joist crossing',
+                        qty: units(plan.screws / (input.composite ? 100 : 1000)),
+                        unit: 'packs',
                     },
                     {
                         id: 'fascia',
-                        name: input.composite ? 'Composite fascia board, 3.6 m' : 'Treated fascia / edging board, 3.6 m',
+                        name: input.composite
+                            ? 'Composite deck fascia board, 12 × 150 mm × 2.2 m'
+                            : 'Treated fascia board, 150 × 22 mm × 3.6 m',
                         detail: 'around the visible edges',
-                        qty: units((2 * (input.widthM + input.lengthM)) / 3.6),
+                        qty: units((2 * (input.widthM + input.lengthM)) / (input.composite ? 2.2 : 3.6)),
                         unit: 'boards',
                     },
                 ],
@@ -103,7 +107,7 @@ export function calculateDecking(input: DeckingInput): BillOfMaterials {
                 lines: [
                     {
                         id: 'joists',
-                        name: 'UC4 treated joist, 47 × 100 mm',
+                        name: 'Sawn treated C16 timber, 100 × 47 mm (4" × 2")',
                         detail: '3.6 m lengths — joists + ringbeam, 5% over',
                         qty: plan.joistLengths,
                         unit: 'lengths',
@@ -119,33 +123,33 @@ export function calculateDecking(input: DeckingInput): BillOfMaterials {
                         ? [
                               {
                                   id: 'posts',
-                                  name: 'UC4 treated post, 100 × 100 mm × 2.4 m',
+                                  name: 'Incised fence post, treated 100 × 100 mm',
                                   detail: 'cut down — one per support point',
                                   qty: units(plan.supports / 2),
                                   unit: 'posts',
                               },
                               {
                                   id: 'postfix',
-                                  name: 'Fast-set post-fixing concrete',
-                                  detail: '20 kg bag — one per post',
-                                  qty: units(plan.supports / 2),
+                                  name: 'Carlton Rapid Set fence post concrete',
+                                  detail: '20 kg bag — two per post',
+                                  qty: units(plan.supports),
                                   unit: 'bags',
                               },
                           ]
                         : [
                               {
                                   id: 'blocks',
-                                  name: 'Concrete deck support blocks',
-                                  detail: 'on a 1.2 m grid under the joists',
+                                  name: 'Dense concrete block 7N, 100 mm solid',
+                                  detail: 'bedded flat on a 1.2 m grid under the joists',
                                   qty: plan.supports,
                                   unit: 'blocks',
                               },
                           ]),
                     {
                         id: 'membrane',
-                        name: 'Weed control membrane',
-                        detail: '1 m × 15 m roll under the deck',
-                        qty: units((plan.areaM2 * 1.1) / 15),
+                        name: 'TDP50 weed control fabric',
+                        detail: '1 m × 14 m roll under the deck',
+                        qty: units((plan.areaM2 * 1.1) / 14),
                         unit: 'rolls',
                     },
                 ],

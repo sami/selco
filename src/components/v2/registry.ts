@@ -150,6 +150,16 @@ const BESPOKE: V2CalculatorMeta[] = [
         preview: 'Live conversions with trade equivalents',
     },
     {
+        slug: 'french-drain',
+        name: 'French drain',
+        category: 'Groundworks & drainage',
+        description:
+            'Sort a soggy lawn for good. Geotextile, clean stone and an optional soakaway, with the trench drawn so you can see how it goes together.',
+        icon: 'fa-arrow-down-up-across-line',
+        kind: 'bespoke',
+        preview: 'Trench cross-section and fall diagram',
+    },
+    {
         slug: 'board-cutting',
         name: 'Board cutting optimiser',
         category: 'Handy tools',

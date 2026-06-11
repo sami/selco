@@ -16,14 +16,50 @@ import { fmtM2, units } from './types';
 export interface SlabFormat {
     id: string;
     label: string;
+    productName: string;
+    detail: string;
     wMm: number;
     hMm: number;
+    porcelain: boolean;
 }
 
 export const SLAB_FORMATS: SlabFormat[] = [
-    { id: '450', label: '450 × 450 mm', wMm: 450, hMm: 450 },
-    { id: '600', label: '600 × 600 mm', wMm: 600, hMm: 600 },
-    { id: '900x600', label: '900 × 600 mm', wMm: 900, hMm: 600 },
+    {
+        id: 'concrete450',
+        label: 'Concrete 450',
+        productName: 'Stonemarket Ryton riven utility slab, 450 × 450 mm',
+        detail: '32 mm thick, grey / buff / charcoal',
+        wMm: 450,
+        hMm: 450,
+        porcelain: false,
+    },
+    {
+        id: 'concrete600',
+        label: 'Concrete 600',
+        productName: 'Stonemarket Stretton smooth utility slab, 600 × 600 mm',
+        detail: '38 mm thick, grey / buff',
+        wMm: 600,
+        hMm: 600,
+        porcelain: false,
+    },
+    {
+        id: 'porcelain600',
+        label: 'Porcelain 600',
+        productName: 'Stonemarket Fortuna porcelain slab, 600 × 600 mm',
+        detail: '20 mm thick, vitrified',
+        wMm: 600,
+        hMm: 600,
+        porcelain: true,
+    },
+    {
+        id: 'porcelain1200',
+        label: 'Porc. 1200',
+        productName: 'Stonemarket Locana porcelain slab, 600 × 1200 mm',
+        detail: '20 mm thick, vitrified',
+        wMm: 1200,
+        hMm: 600,
+        porcelain: true,
+    },
 ];
 
 export interface PatioInput {
@@ -72,37 +108,39 @@ export function calculatePatio(input: PatioInput): BillOfMaterials {
     const lines: BomLine[] = [
         {
             id: 'slabs',
-            name: `Concrete paving slab, ${plan.slab.label}`,
-            detail: `${plan.cols} × ${plan.rows} grid + ${input.wastePct}% cuts`,
+            name: plan.slab.productName,
+            detail: `${plan.slab.detail} — ${plan.cols} × ${plan.rows} grid + ${input.wastePct}% cuts`,
             qty: plan.slabs,
             unit: 'slabs',
         },
         {
             id: 'sharp-sand',
-            name: 'Sharp sand',
-            detail: 'bulk bag (~850 kg) — 30 mm bed',
-            qty: units((sandT * 1000) / 850),
-            unit: 'bulk bags',
+            name: 'Concreting Sharp Sand',
+            detail: 'Large Bag (~800 kg) — 30 mm full mortar bed',
+            qty: units((sandT * 1000) / 800),
+            unit: 'Large Bags',
         },
         {
             id: 'cement',
-            name: 'General-purpose cement',
+            name: 'Rugby Premium Cement',
             detail: '25 kg bag — 5:1 bed mix',
             qty: cementBags,
             unit: 'bags',
         },
         {
             id: 'jointing',
-            name: 'Brush-in paving jointing compound',
-            detail: '15 kg tub — covers ~12 m²',
-            qty: units(a / 12),
+            name: 'Pavetuf All-Weather jointing compound',
+            detail: '12.5 kg tub, brush-in',
+            qty: units(a / 10),
             unit: 'tubs',
         },
         {
             id: 'primer',
-            name: 'Slurry priming bond',
-            detail: '5 kg — bonds slab to bed',
-            qty: units(a / 15),
+            name: 'Pavetuf priming slurry',
+            detail: plan.slab.porcelain
+                ? '17 kg tub — essential under porcelain'
+                : '17 kg tub — bonds slab to bed',
+            qty: units(a / 17),
             unit: 'tubs',
         },
     ];
@@ -110,10 +148,10 @@ export function calculatePatio(input: PatioInput): BillOfMaterials {
     if (input.includeSubBase) {
         lines.splice(1, 0, {
             id: 'mot',
-            name: 'MOT Type 1 sub-base',
-            detail: 'bulk bag (~850 kg) — 100 mm compacted',
-            qty: units((a * SUBBASE_M * 2200) / 850),
-            unit: 'bulk bags',
+            name: 'MOT Type 1 Roadstone',
+            detail: 'Large Bag (~800 kg) — 100 mm compacted',
+            qty: units((a * SUBBASE_M * 2200) / 800),
+            unit: 'Large Bags',
         });
     }
 
@@ -121,8 +159,8 @@ export function calculatePatio(input: PatioInput): BillOfMaterials {
         const perimeterM = 2 * (input.widthM + input.lengthM);
         lines.push({
             id: 'edging',
-            name: 'Concrete round-top edging stone',
-            detail: '915 × 150 × 50 mm',
+            name: 'Round Top path edging',
+            detail: '150 × 915 mm concrete edging stone',
             qty: units(perimeterM / 0.915),
             unit: 'stones',
         });
@@ -145,6 +183,9 @@ export function calculatePatio(input: PatioInput): BillOfMaterials {
             'Knee pads and gloves — slabs are heavier than they look',
         ],
         notes: [
+            ...(plan.slab.porcelain
+                ? ['Porcelain must be primed slab-by-slab with the slurry and cut with a diamond blade. Worth every minute.']
+                : []),
             'Build-up: 100 mm compacted MOT Type 1, 30 mm full mortar bed (5:1), 10 mm joints.',
             'Fall of 1:80 away from the house assumed — adjust dig depth accordingly.',
             'Excavation roughly 175 mm below finished level; allow for muck-away.',
