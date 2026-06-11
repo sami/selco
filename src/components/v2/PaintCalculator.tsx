@@ -2,8 +2,9 @@
  * @file src/components/v2/PaintCalculator.tsx
  *
  * Paint & decorating island, draws the room's walls "unwrapped" into one
- * elevation strip with doors and windows marked, so the deduction logic is
- * visible at a glance.
+ * elevation strip so the wall run being painted is visible at a glance.
+ * Doors and windows are not deducted: you cut in around them and paint the
+ * reveals, so the wall area is taken in full.
  */
 
 import { useMemo, useState } from 'react';
@@ -32,21 +33,6 @@ function PaintPreview({ input }: { input: PaintInput }) {
     const x0 = (W - stripW) / 2;
     const y0 = (H - stripH) / 2 + 10;
 
-    // Openings spaced evenly along the unwrapped strip.
-    const openings: Array<{ kind: 'door' | 'window'; wM: number; hM: number }> = [
-        ...Array.from({ length: input.doors }, () => ({
-            kind: 'door' as const,
-            wM: 0.76,
-            hM: 1.98,
-        })),
-        ...Array.from({ length: input.windows }, () => ({
-            kind: 'window' as const,
-            wM: 1.2,
-            hM: 1.05,
-        })),
-    ];
-    const slotW = totalM / (openings.length + 1);
-
     let acc = 0;
     const wallXs = walls.map((w) => {
         const x = acc;
@@ -59,7 +45,7 @@ function PaintPreview({ input }: { input: PaintInput }) {
             viewBox={`0 0 ${W} ${H}`}
             className="w-full h-auto"
             role="img"
-            aria-label="Unwrapped wall elevation with doors and windows"
+            aria-label="Unwrapped wall elevation"
         >
             {/* wall strip */}
             <rect x={x0} y={y0} width={stripW} height={stripH} fill={WALL_FILL} stroke="#fff" strokeWidth="2" />
@@ -92,47 +78,6 @@ function PaintPreview({ input }: { input: PaintInput }) {
                 </g>
             ))}
 
-            {/* openings */}
-            {openings.map((o, i) => {
-                const cxM = slotW * (i + 1);
-                const wPx = o.wM * scale;
-                const hPx = o.hM * scale;
-                const x = x0 + cxM * scale - wPx / 2;
-                const y =
-                    o.kind === 'door'
-                        ? y0 + stripH - hPx
-                        : y0 + stripH - 0.9 * scale - hPx;
-                return (
-                    <g key={i}>
-                        <rect
-                            x={x}
-                            y={y}
-                            width={wPx}
-                            height={hPx}
-                            fill="rgba(4,32,75,0.55)"
-                            stroke={YELLOW}
-                            strokeWidth="1.5"
-                        />
-                        {o.kind === 'window' && (
-                            <>
-                                <line x1={x + wPx / 2} y1={y} x2={x + wPx / 2} y2={y + hPx} stroke={YELLOW} strokeWidth="1" />
-                                <line x1={x} y1={y + hPx / 2} x2={x + wPx} y2={y + hPx / 2} stroke={YELLOW} strokeWidth="1" />
-                            </>
-                        )}
-                        <text
-                            x={x + wPx / 2}
-                            y={y + hPx + 14}
-                            fill={YELLOW}
-                            fontSize="10"
-                            fontWeight="600"
-                            textAnchor="middle"
-                        >
-                            {o.kind}
-                        </text>
-                    </g>
-                );
-            })}
-
             {/* height dimension */}
             <g fill={YELLOW} fontSize="13" fontWeight="700">
                 <line x1={x0 - 16} y1={y0} x2={x0 - 16} y2={y0 + stripH} stroke={YELLOW} strokeWidth="1" />
@@ -148,7 +93,7 @@ function PaintPreview({ input }: { input: PaintInput }) {
 
             {/* footer note */}
             <text x={W / 2} y={H - 12} fill="#fff" fontSize="11" textAnchor="middle" opacity="0.8">
-                Room unwrapped, {totalM.toFixed(1)} m of wall, openings deducted from paint area
+                Room unwrapped, {totalM.toFixed(1)} m of wall painted in full (openings not deducted)
             </text>
         </svg>
     );
@@ -159,8 +104,6 @@ export default function PaintCalculator() {
         lengthM: 4.5,
         widthM: 3.5,
         heightM: 2.4,
-        doors: 1,
-        windows: 2,
         coats: 2,
         paintWalls: true,
         paintCeiling: true,
@@ -181,10 +124,6 @@ export default function PaintCalculator() {
                     <NumberField label="Room width" value={input.widthM} onChange={(v) => set('widthM', v)} unit="m" min={1} max={15} />
                 </div>
                 <NumberField label="Ceiling height" value={input.heightM} onChange={(v) => set('heightM', v)} unit="m" min={2} max={4} />
-                <div className="grid grid-cols-2 gap-3">
-                    <NumberField label="Doors" value={input.doors} onChange={(v) => set('doors', Math.round(v))} min={0} max={4} step={1} />
-                    <NumberField label="Windows" value={input.windows} onChange={(v) => set('windows', Math.round(v))} min={0} max={6} step={1} />
-                </div>
                 <Segmented
                     label="Coats"
                     value={String(input.coats) as '1' | '2' | '3'}
@@ -196,7 +135,7 @@ export default function PaintCalculator() {
                     ]}
                 />
                 <div className="space-y-2">
-                    <ToggleRow label="Walls" hint={`${areas.wallM2.toFixed(1)} m² after deductions`} checked={input.paintWalls} onChange={(v) => set('paintWalls', v)} />
+                    <ToggleRow label="Walls" hint={`${areas.wallM2.toFixed(1)} m² of wall`} checked={input.paintWalls} onChange={(v) => set('paintWalls', v)} />
                     <ToggleRow label="Ceiling" hint={`${areas.ceilingM2.toFixed(1)} m²`} checked={input.paintCeiling} onChange={(v) => set('paintCeiling', v)} />
                     <ToggleRow label="Woodwork" hint="Undercoat + gloss for frames & skirting" checked={input.paintWoodwork} onChange={(v) => set('paintWoodwork', v)} />
                     <ToggleRow label="Bare plaster" hint="Adds mist coat allowance (+20%)" checked={input.barePlaster} onChange={(v) => set('barePlaster', v)} />
