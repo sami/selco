@@ -283,14 +283,14 @@ export const doorsLinings: CalcSpec = {
         {
             kind: 'choice',
             id: 'doorSize',
-            label: 'Door size (1981 mm high)',
+            label: 'Door size (1981 mm / 78" high)',
             options: [
-                { value: '457', label: '1981 × 457 mm (6\'6" × 1\'6")' },
-                { value: '533', label: '1981 × 533 mm (6\'6" × 1\'9")' },
-                { value: '610', label: '1981 × 610 mm (6\'6" × 2\'0")' },
-                { value: '686', label: '1981 × 686 mm (6\'6" × 2\'3")' },
-                { value: '762', label: '1981 × 762 mm (6\'6" × 2\'6")' },
-                { value: '838', label: '1981 × 838 mm (6\'6" × 2\'9")' },
+                { value: '457', label: '457 mm · 18" (1\'6")' },
+                { value: '533', label: '533 mm · 21" (1\'9")' },
+                { value: '610', label: '610 mm · 24" (2\'0")' },
+                { value: '686', label: '686 mm · 27" (2\'3")' },
+                { value: '762', label: '762 mm · 30" (2\'6")' },
+                { value: '838', label: '838 mm · 33" (2\'9")' },
             ],
             default: '762',
         },
@@ -323,6 +323,10 @@ export const doorsLinings: CalcSpec = {
             primed: 'White primed door (e.g. Amsterdam, Arnhem)',
         }[str(v, 'doorType')] ?? 'Oak veneer door';
         const widthMm = Number(str(v, 'doorSize')) || 762;
+        // Doors are usually asked for in plain inches (a "30 inch door").
+        const widthIn = { 457: 18, 533: 21, 610: 24, 686: 27, 711: 28, 762: 30, 838: 33 }[widthMm] ?? Math.round(widthMm / 25.4);
+        const sizeMm = `1981 × ${widthMm} × ${fire ? 44 : 35} mm`;
+        const sizeIn = `78" × ${widthIn}"`;
 
         // Fire doors must hang in a certified lining, no exceptions. If the
         // picked lining is not fire-rated, snap to the Firecheck pack at the
@@ -335,7 +339,7 @@ export const doorsLinings: CalcSpec = {
         return {
             facts: [
                 { label: 'Doors', value: `${n}` },
-                { label: 'Size', value: `1981 × ${widthMm} × ${fire ? 44 : 35} mm` },
+                { label: 'Size', value: `${sizeIn} (${sizeMm})` },
                 { label: 'Spec', value: specLabel },
                 { label: 'Hinges', value: `${n * 3} (1.5 pairs each)` },
             ],
@@ -343,7 +347,7 @@ export const doorsLinings: CalcSpec = {
                 {
                     title: 'Doors & linings',
                     lines: [
-                        { id: 'doors', name: `${doorName}${fire ? ' FD30' : ''}`, detail: `1981 × ${widthMm} × ${fire ? 44 : 35} mm`, qty: n, unit: 'doors' },
+                        { id: 'doors', name: `${doorName}${fire ? ' FD30' : ''}`, detail: `${sizeMm} (${sizeIn})`, qty: n, unit: 'doors' },
                         ...(bool(v, 'newLinings')
                             ? [
                                   { id: 'linings', name: `${lining.name}, ${lining.size}`, detail: lining.detail, qty: n, unit: 'sets' },
