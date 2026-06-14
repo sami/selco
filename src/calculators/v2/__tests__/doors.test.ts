@@ -113,6 +113,27 @@ describe('doorsLinings — door use drives the hardware', () => {
     });
 });
 
+describe('doorsLinings — inches, the way doors are usually asked for', () => {
+    it('TC11: the door line spells out the size in inches (78 × 30")', () => {
+        const detail = line({ ...base, doorSize: '762' }, 'doors')!.detail;
+        expect(detail).toContain('30"');
+        expect(detail).toContain('78"');
+    });
+
+    it('TC12: each width carries its nominal inch size', () => {
+        expect(line({ ...base, doorSize: '686' }, 'doors')!.detail).toContain('27"');
+        expect(line({ ...base, doorSize: '838' }, 'doors')!.detail).toContain('33"');
+    });
+
+    it('TC13: the size choices list inches alongside mm', () => {
+        const sizeField = doorsLinings.fields.find((f) => f.id === 'doorSize');
+        expect(sizeField?.kind).toBe('choice');
+        if (sizeField?.kind === 'choice') {
+            expect(sizeField.options.find((o) => o.value === '762')!.label).toContain('30"');
+        }
+    });
+});
+
 describe('doorsLinings — quantities still scale per door', () => {
     it('TC7: three hinges per door, latch per door', () => {
         expect(line({ ...base, doors: 4 }, 'hinges')!.qty).toBe(12);
