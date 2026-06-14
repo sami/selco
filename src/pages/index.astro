@@ -1,149 +1,27 @@
 ---
-import SelcoLayout from '../layouts/SelcoLayout.astro';
-import Disclaimer from '../components/Disclaimer.astro';
-import SelcoSidebar from '../components/selco/SelcoSidebar.astro';
-
+// The live calculators now live under /concept (the Project Planner). Users
+// still land on the old root, so send them there. Static-friendly redirect:
+// a 0-second meta refresh and a canonical link, with a JS fallback. BASE_URL
+// keeps it correct under the /selco subpath in production and in dev.
 const BASE_URL = import.meta.env.BASE_URL;
 const base = BASE_URL.endsWith('/') ? BASE_URL : `${BASE_URL}/`;
-
-const breadcrumbs = [
-  { label: 'Home' }
-];
-
-const title = "Trade Materials Calculators";
-const description = "Pick your job, put your sizes in, and get a full materials list you can take to the counter.";
-
-// Define the calculators dashboard grid
-// The type property is internal and neither shown to users nor reflected in URLs.
-const calculators = [
-  {
-    title: 'Tiling project',
-    description: 'Estimate tiles, adhesive, grout, spacers, and self-levelling compound for any floor or wall area.',
-    href: `${base}tiling/`,
-    type: 'project'
-  },
-  {
-    title: 'Hard flooring',
-    description: 'Work out quantities for laminate, engineered wood, or vinyl click flooring including underlay.',
-    href: `${base}hard-flooring/`,
-    type: 'project'
-  },
-  {
-    title: 'Brick & block wall',
-    description: 'Calculate bricks or blocks, sand, cement, and wall ties for single-skin or cavity walls.',
-    href: `${base}brick-wall/`
-  },
-  {
-    title: 'Decking',
-    description: 'Estimate decking boards, joists, screws or hidden clips, and concrete deck blocks for outdoor decking areas.',
-    href: `${base}decking/`
-  },
-  {
-    title: 'Cladding',
-    description: 'Calculate boards, battens, and fixings needed for exterior or interior cladding.',
-    href: `${base}cladding/`,
-    comingSoon: true
-  },
-  {
-    title: 'Unit converter',
-    description: 'Convert between metric and imperial units for length, area, volume, and weight.',
-    href: `${base}unit-converter/`
-  },
-  {
-    title: 'Board coverage',
-    description: 'Work out how many plasterboard, plywood, or backer boards you need.',
-    href: `${base}coverage/`
-  },
-  {
-    title: 'Board cutting optimiser',
-    description: 'Plan your cuts to get the most parts out of standard plywood or plasterboard sheets.',
-    href: `${base}board-cutting/`,
-    comingSoon: true
-  }
-];
+const target = `${base}concept/`;
 ---
 
-<SelcoLayout
-  title={title}
-  description={description}
-  showSidebar={true}
-  breadcrumbs={breadcrumbs}
-  pageTitle="Trade Materials Calculators"
->
-  <SelcoSidebar />
-
-  <main class="w-full">
-    <div class="space-y-12 pb-12">
-      
-      {/* Hero Section */}
-      <section class="page-section pt-0 pb-4 max-w-3xl">
-        <h1 class="text-3xl md:text-4xl font-extrabold text-primary-dark mb-4">Trade materials calculators</h1>
-        <p class="text-lg text-text-muted leading-relaxed">
-          {description}
-        </p>
-      </section>
-
-      {/* Calculators Grid Section */}
-      <section class="space-y-6">
-        <div>
-          <h2 class="text-2xl md:text-3xl font-bold text-text-main mb-2">Calculators</h2>
-          <p class="text-text-muted text-base">All our calculators in one place – from full jobs to quick one-off tools.</p>
-        </div>
-        
-        <div class="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-          {calculators.map(calc => {
-            const Element = calc.comingSoon ? 'div' : 'a';
-            return (
-              <Element
-                href={!calc.comingSoon ? calc.href : undefined}
-                class={`group card block ${calc.comingSoon ? 'opacity-60 grayscale-[50%]' : 'card-hover cursor-pointer'}`}
-              >
-                <div class="flex items-start justify-between gap-2 mb-2">
-                  <h3 class={`text-lg font-bold text-text-main ${!calc.comingSoon ? 'group-hover:text-primary transition-colors' : ''}`}>
-                    {calc.title}
-                  </h3>
-                  {calc.comingSoon && (
-                    <span class="inline-flex items-center rounded-full bg-border-default/50 border border-border-default px-2.5 py-0.5 text-[0.65rem] font-bold tracking-wider uppercase text-text-muted whitespace-nowrap">
-                      Coming soon
-                    </span>
-                  )}
-                </div>
-                <p class="text-sm text-text-muted leading-relaxed">{calc.description}</p>
-              </Element>
-            );
-          })}
-        </div>
-      </section>
-
-      {/* How It Works Section */}
-      <section class="space-y-6 max-w-3xl">
-        <h2 class="text-2xl md:text-3xl font-bold text-text-main">How it works</h2>
-        
-        <ol class="space-y-4 text-text-muted list-decimal list-inside marker:font-bold marker:text-primary pl-2">
-          <li><span class="text-text-main font-medium">Pick the calculator that matches the job you’re doing.</span></li>
-          <li><span class="text-text-main font-medium">Type in your measurements and pick your options.</span></li>
-          <li><span class="text-text-main font-medium">Get a clear list of what you’ll need, with sensible wastage added on.</span></li>
-        </ol>
-
-        <p class="text-text-muted text-base mt-2 pl-2">
-          Use it before you order so you’re not guessing off the top of your head.
-        </p>
-      </section>
-    </div>
-
-    <div class="mt-16 flex flex-col sm:flex-row gap-4 items-center justify-between p-6 rounded-xl border-2 border-primary-nav bg-gradient-to-br from-primary-nav/5 to-transparent shadow-sm">
-      <div class="flex-1 w-full text-left">
-        <Disclaimer text="Calculations are estimates only. Always verify product coverage and site conditions before ordering." />
-      </div>
-      <a 
-        href="https://madebysami.notion.site/2fe361401cd480fc9fcfdf4871d199b1?pvs=105" 
-        target="_blank"
-        rel="noopener noreferrer"
-        class="inline-flex items-center justify-center px-6 py-3 rounded-lg bg-primary-nav text-white font-bold text-sm uppercase tracking-wide hover:bg-accent hover:text-primary-dark transition-all duration-300 hover:-translate-y-0.5 shadow-sm hover:shadow-md flex-shrink-0 w-full sm:w-auto text-center"
-      >
-        Share feedback
-      </a>
-    </div>
-  </main>
-</SelcoLayout>
-
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta http-equiv="refresh" content={`0; url=${target}`} />
+    <link rel="canonical" href={target} />
+    <meta name="robots" content="noindex" />
+    <title>Trade Materials Calculators</title>
+    <script is:inline define:vars={{ target }}>
+      window.location.replace(target);
+    </script>
+  </head>
+  <body>
+    <p>Redirecting to the <a href={target}>Trade Materials Calculators</a>…</p>
+  </body>
+</html>
