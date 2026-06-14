@@ -29,6 +29,7 @@ function DoorPreview({ v }: { v: Values }) {
     const closers = exit || (fire && v.closers === true);
     const doorType = String(v.doorType);
     const widthMm = Number(String(v.doorSize)) || 762;
+    const widthIn = ({ 457: 18, 533: 21, 610: 24, 686: 27, 711: 28, 762: 30, 838: 33 } as Record<number, number>)[widthMm] ?? Math.round(widthMm / 25.4);
     // Door 1981 high, drawn at fixed scale.
     const scale = 0.165;
     const dh = 1981 * scale;
@@ -156,7 +157,7 @@ function DoorPreview({ v }: { v: Values }) {
                 <text fontWeight="700" fontSize="13" fill={YELLOW}>
                     {exit ? 'Fire exit / public door' : fire ? 'FD30 fire door' : 'Standard internal'}
                 </text>
-                <text y="24">1981 × {widthMm} × {fire ? 44 : 35} mm</text>
+                <text y="24">78" × {widthIn}" · 1981 × {widthMm} × {fire ? 44 : 35} mm</text>
                 <text y="44">{fire ? 'Fire-rated grade 11 hinges, 100 mm' : 'Ball bearing hinges, 75 mm'}</text>
                 <text y="64">{exit ? 'Push bar to open, EN 1125' : fire ? 'Fire-rated latch, lever handles' : 'Tubular latch, lever handles'}</text>
                 <text y="84" opacity="0.8">
