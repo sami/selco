@@ -1,27 +1,18 @@
 ---
-// The live calculators now live under /concept (the Project Planner). Users
-// still land on the old root, so send them there. Static-friendly redirect:
-// a 0-second meta refresh and a canonical link, with a JS fallback. BASE_URL
-// keeps it correct under the /selco subpath in production and in dev.
 const BASE_URL = import.meta.env.BASE_URL;
-const base = BASE_URL.endsWith('/') ? BASE_URL : `${BASE_URL}/`;
-const target = `${base}concept/`;
+const title = "Trade Materials Calculators";
 ---
 
-<!doctype html>
 <html lang="en">
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <meta http-equiv="refresh" content={`0; url=${target}`} />
-    <link rel="canonical" href={target} />
-    <meta name="robots" content="noindex" />
-    <title>Trade Materials Calculators</title>
-    <script is:inline define:vars={{ target }}>
-      window.location.replace(target);
-    </script>
+    <title>{title}</title>
   </head>
-  <body>
-    <p>Redirecting to the <a href={target}>Trade Materials Calculators</a>…</p>
+  <body class="bg-white text-gray-900 p-8">
+    <main class="max-w-4xl mx-auto space-y-6">
+      <h1 class="text-4xl font-bold text-[#04204b]">{title}</h1>
+      <p class="text-lg">Placeholder site for the 1 Jul reset.</p>
+    </main>
   </body>
 </html>
