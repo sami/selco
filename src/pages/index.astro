@@ -1,20 +1,164 @@
 ---
 import BaseLayout from '../layouts/BaseLayout.astro';
+import { projectRegistry } from '../projects/registry';
+import { ChevronRight } from 'lucide-react';
+
+const baseUrl = import.meta.env.BASE_URL;
+const getUrl = (route: string) => {
+  const base = baseUrl.endsWith('/') ? baseUrl.slice(0, -1) : baseUrl;
+  return `${base}${route}`;
+};
+
+const projectCalculators = projectRegistry.filter(p => p.category === 'Project Calculators');
+
+const seoTitle = "Trade Projects Calculator";
+const seoDescription = "Project calculators for tradespeople. Calculate all materials for masonry walls and hard flooring in one guided flow. Accurate quantities with wastage included.";
+
+const jsonLd = {
+  "@context": "https://schema.org",
+  "@graph": [
+    {
+      "@type": "WebSite",
+      "name": seoTitle,
+      "description": seoDescription,
+      "url": "https://sami.github.io/selco/"
+    },
+    {
+      "@type": "FAQPage",
+      "mainEntity": [
+        {
+          "@type": "Question",
+          "name": "How accurate are the calculations?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "We use industry-standard formulas and manufacturer coverage rates. Wastage is configurable. These calculations are estimates, not exact quantities, so always round up."
+          }
+        },
+        {
+          "@type": "Question",
+          "name": "Why include wastage?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "Wastage accounts for offcuts, breakage, and pattern matching. We recommend ~10% for flooring and ~5% for bricks. Skipping it means a return trip to the merchant."
+          }
+        },
+        {
+          "@type": "Question",
+          "name": "Do I need an account?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "No account needed. The calculator runs entirely in your browser. There is no sign-up and no data stored."
+          }
+        },
+        {
+          "@type": "Question",
+          "name": "What is a project calculator?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "It chains every material for one job into one guided flow. For example, the Masonry Wall calculator covers bricks or blocks, sand, cement and wall ties."
+          }
+        }
+      ]
+    }
+  ]
+};
 ---
 
-<BaseLayout title="Home">
+<BaseLayout title={seoTitle} description={seoDescription}>
+  <Fragment slot="head">
+    <script type="application/ld+json" set:html={JSON.stringify(jsonLd)} />
+  </Fragment>
+
   <div slot="breadcrumb">
     <nav aria-label="Breadcrumb" class="text-sm">
       <ol class="flex items-center space-x-2">
         <li>
-          <span class="text-gray-500 font-medium" aria-current="page">Home</span>
+          <span class="text-gray-900 font-medium" aria-current="page">Home</span>
         </li>
       </ol>
     </nav>
   </div>
 
-  <div class="text-center py-20">
-    <h1 class="text-4xl font-bold text-selco-navy mb-4">SELCO Calculator</h1>
-    <p class="text-xl text-gray-600">Placeholder for the home page content.</p>
+  <div class="space-y-16 py-8">
+    
+    <!-- Hero / Intro -->
+    <section class="max-w-3xl">
+      <h1 class="text-4xl md:text-5xl font-bold text-selco-navy mb-6">Trade Projects Calculator</h1>
+      <div class="space-y-4 text-lg text-gray-700">
+        <p>Calculate every material for your project in one go. Select a project type, enter your dimensions, and get a full materials list with wastage included.</p>
+        <p>Each project calculator walks you through every material step by step. No more switching between separate tools for bricks, sand, cement and wall ties. One flow covers everything.</p>
+        <p class="font-medium text-selco-navy">Built for tradespeople who need quick, accurate answers on site.</p>
+      </div>
+    </section>
+
+    <!-- Project Calculators -->
+    <section>
+      <h2 class="text-2xl font-bold text-selco-navy mb-6">Project Calculators</h2>
+      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        {projectCalculators.map(calc => (
+          <a 
+            href={getUrl(calc.route)} 
+            class="group block bg-white border border-gray-200 rounded-lg p-6 hover:border-selco-navy hover:shadow-md transition-all focus:outline-none focus:ring-2 focus:ring-selco-yellow"
+          >
+            <div class="flex justify-between items-start mb-2">
+              <h3 class="text-xl font-bold text-selco-navy group-hover:text-selco-yellow transition-colors">{calc.title}</h3>
+              <ChevronRight size={24} class="text-gray-400 group-hover:text-selco-yellow transition-colors" />
+            </div>
+            <p class="text-gray-600">{calc.blurb}</p>
+          </a>
+        ))}
+      </div>
+    </section>
+
+    <!-- How It Works -->
+    <section class="bg-white border border-gray-200 rounded-lg p-8">
+      <h2 class="text-2xl font-bold text-selco-navy mb-8 text-center">How It Works</h2>
+      <div class="grid grid-cols-1 md:grid-cols-4 gap-8">
+        <div class="relative">
+          <div class="bg-selco-navy text-white w-8 h-8 rounded-full flex items-center justify-center font-bold mb-4">1</div>
+          <p class="font-bold text-selco-navy mb-2">Pick a project</p>
+          <p class="text-gray-600 text-sm">Select Masonry Wall or Hard Flooring to get started.</p>
+        </div>
+        <div class="relative">
+          <div class="bg-selco-navy text-white w-8 h-8 rounded-full flex items-center justify-center font-bold mb-4">2</div>
+          <p class="font-bold text-selco-navy mb-2">Enter measurements</p>
+          <p class="text-gray-600 text-sm">Placeholder values guide you through entering your dimensions.</p>
+        </div>
+        <div class="relative">
+          <div class="bg-selco-navy text-white w-8 h-8 rounded-full flex items-center justify-center font-bold mb-4">3</div>
+          <p class="font-bold text-selco-navy mb-2">Step through materials</p>
+          <p class="text-gray-600 text-sm">Review each material needed. Skip any optional steps you don't require.</p>
+        </div>
+        <div class="relative">
+          <div class="bg-selco-navy text-white w-8 h-8 rounded-full flex items-center justify-center font-bold mb-4">4</div>
+          <p class="font-bold text-selco-navy mb-2">Get your list</p>
+          <p class="text-gray-600 text-sm">Get your full materials list with wastage included, ready for ordering.</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- FAQ -->
+    <section>
+      <h2 class="text-2xl font-bold text-selco-navy mb-6">Frequently Asked Questions</h2>
+      <div class="space-y-6">
+        <div class="bg-white border border-gray-200 rounded-lg p-6">
+          <h3 class="font-bold text-selco-navy mb-2">How accurate are the calculations?</h3>
+          <p class="text-gray-700">We use industry-standard formulas and manufacturer coverage rates. Wastage is configurable. These calculations are estimates, not exact quantities, so always round up.</p>
+        </div>
+        <div class="bg-white border border-gray-200 rounded-lg p-6">
+          <h3 class="font-bold text-selco-navy mb-2">Why include wastage?</h3>
+          <p class="text-gray-700">Wastage accounts for offcuts, breakage, and pattern matching. We recommend ~10% for flooring and ~5% for bricks. Skipping it means a return trip to the merchant.</p>
+        </div>
+        <div class="bg-white border border-gray-200 rounded-lg p-6">
+          <h3 class="font-bold text-selco-navy mb-2">Do I need an account?</h3>
+          <p class="text-gray-700">No account needed. The calculator runs entirely in your browser. There is no sign-up and no data stored.</p>
+        </div>
+        <div class="bg-white border border-gray-200 rounded-lg p-6">
+          <h3 class="font-bold text-selco-navy mb-2">What is a project calculator?</h3>
+          <p class="text-gray-700">It chains every material for one job into one guided flow. For example, the Masonry Wall calculator covers bricks or blocks, sand, cement and wall ties.</p>
+        </div>
+      </div>
+    </section>
+
   </div>
 </BaseLayout>
