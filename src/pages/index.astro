@@ -1,18 +1,20 @@
 ---
-const BASE_URL = import.meta.env.BASE_URL;
-const title = "Trade Materials Calculators";
+import BaseLayout from '../layouts/BaseLayout.astro';
 ---
 
-<html lang="en">
-  <head>
-    <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>{title}</title>
-  </head>
-  <body class="bg-white text-gray-900 p-8">
-    <main class="max-w-4xl mx-auto space-y-6">
-      <h1 class="text-4xl font-bold text-[#04204b]">{title}</h1>
-      <p class="text-lg">Placeholder site for the 1 Jul reset.</p>
-    </main>
-  </body>
-</html>
+<BaseLayout title="Home">
+  <div slot="breadcrumb">
+    <nav aria-label="Breadcrumb" class="text-sm">
+      <ol class="flex items-center space-x-2">
+        <li>
+          <span class="text-gray-500 font-medium" aria-current="page">Home</span>
+        </li>
+      </ol>
+    </nav>
+  </div>
+
+  <div class="text-center py-20">
+    <h1 class="text-4xl font-bold text-selco-navy mb-4">SELCO Calculator</h1>
+    <p class="text-xl text-gray-600">Placeholder for the home page content.</p>
+  </div>
+</BaseLayout>

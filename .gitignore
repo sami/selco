@@ -18,3 +18,7 @@ coverage
 # Local worktrees and editor session state
 .worktrees/
 .worktrees/
+
+task.md
+walkthrough.md
+docs/evidence/

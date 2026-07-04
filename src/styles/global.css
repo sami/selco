@@ -1,0 +1,18 @@
+@import "tailwindcss";
+
+@theme {
+  --color-selco-navy: #04204b;
+  --color-selco-yellow: #ca8a04;
+  --color-selco-footer: #111827;
+  --color-error-red: #dc2626;
+  --color-neutral-grey-50: #f9fafb;
+  --color-neutral-grey-100: #f3f4f6;
+  --color-neutral-grey-200: #e5e7eb;
+  --color-neutral-grey-800: #1f2937;
+}
+
+@layer base {
+  body {
+    @apply bg-neutral-grey-50 text-neutral-grey-800 font-sans;
+  }
+}

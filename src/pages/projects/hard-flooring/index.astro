@@ -1,0 +1,35 @@
+---
+import BaseLayout from '../../../layouts/BaseLayout.astro';
+import { projectRegistry } from '../../../projects/registry';
+import { ChevronRight } from 'lucide-react';
+
+const project = projectRegistry.find(p => p.id === 'hard-flooring');
+const baseUrl = import.meta.env.BASE_URL;
+---
+
+<BaseLayout title={project?.title || "Hard Flooring"}>
+  <div slot="breadcrumb">
+    <nav aria-label="Breadcrumb" class="text-sm">
+      <ol class="flex items-center space-x-2">
+        <li>
+          <a href={baseUrl} class="text-gray-500 hover:text-selco-navy focus:outline-none focus:underline">Home</a>
+        </li>
+        <li>
+          <ChevronRight size={16} class="text-gray-400" />
+        </li>
+        <li>
+          <span class="text-gray-900 font-medium" aria-current="page">{project?.title}</span>
+        </li>
+      </ol>
+    </nav>
+  </div>
+
+  <div class="max-w-3xl">
+    <h1 class="text-3xl md:text-4xl font-bold text-selco-navy mb-4">{project?.title}</h1>
+    <p class="text-lg text-gray-700 mb-8">{project?.blurb}</p>
+    
+    <div class="bg-white border border-gray-200 rounded-md p-8 text-center">
+      <p class="text-gray-500 italic">Calculator UI placeholder</p>
+    </div>
+  </div>
+</BaseLayout>

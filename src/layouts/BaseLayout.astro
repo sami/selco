@@ -1,0 +1,106 @@
+---
+import '../styles/global.css';
+import MobileMenu from '../components/MobileMenu';
+import { projectRegistry } from '../projects/registry';
+
+interface Props {
+  title: string;
+  description?: string;
+}
+
+const { title, description = "SELCO Trade Materials Calculator" } = Astro.props;
+const baseUrl = import.meta.env.BASE_URL;
+const getUrl = (route: string) => {
+  const base = baseUrl.endsWith('/') ? baseUrl.slice(0, -1) : baseUrl;
+  return `${base}${route}`;
+};
+
+const handyCalculators = projectRegistry.filter(p => p.category === 'Handy Calculators');
+const projectCalculators = projectRegistry.filter(p => p.category === 'Project Calculators');
+---
+
+<!DOCTYPE html>
+<html lang="en-GB" class="scroll-smooth">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>{title} | SELCO Calculator</title>
+    <meta name="description" content={description} />
+    <link rel="icon" type="image/svg+xml" href={getUrl('/selco-logo.svg')} />
+  </head>
+  <body class="flex flex-col min-h-screen bg-neutral-grey-50 text-neutral-grey-800">
+    <a href="#main-content" class="sr-only focus:not-sr-only focus:absolute focus:top-4 focus:left-4 bg-selco-yellow text-selco-navy font-bold py-2 px-4 rounded-md z-50">
+      Skip to content
+    </a>
+
+    <header class="bg-selco-navy text-white relative z-40">
+      <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="flex justify-between items-center h-16">
+          <div class="flex-shrink-0 flex items-center">
+            <a href={baseUrl} class="font-bold text-xl tracking-tight focus:outline-none focus:ring-2 focus:ring-selco-yellow rounded-sm">
+              SELCO Calculator
+            </a>
+          </div>
+          
+          {/* Desktop Nav */}
+          <nav class="hidden md:flex space-x-8">
+            {handyCalculators.length > 0 && (
+              <div class="relative group">
+                <button class="text-gray-300 group-hover:text-white font-medium focus:outline-none focus:text-white py-2">
+                  Handy Calculators
+                </button>
+                <div class="absolute left-0 mt-2 w-56 bg-white rounded-md shadow-lg py-1 opacity-0 group-hover:opacity-100 group-focus-within:opacity-100 transition-opacity duration-150 invisible group-hover:visible group-focus-within:visible border border-gray-200">
+                  {handyCalculators.map(calc => (
+                    <a href={getUrl(calc.route)} class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 hover:text-selco-navy focus:bg-gray-100 focus:outline-none">
+                      {calc.title}
+                    </a>
+                  ))}
+                </div>
+              </div>
+            )}
+            
+            {projectCalculators.length > 0 && (
+              <div class="relative group">
+                <button class="text-gray-300 group-hover:text-white font-medium focus:outline-none focus:text-white py-2">
+                  Project Calculators
+                </button>
+                <div class="absolute left-0 mt-2 w-56 bg-white rounded-md shadow-lg py-1 opacity-0 group-hover:opacity-100 group-focus-within:opacity-100 transition-opacity duration-150 invisible group-hover:visible group-focus-within:visible border border-gray-200 z-50">
+                  {projectCalculators.map(calc => (
+                    <a href={getUrl(calc.route)} class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 hover:text-selco-navy focus:bg-gray-100 focus:outline-none">
+                      {calc.title}
+                    </a>
+                  ))}
+                </div>
+              </div>
+            )}
+          </nav>
+
+          {/* Mobile Nav React Island */}
+          <MobileMenu baseUrl={baseUrl} client:load />
+        </div>
+      </div>
+    </header>
+
+    <div class="bg-white border-b border-gray-200">
+      <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-3">
+        <slot name="breadcrumb" />
+      </div>
+    </div>
+
+    <main id="main-content" class="flex-grow max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 w-full">
+      <slot />
+    </main>
+
+    <footer class="bg-selco-footer text-white py-8 mt-auto">
+      <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex flex-col md:flex-row justify-between items-center gap-4">
+        <div class="text-sm text-gray-400">
+          <p class="font-bold text-gray-300 mb-1">Disclaimer</p>
+          <p>These calculators are designed for estimating purposes only. Always check your quantities with a trade professional.</p>
+        </div>
+        <button class="bg-selco-yellow text-selco-navy font-bold py-2 px-6 rounded-md hover:bg-yellow-500 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-selco-footer focus:ring-selco-yellow transition-colors whitespace-nowrap">
+          Give Feedback
+        </button>
+      </div>
+    </footer>
+  </body>
+</html>
