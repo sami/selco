@@ -4,30 +4,59 @@ import { calculateMasonry } from '../masonry';
 describe('Masonry Engine', () => {
   it('calculates materials for a 5.0m x 2.5m wall (12.5 m²)', () => {
     const result = calculateMasonry({ length: 5.0, height: 2.5 });
-    
-    // We expect ceil() rounding now, so bricks goes from 669 -> 670
-    expect(result.bricks).toBe(670);
-    expect(result.mortarBags).toBe(10);
-    expect(result.sandTonnes).toBeCloseTo(0.51, 2);
-    // Standard wall tie rate: 2.5 ties per m² -> 12.5 * 2.5 = 31.25 -> 32
-    expect(result.wallTies).toBe(32); 
+
+    expect(result.bricks).toBe(670); // 12.5 * 51 * 1.05 = 669.375 -> ceil 670
+    expect(result.mortar).toBe('10 × 25kg bags of Blue Circle OPC');
+    // 510 kg / 875 kg per jumbo bag = 0.583 -> ceil 1
+    expect(result.sand).toBe('1 × Building Sand Jumbo Bag');
+    // 32 ties / 250 per box = 0.128 -> ceil 1
+    expect(result.ties).toBe('1 × Type 4 Light Duty Wall Tie 200mm (Box of 250)');
   });
 
   it('calculates materials for a 3.0m x 2.0m wall (6.0 m²)', () => {
     const result = calculateMasonry({ length: 3.0, height: 2.0 });
-    
+
     expect(result.bricks).toBe(322); // 6 * 51 * 1.05 = 321.3 -> ceil 322
-    expect(result.mortarBags).toBe(5); // 6 * 0.8 = 4.8 -> ceil 5
-    expect(result.sandTonnes).toBeCloseTo(0.24, 2); // 6 * 0.0408 = 0.2448
-    expect(result.wallTies).toBe(15); // 6 * 2.5 = 15
+    expect(result.mortar).toBe('5 × 25kg bags of Blue Circle OPC');
+    // 244.8 kg / 875 kg = 0.2798 -> ceil 1
+    expect(result.sand).toBe('1 × Building Sand Jumbo Bag');
+    // 15 ties / 250 per box = 0.06 -> ceil 1
+    expect(result.ties).toBe('1 × Type 4 Light Duty Wall Tie 200mm (Box of 250)');
   });
 
-  it('returns zeros for zero or negative inputs', () => {
-    const result = calculateMasonry({ length: 0, height: 2.5 });
-    
-    expect(result.bricks).toBe(0);
-    expect(result.mortarBags).toBe(0);
-    expect(result.sandTonnes).toBe(0);
-    expect(result.wallTies).toBe(0);
+  it('calculates materials for a 4.0m x 2.4m block wall (9.6 m²)', () => {
+    const result = calculateMasonry({ length: 4.0, height: 2.4, wallType: 'block' });
+
+    expect(result.blocks).toBe(101); // 9.6 * 10 * 1.05 = 100.8 -> ceil 101
+    expect(result.mortar).toBe('8 × 25kg bags of Blue Circle OPC');
+    // 391.68 kg / 875 kg = 0.4476 -> ceil 1
+    expect(result.sand).toBe('1 × Building Sand Jumbo Bag');
+    // 24 ties / 250 per box = 0.096 -> ceil 1
+    expect(result.ties).toBe('1 × Type 4 Light Duty Wall Tie 200mm (Box of 250)');
+  });
+
+  it('applies custom wastage when provided', () => {
+    // Same 5×2.5m wall but with 10% wastage instead of default 5%
+    const result = calculateMasonry({ length: 5.0, height: 2.5, wastage: 10 });
+
+    // 12.5 * 51 * 1.10 = 701.25 -> ceil 702
+    expect(result.bricks).toBe(702);
+  });
+
+  it('uses default 5% wastage when not specified', () => {
+    const result = calculateMasonry({ length: 5.0, height: 2.5 });
+
+    // 12.5 * 51 * 1.05 = 669.375 -> ceil 670 (unchanged)
+    expect(result.bricks).toBe(670);
+  });
+
+  it('throws for zero-length wall', () => {
+    expect(() => calculateMasonry({ length: 0, height: 2.5 }))
+      .toThrow('Wall dimensions must be positive');
+  });
+
+  it('throws for negative-height wall', () => {
+    expect(() => calculateMasonry({ length: 3, height: -1 }))
+      .toThrow('Wall dimensions must be positive');
   });
 });
