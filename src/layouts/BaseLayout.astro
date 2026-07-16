@@ -1,7 +1,6 @@
 ---
 import '../styles/global.css';
 import MobileMenu from '../components/MobileMenu';
-import { projectRegistry } from '../projects/registry';
 
 interface Props {
   title: string;
@@ -15,8 +14,26 @@ const getUrl = (route: string) => {
   return `${base}${route}`;
 };
 
-const handyCalculators = projectRegistry.filter(p => p.category === 'Handy Calculators');
-const projectCalculators = projectRegistry.filter(p => p.category === 'Project Calculators');
+const categories = [
+  'Building\nMaterials', 'Timber &\nJoinery', 'Landscaping &\nFencing',
+  'Kitchens &\nBathrooms', 'Flooring &\nTiling', 'Plumbing &\nHeating',
+  'Tools, Equipment\n& Workwear', 'Painting &\nDecorating',
+  'Electrical, Lighting\n& Ventilation', 'Security &\nIronmongery', 'Fixings &\nAdhesives',
+];
+
+const footerColumns = [
+  { heading: 'Help', links: ['Selcobw.com Help', 'Buying from Selco', 'Branch Finder', 'Returns Policy', 'What are Project Lists?', 'Contact Us'] },
+  { heading: 'Services', links: ['Get a Trade Card', 'Trade Accounts Explained', 'Click & Collect', 'Click & Deliver', 'Dial & Deliver', 'All Trade Services'] },
+  { heading: 'About', links: ['About Selco', 'The Toolkit Blog', 'Careers', 'Modern Slavery Policy Statement', 'Property Requirements', 'Environmental, Social and Governance (ESG)'] },
+];
+
+const socialIcons = [
+  { icon: 'fa-facebook-f', label: 'Facebook (placeholder)' },
+  { icon: 'fa-instagram', label: 'Instagram (placeholder)' },
+  { icon: 'fa-twitter', label: 'X / Twitter (placeholder)' },
+  { icon: 'fa-linkedin-in', label: 'LinkedIn (placeholder)' },
+  { icon: 'fa-youtube', label: 'YouTube (placeholder)' },
+];
 ---
 
 <!DOCTYPE html>
@@ -27,80 +44,249 @@ const projectCalculators = projectRegistry.filter(p => p.category === 'Project C
     <title>{title} | SELCO Calculator</title>
     <meta name="description" content={description} />
     <link rel="icon" type="image/svg+xml" href={getUrl('/selco-logo.svg')} />
+    <link rel="stylesheet" href={getUrl('/vendor/fontawesome/css/all.min.css')} />
   </head>
-  <body class="flex flex-col min-h-screen bg-neutral-grey-50 text-neutral-grey-800">
-    <a href="#main-content" class="sr-only focus:not-sr-only focus:absolute focus:top-4 focus:left-4 bg-selco-yellow text-selco-navy font-bold py-2 px-4 rounded-md z-50">
+  <body class="flex flex-col min-h-screen">
+    <a href="#main-content" class="sr-only focus:not-sr-only focus:absolute focus:top-4 focus:left-4 bg-brand-navy text-white font-bold py-2 px-4 rounded-md z-50">
       Skip to content
     </a>
 
-    <header class="bg-selco-navy text-white relative z-40">
-      <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div class="flex justify-between items-center h-16">
-          <div class="flex-shrink-0 flex items-center">
-            <a href={baseUrl} class="font-bold text-xl tracking-tight focus:outline-none focus:ring-2 focus:ring-selco-yellow rounded-sm">
-              SELCO Calculator
-            </a>
-          </div>
-          
-          {/* Desktop Nav */}
-          <nav class="hidden md:flex space-x-8">
-            {handyCalculators.length > 0 && (
-              <div class="relative group">
-                <button class="text-gray-300 group-hover:text-white font-medium focus:outline-none focus:text-white py-2">
-                  Handy Calculators
-                </button>
-                <div class="absolute left-0 mt-2 w-56 bg-white rounded-md shadow-lg py-1 opacity-0 group-hover:opacity-100 group-focus-within:opacity-100 transition-opacity duration-150 invisible group-hover:visible group-focus-within:visible border border-gray-200">
-                  {handyCalculators.map(calc => (
-                    <a href={getUrl(calc.route)} class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 hover:text-selco-navy focus:bg-gray-100 focus:outline-none">
-                      {calc.title}
-                    </a>
-                  ))}
-                </div>
-              </div>
-            )}
-            
-            {projectCalculators.length > 0 && (
-              <div class="relative group">
-                <button class="text-gray-300 group-hover:text-white font-medium focus:outline-none focus:text-white py-2">
-                  Project Calculators
-                </button>
-                <div class="absolute left-0 mt-2 w-56 bg-white rounded-md shadow-lg py-1 opacity-0 group-hover:opacity-100 group-focus-within:opacity-100 transition-opacity duration-150 invisible group-hover:visible group-focus-within:visible border border-gray-200 z-50">
-                  {projectCalculators.map(calc => (
-                    <a href={getUrl(calc.route)} class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 hover:text-selco-navy focus:bg-gray-100 focus:outline-none">
-                      {calc.title}
-                    </a>
-                  ))}
-                </div>
-              </div>
-            )}
-          </nav>
+    <header class="selco-header relative z-40">
+      <div class="header-inner">
+        <a href={baseUrl} class="logo">
+          <img src={getUrl('/selco-logo.svg')} alt="Selco Builders Warehouse" />
+        </a>
 
-          {/* Mobile Nav React Island */}
+        <div class="search-container">
+          <input type="text" placeholder="Search (e.g. Bricks, Bosch, 5mm)" disabled />
+          <button disabled aria-label="Search (coming soon)"><i class="fas fa-search" aria-hidden="true"></i></button>
+        </div>
+
+        <div class="hil-menu">
           <MobileMenu baseUrl={baseUrl} client:load />
         </div>
+        <span class="header-icon-link hil-branches" aria-hidden="true">
+          <i class="fas fa-map-marker-alt"></i>
+          <span>Branches</span>
+        </span>
+        <a href={baseUrl} class="header-icon-link hil-calculators">
+          <i class="fas fa-calculator" aria-hidden="true"></i>
+          <span>Calculators</span>
+        </a>
+        <span class="header-icon-link hil-login" aria-hidden="true">
+          <i class="fas fa-lock"></i>
+          <span>Log In</span>
+        </span>
       </div>
     </header>
 
-    <div class="bg-white border-b border-gray-200">
-      <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-3">
-        <slot name="breadcrumb" />
+    {/* Mega-menu strip — visually present, deliberately inert (honest prototype) */}
+    <nav class="selco-nav" aria-hidden="true">
+      <div class="nav-inner">
+        <div class="nav-item"><i class="fas fa-home home-icon"></i></div>
+        {categories.map(cat => (
+          <div class="nav-item">{cat.split('\n')[0]}<br />{cat.split('\n')[1]}</div>
+        ))}
+      </div>
+    </nav>
+
+    {/* Utility bar */}
+    <div class="info-strip">
+      <div class="info-strip-inner">
+        <span class="info-item"><i class="fas fa-headset" aria-hidden="true"></i> <strong>Dial &amp; Deliver:</strong> Got a Trade Card? Call us on <span class="underline">03331 886 388</span> to place an order.</span>
+        <span class="info-item"><i class="fas fa-truck" aria-hidden="true"></i> <strong>Click &amp; Deliver:</strong> FREE Delivery on orders over £150 ex VAT.</span>
       </div>
     </div>
 
-    <main id="main-content" class="flex-grow max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 w-full">
+    {Astro.slots.has('breadcrumb') && (
+      <div class="breadcrumbs">
+        <slot name="breadcrumb" />
+      </div>
+    )}
+
+    <main id="main-content" class="flex-grow max-w-[1280px] mx-auto px-[15px] py-8 w-full">
       <slot />
     </main>
 
-    <footer class="bg-selco-footer text-white py-8 mt-auto">
-      <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex flex-col md:flex-row justify-between items-center gap-4">
-        <div class="text-sm text-gray-400">
-          <p class="font-bold text-gray-300 mb-1">Disclaimer</p>
-          <p>These calculators are designed for estimating purposes only. Always check your quantities with a trade professional.</p>
+    {/* Footer promo — demo disclaimer */}
+    <div class="bg-brand-yellow py-[30px] px-[15px] mt-auto">
+      <div class="max-w-[1280px] mx-auto px-[15px]">
+        <div class="bg-[#fff3cd] border-[3px] border-[#ffc107] p-[20px] my-[20px] rounded-lg text-center mx-auto max-w-[700px]">
+          <h3 class="text-[#856404] text-[1.2rem] mb-[8px] font-extrabold">⚠️ DEMO ONLY</h3>
+          <p class="text-[#856404] text-[0.9rem] m-0"><strong>Not affiliated with Selco Builders Warehouse.</strong> This is a demonstration calculator application created to showcase potential functionality for selcobw.com.</p>
         </div>
-        <button class="bg-selco-yellow text-selco-navy font-bold py-2 px-6 rounded-md hover:bg-yellow-500 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-selco-footer focus:ring-selco-yellow transition-colors whitespace-nowrap">
-          Give Feedback
-        </button>
+      </div>
+    </div>
+
+    {/* Main footer */}
+    <footer class="bg-brand-navy text-white pt-[50px] pb-[20px]">
+      <div class="max-w-[1280px] mx-auto px-[15px] grid grid-cols-4 gap-[30px] mb-[40px] max-lg:grid-cols-2 max-[600px]:grid-cols-1 max-[600px]:text-center">
+        {footerColumns.map(col => (
+          <div>
+            <h4 class="text-white mb-[20px] text-[1rem] font-bold">{col.heading}</h4>
+            <ul class="list-none p-0 m-0">
+              {col.links.map(link => (
+                <li class="mb-[10px] text-[0.85rem]"><span class="text-[#ccc]">{link}</span></li>
+              ))}
+            </ul>
+          </div>
+        ))}
+        <div>
+          <h4 class="text-white mb-[20px] text-[1rem] font-bold">Connect with us on Social</h4>
+          <div class="flex gap-[10px] max-[600px]:justify-center">
+            {socialIcons.map(s => (
+              <span class="w-[32px] h-[32px] bg-white/20 rounded-full flex items-center justify-center text-white" aria-hidden="true">
+                <i class={`fab ${s.icon}`}></i>
+              </span>
+            ))}
+          </div>
+        </div>
+      </div>
+      <div class="max-w-[1280px] mx-auto pt-[20px] px-[15px] border-t border-white/10 text-center text-[#ccc] text-[0.8rem]">
+        <p>&copy; 2026 Demo Application. Built with Astro &amp; React. Original design &copy; Selco Builders Warehouse.</p>
       </div>
     </footer>
+
+    <style>
+      /* Ported from the concept demonstrator's compiled CSS (design source of truth) */
+      .selco-header {
+        background-color: var(--color-brand-yellow);
+        padding: 10px 0;
+      }
+      .header-inner {
+        max-width: 1280px;
+        margin: 0 auto;
+        padding: 0 15px;
+        display: flex;
+        align-items: center;
+        gap: 20px;
+      }
+      .logo { order: 1; }
+      .logo img { height: 50px; width: auto; display: block; }
+      .search-container {
+        order: 2;
+        flex-grow: 1;
+        display: flex;
+        max-width: 600px;
+        margin: 0 auto;
+      }
+      .search-container input {
+        width: 100%;
+        padding: 10px 15px;
+        border: 1px solid white;
+        border-right: none;
+        border-radius: 4px 0 0 4px;
+        font-size: 0.9rem;
+        outline: none;
+        background-color: #fff;
+      }
+      .search-container button {
+        background-color: var(--color-brand-navy);
+        color: #fff;
+        border: 1px solid var(--color-brand-navy);
+        padding: 0 15px;
+        border-radius: 0 4px 4px 0;
+        font-size: 1rem;
+      }
+      .header-icon-link {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        color: var(--color-brand-navy);
+        font-weight: 700;
+        font-size: 0.8rem;
+        text-decoration: none;
+      }
+      .header-icon-link i { font-size: 1.2rem; margin-bottom: 2px; }
+      .hil-menu { display: none; }
+
+      .selco-nav { background-color: #1b3a6e; color: #fff; }
+      .nav-inner {
+        max-width: 1280px;
+        margin: 0 auto;
+        padding: 0 15px;
+        display: flex;
+        justify-content: space-between;
+        overflow-x: auto;
+      }
+      .nav-item {
+        padding: 12px 10px;
+        font-size: 0.7rem;
+        font-weight: 700;
+        text-transform: uppercase;
+        text-align: center;
+        white-space: nowrap;
+        cursor: not-allowed;
+        border-right: 1px solid rgba(255, 255, 255, 0.1);
+        display: flex;
+        align-items: center;
+        opacity: 0.7;
+        pointer-events: none;
+      }
+      .nav-item:first-child { padding-left: 0; }
+      .nav-item:last-child { border-right: none; }
+
+      .info-strip {
+        background-color: #fcfcfc;
+        border-bottom: 1px solid #e0e0e0;
+        padding: 10px 0;
+        font-size: 0.8rem;
+        color: var(--color-brand-blue);
+        font-weight: 600;
+      }
+      .info-strip-inner {
+        max-width: 1280px;
+        margin: 0 auto;
+        padding: 0 15px;
+        display: flex;
+        gap: 30px;
+        flex-wrap: wrap;
+      }
+
+      .breadcrumbs {
+        max-width: 1280px;
+        margin: 0 auto;
+        padding: 28px 15px 0;
+        font-size: 0.8rem;
+        color: var(--color-brand-blue);
+        font-weight: 600;
+        width: 100%;
+        box-sizing: border-box;
+      }
+      .breadcrumbs :global(a) { color: var(--color-brand-blue); text-decoration: none; }
+      .breadcrumbs :global(span) { color: #ccc; margin: 0 5px; font-weight: 400; }
+      .breadcrumbs :global(.current) { color: #999; }
+
+      @media (max-width: 1024px) {
+        .selco-header { padding: 0 0 10px; }
+        .header-inner {
+          display: grid;
+          grid-template-columns: repeat(5, 1fr);
+          grid-template-rows: auto auto;
+          gap: 5px 2px;
+          padding: 5px 10px;
+        }
+        .hil-menu { display: flex; grid-row: 1; grid-column: 1; justify-self: center; }
+        .hil-branches { grid-row: 1; grid-column: 2; }
+        .logo { grid-row: 1; grid-column: 3; justify-self: center; padding-top: 2px; }
+        .logo img { height: 28px; }
+        .hil-calculators { grid-row: 1; grid-column: 4; }
+        .hil-login { grid-row: 1; grid-column: 5; }
+        .header-icon-link { justify-self: center; margin: 0; font-size: 0.6rem; padding-top: 2px; }
+        .header-icon-link i { font-size: 1rem; }
+        .search-container {
+          grid-row: 2;
+          grid-column: 1 / -1;
+          margin: 2px 0 0;
+          max-width: none;
+        }
+        .search-container input { padding: 6px 10px; font-size: 0.85rem; }
+        .search-container button { padding: 0 10px; }
+        .breadcrumbs { padding: 10px 15px 0; margin: 0; }
+      }
+      @media (max-width: 768px) {
+        .selco-nav { display: none; }
+      }
+    </style>
   </body>
 </html>

@@ -23,15 +23,15 @@ export default function MobileMenu({ baseUrl }: { baseUrl: string }) {
   };
 
   return (
-    <div className="md:hidden">
-      <button 
+    <div>
+      <button
         onClick={() => setIsOpen(!isOpen)}
-        className="p-2 text-white hover:text-selco-yellow focus:outline-none focus:ring-2 focus:ring-selco-yellow rounded-md flex items-center gap-2"
+        className="flex flex-col items-center text-brand-navy font-bold focus:outline-none focus:ring-2 focus:ring-brand-navy rounded-md"
         aria-expanded={isOpen}
         aria-label="Toggle navigation menu"
       >
-        {isOpen ? <X size={24} /> : <Menu size={24} />}
-        <span className="text-sm font-medium">Menu</span>
+        {isOpen ? <X size={16} /> : <Menu size={16} />}
+        <span className="text-[0.6rem]">Menu</span>
       </button>
 
       {isOpen && (

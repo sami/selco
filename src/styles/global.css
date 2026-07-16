@@ -1,8 +1,19 @@
 @import "tailwindcss";
 
 @theme {
+  /* Brand palette — extracted from the concept demonstrator's compiled CSS */
+  --color-brand-navy: #04204b;
+  --color-brand-yellow: #ffd407;
+  --color-brand-blue: #253081;
+  --color-brand-light-grey: #f2f6fa;
+  --color-text-main: #1f2937;
+  --color-text-muted: #64748b;
+  --color-border-default: #e2e8f0;
+
+  /* DEPRECATED aliases — still consumed by ui/ components, MobileMenu, and
+     calculator pages. Migrate usages to the brand tokens above, then delete. */
   --color-selco-navy: #04204b;
-  --color-selco-yellow: #ca8a04;
+  --color-selco-yellow: #ffd407;
   --color-selco-footer: #111827;
   --color-error-red: #dc2626;
   --color-neutral-grey-50: #f9fafb;
@@ -13,6 +24,6 @@
 
 @layer base {
   body {
-    @apply bg-neutral-grey-50 text-neutral-grey-800 font-sans;
+    @apply bg-brand-light-grey text-text-main font-sans;
   }
 }
