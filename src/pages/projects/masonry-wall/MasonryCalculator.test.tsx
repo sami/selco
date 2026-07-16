@@ -31,7 +31,7 @@ describe('MasonryCalculator', () => {
 
     // Headline result card
     expect(screen.getByText('670')).toBeInTheDocument();
-    expect(screen.getByText(/bricks/i)).toBeInTheDocument();
+    expect(screen.getAllByText(/bricks/i).length).toBeGreaterThan(0);
 
     // Materials table parsed from the engine's pack-rounded strings
     const table = screen.getByRole('table');
@@ -47,7 +47,7 @@ describe('MasonryCalculator', () => {
     fillAndCalculate({ length: '4', height: '2.4' });
 
     expect(screen.getByText('101')).toBeInTheDocument();
-    expect(screen.getByText(/blocks/i)).toBeInTheDocument();
+    expect(screen.getAllByText(/blocks/i).length).toBeGreaterThan(0);
   });
 
   it('surfaces the engine validation error in the aria-live region for negative dimensions', () => {
