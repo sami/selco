@@ -1,6 +1,9 @@
 @import "tailwindcss";
 
 @theme {
+  /* Typeface — Open Sans, self-hosted (loaded in BaseLayout head) */
+  --font-sans: 'Open Sans', ui-sans-serif, system-ui, sans-serif;
+
   /* Brand palette — extracted from the concept demonstrator's compiled CSS */
   --color-brand-navy: #04204b;
   --color-brand-yellow: #ffd407;
@@ -9,6 +12,13 @@
   --color-text-main: #1f2937;
   --color-text-muted: #64748b;
   --color-border-default: #e2e8f0;
+  --color-primary: #04204b;
+  --color-primary-nav: #253081;
+  --color-surface: #ffffff;
+
+  /* Radii */
+  --radius-button: 0.5rem;
+  --radius-card: 0.75rem;
 
   /* DEPRECATED aliases — still consumed by ui/ components, MobileMenu, and
      calculator pages. Migrate usages to the brand tokens above, then delete. */
@@ -25,5 +35,27 @@
 @layer base {
   body {
     @apply bg-brand-light-grey text-text-main font-sans;
+  }
+}
+
+@layer components {
+  /* Concept design language — shared by the landing page and calculator pages */
+  .card {
+    @apply bg-surface border border-border-default rounded-card p-6 shadow-sm;
+  }
+  .card-hover {
+    @apply transition-all duration-300 hover:-translate-y-0.5 hover:shadow-md hover:border-primary/40;
+  }
+  .btn-accent {
+    @apply inline-flex cursor-pointer items-center justify-center gap-2 rounded-button
+      bg-brand-yellow text-brand-navy font-bold text-base min-w-[44px] min-h-[44px] px-6
+      hover:brightness-95 focus-visible:ring-2 focus-visible:ring-brand-navy
+      disabled:cursor-not-allowed disabled:opacity-50;
+  }
+  .btn-ghost {
+    @apply inline-flex cursor-pointer items-center justify-center gap-2 rounded-button
+      border border-brand-navy text-brand-navy font-bold text-base min-w-[44px] min-h-[44px] px-6
+      hover:bg-brand-navy/10 focus-visible:ring-2 focus-visible:ring-brand-navy
+      disabled:cursor-not-allowed disabled:opacity-50;
   }
 }

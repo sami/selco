@@ -45,11 +45,28 @@ const socialIcons = [
     <meta name="description" content={description} />
     <link rel="icon" type="image/svg+xml" href={getUrl('/selco-logo.svg')} />
     <link rel="stylesheet" href={getUrl('/vendor/fontawesome/css/all.min.css')} />
+    <link rel="stylesheet" href={getUrl('/vendor/open-sans/open-sans.css')} />
+    <slot name="head" />
   </head>
   <body class="flex flex-col min-h-screen">
     <a href="#main-content" class="sr-only focus:not-sr-only focus:absolute focus:top-4 focus:left-4 bg-brand-navy text-white font-bold py-2 px-4 rounded-md z-50">
       Skip to content
     </a>
+
+    {/* Top bar — visually present, deliberately inert (honest prototype) */}
+    <div class="top-bar" aria-hidden="true">
+      <div class="top-bar-inner">
+        <div class="top-links">
+          <span>Materials</span>
+          <span>Careers</span>
+          <span>Blog</span>
+        </div>
+        <div class="top-links">
+          <span>First Time Log In</span>
+          <span>Get a Trade Card</span>
+        </div>
+      </div>
+    </div>
 
     <header class="selco-header relative z-40">
       <div class="header-inner">
@@ -65,14 +82,14 @@ const socialIcons = [
         <div class="hil-menu">
           <MobileMenu baseUrl={baseUrl} client:load />
         </div>
-        <span class="header-icon-link hil-branches" aria-hidden="true">
-          <i class="fas fa-map-marker-alt"></i>
-          <span>Branches</span>
-        </span>
         <a href={baseUrl} class="header-icon-link hil-calculators">
           <i class="fas fa-calculator" aria-hidden="true"></i>
           <span>Calculators</span>
         </a>
+        <span class="header-icon-link hil-branches" aria-hidden="true">
+          <i class="fas fa-map-marker-alt"></i>
+          <span>Branches</span>
+        </span>
         <span class="header-icon-link hil-login" aria-hidden="true">
           <i class="fas fa-lock"></i>
           <span>Log In</span>
@@ -149,6 +166,28 @@ const socialIcons = [
 
     <style>
       /* Ported from the concept demonstrator's compiled CSS (design source of truth) */
+      .top-bar {
+        background-color: var(--color-brand-navy);
+        color: #fff;
+        font-size: 0.75rem;
+        font-weight: 700;
+        padding: 8px 0;
+      }
+      .top-bar-inner {
+        max-width: 1280px;
+        margin: 0 auto;
+        padding: 0 15px;
+        display: flex;
+        justify-content: space-between;
+        flex-wrap: wrap;
+        gap: 10px;
+      }
+      .top-links span {
+        margin: 0 10px;
+        text-transform: uppercase;
+        padding: 2px 8px;
+        opacity: 0.7;
+      }
       .selco-header {
         background-color: var(--color-brand-yellow);
         padding: 10px 0;
@@ -161,10 +200,8 @@ const socialIcons = [
         align-items: center;
         gap: 20px;
       }
-      .logo { order: 1; }
       .logo img { height: 50px; width: auto; display: block; }
       .search-container {
-        order: 2;
         flex-grow: 1;
         display: flex;
         max-width: 600px;
@@ -258,14 +295,18 @@ const socialIcons = [
       .breadcrumbs :global(.current) { color: #999; }
 
       @media (max-width: 1024px) {
+        .top-bar { display: none; }
         .selco-header { padding: 0 0 10px; }
         .header-inner {
           display: grid;
-          grid-template-columns: repeat(5, 1fr);
+          /* minmax(0,1fr) lets columns shrink below content min-width —
+             the concept's plain 1fr version overflows 390px viewports */
+          grid-template-columns: minmax(0, 1fr) minmax(0, 1fr) auto minmax(0, 1fr) minmax(0, 1fr);
           grid-template-rows: auto auto;
           gap: 5px 2px;
           padding: 5px 10px;
         }
+        .header-inner > * { min-width: 0; }
         .hil-menu { display: flex; grid-row: 1; grid-column: 1; justify-self: center; }
         .hil-branches { grid-row: 1; grid-column: 2; }
         .logo { grid-row: 1; grid-column: 3; justify-self: center; padding-top: 2px; }
