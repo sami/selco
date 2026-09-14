@@ -167,6 +167,10 @@ describe('planCutting: standard sheets', () => {
     for (const entry of plan.cutList) {
       expect(placed(plan).filter((p) => p.ref === entry.ref)).toHaveLength(entry.qty);
     }
+    for (const p of placed(plan)) {
+      const entry = plan.cutList.find((e) => e.ref === p.ref)!;
+      expect(p.rotated ? [p.hMm, p.wMm] : [p.wMm, p.hMm]).toEqual([entry.cutWMm, entry.cutHMm]);
+    }
   });
 
   it('reports pieces too big for the board and still places the rest', () => {
@@ -183,6 +187,23 @@ describe('planCutting: standard sheets', () => {
     const plan = sheetPlan([]);
     expect(plan.cutList).toEqual([]);
     expect(plan.layouts).toEqual([]);
+  });
+
+  it('gives the in-store cut size, in the direction entered, on each cut list line', () => {
+    const cutSize = (piece: PieceInput) => {
+      const entry = sheetPlan([piece]).cutList[0];
+      return [entry.cutWMm, entry.cutHMm];
+    };
+    expect(cutSize({ wMm: 400, hMm: 300, qty: 1 })).toEqual([500, 300]);
+    expect(cutSize({ wMm: 200, hMm: 200, qty: 1 })).toEqual([500, 230]);
+    expect(cutSize({ wMm: 300, hMm: 400, qty: 1 })).toEqual([300, 500]);
+    expect(cutSize({ wMm: 800, hMm: 600, qty: 1 })).toEqual([800, 600]);
+  });
+
+  it('keeps the finished size as the cut size for a piece too big for the board', () => {
+    const entry = sheetPlan([{ wMm: 1300, hMm: 2500, qty: 1 }]).cutList[0];
+    expect(entry.fits).toBe(false);
+    expect([entry.cutWMm, entry.cutHMm]).toEqual([1300, 2500]);
   });
 });
 
@@ -225,7 +246,17 @@ describe('planCutting: worktops', () => {
     const plan = worktopPlan([{ wMm: 600, hMm: 50, qty: 50 }]);
     expect(plan.layouts).toHaveLength(5);
     expect(placed(plan).every((p) => p.hMm === 230)).toBe(true);
+    expect(placed(plan).every((p) => p.wMm === plan.cutList[0].cutWMm && p.hMm === plan.cutList[0].cutHMm)).toBe(true);
     expectCuttable(plan);
+  });
+
+  it('gives the full worktop width and the oversize length as the cut size', () => {
+    const entry = worktopPlan([{ wMm: 150, hMm: 200, qty: 1 }]).cutList[0];
+    expect([entry.cutWMm, entry.cutHMm]).toEqual([600, 230]);
+
+    const tooWide = worktopPlan([{ wMm: 700, hMm: 300, qty: 1 }]).cutList[0];
+    expect(tooWide.fits).toBe(false);
+    expect([tooWide.cutWMm, tooWide.cutHMm]).toEqual([700, 300]);
   });
 
   it('does not flag trimming or the saw minimum on a piece that does not fit', () => {

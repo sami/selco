@@ -379,4 +379,13 @@ describe('BoardCuttingCalculator', () => {
     expect(screen.getByLabelText('Quantity of piece A')).toHaveAttribute('aria-invalid', 'true');
     expect(printButton()).toBeDisabled();
   });
+
+  it('names the size order in the printed cut list header for each board type', () => {
+    render(<BoardCuttingCalculator initialRows={[{ w: '600', h: '1500', qty: '1' }]} />);
+    expect(within(printSheet()).getByRole('columnheader', { name: 'Width × height (mm)' })).toBeInTheDocument();
+
+    fireEvent.change(screen.getByLabelText('Board type'), { target: { value: 'worktop' } });
+    expect(within(printSheet()).getByRole('columnheader', { name: 'Depth × length (mm)' })).toBeInTheDocument();
+    expect(within(printSheet()).queryByRole('columnheader', { name: 'Width × height (mm)' })).not.toBeInTheDocument();
+  });
 });

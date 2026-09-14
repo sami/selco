@@ -83,6 +83,15 @@ describe('buildCuttingTerms', () => {
     );
   });
 
+  it('calls board counts an estimate in the last term', () => {
+    const terms = buildCuttingTerms(plan([{ wMm: 800, hMm: 600, qty: 2 }]));
+    expect(terms.at(-1)?.id).toBe('estimate');
+    expect(term(terms, 'estimate')?.title).toBe('Estimate');
+    expect(term(terms, 'estimate')?.text).toBe(
+      'Board counts and layouts are worked out from the sizes given and are an estimate. Board sizes can vary slightly between batches.',
+    );
+  });
+
   it('has a sign-off statement for the signature block', () => {
     expect(SIGN_OFF_STATEMENT).toBe("I've checked the sizes, the cutting plan and the boards, and I agree to the terms above.");
   });
@@ -114,13 +123,13 @@ describe('notesFor', () => {
     ]);
     expect(notesFor(p.cutList[0], p.rotationAllowed)).toEqual(['May be turned to fit']);
     expect(notesFor(p.cutList[1], p.rotationAllowed)).toEqual([]);
-    expect(notesFor(p.cutList[2], p.rotationAllowed)).toEqual(['May be turned to fit', 'Below saw minimum: cut oversize, trim at home']);
+    expect(notesFor(p.cutList[2], p.rotationAllowed)).toEqual(['May be turned to fit', 'Below saw minimum: cut at 500 × 300, trim at home']);
     expect(notesFor(p.cutList[3], p.rotationAllowed)).toEqual(['Too big for this board']);
   });
 
   it('notes that a small square piece may be turned, because it is cut oversize and no longer square', () => {
     const p = plan([{ wMm: 200, hMm: 200, qty: 1 }]);
-    expect(notesFor(p.cutList[0], p.rotationAllowed)).toEqual(['May be turned to fit', 'Below saw minimum: cut oversize, trim at home']);
+    expect(notesFor(p.cutList[0], p.rotationAllowed)).toEqual(['May be turned to fit', 'Below saw minimum: cut at 500 × 230, trim at home']);
   });
 
   it('does not mention turning when rotation is off', () => {
