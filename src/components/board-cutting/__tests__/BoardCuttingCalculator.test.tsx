@@ -103,7 +103,7 @@ describe('BoardCuttingCalculator', () => {
       .map((li) => li.textContent);
     const printed = within(printSheet()).getAllByRole('listitem').map((li) => li.textContent);
 
-    expect(onScreen).toHaveLength(9);
+    expect(onScreen).toHaveLength(8);
     expect(printed).toEqual(onScreen);
     expect(onScreen.some((t) => t?.includes('up to 3 mm over or under'))).toBe(true);
   });

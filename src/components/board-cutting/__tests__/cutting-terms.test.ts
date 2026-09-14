@@ -7,11 +7,16 @@ const plan = (pieces: PieceInput[], { sheetId = 'sheet' as SheetId, allowRotatio
 const term = (terms: ReturnType<typeof buildCuttingTerms>, id: TermId) => terms.find((t) => t.id === id);
 
 describe('buildCuttingTerms', () => {
-  it('lists the nine standard terms in order when nothing needs trimming', () => {
+  it('lists the eight standard terms in order when nothing needs trimming', () => {
     const terms = buildCuttingTerms(plan([{ wMm: 800, hMm: 600, qty: 2 }]));
     expect(terms.map((t) => t.id)).toEqual([
-      'sizes', 'tolerance', 'blade', 'board-choice', 'cut-edges', 'grain', 'once-cut', 'returns', 'estimate',
+      'sizes', 'tolerance', 'blade', 'cut-edges', 'grain', 'once-cut', 'returns', 'estimate',
     ]);
+  });
+
+  it('does not ask the customer to confirm boards they may not have seen, as some orders are taken by phone', () => {
+    const terms = buildCuttingTerms(plan([{ wMm: 800, hMm: 600, qty: 2 }]));
+    expect(terms.some((t) => /board choice|staff chose|you've seen them/i.test(`${t.title} ${t.text}`))).toBe(false);
   });
 
   it('always states the ±3 mm tolerance and the 3 mm blade', () => {
@@ -20,11 +25,8 @@ describe('buildCuttingTerms', () => {
     expect(term(terms, 'blade')?.text).toContain('removes about 3 mm with every cut');
   });
 
-  it('makes the customer confirm the boards staff chose, and that cut boards are non-returnable', () => {
+  it('says cut boards are non-returnable', () => {
     const terms = buildCuttingTerms(plan([{ wMm: 800, hMm: 600, qty: 2 }]));
-    expect(term(terms, 'board-choice')?.text).toBe(
-      "Our staff chose these boards. By signing, you confirm you've seen them and are happy they're free of damage or bowing before cutting starts.",
-    );
     expect(term(terms, 'returns')?.text).toBe(
       "Cut boards and offcuts can't be returned or refunded. This doesn't affect your rights if a board is faulty.",
     );
@@ -42,9 +44,9 @@ describe('buildCuttingTerms', () => {
     ).toBe('Pieces are cut in the direction shown on the plan.');
   });
 
-  it('adds the trim term, in seventh place, naming a single small piece', () => {
+  it('adds the trim term, in sixth place, naming a single small piece', () => {
     const terms = buildCuttingTerms(plan([{ wMm: 500, hMm: 500, qty: 1 }, { wMm: 400, hMm: 300, qty: 1 }]));
-    expect(terms.map((t) => t.id).indexOf('trim')).toBe(6);
+    expect(terms.map((t) => t.id).indexOf('trim')).toBe(5);
     expect(term(terms, 'trim')?.text).toBe(
       "Piece B is below the saw's 500 × 230 mm minimum. We'll cut it oversize and you'll need to trim it yourself.",
     );
@@ -63,7 +65,7 @@ describe('buildCuttingTerms', () => {
 
   it('explains trimming worktop pieces to width at home', () => {
     const terms = buildCuttingTerms(plan([{ wMm: 400, hMm: 1000, qty: 1 }, { wMm: 450, hMm: 1200, qty: 1 }], { sheetId: 'worktop' }));
-    expect(terms.map((t) => t.id).indexOf('trim')).toBe(6);
+    expect(terms.map((t) => t.id).indexOf('trim')).toBe(5);
     expect(term(terms, 'trim')?.text).toBe(
       "Pieces A and B are narrower than the 600 mm worktop. Worktops are cut to length only, so you'll need to trim them to width yourself.",
     );

@@ -8,8 +8,8 @@
 Rebuild the board cutting optimiser in `src/` so a trade sales assistant (TSA)
 can plan a customer's cuts, go through the terms with them on screen, then
 print a cutting sheet the customer signs before any board is cut. The wording
-protects the TSA on tolerance, board choice, cut edges, pieces the saw can't
-cut to size, and returns.
+protects the TSA on tolerance, cut edges, pieces the saw can't cut to size,
+and returns.
 
 Only the cutting optimiser gets print support in this pass. Other calculators
 are unchanged.
@@ -21,7 +21,6 @@ are unchanged.
 | Approach | Rebuild in `src/`, test-first, porting the engine from `200e7f4` (`src/calculators/v2/board-cutting.ts`) |
 | Tolerance | Fixed at ±3 mm, printed on every sheet |
 | Returns | Cut boards and offcuts are non-returnable, except where a board is faulty |
-| Board choice | The TSA picks the boards; the customer confirms they've seen them and accepts their condition |
 | Sheet details | Customer signature, plus date and time (printed timestamp and a handwritten signed date and time) |
 | Not included | Customer name, phone, order or receipt number, TSA name or signature |
 | Terms on screen | Yes, above the print button, from the same source as the printed terms |
@@ -37,6 +36,10 @@ the employer's own terms of sale before customers sign it.
 names its order ("Width × height (mm)" for sheets, "Depth × length (mm)" for
 worktops), the below-minimum note gives the in-store cut size, and term 10 says
 "Board counts" rather than "Sheet counts". Sections 1 and 2 below include them.
+
+**Removed after release:** the "Board choice" term, which asked the customer to
+confirm they had seen the boards staff chose. Some orders are taken over the
+phone, so the customer may never see the boards before they're cut.
 
 ## 1. Engine: `src/calculators/board-cutting.ts`
 
@@ -101,17 +104,16 @@ column names and the below-minimum note were approved after the final review.
 1. **Sizes.** We cut to the sizes in the cut list above. Check every line before you sign, because we can't change a size once it's been cut.
 2. **Tolerance.** Each cut piece can be up to 3 mm over or under the size listed. Allow for this in your fitting, for example with a small gap or by scribing to fit.
 3. **Blade width.** The saw removes about 3 mm with every cut. The plan already allows for it, so leftover pieces will be slightly smaller than they look on paper.
-4. **Board choice.** Our staff chose these boards. By signing, you confirm you've seen them and are happy they're free of damage or bowing before cutting starts.
-5. **Cut edges.** Coated boards such as melamine or laminate can chip along a cut. Cut edges aren't finished and may need edging tape or a light sand.
-6. **Grain and pattern.**
+4. **Cut edges.** Coated boards such as melamine or laminate can chip along a cut. Cut edges aren't finished and may need edging tape or a light sand.
+5. **Grain and pattern.**
    - Rotation on: "Pieces may be turned on the sheet to save board. If grain or pattern direction matters, tell us before signing."
    - Rotation off: "Pieces are cut in the direction shown on the plan."
-7. **Pieces we can't cut to size.** Only when needed.
+6. **Pieces we can't cut to size.** Only when needed.
    - Below minimum: "Pieces C are below the saw's 500 × 230 mm minimum. We'll cut them oversize and you'll need to trim them yourself." (letters listed)
    - Worktops narrower than 600 mm: equivalent line saying they're cut to length only and need trimming to width at home.
-8. **Once cut.** Boards can move slightly with changes in temperature and humidity, so store cut pieces flat and dry.
-9. **Returns.** Cut boards and offcuts can't be returned or refunded. This doesn't affect your rights if a board is faulty.
-10. **Estimate.** Board counts and layouts are worked out from the sizes given and are an estimate. Board sizes can vary slightly between batches. (Wording approved after the final review.)
+7. **Once cut.** Boards can move slightly with changes in temperature and humidity, so store cut pieces flat and dry.
+8. **Returns.** Cut boards and offcuts can't be returned or refunded. This doesn't affect your rights if a board is faulty.
+9. **Estimate.** Board counts and layouts are worked out from the sizes given and are an estimate. Board sizes can vary slightly between batches. (Wording approved after the final review.)
 
 **Signature block:** "I've checked the sizes, the cutting plan and the boards,
 and I agree to the terms above." Lines for customer signature, and date and
@@ -173,8 +175,9 @@ Test-first, with RED and GREEN commits as for Masonry and Flooring.
   width and narrower ones are flagged; rotation off never rotates; below
   minimum and unplaceable parts flagged; one letter assigned per row;
   invalid input throws.
-- **Terms:** ten terms in order; rotation wording follows the setting; term 7
-  appears only when needed and names the right letters; ±3 mm always present.
+- **Terms:** up to nine terms in order; rotation wording follows the setting;
+  term 6 appears only when needed and names the right letters; ±3 mm always
+  present; no term asks the customer to confirm boards they may not have seen.
 - **Components:** add and remove rows; an oversized part flags its row and
   disables printing; rotation checkbox hidden for worktops; print button calls
   `window.print`; timestamp set on `beforeprint`; screen terms match printed

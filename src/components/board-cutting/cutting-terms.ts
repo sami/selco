@@ -6,7 +6,7 @@
  */
 import { PANEL_SAW, TOLERANCE_MM, type CutListEntry, type CuttingPlan } from '../../calculators/board-cutting';
 
-export type TermId = 'sizes' | 'tolerance' | 'blade' | 'board-choice' | 'cut-edges' | 'grain' | 'trim' | 'once-cut' | 'returns' | 'estimate';
+export type TermId = 'sizes' | 'tolerance' | 'blade' | 'cut-edges' | 'grain' | 'trim' | 'once-cut' | 'returns' | 'estimate';
 
 export interface Term {
   id: TermId;
@@ -51,7 +51,6 @@ export function buildCuttingTerms(plan: CuttingPlan): Term[] {
     { id: 'sizes', title: 'Sizes', text: "We cut to the sizes in the cut list above. Check every line before you sign, because we can't change a size once it's been cut." },
     { id: 'tolerance', title: 'Tolerance', text: `Each cut piece can be up to ${TOLERANCE_MM} mm over or under the size listed. Allow for this in your fitting, for example with a small gap or by scribing to fit.` },
     { id: 'blade', title: 'Blade width', text: `The saw removes about ${PANEL_SAW.kerfMm} mm with every cut. The plan already allows for it, so leftover pieces will be slightly smaller than they look on paper.` },
-    { id: 'board-choice', title: 'Board choice', text: "Our staff chose these boards. By signing, you confirm you've seen them and are happy they're free of damage or bowing before cutting starts." },
     { id: 'cut-edges', title: 'Cut edges', text: "Coated boards such as melamine or laminate can chip along a cut. Cut edges aren't finished and may need edging tape or a light sand." },
     {
       id: 'grain',
