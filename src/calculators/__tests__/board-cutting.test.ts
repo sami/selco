@@ -143,6 +143,11 @@ describe('planCutting — standard sheets', () => {
     expect(plan.cutList[0]).toMatchObject({ wMm: 100, hMm: 100, belowMin: true });
   });
 
+  it('cuts small pieces oversize in the direction entered when rotation is off', () => {
+    expect(placed(sheetPlan([{ wMm: 100, hMm: 400, qty: 1 }]))[0]).toMatchObject({ wMm: 230, hMm: 500, rotated: false });
+    expect(placed(sheetPlan([{ wMm: 400, hMm: 100, qty: 1 }]))[0]).toMatchObject({ wMm: 500, hMm: 230, rotated: false });
+  });
+
   it('only fits a full-length sheet across the width when it may be turned', () => {
     expect(sheetPlan([{ wMm: 2440, hMm: 1220, qty: 1 }], false).unplaceableRefs).toEqual(['A']);
     const turned = sheetPlan([{ wMm: 2440, hMm: 1220, qty: 1 }], true);
