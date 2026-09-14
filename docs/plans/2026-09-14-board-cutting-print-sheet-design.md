@@ -61,6 +61,13 @@ Changes from the old engine:
   at home", and are named by letter on the sheet.
 - The below-minimum rule is the same for both profiles (the old worktop path
   only compared length with the 230 mm figure).
+- Parts below the saw minimum are packed at their in-store cut size (long side
+  at least 500 mm, short side at least 230 mm; worktop lengths at least
+  230 mm), so the drawing and the number of boards match what the saw cuts.
+  The cut list still shows the finished size the customer asked for.
+- For worktops, width is the depth across the worktop (up to 600 mm) and
+  height is the length along it (up to 3000 mm). The two are never swapped.
+- Sizes must be whole millimetres.
 - New constant `TOLERANCE_MM = 3`.
 
 ## 2. Printed sheet wording
