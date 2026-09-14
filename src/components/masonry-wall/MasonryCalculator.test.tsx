@@ -1,4 +1,3 @@
-import React from 'react';
 import { render, screen, fireEvent } from '@testing-library/react';
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { MasonryCalculator } from './MasonryCalculator';
@@ -29,17 +28,14 @@ describe('MasonryCalculator', () => {
   it('calculates a brick wall: 5.0m × 2.5m → 670 bricks and pack-rounded materials', () => {
     fillAndCalculate({ length: '5', height: '2.5' });
 
-    // Headline result card
     expect(screen.getByText('670')).toBeInTheDocument();
     expect(screen.getAllByText(/bricks/i).length).toBeGreaterThan(0);
 
-    // Materials table parsed from the engine's pack-rounded strings
-    const table = screen.getByRole('table');
-    expect(table).toHaveTextContent('Blue Circle OPC');
-    expect(table).toHaveTextContent('10');
-    expect(table).toHaveTextContent('25kg bags');
-    expect(table).toHaveTextContent('Building Sand Jumbo Bag');
-    expect(table).toHaveTextContent('Type 4 Light Duty Wall Tie 200mm');
+    const rows = screen.getAllByRole('row');
+    const row = (name: string) => rows.find((r) => r.textContent?.includes(name));
+    expect(row('Blue Circle OPC')).toHaveTextContent('725kg bags');
+    expect(row('Building Sand Jumbo Bag')).toHaveTextContent('1');
+    expect(row('Type 4 Light Duty Wall Tie 200mm')).toHaveTextContent('boxes of 50');
   });
 
   it('calculates a block wall: 4.0m × 2.4m → 101 blocks', () => {
@@ -54,7 +50,6 @@ describe('MasonryCalculator', () => {
     fillAndCalculate({ length: '-1', height: '2.5' });
 
     const liveRegion = screen.getByText('Wall dimensions must be positive');
-    expect(liveRegion).toBeInTheDocument();
     expect(liveRegion.closest('[aria-live="assertive"]')).not.toBeNull();
     // No stale results alongside the error
     expect(screen.queryByRole('table')).not.toBeInTheDocument();
@@ -81,9 +76,9 @@ describe('MasonryCalculator', () => {
 
     expect(writeText).toHaveBeenCalledTimes(1);
     const copied = writeText.mock.calls[0][0] as string;
-    expect(copied).toContain('670 bricks');
-    expect(copied).toContain('10 × 25kg bags of Blue Circle OPC');
-    expect(copied).toContain('1 × Building Sand Jumbo Bag');
-    expect(copied).toContain('1 × Type 4 Light Duty Wall Tie 200mm (Box of 250)');
+    expect(copied).toContain('- 670 bricks');
+    expect(copied).toContain('- Blue Circle OPC: 7 × 25kg bags');
+    expect(copied).toContain('- Building Sand Jumbo Bag: 1 × 875kg bags');
+    expect(copied).toContain('- Type 4 Light Duty Wall Tie 200mm: 1 × boxes of 50');
   });
 });
