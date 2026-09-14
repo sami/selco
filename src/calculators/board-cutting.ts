@@ -143,11 +143,13 @@ function describePiece(p: PieceInput, cut: Size, ref: string, sheet: SheetFormat
     const fits = p.wMm <= sheet.wMm && p.hMm <= sheet.hMm;
     return {
       ref, wMm: p.wMm, hMm: p.hMm, qty: p.qty, fits,
-      // In store the piece comes off at full width, so test that shape.
+      // Decided from the full-width shape the piece comes off the saw at; the
+      // oversize length itself is applied in inStoreSize.
       belowMin: fits && isBelowSawMinimum(sheet.wMm, p.hMm),
       trimToWidth: fits && p.wMm < sheet.wMm,
     };
   }
+  // Checked on the cut size on purpose, so a board smaller than the saw minimum stays correct (same answer on current boards).
   const fits =
     (cut.w <= sheet.wMm && cut.h <= sheet.hMm) ||
     (allowRotation && cut.h <= sheet.wMm && cut.w <= sheet.hMm);
