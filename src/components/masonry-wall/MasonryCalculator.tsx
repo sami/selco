@@ -112,7 +112,7 @@ export function MasonryCalculator() {
       {result && attempted && (
         <section aria-label="Results" className="space-y-4">
           <ResultCard
-            title="You will need"
+            title="Estimated quantity"
             quantity={result.unitCount}
             unit={result.unitKind}
             detail={`${attempted.length}m × ${attempted.height}m ${attempted.wallType} wall, including ${attempted.wastage}% wastage`}

@@ -10,14 +10,14 @@ export const projectRegistry: ProjectCalculator[] = [
   {
     id: 'masonry-wall',
     title: 'Masonry Wall',
-    blurb: 'Calculate bricks, blocks, mortar, and wall ties for your wall build.',
+    blurb: "Estimate bricks or blocks, cement, sand and wall ties for a customer's wall.",
     route: '/projects/masonry-wall',
     category: 'Project Calculators',
   },
   {
     id: 'hard-flooring',
     title: 'Hard Flooring',
-    blurb: 'Estimate laminate, LVT, or engineered wood and underlay requirements.',
+    blurb: "Estimate flooring, underlay and edge trims for a customer's room.",
     route: '/projects/hard-flooring',
     category: 'Project Calculators',
   },

@@ -140,7 +140,7 @@ export function FlooringCalculator() {
       {result && attempted && (
         <section aria-label="Results" className="space-y-4">
           <ResultCard
-            title="Flooring to buy"
+            title="Estimated flooring to buy"
             quantity={result.coverM2.toFixed(2)}
             unit="m²"
             detail={`${attempted.widthM}m × ${attempted.lengthM}m room, including 8% cutting waste. Buy whole packs to cover this.`}
