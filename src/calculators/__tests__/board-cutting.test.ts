@@ -56,7 +56,7 @@ describe('constants', () => {
   });
 });
 
-describe('planCutting — standard sheets', () => {
+describe('planCutting: standard sheets', () => {
   const job: PieceInput[] = [
     { wMm: 800, hMm: 600, qty: 4 },
     { wMm: 1200, hMm: 400, qty: 2 },
@@ -186,7 +186,7 @@ describe('planCutting — standard sheets', () => {
   });
 });
 
-describe('planCutting — worktops', () => {
+describe('planCutting: worktops', () => {
   it('cuts to length only, every piece taking the full 600 mm width', () => {
     // 1500 + 3 + 1497 = 3000, exactly one worktop
     const plan = worktopPlan([

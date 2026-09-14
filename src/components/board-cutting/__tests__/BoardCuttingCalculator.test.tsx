@@ -6,6 +6,9 @@ import { SIGN_OFF_STATEMENT } from '../cutting-terms';
 
 const printButton = () => screen.getByRole('button', { name: 'Print cutting sheet' });
 const printSheet = () => screen.getByRole('region', { name: 'Printable cutting sheet' });
+/** The stamp for 14 September 2026 at the given time, formatted the same way as the component. */
+const stampAt = (hour: number, minute: number) =>
+  new Date(2026, 8, 14, hour, minute).toLocaleString('en-GB', { dateStyle: 'short', timeStyle: 'short' });
 /** The print-only paragraph shown instead of the sheet: the copy of the reason that isn't the button's description. */
 const printFallback = (reason: string) =>
   screen.getAllByText(reason).find((el) => el.id !== printButton().getAttribute('aria-describedby'));
@@ -84,13 +87,13 @@ describe('BoardCuttingCalculator', () => {
     vi.useFakeTimers({ toFake: ['Date'] });
     vi.setSystemTime(new Date(2026, 8, 14, 21, 50));
     render(<BoardCuttingCalculator initialRows={[{ w: '800', h: '600', qty: '2' }]} />);
-    expect(within(printSheet()).getByText('14/09/2026, 21:50')).toBeInTheDocument();
+    expect(within(printSheet()).getByText(stampAt(21, 50))).toBeInTheDocument();
 
     vi.setSystemTime(new Date(2026, 8, 14, 21, 55));
     act(() => {
       window.dispatchEvent(new Event('beforeprint'));
     });
-    expect(within(printSheet()).getByText('14/09/2026, 21:55')).toBeInTheDocument();
+    expect(within(printSheet()).getByText(stampAt(21, 55))).toBeInTheDocument();
   });
 
   it('shows the same terms on screen as on the printed sheet', () => {
@@ -146,7 +149,7 @@ describe('BoardCuttingCalculator', () => {
     vi.setSystemTime(new Date(2026, 8, 14, 21, 55));
     let stampedWhenPrinted = false;
     vi.spyOn(window, 'print').mockImplementation(() => {
-      stampedWhenPrinted = within(printSheet()).queryByText('14/09/2026, 21:55') !== null;
+      stampedWhenPrinted = within(printSheet()).queryByText(stampAt(21, 55)) !== null;
     });
     fireEvent.click(printButton());
 
@@ -165,7 +168,7 @@ describe('BoardCuttingCalculator', () => {
     try {
       env.IS_REACT_ACT_ENVIRONMENT = false;
       window.dispatchEvent(new Event('beforeprint'));
-      stamped = within(printSheet()).queryByText('14/09/2026, 21:55') !== null;
+      stamped = within(printSheet()).queryByText(stampAt(21, 55)) !== null;
     } finally {
       env.IS_REACT_ACT_ENVIRONMENT = previous;
     }
@@ -359,5 +362,21 @@ describe('BoardCuttingCalculator', () => {
 
     expect(screen.getByLabelText('Width of piece A')).toHaveAccessibleDescription('Too big for this board');
     expect(printButton()).toHaveAccessibleDescription('Fix the highlighted pieces before printing.');
+  });
+
+  it('rejects exponent notation in a size rather than planning the expanded number', () => {
+    render(<BoardCuttingCalculator initialRows={[{ w: '1e3', h: '600', qty: '1' }]} />);
+
+    expect(screen.getByText('Enter a width and height in whole mm above 0')).toBeInTheDocument();
+    expect(screen.getByLabelText('Width of piece A')).toHaveAttribute('aria-invalid', 'true');
+    expect(printButton()).toBeDisabled();
+  });
+
+  it('rejects exponent notation in a quantity', () => {
+    render(<BoardCuttingCalculator initialRows={[{ w: '800', h: '600', qty: '2e1' }]} />);
+
+    expect(screen.getByText('Quantity must be a whole number from 1 to 50')).toBeInTheDocument();
+    expect(screen.getByLabelText('Quantity of piece A')).toHaveAttribute('aria-invalid', 'true');
+    expect(printButton()).toBeDisabled();
   });
 });
