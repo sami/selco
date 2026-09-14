@@ -71,6 +71,14 @@ export interface CutListEntry {
   /** Finished size the customer asked for. */
   wMm: number;
   hMm: number;
+  /**
+   * Size cut in store, in the direction entered. Larger than the finished size for pieces below the saw
+   * minimum; for worktops the width is always the full worktop width. Equal to the finished size for pieces
+   * that don't fit the board.
+   */
+  cutWMm: number;
+  /** Length of the in-store cut, paired with `cutWMm`. */
+  cutHMm: number;
   qty: number;
   /** Fits the board in an allowed orientation. */
   fits: boolean;
@@ -143,6 +151,8 @@ function describePiece(p: PieceInput, cut: Size, ref: string, sheet: SheetFormat
     const fits = p.wMm <= sheet.wMm && p.hMm <= sheet.hMm;
     return {
       ref, wMm: p.wMm, hMm: p.hMm, qty: p.qty, fits,
+      cutWMm: fits ? cut.w : p.wMm,
+      cutHMm: fits ? cut.h : p.hMm,
       // Decided from the full-width shape the piece comes off the saw at; the
       // oversize length itself is applied in inStoreSize.
       belowMin: fits && isBelowSawMinimum(sheet.wMm, p.hMm),
@@ -155,6 +165,8 @@ function describePiece(p: PieceInput, cut: Size, ref: string, sheet: SheetFormat
     (allowRotation && cut.h <= sheet.wMm && cut.w <= sheet.hMm);
   return {
     ref, wMm: p.wMm, hMm: p.hMm, qty: p.qty, fits,
+    cutWMm: fits ? cut.w : p.wMm,
+    cutHMm: fits ? cut.h : p.hMm,
     belowMin: fits && isBelowSawMinimum(p.wMm, p.hMm),
     trimToWidth: false,
   };

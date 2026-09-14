@@ -10,7 +10,7 @@ export const CutListTable = memo(function CutListTable({ plan }: { plan: Cutting
       <caption className="sr-only">Cut list</caption>
       <thead>
         <tr>
-          {['Ref', 'Size (mm)', 'Qty', 'Notes'].map((h) => (
+          {['Ref', plan.sheet.crossCutOnly ? 'Depth × length (mm)' : 'Width × height (mm)', 'Qty', 'Notes'].map((h) => (
             <th key={h} scope="col" className={`${cell} font-bold`}>
               {h}
             </th>
