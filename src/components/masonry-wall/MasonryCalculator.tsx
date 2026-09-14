@@ -2,26 +2,10 @@ import React, { useState } from 'react';
 import { calculateMasonry, type MasonryResult } from '../../calculators/masonry';
 import { FormField } from '../ui/FormField';
 import { NumberInput } from '../ui/NumberInput';
-import { MaterialsList, type MaterialItem } from '../ui/MaterialsList';
+import { MaterialsList } from '../ui/MaterialsList';
 import { ResultCard } from '../ui/ResultCard';
 
 type WallType = 'brick' | 'block';
-
-/**
- * Parse one of the engine's pack-rounded strings into MaterialsList columns.
- * Known shapes (see calculators/masonry.ts):
- *   "10 × 25kg bags of Blue Circle OPC"                        → qty / unit / name
- *   "1 × Type 4 Light Duty Wall Tie 200mm (Box of 250)"        → qty / name / boxes-of unit
- *   "1 × Building Sand Jumbo Bag"                              → qty / name (bag counted in name)
- */
-function parsePacked(packed: string): Omit<MaterialItem, 'id'> {
-  const [quantity, rest] = packed.split(' × ');
-  const box = rest.match(/^(.*) \(Box of (\d+)\)$/);
-  if (box) return { quantity, name: box[1], unit: `boxes of ${box[2]}` };
-  const parts = rest.split(' of ');
-  if (parts.length === 2) return { quantity, name: parts[1], unit: parts[0] };
-  return { quantity, name: rest, unit: 'bags' };
-}
 
 export function MasonryCalculator() {
   const [length, setLength] = useState('');
@@ -33,7 +17,7 @@ export function MasonryCalculator() {
   const [error, setError] = useState<string | null>(null);
   const [copied, setCopied] = useState(false);
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = (e: React.SyntheticEvent<HTMLFormElement>) => {
     e.preventDefault();
     // Invalid/empty input parses to 0 so the engine's own guard produces
     // the single canonical error message.
@@ -58,26 +42,13 @@ export function MasonryCalculator() {
   const fieldError = (value: number | undefined) =>
     attempted && value !== undefined && value <= 0 ? 'Enter a positive number' : undefined;
 
-  const unitCount = result ? (result.bricks ?? result.blocks ?? 0) : 0;
-  const unitLabel = result?.blocks !== undefined ? 'blocks' : 'bricks';
-
-  const materials: MaterialItem[] = result
-    ? [
-        { id: 'mortar', ...parsePacked(result.mortar) },
-        { id: 'sand', ...parsePacked(result.sand) },
-        { id: 'ties', ...parsePacked(result.ties) },
-      ]
-    : [];
-
   const copyList = () => {
     if (!result || !attempted) return;
     const lines = [
       `Masonry wall — ${attempted.length}m × ${attempted.height}m (${attempted.wallType}, ${attempted.wastage}% wastage)`,
       '',
-      `- ${unitCount} ${unitLabel}`,
-      `- ${result.mortar}`,
-      `- ${result.sand}`,
-      `- ${result.ties}`,
+      `- ${result.unitCount} ${result.unitKind}`,
+      ...result.lines.map((l) => `- ${l.name}: ${l.quantity} × ${l.unit}`),
     ];
     navigator.clipboard.writeText(lines.join('\n')).then(() => setCopied(true));
   };
@@ -142,11 +113,11 @@ export function MasonryCalculator() {
         <section aria-label="Results" className="space-y-4">
           <ResultCard
             title="You will need"
-            quantity={unitCount}
-            unit={unitLabel}
+            quantity={result.unitCount}
+            unit={result.unitKind}
             detail={`${attempted.length}m × ${attempted.height}m ${attempted.wallType} wall, including ${attempted.wastage}% wastage`}
           />
-          <MaterialsList items={materials} />
+          <MaterialsList items={result.lines} />
           <button type="button" onClick={copyList} className="btn-ghost">
             {copied ? 'Copied ✓' : 'Copy list'}
           </button>
