@@ -51,10 +51,15 @@ const BLANK_ROW: PieceRow = { w: '', h: '', qty: '1' };
 
 const formatNow = () => new Date().toLocaleString('en-GB', { dateStyle: 'short', timeStyle: 'short' });
 
-const hasEntry = (r: Row, f: Field) => r[f].trim() !== '' || r.bad[f] === true;
+/**
+ * Unreadable text, or anything other than plain digits. A number input accepts "1e3" or "405.5", which would
+ * otherwise show as typed but plan and print as a different number.
+ */
+const isBad = (r: Row, f: Field) => r.bad[f] === true || (r[f].trim() !== '' && !/^\d+$/.test(r[f]));
+const hasEntry = (r: Row, f: Field) => r[f].trim() !== '' || isBad(r, f);
 /** A row with no width and no height yet hasn't been started, so it's ignored rather than flagged. */
 const isBlank = (r: Row) => !hasEntry(r, 'w') && !hasEntry(r, 'h');
-const toNumber = (r: Row, f: Field) => (r.bad[f] ? NaN : Number(r[f]));
+const toNumber = (r: Row, f: Field) => (isBad(r, f) ? NaN : Number(r[f]));
 const toPiece = (r: Row): PieceInput => ({ wMm: toNumber(r, 'w'), hMm: toNumber(r, 'h'), qty: toNumber(r, 'qty') });
 const isWholeMm = (n: number) => Number.isInteger(n) && n > 0;
 const isValidQty = (n: number) => Number.isInteger(n) && n >= 1 && n <= MAX_QTY;
