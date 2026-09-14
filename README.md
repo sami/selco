@@ -1,63 +1,66 @@
 # Trade Materials Calculator
 
 A web app that estimates trade materials for common building projects —
-tiling, flooring, masonry, decking, and more — using product data sourced
+masonry, flooring, tiling, decking and more — using product data sourced
 from SELCO Builders Warehouse and manufacturer technical data sheets.
 
 **Live:** [https://sami.github.io/selco/](https://sami.github.io/selco/)
 
 ## What it does
 
-The app combines two complementary tools:
+The site root is a catalogue of 35 project calculators, sorted by trade.
+Behind it sit two kinds of page:
 
-- **Project calculators** — multi-step wizards that walk through a complete
-  project (room or wall measurements, substrate choices, product
-  selection) and return a single bill of materials covering every required
-  item.
-- **Handy calculators** — single-purpose utilities for unit conversion and
-  board-coverage estimation.
+- **Rebuilt calculators** — written by hand and test-first since the
+  1 July reset, in `src/`. Each takes the job's measurements and returns a
+  materials list rounded up to whole packs of stocked products. Live now:
+  - **Masonry Wall** (`/projects/masonry-wall/`) — bricks or blocks with
+    wastage, then cement, sand and wall ties.
+  - **Hard Flooring** (`/projects/hard-flooring/`) — area to buy, underlay
+    or adhesive, scotia beading and threshold bars.
+- **Concept exhibit** — the remaining calculators from the earlier concept
+  demonstrator, frozen as prebuilt static pages in `public/`. They are
+  replaced card by card as each calculator is rebuilt in `src/`.
 
-Six calculators are live and two more are planned. The full catalogue is
-maintained in [`src/projects/registry.ts`](src/projects/registry.ts) — the
-homepage grid, sidebar navigation, and breadcrumbs all derive from it, so
-the registry stays the single source of truth for what is shipped.
+The rebuilt calculators are listed in
+[`src/projects/registry.ts`](src/projects/registry.ts); their pages take
+their titles and blurbs from it.
 
 ## Tech stack
 
 - **[Astro 5](https://astro.build)** — static-site generation; pages are
   rendered ahead of time and served from GitHub Pages.
-- **[React 19](https://react.dev)** — interactive islands hydrated as
-  needed (`client:load`, `client:visible`).
+- **[React 19](https://react.dev)** — interactive calculator islands.
 - **[Tailwind CSS 4](https://tailwindcss.com)** — `@theme`-driven token
-  system with a CI lint guard against undefined custom properties.
+  system with a lint guard against undefined custom properties.
 - **[Vitest 4](https://vitest.dev)** + React Testing Library + jsdom —
-  unit and component tests, currently 51 files / 500 cases on `src/`.
+  unit and component tests, currently 11 files / 80 cases.
 - **TypeScript 5** in strict mode across all source.
 
 ## Project layout
 
-The codebase is a single npm package with a deliberate three-layer split.
-[`ARCHITECTURE.md`](ARCHITECTURE.md) covers the rationale and conventions
-in detail.
+[`ARCHITECTURE.md`](ARCHITECTURE.md) covers the layering rationale.
 
 ```
 src/
-  calculators/   Layer 1 — pure-TS calculation engines (no React)
-  projects/      Layer 2 — wizard step descriptors composing Layer 1
-  components/    Layer 3 — React islands and shared `ui/` primitives
-  layouts/       Layer 3 — Astro layouts and SELCO chrome
-  pages/         Layer 3 — Astro routes
-  data/          product catalogues consumed by Layer 1
-  styles/        Tailwind entry and `@theme` tokens
+  calculators/   pure-TS engines (no React); packs.ts holds shared pack maths
+  data/          product catalogues consumed by the engines
+  projects/      registry of rebuilt calculators
+  components/    React calculator islands and shared ui/ primitives
+  layouts/       Astro layout and SELCO chrome
+  pages/         Astro routes (.astro files only)
+  styles/        Tailwind entry and @theme tokens
+public/          frozen concept exhibit, catalogue (index.html) and vendored assets
 docs/
   audit/         TMA 02 audit and redesign decisions
   plans/         dated implementation plans
-  evidence/      decision-trace evidence (design tokens, masonry engine)
   tds/           manufacturer technical data sheets
 PROJECT_HISTORY.md   factual narrative of the codebase by era
 ```
 
 ## Running locally
+
+Node 22 is required; Vitest does not run on Node 18.
 
 ```sh
 npm install
@@ -72,9 +75,9 @@ The dev server starts at `http://localhost:4321/selco/`.
 npm test                # watch mode
 npm test -- --run       # single pass
 npm run test:coverage   # single pass with v8 coverage report in coverage/
+npm run lint:tokens     # check for undefined CSS custom properties
+npx astro check         # type check
 ```
-
-Coverage output is written to `coverage/` and is git-ignored.
 
 ## Build and preview
 
@@ -83,11 +86,15 @@ npm run build           # static output to dist/
 npm run preview         # serve dist/ locally for verification
 ```
 
+`package.json` pins Vite to 6 via `overrides`, matching the version Astro 5
+ships with, so the Tailwind and Vitest plugins type-check against the same
+Vite as Astro.
+
 ## Deploy
 
 The app deploys to GitHub Pages on push to `main` via the workflow in
 `.github/workflows/`. The base path is `/selco`, configured in
-[`astro.config.mjs`](astro.config.mjs). All internal links must use
+[`astro.config.mjs`](astro.config.mjs). Internal links in `src/` must use
 `import.meta.env.BASE_URL` so they resolve correctly under the subpath.
 
 ## Background
