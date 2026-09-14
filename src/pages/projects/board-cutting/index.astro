@@ -1,0 +1,50 @@
+---
+import BaseLayout from '../../../layouts/BaseLayout.astro';
+import { projectRegistry } from '../../../projects/registry';
+import { BoardCuttingCalculator } from '../../../components/board-cutting/BoardCuttingCalculator';
+
+const project = projectRegistry.find(p => p.id === 'board-cutting');
+const baseUrl = import.meta.env.BASE_URL;
+---
+
+<BaseLayout title={project?.title || 'Board Cutting Optimiser'} description={project?.blurb}>
+  <Fragment slot="breadcrumb">
+    <a href={baseUrl}>Home</a><span>/</span><span class="current">{project?.title}</span>
+  </Fragment>
+
+  <div class="max-w-5xl">
+    <div class="page-intro">
+      <h1 class="text-3xl md:text-4xl font-bold text-brand-navy mb-4">{project?.title}</h1>
+      <p class="text-lg text-text-muted mb-8">{project?.blurb}</p>
+    </div>
+
+    <BoardCuttingCalculator client:load />
+
+    <p class="page-intro text-sm text-text-muted mt-8">
+      This is an estimate to plan the job with the customer, not a guarantee of how the boards
+      will cut. Go through the terms with them and get the sheet signed before any board is cut.
+    </p>
+  </div>
+</BaseLayout>
+
+<style is:global>
+  @page {
+    size: A4;
+    margin: 12mm;
+  }
+  @media print {
+    .tmc-header,
+    .tmc-footer,
+    .breadcrumbs,
+    .page-intro {
+      display: none !important;
+    }
+    body {
+      background: #fff !important;
+    }
+    main {
+      padding: 0 !important;
+      max-width: none !important;
+    }
+  }
+</style>

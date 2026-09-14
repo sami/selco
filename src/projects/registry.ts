@@ -21,4 +21,11 @@ export const projectRegistry: ProjectCalculator[] = [
     route: '/projects/hard-flooring',
     category: 'Project Calculators',
   },
+  {
+    id: 'board-cutting',
+    title: 'Board Cutting Optimiser',
+    blurb: "Plan a customer's cuts onto boards and print a cutting sheet to sign.",
+    route: '/projects/board-cutting',
+    category: 'Handy Calculators',
+  },
 ];
