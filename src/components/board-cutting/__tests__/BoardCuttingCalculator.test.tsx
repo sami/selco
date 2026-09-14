@@ -1,4 +1,5 @@
 import { act, fireEvent, render, screen, within } from '@testing-library/react';
+import { renderToString } from 'react-dom/server';
 import { afterEach, describe, expect, it, vi } from 'vitest';
 import { BoardCuttingCalculator } from '../BoardCuttingCalculator';
 import { SIGN_OFF_STATEMENT } from '../cutting-terms';
@@ -299,5 +300,64 @@ describe('BoardCuttingCalculator', () => {
 
     expect(printFallback('Fix the highlighted pieces before printing.')).toBeInTheDocument();
     expect(screen.queryByRole('region', { name: 'Printable cutting sheet' })).not.toBeInTheDocument();
+  });
+
+  it('keeps a row untouched while moving between its own inputs', () => {
+    render(<BoardCuttingCalculator initialRows={[{ w: '800', h: '', qty: '1' }]} />);
+    const width = screen.getByLabelText('Width of piece A');
+    const height = screen.getByLabelText('Height of piece A');
+
+    fireEvent.blur(width, { relatedTarget: height });
+    expect(screen.queryByText('Enter a width and height in whole mm above 0')).not.toBeInTheDocument();
+    expect(printButton()).toHaveAccessibleDescription('Finish entering the pieces before printing.');
+
+    fireEvent.blur(height, { relatedTarget: document.body });
+    expect(screen.getByText('Enter a width and height in whole mm above 0')).toBeInTheDocument();
+    expect(printButton()).toHaveAccessibleDescription('Fix the highlighted pieces before printing.');
+  });
+
+  it('renders the same HTML, row ids included, on every server render', () => {
+    expect(renderToString(<BoardCuttingCalculator />)).toBe(renderToString(<BoardCuttingCalculator />));
+  });
+
+  it('records unreadable text typed into an empty size', () => {
+    render(<BoardCuttingCalculator />);
+    const width = screen.getByLabelText('Width of new piece');
+    Object.defineProperty(width, 'validity', { value: { badInput: true }, configurable: true });
+    fireEvent.input(width, { target: { value: '' } });
+
+    fireEvent.blur(screen.getByLabelText('Width of piece A'), { relatedTarget: document.body });
+    expect(screen.getByText('Enter a width and height in whole mm above 0')).toBeInTheDocument();
+    expect(printButton()).toBeDisabled();
+  });
+
+  it('forgets unreadable text once the size is cleared', () => {
+    render(<BoardCuttingCalculator />);
+    const width = screen.getByLabelText('Width of new piece');
+    Object.defineProperty(width, 'validity', { value: { badInput: true }, configurable: true });
+    fireEvent.input(width, { target: { value: '' } });
+    expect(screen.getByLabelText('Width of piece A')).toBe(width);
+
+    Object.defineProperty(width, 'validity', { value: { badInput: false }, configurable: true });
+    fireEvent.input(width, { target: { value: '' } });
+    expect(screen.getByLabelText('Width of new piece')).toBe(width);
+    expect(printButton()).toHaveAccessibleDescription('Add at least one piece before printing.');
+  });
+
+  it('ignores a row with no sizes even when its quantity is unreadable', () => {
+    render(<BoardCuttingCalculator />);
+    const qty = screen.getByLabelText('Quantity of new piece');
+    Object.defineProperty(qty, 'validity', { value: { badInput: true }, configurable: true });
+    fireEvent.change(qty, { target: { value: '' } });
+
+    expect(screen.getByLabelText('Width of new piece')).toBeInTheDocument();
+    expect(printButton()).toHaveAccessibleDescription('Add at least one piece before printing.');
+  });
+
+  it('keeps flagging a piece too big for the board while another piece is being typed', () => {
+    render(<BoardCuttingCalculator initialRows={[{ w: '1300', h: '2500', qty: '1' }, { w: '800', h: '', qty: '1' }]} />);
+
+    expect(screen.getByLabelText('Width of piece A')).toHaveAccessibleDescription('Too big for this board');
+    expect(printButton()).toHaveAccessibleDescription('Fix the highlighted pieces before printing.');
   });
 });
