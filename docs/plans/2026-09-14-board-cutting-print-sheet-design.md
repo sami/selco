@@ -33,6 +33,11 @@ to tie to a sale later. This was a deliberate choice and can be revisited.
 The wording is plain English, not legal advice. It should be checked against
 the employer's own terms of sale before customers sign it.
 
+**Changes the user approved after the final review:** the cut list size column
+names its order ("Width × height (mm)" for sheets, "Depth × length (mm)" for
+worktops), the below-minimum note gives the in-store cut size, and term 10 says
+"Board counts" rather than "Sheet counts". Sections 1 and 2 below include them.
+
 ## 1. Engine: `src/calculators/board-cutting.ts`
 
 Ported from the pre-reset engine, keeping:
@@ -66,6 +71,11 @@ Changes from the old engine:
   at least 500 mm, short side at least 230 mm; worktop lengths at least
   230 mm), so the drawing and the number of boards match what the saw cuts.
   The cut list still shows the finished size the customer asked for.
+- Each `CutListEntry` also carries the in-store cut size in the direction
+  entered (`cutWMm`/`cutHMm`): oversize for pieces below the saw minimum, the
+  full 600 mm width for worktops, and the finished size for pieces that don't
+  fit. It matches the size each placed piece is packed at, allowing for
+  rotation. (Approved after the final review.)
 - For worktops, width is the depth across the worktop (up to 600 mm) and
   height is the length along it (up to 3000 mm). The two are never swapped.
 - Sizes must be whole millimetres.
@@ -80,9 +90,11 @@ needed", whether pieces may be turned) and "Printed on" with the date and time.
 
 **Cutting plan:** drawing of each sheet with every piece labelled by letter.
 
-**Cut list:** columns Ref, Size (mm), Qty, Notes. Notes cover "May be turned
-to fit", "Below saw minimum: cut oversize, trim at home", and for worktops
-"Cut to length only: trim to width at home".
+**Cut list:** columns Ref, "Width × height (mm)" for sheets or "Depth ×
+length (mm)" for worktops, Qty, Notes. Notes cover "May be turned to fit",
+"Below saw minimum: cut at W × H, trim at home" (W × H is the in-store cut
+size), and for worktops "Cut to length only: trim to width at home". The
+column names and the below-minimum note were approved after the final review.
 
 **Please read before signing**
 
@@ -99,7 +111,7 @@ to fit", "Below saw minimum: cut oversize, trim at home", and for worktops
    - Worktops narrower than 600 mm: equivalent line saying they're cut to length only and need trimming to width at home.
 8. **Once cut.** Boards can move slightly with changes in temperature and humidity, so store cut pieces flat and dry.
 9. **Returns.** Cut boards and offcuts can't be returned or refunded. This doesn't affect your rights if a board is faulty.
-10. **Estimate.** Sheet counts and layouts are worked out from the sizes given and are an estimate. Board sizes can vary slightly between batches.
+10. **Estimate.** Board counts and layouts are worked out from the sizes given and are an estimate. Board sizes can vary slightly between batches. (Wording approved after the final review.)
 
 **Signature block:** "I've checked the sizes, the cutting plan and the boards,
 and I agree to the terms above." Lines for customer signature, and date and
