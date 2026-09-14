@@ -25,6 +25,8 @@
 
 ### Task 1: Engine tests (RED)
 
+> **Superseded after code review.** See the note under Task 2; the committed test file is the source of truth.
+
 **Files:**
 - Test: `src/calculators/__tests__/board-cutting.test.ts`
 
@@ -243,6 +245,8 @@ git commit -m "test: board cutting engine with reference letters, saw limits and
 ---
 
 ### Task 2: Engine implementation (GREEN)
+
+> **Superseded after code review.** The shipped engine differs from the code below: pieces below the saw minimum are packed at their in-store cut size, worktop width is the depth and height the length (never swapped), sizes must be whole millimetres (`Enter a width and height in whole mm above 0`), and `isBelowSawMinimum` is private. See commits c13301b, c802452 and design section 1. Treat `src/calculators/board-cutting.ts` as the source of truth.
 
 **Files:**
 - Create: `src/calculators/board-cutting.ts`
