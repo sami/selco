@@ -25,11 +25,10 @@ describe('buildCuttingTerms', () => {
     expect(term(terms, 'blade')?.text).toContain('removes about 3 mm with every cut');
   });
 
-  it('says cut boards are non-returnable', () => {
+  it('says cut boards are non-returnable, leaving the TSA to handle any further conversation', () => {
     const terms = buildCuttingTerms(plan([{ wMm: 800, hMm: 600, qty: 2 }]));
-    expect(term(terms, 'returns')?.text).toBe(
-      "Cut boards and offcuts can't be returned or refunded. This doesn't affect your rights if a board is faulty.",
-    );
+    expect(term(terms, 'returns')?.text).toBe("Cut boards and offcuts can't be returned or refunded.");
+    expect(terms.some((t) => /faulty|terms and conditions|https?:\/\//i.test(t.text))).toBe(false);
   });
 
   it('switches the grain wording with the rotation setting', () => {

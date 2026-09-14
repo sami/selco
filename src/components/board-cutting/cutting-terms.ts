@@ -61,7 +61,7 @@ export function buildCuttingTerms(plan: CuttingPlan): Term[] {
     },
     ...(trim ? [{ id: 'trim' as const, title: "Pieces we can't cut to size", text: trim }] : []),
     { id: 'once-cut', title: 'Once cut', text: 'Boards can move slightly with changes in temperature and humidity, so store cut pieces flat and dry.' },
-    { id: 'returns', title: 'Returns', text: "Cut boards and offcuts can't be returned or refunded. This doesn't affect your rights if a board is faulty." },
+    { id: 'returns', title: 'Returns', text: "Cut boards and offcuts can't be returned or refunded." },
     { id: 'estimate', title: 'Estimate', text: 'Board counts and layouts are worked out from the sizes given and are an estimate. Board sizes can vary slightly between batches.' },
   ];
 }

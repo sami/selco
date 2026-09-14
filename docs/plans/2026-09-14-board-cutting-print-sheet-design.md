@@ -20,7 +20,7 @@ are unchanged.
 |---|---|
 | Approach | Rebuild in `src/`, test-first, porting the engine from `200e7f4` (`src/calculators/v2/board-cutting.ts`) |
 | Tolerance | Fixed at ±3 mm, printed on every sheet |
-| Returns | Cut boards and offcuts are non-returnable, except where a board is faulty |
+| Returns | Cut boards and offcuts are non-returnable; the sheet says only that, and the TSA handles any further conversation |
 | Sheet details | Customer signature, plus date and time (printed timestamp and a handwritten signed date and time) |
 | Not included | Customer name, phone, order or receipt number, TSA name or signature |
 | Terms on screen | Yes, above the print button, from the same source as the printed terms |
@@ -39,7 +39,10 @@ worktops), the below-minimum note gives the in-store cut size, and term 10 says
 
 **Removed after release:** the "Board choice" term, which asked the customer to
 confirm they had seen the boards staff chose. Some orders are taken over the
-phone, so the customer may never see the boards before they're cut.
+phone, so the customer may never see the boards before they're cut. The
+Returns term was also shortened to "Cut boards and offcuts can't be returned
+or refunded.", dropping the faulty-board sentence, with no link to external
+terms; the TSA handles any further conversation.
 
 ## 1. Engine: `src/calculators/board-cutting.ts`
 
@@ -112,7 +115,7 @@ column names and the below-minimum note were approved after the final review.
    - Below minimum: "Pieces C are below the saw's 500 × 230 mm minimum. We'll cut them oversize and you'll need to trim them yourself." (letters listed)
    - Worktops narrower than 600 mm: equivalent line saying they're cut to length only and need trimming to width at home.
 7. **Once cut.** Boards can move slightly with changes in temperature and humidity, so store cut pieces flat and dry.
-8. **Returns.** Cut boards and offcuts can't be returned or refunded. This doesn't affect your rights if a board is faulty.
+8. **Returns.** Cut boards and offcuts can't be returned or refunded.
 9. **Estimate.** Board counts and layouts are worked out from the sizes given and are an estimate. Board sizes can vary slightly between batches. (Wording approved after the final review.)
 
 **Signature block:** "I've checked the sizes, the cutting plan and the boards,
