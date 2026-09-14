@@ -1,7 +1,7 @@
 # Board cutting optimiser: printable, signable cutting sheet
 
 **Date:** 14 September 2026
-**Status:** Approved design, ready for an implementation plan
+**Status:** Approved design, implemented on branch feat/board-cutting-print-sheet
 
 ## Goal
 
@@ -50,8 +50,9 @@ Changes from the old engine:
 
 - Returns a structured plan: sheets, placed parts with coordinates, flags and
   unplaceable parts. No customer-voice notes or tools checklist in the engine.
-- Each distinct cut size gets a reference letter (A, B, C…) used by the
-  drawing, the cut list and the signed sheet.
+- Each row gets its own reference letter (A, B, C…), so two rows with the
+  same size get two letters. The letters are used by the drawing, the cut
+  list and the signed sheet.
 - Invalid input throws rather than being skipped: zero or negative sizes,
   quantities that aren't whole numbers from 1 to 50, and unknown sheet ids
   (no silent fallback to the first profile).
@@ -74,8 +75,8 @@ Changes from the old engine:
 
 Black and white, A4. "We" means the store doing the cutting.
 
-**Header:** "Board cutting sheet", then a job summary (board type, sheets
-needed, whether pieces may be turned) and "Printed on" with the date and time.
+**Header:** "Board cutting sheet", then a job summary (board type, "Boards
+needed", whether pieces may be turned) and "Printed on" with the date and time.
 
 **Cutting plan:** drawing of each sheet with every piece labelled by letter.
 
@@ -144,6 +145,12 @@ with a registry entry. The catalogue card in `public/index.html` points to
   conditional terms, built from a plan
 - `src/components/board-cutting/`: calculator island, plan drawing, cut list,
   terms panel and printable sheet
+- As built: DOM ids use `useId`, and row keys are stable per instance, so the
+  server and the client render the same ids. The "Printed on" timestamp is
+  stamped with `flushSync` on `beforeprint` and before the print button calls
+  `window.print`, so the printed time is current. A row's input errors appear
+  once both sizes are entered or focus leaves the row, and printing stays
+  blocked while any row is invalid, including errors not yet shown.
 
 ## Testing
 
@@ -152,7 +159,7 @@ Test-first, with RED and GREEN commits as for Masonry and Flooring.
 - **Engine:** parts never overlap and stay inside the sheet; at least 3 mm
   kerf between neighbouring parts; worktop parts always take the full 600 mm
   width and narrower ones are flagged; rotation off never rotates; below
-  minimum and unplaceable parts flagged; letters assigned per distinct size;
+  minimum and unplaceable parts flagged; one letter assigned per row;
   invalid input throws.
 - **Terms:** ten terms in order; rotation wording follows the setting; term 7
   appears only when needed and names the right letters; ±3 mm always present.
