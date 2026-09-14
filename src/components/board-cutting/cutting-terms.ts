@@ -69,7 +69,7 @@ export function buildCuttingTerms(plan: CuttingPlan): Term[] {
 export function notesFor(entry: CutListEntry, rotationAllowed: boolean): string[] {
   if (!entry.fits) return ['Too big for this board'];
   const notes: string[] = [];
-  if (rotationAllowed && entry.wMm !== entry.hMm) notes.push('May be turned to fit');
+  if (rotationAllowed && (entry.wMm !== entry.hMm || entry.belowMin)) notes.push('May be turned to fit');
   if (entry.belowMin) notes.push('Below saw minimum: cut oversize, trim at home');
   if (entry.trimToWidth) notes.push('Cut to length only: trim to width at home');
   return notes;
