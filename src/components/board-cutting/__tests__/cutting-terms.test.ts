@@ -1,6 +1,6 @@
 import { describe, it, expect } from 'vitest';
 import { planCutting, type PieceInput, type SheetId } from '../../../calculators/board-cutting';
-import { buildCuttingTerms, formatRefs, notesFor, SIGN_OFF_STATEMENT } from '../cutting-terms';
+import { buildCuttingTerms, formatRefs, notesFor, SHEET_FOOTER, SIGN_OFF_STATEMENT } from '../cutting-terms';
 
 const plan = (pieces: PieceInput[], { sheetId = 'sheet' as SheetId, allowRotation = true } = {}) =>
   planCutting({ sheetId, pieces, allowRotation });
@@ -63,6 +63,7 @@ describe('buildCuttingTerms', () => {
 
   it('explains trimming worktop pieces to width at home', () => {
     const terms = buildCuttingTerms(plan([{ wMm: 400, hMm: 1000, qty: 1 }, { wMm: 450, hMm: 1200, qty: 1 }], { sheetId: 'worktop' }));
+    expect(terms.map((t) => t.id).indexOf('trim')).toBe(6);
     expect(term(terms, 'trim')?.text).toBe(
       "Pieces A and B are narrower than the 600 mm worktop. Worktops are cut to length only, so you'll need to trim them to width yourself.",
     );
@@ -75,8 +76,19 @@ describe('buildCuttingTerms', () => {
     );
   });
 
+  it('names each worktop trim sentence after its own pieces', () => {
+    const terms = buildCuttingTerms(plan([{ wMm: 600, hMm: 200, qty: 1 }, { wMm: 400, hMm: 1000, qty: 1 }], { sheetId: 'worktop' }));
+    expect(term(terms, 'trim')?.text).toBe(
+      "Piece A is below the saw's 500 × 230 mm minimum. We'll cut it oversize and you'll need to trim it yourself. Piece B is narrower than the 600 mm worktop. Worktops are cut to length only, so you'll need to trim it to width yourself.",
+    );
+  });
+
   it('has a sign-off statement for the signature block', () => {
     expect(SIGN_OFF_STATEMENT).toBe("I've checked the sizes, the cutting plan and the boards, and I agree to the terms above.");
+  });
+
+  it('has a footer for the printed sheet', () => {
+    expect(SHEET_FOOTER).toBe('Produced with Trade Materials Calculator, an independent estimating tool.');
   });
 });
 
@@ -85,6 +97,10 @@ describe('formatRefs', () => {
     expect(formatRefs(['A'])).toBe('A');
     expect(formatRefs(['A', 'C'])).toBe('A and C');
     expect(formatRefs(['A', 'B', 'D'])).toBe('A, B and D');
+  });
+
+  it('returns an empty string for no letters', () => {
+    expect(formatRefs([])).toBe('');
   });
 });
 
@@ -100,6 +116,16 @@ describe('notesFor', () => {
     expect(notesFor(p.cutList[1], p.rotationAllowed)).toEqual([]);
     expect(notesFor(p.cutList[2], p.rotationAllowed)).toEqual(['May be turned to fit', 'Below saw minimum: cut oversize, trim at home']);
     expect(notesFor(p.cutList[3], p.rotationAllowed)).toEqual(['Too big for this board']);
+  });
+
+  it('notes that a small square piece may be turned, because it is cut oversize and no longer square', () => {
+    const p = plan([{ wMm: 200, hMm: 200, qty: 1 }]);
+    expect(notesFor(p.cutList[0], p.rotationAllowed)).toEqual(['May be turned to fit', 'Below saw minimum: cut oversize, trim at home']);
+  });
+
+  it('does not mention turning when rotation is off', () => {
+    const p = plan([{ wMm: 800, hMm: 600, qty: 1 }], { allowRotation: false });
+    expect(notesFor(p.cutList[0], p.rotationAllowed)).toEqual([]);
   });
 
   it('marks worktop pieces that need trimming to width', () => {
