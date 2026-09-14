@@ -4,8 +4,14 @@
  * v2 engine (200e7f4).
  *
  * Boards are grouped by size, not material:
- *   - standard sheet, 2440 × 1220 mm, cut both ways (shelf packing, first-fit decreasing height)
- *   - worktop, 3000 × 600 × 38 mm, cut to length only (1D first-fit decreasing)
+ *   - standard sheet, 2440 × 1220 mm, cut both ways: pieces are sorted longest
+ *     side first, then by area; each goes on the existing row it fills best,
+ *     else a new row, else a new sheet
+ *   - worktop, 3000 × 600 × 38 mm, cut to length only: longest first, each on
+ *     the first worktop with room, else a new worktop
+ *
+ * Pieces below the saw minimum are packed at the oversize they're cut at in
+ * store, so the drawing and board count match what actually comes off the saw.
  *
  * Every row gets a reference letter so the drawing, the cut list and the
  * signed cutting sheet all name the same piece.
@@ -32,20 +38,24 @@ export type SheetId = 'sheet' | 'worktop';
 export interface SheetFormat {
   id: SheetId;
   label: string;
+  /** Across the board, as drawn. For worktops this is the depth. */
   wMm: number;
+  /** Along the board, as drawn. For worktops this is the length. */
   hMm: number;
   thicknessMm?: number;
   /** Cut to length only: no lengthways rips, so every piece takes the full width. */
   crossCutOnly: boolean;
 }
 
-export const SHEET_FORMATS: SheetFormat[] = [
+export const SHEET_FORMATS: readonly SheetFormat[] = [
   { id: 'sheet', label: 'Standard sheet, 2440 × 1220 mm (ply, MDF, OSB, hardboard)', wMm: 1220, hMm: 2440, crossCutOnly: false },
   { id: 'worktop', label: 'Worktop, 3000 × 600 × 38 mm (cut to length only)', wMm: 600, hMm: 3000, thicknessMm: 38, crossCutOnly: true },
 ];
 
 export interface PieceInput {
+  /** Across the board, as drawn. For worktops this is the depth. */
   wMm: number;
+  /** Along the board, as drawn. For worktops this is the length. */
   hMm: number;
   qty: number;
 }
@@ -58,6 +68,7 @@ export interface CuttingInput {
 
 export interface CutListEntry {
   ref: string;
+  /** Finished size the customer asked for. */
   wMm: number;
   hMm: number;
   qty: number;
@@ -73,6 +84,7 @@ export interface PlacedPiece {
   ref: string;
   xMm: number;
   yMm: number;
+  /** Size as cut in store, which is larger than the finished size for pieces below the saw minimum. */
   wMm: number;
   hMm: number;
   rotated: boolean;
@@ -80,7 +92,7 @@ export interface PlacedPiece {
 
 export interface SheetLayout {
   pieces: PlacedPiece[];
-  /** Share of the board covered by pieces, 0 to 1. */
+  /** Share of the board covered by pieces as cut, 0 to 1. */
   utilisation: number;
 }
 
@@ -97,8 +109,8 @@ export interface CuttingPlan {
 
 /** Why a piece can't be planned, or null if it's fine. Shared with the UI for row errors. */
 export function validatePiece({ wMm, hMm, qty }: PieceInput): string | null {
-  if (!Number.isFinite(wMm) || !Number.isFinite(hMm) || wMm <= 0 || hMm <= 0) {
-    return 'Enter a width and height above 0 mm';
+  if (!Number.isInteger(wMm) || !Number.isInteger(hMm) || wMm <= 0 || hMm <= 0) {
+    return 'Enter a width and height in whole mm above 0';
   }
   if (!Number.isInteger(qty) || qty < 1 || qty > MAX_QTY) {
     return `Quantity must be a whole number from 1 to ${MAX_QTY}`;
@@ -106,25 +118,39 @@ export function validatePiece({ wMm, hMm, qty }: PieceInput): string | null {
   return null;
 }
 
-export function isBelowSawMinimum(wMm: number, hMm: number): boolean {
+function isBelowSawMinimum(wMm: number, hMm: number): boolean {
   return Math.max(wMm, hMm) < PANEL_SAW.minLongMm || Math.min(wMm, hMm) < PANEL_SAW.minShortMm;
 }
 
-function describePiece(p: PieceInput, ref: string, sheet: SheetFormat, allowRotation: boolean): CutListEntry {
+interface Size {
+  w: number;
+  h: number;
+}
+
+/** The size the store actually cuts: oversize up to the saw minimum, keeping the piece's direction. */
+function inStoreSize(p: PieceInput, sheet: SheetFormat): Size {
   if (sheet.crossCutOnly) {
-    const across = Math.min(p.wMm, p.hMm);
-    const length = Math.max(p.wMm, p.hMm);
-    const fits = across <= sheet.wMm && length <= sheet.hMm;
+    // Comes off at the full worktop width, so only the length can be under the minimum.
+    return { w: sheet.wMm, h: Math.max(p.hMm, PANEL_SAW.minShortMm) };
+  }
+  const long = Math.max(Math.max(p.wMm, p.hMm), PANEL_SAW.minLongMm);
+  const short = Math.max(Math.min(p.wMm, p.hMm), PANEL_SAW.minShortMm);
+  return p.wMm >= p.hMm ? { w: long, h: short } : { w: short, h: long };
+}
+
+function describePiece(p: PieceInput, cut: Size, ref: string, sheet: SheetFormat, allowRotation: boolean): CutListEntry {
+  if (sheet.crossCutOnly) {
+    const fits = p.wMm <= sheet.wMm && p.hMm <= sheet.hMm;
     return {
       ref, wMm: p.wMm, hMm: p.hMm, qty: p.qty, fits,
       // In store the piece comes off at full width, so test that shape.
-      belowMin: fits && isBelowSawMinimum(sheet.wMm, length),
-      trimToWidth: fits && across < sheet.wMm,
+      belowMin: fits && isBelowSawMinimum(sheet.wMm, p.hMm),
+      trimToWidth: fits && p.wMm < sheet.wMm,
     };
   }
   const fits =
-    (p.wMm <= sheet.wMm && p.hMm <= sheet.hMm) ||
-    (allowRotation && p.hMm <= sheet.wMm && p.wMm <= sheet.hMm);
+    (cut.w <= sheet.wMm && cut.h <= sheet.hMm) ||
+    (allowRotation && cut.h <= sheet.wMm && cut.w <= sheet.hMm);
   return {
     ref, wMm: p.wMm, hMm: p.hMm, qty: p.qty, fits,
     belowMin: fits && isBelowSawMinimum(p.wMm, p.hMm),
@@ -132,9 +158,7 @@ function describePiece(p: PieceInput, ref: string, sheet: SheetFormat, allowRota
   };
 }
 
-interface Orientation {
-  w: number;
-  h: number;
+interface Orientation extends Size {
   rotated: boolean;
 }
 
@@ -150,16 +174,28 @@ interface WorkingSheet {
   pieces: PlacedPiece[];
 }
 
+interface Instance extends Size {
+  ref: string;
+}
+
 const place = (ref: string, xMm: number, yMm: number, o: Orientation): PlacedPiece => ({
   ref, xMm, yMm, wMm: o.w, hMm: o.h, rotated: o.rotated,
 });
 
-/** Shelf packing, first-fit decreasing height, with a blade width between pieces and rows. */
-function packShelves(pieces: PieceInput[], cutList: CutListEntry[], sheet: SheetFormat, allowRotation: boolean): PlacedPiece[][] {
-  const kerf = PANEL_SAW.kerfMm;
-  const instances = pieces.flatMap((p, i) =>
-    cutList[i].fits ? Array.from({ length: p.qty }, () => ({ ref: cutList[i].ref, w: p.wMm, h: p.hMm })) : [],
+/** One instance per piece to cut, at its in-store size, for rows that fit the board. */
+function instancesToCut(pieces: PieceInput[], cuts: Size[], cutList: CutListEntry[]): Instance[] {
+  return pieces.flatMap((p, i) =>
+    cutList[i].fits ? Array.from({ length: p.qty }, () => ({ ref: cutList[i].ref, ...cuts[i] })) : [],
   );
+}
+
+/**
+ * Shelf packing with a blade width between pieces and rows. Pieces are sorted
+ * longest side first, then by area; each goes on the existing row it fills
+ * best, else a new row, else a new sheet.
+ */
+function packShelves(instances: Instance[], sheet: SheetFormat, allowRotation: boolean): PlacedPiece[][] {
+  const kerf = PANEL_SAW.kerfMm;
   instances.sort((a, b) => Math.max(b.w, b.h) - Math.max(a.w, a.h) || b.w * b.h - a.w * a.h);
 
   const sheets: WorkingSheet[] = [];
@@ -214,28 +250,34 @@ function packShelves(pieces: PieceInput[], cutList: CutListEntry[], sheet: Sheet
 }
 
 /** Cut-to-length packing: longest first, a blade width between cuts, full board width per piece. */
-function packCrossCut(pieces: PieceInput[], cutList: CutListEntry[], sheet: SheetFormat): PlacedPiece[][] {
+function packCrossCut(instances: Instance[], sheet: SheetFormat): PlacedPiece[][] {
   const kerf = PANEL_SAW.kerfMm;
-  const instances = pieces.flatMap((p, i) =>
-    cutList[i].fits ? Array.from({ length: p.qty }, () => ({ ref: cutList[i].ref, length: Math.max(p.wMm, p.hMm) })) : [],
-  );
-  instances.sort((a, b) => b.length - a.length);
+  instances.sort((a, b) => b.h - a.h);
 
   const boards: Array<{ usedMm: number; pieces: PlacedPiece[] }> = [];
   for (const inst of instances) {
-    const o: Orientation = { w: sheet.wMm, h: inst.length, rotated: false };
-    const board = boards.find((b) => b.usedMm + kerf + inst.length <= sheet.hMm);
+    const o: Orientation = { w: inst.w, h: inst.h, rotated: false };
+    const board = boards.find((b) => b.usedMm + kerf + inst.h <= sheet.hMm);
     if (board) {
       const y = board.usedMm + kerf;
       board.pieces.push(place(inst.ref, 0, y, o));
-      board.usedMm = y + inst.length;
+      board.usedMm = y + inst.h;
     } else {
-      boards.push({ usedMm: inst.length, pieces: [place(inst.ref, 0, 0, o)] });
+      boards.push({ usedMm: inst.h, pieces: [place(inst.ref, 0, 0, o)] });
     }
   }
   return boards.map((b) => b.pieces);
 }
 
+/**
+ * Plans the pieces onto boards.
+ *
+ * Throws for input that can't be planned: sizes that aren't whole mm above 0,
+ * quantities outside 1 to MAX_QTY, an unknown board type, or more than 26 rows.
+ * Only flags, and still plans the rest, for pieces too big for the board
+ * (`unplaceableRefs`), below the saw minimum (`belowMinRefs`) or needing
+ * trimming to width at home (`trimToWidthRefs`).
+ */
 export function planCutting(input: CuttingInput): CuttingPlan {
   const sheet = SHEET_FORMATS.find((s) => s.id === input.sheetId);
   if (!sheet) throw new Error(`Unknown board type: ${input.sheetId}`);
@@ -247,10 +289,12 @@ export function planCutting(input: CuttingInput): CuttingPlan {
     if (error) throw new Error(`Piece ${LETTERS[i]}: ${error}`);
   });
 
-  const cutList = input.pieces.map((p, i) => describePiece(p, LETTERS[i], sheet, input.allowRotation));
+  const cuts = input.pieces.map((p) => inStoreSize(p, sheet));
+  const cutList = input.pieces.map((p, i) => describePiece(p, cuts[i], LETTERS[i], sheet, input.allowRotation));
+  const instances = instancesToCut(input.pieces, cuts, cutList);
   const packed = sheet.crossCutOnly
-    ? packCrossCut(input.pieces, cutList, sheet)
-    : packShelves(input.pieces, cutList, sheet, input.allowRotation);
+    ? packCrossCut(instances, sheet)
+    : packShelves(instances, sheet, input.allowRotation);
 
   const boardArea = sheet.wMm * sheet.hMm;
   const refsWhere = (test: (c: CutListEntry) => boolean) => cutList.filter(test).map((c) => c.ref);
