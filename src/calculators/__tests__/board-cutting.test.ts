@@ -1,6 +1,8 @@
 import { describe, it, expect } from 'vitest';
 import {
+  MAX_QTY,
   PANEL_SAW,
+  SHEET_FORMATS,
   TOLERANCE_MM,
   planCutting,
   validatePiece,
@@ -41,6 +43,16 @@ describe('constants', () => {
   it('uses a 3 mm blade and a ±3 mm tolerance', () => {
     expect(PANEL_SAW.kerfMm).toBe(3);
     expect(TOLERANCE_MM).toBe(3);
+  });
+
+  it('keeps every board format within the panel saw limits', () => {
+    for (const format of SHEET_FORMATS) {
+      expect(Math.max(format.wMm, format.hMm)).toBeLessThanOrEqual(PANEL_SAW.maxLongMm);
+      expect(Math.min(format.wMm, format.hMm)).toBeLessThanOrEqual(PANEL_SAW.maxShortMm);
+      if (format.thicknessMm !== undefined) {
+        expect(format.thicknessMm).toBeLessThanOrEqual(PANEL_SAW.maxDepthMm);
+      }
+    }
   });
 });
 
@@ -108,6 +120,50 @@ describe('planCutting — standard sheets', () => {
     expect(placed(plan)).toHaveLength(3);
   });
 
+  it('flags the saw minimum at its exact boundaries', () => {
+    const plan = sheetPlan([
+      { wMm: 499, hMm: 300, qty: 1 },
+      { wMm: 500, hMm: 230, qty: 1 },
+    ]);
+    expect(plan.belowMinRefs).toEqual(['A']);
+  });
+
+  it('packs pieces below the saw minimum at the size cut in store', () => {
+    // Two rows of MAX_QTY, since a single row can't order 100
+    const plan = sheetPlan([{ wMm: 100, hMm: 100, qty: MAX_QTY }, { wMm: 100, hMm: 100, qty: MAX_QTY }], true);
+    // Each is cut as 500 × 230 mm: 11.5 m² of cuts on 2.98 m² sheets needs at least four
+    expect(plan.layouts.length).toBeGreaterThanOrEqual(4);
+    expect(placed(plan)).toHaveLength(100);
+    for (const p of placed(plan)) {
+      expect(Math.max(p.wMm, p.hMm)).toBeGreaterThanOrEqual(PANEL_SAW.minLongMm);
+      expect(Math.min(p.wMm, p.hMm)).toBeGreaterThanOrEqual(PANEL_SAW.minShortMm);
+    }
+    expectCuttable(plan);
+    // The cut list keeps the finished size the customer asked for
+    expect(plan.cutList[0]).toMatchObject({ wMm: 100, hMm: 100, belowMin: true });
+  });
+
+  it('only fits a full-length sheet across the width when it may be turned', () => {
+    expect(sheetPlan([{ wMm: 2440, hMm: 1220, qty: 1 }], false).unplaceableRefs).toEqual(['A']);
+    const turned = sheetPlan([{ wMm: 2440, hMm: 1220, qty: 1 }], true);
+    expect(placed(turned)).toEqual([{ ref: 'A', xMm: 0, yMm: 0, wMm: 1220, hMm: 2440, rotated: true }]);
+  });
+
+  it('never marks a square piece as turned', () => {
+    const plan = sheetPlan([{ wMm: 1220, hMm: 1220, qty: 1 }], true);
+    expect(placed(plan)).toHaveLength(1);
+    expect(placed(plan)[0].rotated).toBe(false);
+  });
+
+  it('packs a full job of 26 rows cuttably', () => {
+    const pieces = Array.from({ length: 26 }, (_, i) => ({ wMm: 200 + i * 37, hMm: 150 + i * 53, qty: MAX_QTY }));
+    const plan = sheetPlan(pieces, true);
+    expectCuttable(plan);
+    for (const entry of plan.cutList) {
+      expect(placed(plan).filter((p) => p.ref === entry.ref)).toHaveLength(entry.qty);
+    }
+  });
+
   it('reports pieces too big for the board and still places the rest', () => {
     const plan = sheetPlan([
       { wMm: 1300, hMm: 2500, qty: 1 },
@@ -129,7 +185,7 @@ describe('planCutting — worktops', () => {
   it('cuts to length only, every piece taking the full 600 mm width', () => {
     // 1500 + 3 + 1497 = 3000, exactly one worktop
     const plan = worktopPlan([
-      { wMm: 1500, hMm: 600, qty: 1 },
+      { wMm: 600, hMm: 1500, qty: 1 },
       { wMm: 600, hMm: 1497, qty: 1 },
     ]);
     expect(plan.layouts).toHaveLength(1);
@@ -141,7 +197,35 @@ describe('planCutting — worktops', () => {
   });
 
   it('starts another worktop when the blade width tips it over', () => {
-    expect(worktopPlan([{ wMm: 1500, hMm: 600, qty: 1 }, { wMm: 600, hMm: 1498, qty: 1 }]).layouts).toHaveLength(2);
+    expect(worktopPlan([{ wMm: 600, hMm: 1500, qty: 1 }, { wMm: 600, hMm: 1498, qty: 1 }]).layouts).toHaveLength(2);
+  });
+
+  it('fits a full 600 × 3000 mm piece on one worktop with no trimming', () => {
+    const plan = worktopPlan([{ wMm: 600, hMm: 3000, qty: 1 }]);
+    expect(plan.layouts).toHaveLength(1);
+    expect(plan.cutList[0]).toMatchObject({ fits: true, trimToWidth: false, belowMin: false });
+  });
+
+  it('keeps the direction entered: width is the depth, height is the length', () => {
+    const narrow = worktopPlan([{ wMm: 550, hMm: 300, qty: 1 }]);
+    expect(narrow.cutList[0].fits).toBe(true);
+    expect(narrow.trimToWidthRefs).toEqual(['A']);
+    expect(placed(narrow)[0]).toMatchObject({ wMm: 600, hMm: 300 });
+
+    expect(worktopPlan([{ wMm: 700, hMm: 300, qty: 1 }]).unplaceableRefs).toEqual(['A']);
+  });
+
+  it('packs short worktop pieces at the 230 mm length cut in store', () => {
+    // 12 × 230 + 11 × 3 = 2793 fits a worktop; 13 would need 3026
+    const plan = worktopPlan([{ wMm: 600, hMm: 50, qty: 50 }]);
+    expect(plan.layouts).toHaveLength(5);
+    expect(placed(plan).every((p) => p.hMm === 230)).toBe(true);
+    expectCuttable(plan);
+  });
+
+  it('does not flag trimming or the saw minimum on a piece that does not fit', () => {
+    const plan = worktopPlan([{ wMm: 100, hMm: 3100, qty: 1 }]);
+    expect(plan.cutList[0]).toMatchObject({ fits: false, belowMin: false, trimToWidth: false });
   });
 
   it('flags pieces narrower than the worktop for trimming to width at home', () => {
@@ -156,10 +240,11 @@ describe('planCutting — worktops', () => {
   });
 
   it('applies the same saw minimum to the piece as cut in store', () => {
-    // 150 × 200 is cut in store as 600 × 200: under 230 mm, so below minimum
+    // 150 × 200 comes off at full width as 600 × 200: under 230 mm, so below minimum
     const plan = worktopPlan([{ wMm: 150, hMm: 200, qty: 1 }]);
     expect(plan.belowMinRefs).toEqual(['A']);
     expect(plan.trimToWidthRefs).toEqual(['A']);
+    expect(placed(plan)[0]).toMatchObject({ wMm: 600, hMm: 230 });
   });
 
   it('never allows rotation on worktops', () => {
@@ -172,16 +257,22 @@ describe('validation', () => {
     expect(validatePiece({ wMm: 600, hMm: 400, qty: 2 })).toBeNull();
   });
 
-  it('rejects zero or missing sizes', () => {
-    expect(validatePiece({ wMm: 0, hMm: 400, qty: 1 })).toBe('Enter a width and height above 0 mm');
-    expect(validatePiece({ wMm: Number.NaN, hMm: 400, qty: 1 })).toBe('Enter a width and height above 0 mm');
-    expect(() => sheetPlan([{ wMm: 0, hMm: 500, qty: 1 }])).toThrow('Piece A: Enter a width and height above 0 mm');
+  it('rejects zero, negative, missing, infinite or fractional sizes', () => {
+    const message = 'Enter a width and height in whole mm above 0';
+    for (const wMm of [0, -600, Number.NaN, Number.POSITIVE_INFINITY, 405.5]) {
+      expect(validatePiece({ wMm, hMm: 400, qty: 1 })).toBe(message);
+      expect(validatePiece({ wMm: 400, hMm: wMm, qty: 1 })).toBe(message);
+    }
+    expect(() => sheetPlan([{ wMm: 0, hMm: 500, qty: 1 }])).toThrow(`Piece A: ${message}`);
   });
 
-  it('rejects quantities that are not whole numbers from 1 to 50', () => {
-    for (const qty of [0, 1.5, 51]) {
-      expect(() => sheetPlan([{ wMm: 500, hMm: 500, qty }])).toThrow('Piece A: Quantity must be a whole number from 1 to 50');
+  it(`rejects quantities that are not whole numbers from 1 to ${MAX_QTY}`, () => {
+    for (const qty of [0, -1, 1.5, MAX_QTY + 1]) {
+      expect(() => sheetPlan([{ wMm: 500, hMm: 500, qty }])).toThrow(
+        `Piece A: Quantity must be a whole number from 1 to ${MAX_QTY}`,
+      );
     }
+    expect(validatePiece({ wMm: 500, hMm: 500, qty: MAX_QTY })).toBeNull();
   });
 
   it('rejects an unknown board type', () => {
