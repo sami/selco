@@ -202,12 +202,12 @@ export function BoardCuttingCalculator({ initialRows = [BLANK_ROW] }: Props) {
             </select>
           </FormField>
 
-          <p className="text-sm text-text-muted m-0">
+          <p className="text-sm text-text-muted">
             {`Straight cuts on a vertical panel saw with a ${PANEL_SAW.kerfMm} mm blade. The smallest piece it can cut is ${PANEL_SAW.minLongMm} × ${PANEL_SAW.minShortMm} mm.`}
           </p>
 
           {sheet.crossCutOnly ? (
-            <p className="text-sm text-text-muted m-0">Worktops are cut to length only, never along their length.</p>
+            <p className="text-sm text-text-muted">Worktops are cut to length only, never along their length.</p>
           ) : (
             <div>
               <label className="flex items-center gap-2 text-sm font-bold text-selco-navy">
@@ -220,7 +220,7 @@ export function BoardCuttingCalculator({ initialRows = [BLANK_ROW] }: Props) {
 
           <fieldset className="space-y-3">
             <legend className="text-sm font-bold text-selco-navy mb-2">Pieces (mm)</legend>
-            <ul className="list-none m-0 p-0 space-y-3">
+            <ul className="list-none p-0 space-y-3">
               {rows.map((row) => {
                 const s = status.get(row.key);
                 const ref = s?.ref ?? '';
@@ -302,8 +302,8 @@ export function BoardCuttingCalculator({ initialRows = [BLANK_ROW] }: Props) {
 
         {terms && (
           <section aria-label="Terms the customer signs" className="card space-y-3">
-            <h2 className="text-lg font-bold text-brand-navy m-0">Terms the customer signs</h2>
-            <p className="text-sm text-text-muted m-0">Go through these with the customer before printing.</p>
+            <h2 className="text-lg font-bold text-brand-navy">Terms the customer signs</h2>
+            <p className="text-sm text-text-muted">Go through these with the customer before printing.</p>
             <CuttingTerms terms={terms} />
           </section>
         )}
