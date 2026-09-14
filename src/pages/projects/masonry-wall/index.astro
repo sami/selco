@@ -1,7 +1,7 @@
 ---
 import BaseLayout from '../../../layouts/BaseLayout.astro';
 import { projectRegistry } from '../../../projects/registry';
-import { MasonryCalculator } from './MasonryCalculator';
+import { MasonryCalculator } from '../../../components/masonry-wall/MasonryCalculator';
 
 const project = projectRegistry.find(p => p.id === 'masonry-wall');
 const baseUrl = import.meta.env.BASE_URL;

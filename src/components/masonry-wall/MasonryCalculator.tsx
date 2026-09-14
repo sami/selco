@@ -1,9 +1,9 @@
 import React, { useState } from 'react';
-import { calculateMasonry, type MasonryResult } from '../../../calculators/masonry';
-import { FormField } from '../../../components/ui/FormField';
-import { NumberInput } from '../../../components/ui/NumberInput';
-import { MaterialsList, type MaterialItem } from '../../../components/ui/MaterialsList';
-import { ResultCard } from '../../../components/ui/ResultCard';
+import { calculateMasonry, type MasonryResult } from '../../calculators/masonry';
+import { FormField } from '../ui/FormField';
+import { NumberInput } from '../ui/NumberInput';
+import { MaterialsList, type MaterialItem } from '../ui/MaterialsList';
+import { ResultCard } from '../ui/ResultCard';
 
 type WallType = 'brick' | 'block';
 
