@@ -1,6 +1,7 @@
+import { memo } from 'react';
 import type { Term } from './cutting-terms';
 
-export function CuttingTerms({ terms }: { terms: Term[] }) {
+export const CuttingTerms = memo(function CuttingTerms({ terms }: { terms: Term[] }) {
   return (
     <ol className="list-decimal pl-5 space-y-2 text-sm leading-relaxed">
       {terms.map((t) => (
@@ -10,4 +11,4 @@ export function CuttingTerms({ terms }: { terms: Term[] }) {
       ))}
     </ol>
   );
-}
+});

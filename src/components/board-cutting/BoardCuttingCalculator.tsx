@@ -1,4 +1,4 @@
-import { useEffect, useId, useMemo, useRef, useState, type ChangeEvent } from 'react';
+import { useEffect, useId, useMemo, useRef, useState, type SyntheticEvent } from 'react';
 import { flushSync } from 'react-dom';
 import {
   MAX_PIECES,
@@ -31,7 +31,7 @@ interface Row extends PieceRow {
   key: number;
   /** Fields holding text the browser couldn't read as a number, which it reports as an empty value. */
   bad: Partial<Record<Field, boolean>>;
-  /** Set once any of the row's inputs has lost focus. */
+  /** Set once focus has left the row, not when moving between its own inputs. */
   touched: boolean;
 }
 
@@ -53,14 +53,13 @@ const formatNow = () => new Date().toLocaleString('en-GB', { dateStyle: 'short',
 
 const hasEntry = (r: Row, f: Field) => r[f].trim() !== '' || r.bad[f] === true;
 /** A row with no width and no height yet hasn't been started, so it's ignored rather than flagged. */
-const isBlank = (r: Row) => !hasEntry(r, 'w') && !hasEntry(r, 'h') && !r.bad.qty;
+const isBlank = (r: Row) => !hasEntry(r, 'w') && !hasEntry(r, 'h');
 const toNumber = (r: Row, f: Field) => (r.bad[f] ? NaN : Number(r[f]));
 const toPiece = (r: Row): PieceInput => ({ wMm: toNumber(r, 'w'), hMm: toNumber(r, 'h'), qty: toNumber(r, 'qty') });
 const isWholeMm = (n: number) => Number.isInteger(n) && n > 0;
 const isValidQty = (n: number) => Number.isInteger(n) && n >= 1 && n <= MAX_QTY;
 
-let nextKey = 0;
-const newRow = (r: PieceRow): Row => ({ ...r, key: nextKey++, bad: {}, touched: false });
+const toRow = (r: PieceRow, key: number): Row => ({ ...r, key, bad: {}, touched: false });
 
 interface Props {
   initialRows?: PieceRow[];
@@ -75,8 +74,10 @@ export function BoardCuttingCalculator({ initialRows = [BLANK_ROW] }: Props) {
   const [allowRotation, setAllowRotation] = useState(true);
   const [rows, setRows] = useState<Row[]>(() => {
     const start = initialRows.slice(0, MAX_PIECES);
-    return (start.length > 0 ? start : [BLANK_ROW]).map(newRow);
+    return (start.length > 0 ? start : [BLANK_ROW]).map((r, i) => toRow(r, i));
   });
+  // Keys are per instance and follow on from the initial rows, so the server and the client render the same ids.
+  const nextKey = useRef(Math.max(1, Math.min(initialRows.length, MAX_PIECES)));
   // Set after mount and again as the print dialog opens, never at build time.
   const [printedAt, setPrintedAt] = useState('');
 
@@ -115,7 +116,11 @@ export function BoardCuttingCalculator({ initialRows = [BLANK_ROW] }: Props) {
     filled.forEach((r, i) => {
       const { wMm, hMm, qty } = pieces[i];
       const inputError = inputErrors[i];
-      const tooBig = plan !== null && !plan.cutList[i].fits;
+      // Without a full plan (another row still has an input error), check this piece on its own so its flag stays.
+      const fits = plan
+        ? plan.cutList[i].fits
+        : inputError !== null || planCutting({ sheetId, pieces: [pieces[i]], allowRotation }).cutList[0].fits;
+      const tooBig = !fits;
       const sizeWrong = !isWholeMm(wMm) || !isWholeMm(hMm);
       status.set(r.key, {
         ref: String.fromCharCode(65 + i),
@@ -146,10 +151,15 @@ export function BoardCuttingCalculator({ initialRows = [BLANK_ROW] }: Props) {
     ? `Width is the depth across the worktop, up to ${sheet.wMm} mm, and height is the length.`
     : `Width runs across the ${sheet.wMm} mm side and height along the ${sheet.hMm} mm side, as drawn.`;
 
-  const edit = (key: number, field: Field) => (e: ChangeEvent<HTMLInputElement>) => {
-    const { value, validity } = e.target;
+  // Used for onInput as well as onChange: a number input reports '' for unreadable text, so typing it into an
+  // empty field, or clearing it, fires input with no value change and React's onChange never runs.
+  const sync = (key: number, field: Field) => (e: SyntheticEvent<HTMLInputElement>) => {
+    const { value, validity } = e.currentTarget;
+    const bad = validity.badInput;
     setRows((rs) =>
-      rs.map((r) => (r.key === key ? { ...r, [field]: value, bad: { ...r.bad, [field]: validity.badInput } } : r)),
+      rs.some((r) => r.key === key && (r[field] !== value || (r.bad[field] ?? false) !== bad))
+        ? rs.map((r) => (r.key === key ? { ...r, [field]: value, bad: { ...r.bad, [field]: bad } } : r))
+        : rs,
     );
   };
   const touch = (key: number) =>
@@ -160,7 +170,7 @@ export function BoardCuttingCalculator({ initialRows = [BLANK_ROW] }: Props) {
     const index = rows.findIndex((r) => r.key === key);
     const rest = rows.filter((r) => r.key !== key);
     if (rest.length === 0) {
-      const fresh = newRow(BLANK_ROW);
+      const fresh = toRow(BLANK_ROW, nextKey.current++);
       pendingFocus.current = { key: fresh.key, target: 'width' };
       setRows([fresh]);
     } else {
@@ -168,7 +178,10 @@ export function BoardCuttingCalculator({ initialRows = [BLANK_ROW] }: Props) {
       setRows(rest);
     }
   };
-  const add = () => setRows((rs) => [...rs, newRow(BLANK_ROW)]);
+  const add = () => {
+    const key = nextKey.current++;
+    setRows((rs) => [...rs, toRow(BLANK_ROW, key)]);
+  };
 
   const piecesPlanned = plan ? plan.layouts.reduce((n, l) => n + l.pieces.length, 0) : 0;
 
@@ -214,7 +227,13 @@ export function BoardCuttingCalculator({ initialRows = [BLANK_ROW] }: Props) {
                 const qtyMark = mark(error !== null && s!.qtyInvalid);
                 return (
                   <li key={row.key}>
-                    <div className="grid grid-cols-[1.5rem_1fr_1fr_4.5rem_2.75rem] gap-2 items-center">
+                    {/* Touched only when focus leaves the row, not when moving between its own inputs. */}
+                    <div
+                      className="grid grid-cols-[1.5rem_1fr_1fr_4.5rem_2.75rem] gap-2 items-center"
+                      onBlur={(e) => {
+                        if (!e.currentTarget.contains(e.relatedTarget as Node | null)) touch(row.key);
+                      }}
+                    >
                       <span className="font-bold text-brand-navy" aria-hidden="true">{ref}</span>
                       <NumberInput
                         ref={(el) => {
@@ -226,12 +245,12 @@ export function BoardCuttingCalculator({ initialRows = [BLANK_ROW] }: Props) {
                         min="1"
                         step="1"
                         value={row.w}
-                        onChange={edit(row.key, 'w')}
-                        onBlur={() => touch(row.key)}
+                        onInput={sync(row.key, 'w')}
+                        onChange={sync(row.key, 'w')}
                         {...sizeMark}
                       />
-                      <NumberInput aria-label={`Height of ${name}`} unit="mm" min="1" step="1" value={row.h} onChange={edit(row.key, 'h')} onBlur={() => touch(row.key)} {...sizeMark} />
-                      <NumberInput aria-label={`Quantity of ${name}`} min="1" max={MAX_QTY} step="1" value={row.qty} onChange={edit(row.key, 'qty')} onBlur={() => touch(row.key)} {...qtyMark} />
+                      <NumberInput aria-label={`Height of ${name}`} unit="mm" min="1" step="1" value={row.h} onInput={sync(row.key, 'h')} onChange={sync(row.key, 'h')} {...sizeMark} />
+                      <NumberInput aria-label={`Quantity of ${name}`} min="1" max={MAX_QTY} step="1" value={row.qty} onInput={sync(row.key, 'qty')} onChange={sync(row.key, 'qty')} {...qtyMark} />
                       <button
                         ref={(el) => {
                           if (el) removeButtons.current.set(row.key, el);

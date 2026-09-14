@@ -1,9 +1,10 @@
+import { memo } from 'react';
 import type { CuttingPlan } from '../../calculators/board-cutting';
 import { notesFor } from './cutting-terms';
 
 const cell = 'px-3 py-2 text-left align-top border-b border-border-default print:border-black';
 
-export function CutListTable({ plan }: { plan: CuttingPlan }) {
+export const CutListTable = memo(function CutListTable({ plan }: { plan: CuttingPlan }) {
   return (
     <table className="min-w-full text-sm border-collapse">
       <caption className="sr-only">Cut list</caption>
@@ -28,4 +29,4 @@ export function CutListTable({ plan }: { plan: CuttingPlan }) {
       </tbody>
     </table>
   );
-}
+});

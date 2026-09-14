@@ -1,6 +1,7 @@
+import { memo } from 'react';
 import type { CuttingPlan } from '../../calculators/board-cutting';
 
-export function CuttingPlanDrawing({ plan }: { plan: CuttingPlan }) {
+export const CuttingPlanDrawing = memo(function CuttingPlanDrawing({ plan }: { plan: CuttingPlan }) {
   const { sheet, layouts } = plan;
   const boardName = sheet.crossCutOnly ? 'Worktop' : 'Sheet';
   const maxLabel = Math.min(sheet.wMm, sheet.hMm) / 5;
@@ -49,4 +50,4 @@ export function CuttingPlanDrawing({ plan }: { plan: CuttingPlan }) {
       ))}
     </div>
   );
-}
+});
