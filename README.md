@@ -1,8 +1,13 @@
 # Trade Materials Calculator
 
-A web app that estimates trade materials for common building projects —
-masonry, flooring, tiling, decking and more — using product data sourced
-from SELCO Builders Warehouse and manufacturer technical data sheets.
+Estimating tools for trade sales assistants — masonry, flooring, tiling,
+decking and more. Put in the size of a customer's job and get a materials
+list rounded up to whole packs, based on common UK builders' merchant
+ranges and manufacturer technical data sheets.
+
+This is an independent project. It is not affiliated with or endorsed by
+any builders' merchant or manufacturer, and product names belong to their
+owners.
 
 **Live:** [https://sami.github.io/selco/](https://sami.github.io/selco/)
 

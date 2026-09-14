@@ -20,8 +20,8 @@
   --radius-button: 0.5rem;
   --radius-card: 0.75rem;
 
-  /* DEPRECATED aliases — still consumed by ui/ components, MobileMenu, and
-     calculator pages. Migrate usages to the brand tokens above, then delete. */
+  /* DEPRECATED aliases — still consumed by ui/ components and calculator
+     pages. Migrate usages to the brand tokens above, then delete. */
   --color-selco-navy: #04204b;
   --color-selco-yellow: #ffd407;
   --color-selco-footer: #111827;
