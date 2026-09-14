@@ -13,7 +13,7 @@ export function CuttingPlanDrawing({ plan }: { plan: CuttingPlan }) {
             viewBox={`0 0 ${sheet.wMm} ${sheet.hMm}`}
             className="block h-72 w-auto mx-auto print:h-[85mm]"
             role="img"
-            aria-label={`${boardName} ${i + 1}: pieces ${layout.pieces.map((p) => p.ref).join(', ')}`}
+            aria-label={`${boardName} ${i + 1}: pieces ${[...new Set(layout.pieces.map((p) => p.ref))].join(', ')}`}
           >
             <rect x={0} y={0} width={sheet.wMm} height={sheet.hMm} fill="none" stroke="currentColor" strokeWidth={sheet.wMm / 120} />
             {layout.pieces.map((p, j) => (
