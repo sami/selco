@@ -1,10 +1,10 @@
 import { describe, it, expect } from 'vitest';
 import { planCutting, type PieceInput, type SheetId } from '../../../calculators/board-cutting';
-import { buildCuttingTerms, formatRefs, notesFor, SHEET_FOOTER, SIGN_OFF_STATEMENT } from '../cutting-terms';
+import { buildCuttingTerms, formatRefs, notesFor, SHEET_FOOTER, SIGN_OFF_STATEMENT, type TermId } from '../cutting-terms';
 
 const plan = (pieces: PieceInput[], { sheetId = 'sheet' as SheetId, allowRotation = true } = {}) =>
   planCutting({ sheetId, pieces, allowRotation });
-const term = (terms: ReturnType<typeof buildCuttingTerms>, id: string) => terms.find((t) => t.id === id);
+const term = (terms: ReturnType<typeof buildCuttingTerms>, id: TermId) => terms.find((t) => t.id === id);
 
 describe('buildCuttingTerms', () => {
   it('lists the nine standard terms in order when nothing needs trimming', () => {

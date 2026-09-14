@@ -6,8 +6,10 @@
  */
 import { PANEL_SAW, TOLERANCE_MM, type CutListEntry, type CuttingPlan } from '../../calculators/board-cutting';
 
+export type TermId = 'sizes' | 'tolerance' | 'blade' | 'board-choice' | 'cut-edges' | 'grain' | 'trim' | 'once-cut' | 'returns' | 'estimate';
+
 export interface Term {
-  id: string;
+  id: TermId;
   title: string;
   text: string;
 }
@@ -21,7 +23,7 @@ export function formatRefs(refs: string[]): string {
   return `${refs.slice(0, -1).join(', ')} and ${refs[refs.length - 1]}`;
 }
 
-function pieceGroup(refs: string[]) {
+function pieceWording(refs: string[]) {
   const one = refs.length === 1;
   return { subject: `${one ? 'Piece' : 'Pieces'} ${formatRefs(refs)} ${one ? 'is' : 'are'}`, them: one ? 'it' : 'them' };
 }
@@ -29,13 +31,13 @@ function pieceGroup(refs: string[]) {
 function trimText(plan: CuttingPlan): string | null {
   const parts: string[] = [];
   if (plan.belowMinRefs.length > 0) {
-    const g = pieceGroup(plan.belowMinRefs);
+    const g = pieceWording(plan.belowMinRefs);
     parts.push(
       `${g.subject} below the saw's ${PANEL_SAW.minLongMm} × ${PANEL_SAW.minShortMm} mm minimum. We'll cut ${g.them} oversize and you'll need to trim ${g.them} yourself.`,
     );
   }
   if (plan.trimToWidthRefs.length > 0) {
-    const g = pieceGroup(plan.trimToWidthRefs);
+    const g = pieceWording(plan.trimToWidthRefs);
     parts.push(
       `${g.subject} narrower than the ${plan.sheet.wMm} mm worktop. Worktops are cut to length only, so you'll need to trim ${g.them} to width yourself.`,
     );
@@ -58,14 +60,18 @@ export function buildCuttingTerms(plan: CuttingPlan): Term[] {
         ? 'Pieces may be turned on the sheet to save board. If grain or pattern direction matters, tell us before signing.'
         : 'Pieces are cut in the direction shown on the plan.',
     },
-    ...(trim ? [{ id: 'trim', title: "Pieces we can't cut to size", text: trim }] : []),
+    ...(trim ? [{ id: 'trim' as const, title: "Pieces we can't cut to size", text: trim }] : []),
     { id: 'once-cut', title: 'Once cut', text: 'Boards can move slightly with changes in temperature and humidity, so store cut pieces flat and dry.' },
     { id: 'returns', title: 'Returns', text: "Cut boards and offcuts can't be returned or refunded. This doesn't affect your rights if a board is faulty." },
     { id: 'estimate', title: 'Estimate', text: 'Sheet counts and layouts are worked out from the sizes given and are an estimate. Board sizes can vary slightly between batches.' },
   ];
 }
 
-/** Notes column for one cut list line. */
+/**
+ * Notes column for one cut list line.
+ *
+ * Pass `plan.rotationAllowed`, never the raw rotation checkbox value: worktops never rotate.
+ */
 export function notesFor(entry: CutListEntry, rotationAllowed: boolean): string[] {
   if (!entry.fits) return ['Too big for this board'];
   const notes: string[] = [];
