@@ -101,7 +101,10 @@ describe('BoardCuttingCalculator', () => {
     const onScreen = within(screen.getByRole('region', { name: 'Terms the customer signs' }))
       .getAllByRole('listitem')
       .map((li) => li.textContent);
-    const printed = within(printSheet()).getAllByRole('listitem').map((li) => li.textContent);
+    // Scoped to the terms list, since the printed saw plan has its own numbered list of cut steps.
+    const printedTerms = within(printSheet()).getByRole('heading', { name: 'Please read before signing' }).nextElementSibling;
+    expect(printedTerms?.tagName).toBe('OL');
+    const printed = within(printedTerms as HTMLElement).getAllByRole('listitem').map((li) => li.textContent);
 
     expect(onScreen).toHaveLength(8);
     expect(printed).toEqual(onScreen);
@@ -259,9 +262,10 @@ describe('BoardCuttingCalculator', () => {
     expect(printButton()).toBeDisabled();
   });
 
-  it('names each piece once in the drawing label', () => {
+  it('names each piece once in the drawing label, with the offcut count', () => {
+    // Three 800 × 600 strips: each leaves 1220 - 800 - 6 = 414 to its right, plus 2440 - 1812 - 6 = 622 below
     render(<BoardCuttingCalculator initialRows={[{ w: '800', h: '600', qty: '3' }]} />);
-    expect(screen.getAllByRole('img', { name: 'Sheet 1: pieces A' })).toHaveLength(2);
+    expect(screen.getAllByRole('img', { name: 'Sheet 1: pieces A, 4 offcuts' })).toHaveLength(2);
   });
 
   it('re-letters the cut list after removing a piece', () => {
@@ -378,6 +382,63 @@ describe('BoardCuttingCalculator', () => {
     expect(screen.getByText('Quantity must be a whole number from 1 to 50')).toBeInTheDocument();
     expect(screen.getByLabelText('Quantity of piece A')).toHaveAttribute('aria-invalid', 'true');
     expect(printButton()).toBeDisabled();
+  });
+
+  describe('saw operator plan', () => {
+    const planRegion = () => screen.getByRole('region', { name: 'Cutting plan' });
+    const sheetSteps = [
+      'Cut strip 1 across the full 1220 mm width at 600 mm',
+      'From strip 1, cut A at 800 mm',
+      'From strip 1, cut B at 400 mm',
+    ];
+    const renderSheetJob = () => {
+      render(<BoardCuttingCalculator initialRows={[{ w: '800', h: '600', qty: '1' }, { w: '400', h: '600', qty: '1' }]} />);
+      fireEvent.click(screen.getByLabelText('Pieces may be turned to fit'));
+    };
+
+    it('shows the numbered cut steps and offcuts on screen', () => {
+      renderSheetJob();
+      const plan = within(planRegion());
+      const steps = plan.getAllByRole('listitem').map((li) => li.textContent);
+      expect(steps).toEqual(sheetSteps);
+      expect(plan.getByText('Offcuts, at least: 1220 × 1834')).toBeInTheDocument();
+      expect(plan.getByText('Sheet 1 of 1, 24% of board used')).toBeInTheDocument();
+    });
+
+    it('prints the same steps, each with a tick box', () => {
+      renderSheetJob();
+      const sheet = within(printSheet());
+      for (const text of sheetSteps) {
+        const li = sheet.getByText(text).closest('li');
+        expect(li).not.toBeNull();
+        const box = li!.querySelector('span[aria-hidden="true"]');
+        expect(box).not.toBeNull();
+        expect(box!.className).toMatch(/\bborder\b/);
+        expect(box!.textContent).toBe('');
+      }
+      expect(sheet.getByText('Offcuts, at least: 1220 × 1834')).toBeInTheDocument();
+    });
+
+    it('shows worktop pieces cut length by length', () => {
+      render(<BoardCuttingCalculator initialRows={[{ w: '600', h: '1500', qty: '1' }, { w: '600', h: '1000', qty: '1' }]} />);
+      fireEvent.change(screen.getByLabelText('Board type'), { target: { value: 'worktop' } });
+      const plan = within(planRegion());
+      expect(plan.getAllByRole('listitem').map((li) => li.textContent)).toEqual(['Cut A at 1500 mm', 'Cut B at 1000 mm']);
+      expect(plan.getByText('Offcuts, at least: 600 × 488')).toBeInTheDocument();
+      expect(plan.getByText('Worktop 1 of 1, 83% of board used')).toBeInTheDocument();
+    });
+
+    it('says when a board needs no cuts and leaves no usable offcuts', () => {
+      render(<BoardCuttingCalculator initialRows={[{ w: '1220', h: '2440', qty: '1' }]} />);
+      const plan = within(planRegion());
+      expect(plan.getByText('No cuts needed for this board.')).toBeInTheDocument();
+      expect(plan.getByText('No usable offcuts.')).toBeInTheDocument();
+    });
+
+    it('describes the blade and tolerance allowance in the result', () => {
+      renderSheetJob();
+      expect(screen.getByText('2 pieces planned with a 3 mm blade and 3 mm tolerance allowance between cuts')).toBeInTheDocument();
+    });
   });
 
   it('names the size order in the printed cut list header for each board type', () => {

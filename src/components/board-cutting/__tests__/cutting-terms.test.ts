@@ -25,6 +25,13 @@ describe('buildCuttingTerms', () => {
     expect(term(terms, 'blade')?.text).toContain('removes about 3 mm with every cut');
   });
 
+  it('says the plan leaves room for the tolerance', () => {
+    const terms = buildCuttingTerms(plan([{ wMm: 800, hMm: 600, qty: 2 }]));
+    expect(term(terms, 'tolerance')?.text).toBe(
+      'Each cut piece can be up to 3 mm over or under the size listed. The plan leaves room for this. Allow for this in your fitting, for example with a small gap or by scribing to fit.',
+    );
+  });
+
   it('says cut boards are non-returnable, leaving the TSA to handle any further conversation', () => {
     const terms = buildCuttingTerms(plan([{ wMm: 800, hMm: 600, qty: 2 }]));
     expect(term(terms, 'returns')?.text).toBe("Cut boards and offcuts can't be returned or refunded.");
