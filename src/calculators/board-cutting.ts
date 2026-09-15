@@ -10,8 +10,15 @@
  *   - worktop, 3000 × 600 × 38 mm, cut to length only: longest first, each on
  *     the first worktop with room, else a new worktop
  *
+ * Neighbouring pieces, rows and worktop cuts are kept GAP_MM apart: the blade
+ * plus room for a piece to come out up to the tolerance over. There is no gap
+ * at a board edge.
+ *
  * Pieces below the saw minimum are packed at the oversize they're cut at in
  * store, so the drawing and board count match what actually comes off the saw.
+ *
+ * Each board also carries the saw operator's plan: its strips (sheets only),
+ * the numbered cut steps and the offcuts left over, at their smallest size.
  *
  * Every row gets a reference letter so the drawing, the cut list and the
  * signed cutting sheet all name the same piece.
@@ -28,6 +35,16 @@ export const PANEL_SAW = {
 
 /** Every cut piece can be this far over or under the size listed. */
 export const TOLERANCE_MM = 3;
+
+/**
+ * Space left between neighbouring pieces, rows and worktop cuts: the blade plus room for a piece to come out
+ * up to the tolerance over, so it never runs the board out. The operator still cuts each piece to its size.
+ */
+export const GAP_MM = PANEL_SAW.kerfMm + TOLERANCE_MM;
+
+/** Offcuts smaller than this in either direction are dust and aren't listed. */
+export const MIN_OFFCUT_MM = 10;
+
 export const MAX_QTY = 50;
 
 const LETTERS = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
@@ -98,10 +115,43 @@ export interface PlacedPiece {
   rotated: boolean;
 }
 
+/** A strip cut across the full board width (sheets only), with its pieces in the order they are cut. */
+export interface Strip {
+  yMm: number;
+  heightMm: number;
+  /** Sorted by xMm. */
+  pieces: PlacedPiece[];
+}
+
+export type CutStep =
+  /** Cut a strip across the full board width, measured from the current board edge. */
+  | { kind: 'strip'; step: number; strip: number; atMm: number }
+  /** Cross-cut a piece off the strip; trimToMm set when the piece is shorter than its strip. */
+  | { kind: 'piece'; step: number; strip: number; ref: string; atMm: number; trimToMm: number | null }
+  /** Worktops: cut a piece to length. */
+  | { kind: 'length'; step: number; ref: string; atMm: number };
+
+export interface Offcut {
+  xMm: number;
+  yMm: number;
+  /** Smallest size the customer gets, after the blade and tolerance gap. */
+  wMm: number;
+  hMm: number;
+}
+
 export interface SheetLayout {
   pieces: PlacedPiece[];
   /** Share of the board covered by pieces as cut, 0 to 1. */
   utilisation: number;
+  /** Strips in the order they're cut, numbered from 1. Always empty for worktops. */
+  strips: Strip[];
+  /** The saw operator's steps, numbered 1, 2, 3… for this board. */
+  cuts: CutStep[];
+  /**
+   * Offcuts of at least MIN_OFFCUT_MM both ways. Sheets list them per strip (above each trimmed piece in x
+   * order, then the strip's right remainder), then below the last strip; worktops list the end offcut.
+   */
+  offcuts: Offcut[];
 }
 
 export interface CuttingPlan {
@@ -180,12 +230,19 @@ interface Shelf {
   yMm: number;
   heightMm: number;
   usedWMm: number;
+  pieces: PlacedPiece[];
 }
 
 interface WorkingSheet {
   shelves: Shelf[];
   nextShelfY: number;
+}
+
+/** A packed board before its steps and offcuts are worked out. */
+interface PackedBoard {
   pieces: PlacedPiece[];
+  /** Sheets only, in the order they were opened, which is top to bottom. */
+  shelves: Shelf[];
 }
 
 interface Instance extends Size {
@@ -204,12 +261,12 @@ function instancesToCut(pieces: PieceInput[], cuts: Size[], cutList: CutListEntr
 }
 
 /**
- * Shelf packing with a blade width between pieces and rows. Pieces are sorted
- * longest side first, then by area; each goes on the existing row it fills
- * best, else a new row, else a new sheet.
+ * Shelf packing with the blade and tolerance gap between pieces and rows, and
+ * none at the board edges. Pieces are sorted longest side first, then by area;
+ * each goes on the existing row it fills best, else a new row, else a new sheet.
  */
-function packShelves(instances: Instance[], sheet: SheetFormat, allowRotation: boolean): PlacedPiece[][] {
-  const kerf = PANEL_SAW.kerfMm;
+function packShelves(instances: Instance[], sheet: SheetFormat, allowRotation: boolean): PackedBoard[] {
+  const gap = GAP_MM;
   instances.sort((a, b) => Math.max(b.w, b.h) - Math.max(a.w, a.h) || b.w * b.h - a.w * a.h);
 
   const sheets: WorkingSheet[] = [];
@@ -223,7 +280,7 @@ function packShelves(instances: Instance[], sheet: SheetFormat, allowRotation: b
     for (const s of sheets) {
       for (const shelf of s.shelves) {
         for (const o of fitting) {
-          const x = shelf.usedWMm + kerf;
+          const x = shelf.usedWMm + gap;
           if (o.h <= shelf.heightMm && x + o.w <= sheet.wMm) {
             const waste = shelf.heightMm - o.h;
             if (!best || waste < best.waste) best = { s, shelf, o, waste };
@@ -232,8 +289,8 @@ function packShelves(instances: Instance[], sheet: SheetFormat, allowRotation: b
       }
     }
     if (best) {
-      const x = best.shelf.usedWMm + kerf;
-      best.s.pieces.push(place(inst.ref, x, best.shelf.yMm, best.o));
+      const x = best.shelf.usedWMm + gap;
+      best.shelf.pieces.push(place(inst.ref, x, best.shelf.yMm, best.o));
       best.shelf.usedWMm = x + best.o.w;
       continue;
     }
@@ -243,11 +300,10 @@ function packShelves(instances: Instance[], sheet: SheetFormat, allowRotation: b
     let placedOnSheet = false;
     for (const s of sheets) {
       for (const o of flattest) {
-        const y = s.nextShelfY + kerf;
+        const y = s.nextShelfY + gap;
         if (y + o.h <= sheet.hMm) {
-          s.shelves.push({ yMm: y, heightMm: o.h, usedWMm: o.w });
+          s.shelves.push({ yMm: y, heightMm: o.h, usedWMm: o.w, pieces: [place(inst.ref, 0, y, o)] });
           s.nextShelfY = y + o.h;
-          s.pieces.push(place(inst.ref, 0, y, o));
           placedOnSheet = true;
           break;
         }
@@ -258,29 +314,88 @@ function packShelves(instances: Instance[], sheet: SheetFormat, allowRotation: b
 
     // 3. A new sheet.
     const o = flattest[0];
-    sheets.push({ shelves: [{ yMm: 0, heightMm: o.h, usedWMm: o.w }], nextShelfY: o.h, pieces: [place(inst.ref, 0, 0, o)] });
+    sheets.push({
+      shelves: [{ yMm: 0, heightMm: o.h, usedWMm: o.w, pieces: [place(inst.ref, 0, 0, o)] }],
+      nextShelfY: o.h,
+    });
   }
-  return sheets.map((s) => s.pieces);
+  return sheets.map((s) => ({ shelves: s.shelves, pieces: s.shelves.flatMap((shelf) => shelf.pieces) }));
 }
 
-/** Cut-to-length packing: longest first, a blade width between cuts, full board width per piece. */
-function packCrossCut(instances: Instance[], sheet: SheetFormat): PlacedPiece[][] {
-  const kerf = PANEL_SAW.kerfMm;
+/** Cut-to-length packing: longest first, the blade and tolerance gap between cuts, full board width per piece. */
+function packCrossCut(instances: Instance[], sheet: SheetFormat): PackedBoard[] {
+  const gap = GAP_MM;
   instances.sort((a, b) => b.h - a.h);
 
   const boards: Array<{ usedMm: number; pieces: PlacedPiece[] }> = [];
   for (const inst of instances) {
     const o: Orientation = { w: inst.w, h: inst.h, rotated: false };
-    const board = boards.find((b) => b.usedMm + kerf + inst.h <= sheet.hMm);
+    const board = boards.find((b) => b.usedMm + gap + inst.h <= sheet.hMm);
     if (board) {
-      const y = board.usedMm + kerf;
+      const y = board.usedMm + gap;
       board.pieces.push(place(inst.ref, 0, y, o));
       board.usedMm = y + inst.h;
     } else {
       boards.push({ usedMm: inst.h, pieces: [place(inst.ref, 0, 0, o)] });
     }
   }
-  return boards.map((b) => b.pieces);
+  return boards.map((b) => ({ pieces: b.pieces, shelves: [] }));
+}
+
+const usable = (o: Offcut) => o.wMm >= MIN_OFFCUT_MM && o.hMm >= MIN_OFFCUT_MM;
+
+/** Sheets: cut each strip across the full width, then cross-cut its pieces in x order. */
+function planSheetBoard(board: PackedBoard, sheet: SheetFormat): Pick<SheetLayout, 'strips' | 'cuts' | 'offcuts'> {
+  const strips: Strip[] = board.shelves.map((shelf) => ({
+    yMm: shelf.yMm,
+    heightMm: shelf.heightMm,
+    pieces: [...shelf.pieces].sort((a, b) => a.xMm - b.xMm),
+  }));
+
+  const cuts: CutStep[] = [];
+  const offcuts: Offcut[] = [];
+  const next = () => cuts.length + 1;
+
+  strips.forEach((strip, i) => {
+    const n = i + 1;
+    if (strip.yMm + strip.heightMm < sheet.hMm) {
+      cuts.push({ kind: 'strip', step: next(), strip: n, atMm: strip.heightMm });
+    }
+    for (const p of strip.pieces) {
+      const trimToMm = p.hMm < strip.heightMm ? p.hMm : null;
+      if (p.xMm + p.wMm === sheet.wMm && trimToMm === null) continue;
+      cuts.push({ kind: 'piece', step: next(), strip: n, ref: p.ref, atMm: p.wMm, trimToMm });
+    }
+
+    for (const p of strip.pieces) {
+      if (p.hMm < strip.heightMm) {
+        offcuts.push({ xMm: p.xMm, yMm: p.yMm + p.hMm + GAP_MM, wMm: p.wMm, hMm: strip.heightMm - p.hMm - GAP_MM });
+      }
+    }
+    const usedW = Math.max(...strip.pieces.map((p) => p.xMm + p.wMm));
+    offcuts.push({ xMm: usedW + GAP_MM, yMm: strip.yMm, wMm: sheet.wMm - usedW - GAP_MM, hMm: strip.heightMm });
+  });
+
+  const last = strips.at(-1);
+  if (last) {
+    const end = last.yMm + last.heightMm;
+    offcuts.push({ xMm: 0, yMm: end + GAP_MM, wMm: sheet.wMm, hMm: sheet.hMm - end - GAP_MM });
+  }
+
+  return { strips, cuts, offcuts: offcuts.filter(usable) };
+}
+
+/** Worktops: cut each piece to length, in order along the worktop. */
+function planWorktopBoard(board: PackedBoard, sheet: SheetFormat): Pick<SheetLayout, 'strips' | 'cuts' | 'offcuts'> {
+  const pieces = [...board.pieces].sort((a, b) => a.yMm - b.yMm);
+  const cuts: CutStep[] = [];
+  for (const p of pieces) {
+    if (p.yMm + p.hMm === sheet.hMm) continue;
+    cuts.push({ kind: 'length', step: cuts.length + 1, ref: p.ref, atMm: p.hMm });
+  }
+  const used = Math.max(0, ...pieces.map((p) => p.yMm + p.hMm));
+  const end: Offcut = { xMm: 0, yMm: used + GAP_MM, wMm: sheet.wMm, hMm: sheet.hMm - used - GAP_MM };
+  return { strips: [], cuts, offcuts: [end].filter(usable) };
 }
 
 /**
@@ -317,9 +432,10 @@ export function planCutting(input: CuttingInput): CuttingPlan {
     sheet,
     rotationAllowed: input.allowRotation && !sheet.crossCutOnly,
     cutList,
-    layouts: packed.map((pieces) => ({
-      pieces,
-      utilisation: pieces.reduce((sum, p) => sum + p.wMm * p.hMm, 0) / boardArea,
+    layouts: packed.map((board) => ({
+      pieces: board.pieces,
+      utilisation: board.pieces.reduce((sum, p) => sum + p.wMm * p.hMm, 0) / boardArea,
+      ...(sheet.crossCutOnly ? planWorktopBoard(board, sheet) : planSheetBoard(board, sheet)),
     })),
     unplaceableRefs: refsWhere((c) => !c.fits),
     belowMinRefs: refsWhere((c) => c.belowMin),
