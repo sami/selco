@@ -49,7 +49,7 @@ export function buildCuttingTerms(plan: CuttingPlan): Term[] {
   const trim = trimText(plan);
   return [
     { id: 'sizes', title: 'Sizes', text: "We cut to the sizes in the cut list above. Check every line before you sign, because we can't change a size once it's been cut." },
-    { id: 'tolerance', title: 'Tolerance', text: `Each cut piece can be up to ${TOLERANCE_MM} mm over or under the size listed. Allow for this in your fitting, for example with a small gap or by scribing to fit.` },
+    { id: 'tolerance', title: 'Tolerance', text: `Each cut piece can be up to ${TOLERANCE_MM} mm over or under the size listed. The plan leaves room for this. Allow for this in your fitting, for example with a small gap or by scribing to fit.` },
     { id: 'blade', title: 'Blade width', text: `The saw removes about ${PANEL_SAW.kerfMm} mm with every cut. The plan already allows for it, so leftover pieces will be slightly smaller than they look on paper.` },
     { id: 'cut-edges', title: 'Cut edges', text: "Coated boards such as melamine or laminate can chip along a cut. Cut edges aren't finished and may need edging tape or a light sand." },
     {

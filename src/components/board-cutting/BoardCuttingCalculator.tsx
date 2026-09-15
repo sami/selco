@@ -5,6 +5,7 @@ import {
   MAX_QTY,
   PANEL_SAW,
   SHEET_FORMATS,
+  TOLERANCE_MM,
   planCutting,
   validatePiece,
   type PieceInput,
@@ -14,9 +15,9 @@ import { FormField } from '../ui/FormField';
 import { NumberInput } from '../ui/NumberInput';
 import { ResultCard } from '../ui/ResultCard';
 import { CutListTable } from './CutListTable';
-import { CuttingPlanDrawing } from './CuttingPlanDrawing';
 import { CuttingTerms } from './CuttingTerms';
 import { PrintableCuttingSheet } from './PrintableCuttingSheet';
+import { SawPlan } from './SawPlan';
 import { buildCuttingTerms } from './cutting-terms';
 
 export interface PieceRow {
@@ -289,10 +290,10 @@ export function BoardCuttingCalculator({ initialRows = [BLANK_ROW] }: Props) {
               title="Estimated boards needed"
               quantity={plan.layouts.length}
               unit={sheet.crossCutOnly ? 'worktops' : 'sheets'}
-              detail={`${piecesPlanned} pieces planned with a ${PANEL_SAW.kerfMm} mm blade allowance between cuts`}
+              detail={`${piecesPlanned} pieces planned with a ${PANEL_SAW.kerfMm} mm blade and ${TOLERANCE_MM} mm tolerance allowance between cuts`}
             />
             <div className="card text-brand-navy">
-              <CuttingPlanDrawing plan={plan} />
+              <SawPlan plan={plan} />
             </div>
             <div className="card overflow-x-auto">
               <CutListTable plan={plan} />

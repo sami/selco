@@ -1,7 +1,7 @@
 import type { CuttingPlan } from '../../calculators/board-cutting';
 import { CutListTable } from './CutListTable';
-import { CuttingPlanDrawing } from './CuttingPlanDrawing';
 import { CuttingTerms } from './CuttingTerms';
+import { SawPlan } from './SawPlan';
 import { SHEET_FOOTER, SIGN_OFF_STATEMENT, type Term } from './cutting-terms';
 
 interface Props {
@@ -27,12 +27,12 @@ export function PrintableCuttingSheet({ plan, terms, printedAt }: Props) {
         <dd className="m-0">{printedAt}</dd>
       </dl>
 
-      <CuttingPlanDrawing plan={plan} />
+      <SawPlan plan={plan} />
 
-      <h2 className="text-lg font-bold mt-6 mb-2">Cut list</h2>
+      <h2 className="text-lg font-bold mt-6 mb-2 break-after-avoid">Cut list</h2>
       <CutListTable plan={plan} />
 
-      <h2 className="text-lg font-bold mt-6 mb-2">Please read before signing</h2>
+      <h2 className="text-lg font-bold mt-6 mb-2 break-after-avoid">Please read before signing</h2>
       <CuttingTerms terms={terms} />
 
       <div className="break-inside-avoid mt-8 border-t border-black pt-4">
