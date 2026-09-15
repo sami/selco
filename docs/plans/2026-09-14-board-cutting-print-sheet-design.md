@@ -53,8 +53,10 @@ Ported from the pre-reset engine, keeping:
   - Worktop, 3000 × 600 × 38 mm, cross-cut to length only
 - Shelf packing (first-fit decreasing height) for sheets, and 1D first-fit
   decreasing packing for worktops
-- Panel saw limits: 3 mm kerf between every part, 500 × 230 mm minimum
-  workpiece, 3100 × 1644 mm maximum, 60 mm maximum depth
+- Panel saw limits: 3 mm kerf, 500 × 230 mm minimum workpiece, 3100 ×
+  1644 mm maximum, 60 mm maximum depth. Neighbouring parts are packed
+  `GAP_MM` = 6 mm apart (the 3 mm blade plus the 3 mm tolerance), with no gap
+  at a board edge (changed after release, see section 4)
 - An allow-rotation option (off keeps grain or face direction)
 
 Changes from the old engine:
@@ -105,7 +107,7 @@ column names and the below-minimum note were approved after the final review.
 **Please read before signing**
 
 1. **Sizes.** We cut to the sizes in the cut list above. Check every line before you sign, because we can't change a size once it's been cut.
-2. **Tolerance.** Each cut piece can be up to 3 mm over or under the size listed. Allow for this in your fitting, for example with a small gap or by scribing to fit.
+2. **Tolerance.** Each cut piece can be up to 3 mm over or under the size listed. The plan leaves room for this. Allow for this in your fitting, for example with a small gap or by scribing to fit.
 3. **Blade width.** The saw removes about 3 mm with every cut. The plan already allows for it, so leftover pieces will be slightly smaller than they look on paper.
 4. **Cut edges.** Coated boards such as melamine or laminate can chip along a cut. Cut edges aren't finished and may need edging tape or a light sand.
 5. **Grain and pattern.**
@@ -169,12 +171,71 @@ with a registry entry. The catalogue card in `public/index.html` points to
   once both sizes are entered or focus leaves the row, and printing stays
   blocked while any row is invalid, including errors not yet shown.
 
+## 4. Saw operator plan (added after release)
+
+**Approved:** 15 September 2026, on branch feat/saw-operator-plan. The plan
+the TSA prints is now one the saw operator can work from, and the packing
+leaves room for the cutting tolerance.
+
+**Gap.** `GAP_MM = PANEL_SAW.kerfMm + TOLERANCE_MM`, 6 mm, is kept between
+neighbouring pieces on a strip, between strips and between worktop cuts, so a
+piece that comes out up to 3 mm over never runs the board out. The operator
+still cuts each piece to its size. There is no gap at a board edge, so a full
+1220 × 2440 piece still fits one sheet.
+
+**Strips, steps and offcuts.** Each `SheetLayout` now also carries:
+
+- `strips` (sheets only, `[]` for worktops): each strip's y position, height
+  and pieces in x order, numbered from 1 in the order they're cut.
+- `cuts`: the numbered steps, 1, 2, 3… per board.
+  - Sheets, per strip: cut the strip across the full width at its height,
+    unless it ends at the board edge; then cross-cut each piece at its width,
+    with a trim to the piece's height when it's shorter than the strip. A
+    piece that ends flush with the board edge and needs no trim gets no step.
+  - Worktops: cut each piece to length in order along the worktop, skipping a
+    piece that ends flush with the worktop end.
+- `offcuts`, at their smallest size once the gap is allowed for, listed per
+  strip (above each trimmed piece in x order, then the strip's right
+  remainder), then below the last strip. A worktop has a single end offcut.
+
+Pieces below the saw minimum use their in-store cut size and placed
+(possibly turned) dimensions throughout; the trim down to the finished size
+at home is covered by the cut list note, not a saw step.
+
+**`MIN_OFFCUT_MM` = 10.** Offcuts under 10 mm in either direction are dust and
+aren't listed.
+
+**Step wording** (`src/components/board-cutting/saw-steps.ts`):
+
+- Strip: "Cut strip 1 across the full 1220 mm width at 600 mm"
+- Piece: "From strip 1, cut A at 800 mm", adding ", then trim to 400 mm"
+  when trimmed
+- Worktop: "Cut A at 1500 mm"
+- Offcuts line: "Offcuts, at least: 1220 × 1834, 414 × 600", or "No usable
+  offcuts."; a board with no steps shows "No cuts needed for this board."
+
+**Drawing and tick boxes.** `SawPlan` replaces the old plan drawing on screen
+and on the printed sheet. Each board is one block that isn't split across
+pages: a caption ("Sheet 1 of 2, 57% of board used"), then the drawing beside
+the numbered steps on wide screens and in print, stacked on narrow screens.
+Pieces are labelled with their letter and, when there's room, their cut size;
+offcuts are shaded lighter with a dashed outline and labelled "Offcut W × H"
+when there's room. Every step starts with an empty square the operator ticks
+on paper. The result card reads "N pieces planned with a 3 mm blade and 3 mm
+tolerance allowance between cuts".
+
+**Wording note.** The Blade width term still says leftover pieces "will be
+slightly smaller than they look on paper", while the plan now labels offcuts
+with their minimum size. The term was left unchanged; it can be revisited.
+
 ## Testing
 
 Test-first, with RED and GREEN commits as for Masonry and Flooring.
 
-- **Engine:** parts never overlap and stay inside the sheet; at least 3 mm
-  kerf between neighbouring parts; worktop parts always take the full 600 mm
+- **Engine:** parts never overlap and stay inside the sheet; at least the
+  6 mm blade and tolerance gap between neighbouring parts; offcuts stay inside
+  the board, clear of every part by the gap; exact steps and offcuts for
+  sheets, trimmed pieces, pieces below the saw minimum and worktops; worktop parts always take the full 600 mm
   width and narrower ones are flagged; rotation off never rotates; below
   minimum and unplaceable parts flagged; one letter assigned per row;
   invalid input throws.
